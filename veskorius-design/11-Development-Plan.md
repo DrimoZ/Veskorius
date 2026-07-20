@@ -8,7 +8,7 @@ validée en jeu.
 
 | Phase | Nom | Contenu principal | Sources | Sortie testable |
 |---|---|---|---|---|
-| 0 | Fondations | Squelette de projet, outillage | — (déjà fait, `veskorius-mod/`) | Le mod se lance, un item existe |
+| 0 | Fondations | Squelette de projet, outillage | — (fait, `veskorius-mod/`) | Le mod se lance, un item existe |
 | 1 | Boucle T1-T2 | Stabilizer, Assembler, Whetstone, Field Emitter, Purifier, Storage Cell, Locator, Crystal Roost, Crystal Crusher, Resonance Tuner, Catalyst Core, matériaux naturels | 03, 04, 05, 06, 09 | Boucle T1-T2 complète, y compris les voies alternatives (Roost, Crusher, augment) |
 | 2 | Réseau régional T3 | Relay, Alloy Forge (branche conductive + Flux Slag), Synthesizer (+ résidu), Driller, Slag Vent, Flux Compressor, Sigma Laboratory, Poste de Garde | 03, 04, 05, 07, 08, 09 | Un joueur atteint et vide un Sigma Laboratory, gère le Slag |
 | 3 | Synthèse profonde T4 | Amplifier, Deep Synthesis Chamber, Extraction Array, Network Hub, dérive de calibration, Archive Régionale, Orage de Résonance, agriculture | 03, 04, 05, 06, 07, 08, 09 | Bootstrap T4 validé, réseau relié via Amplifier, un orage traversé |
@@ -17,9 +17,23 @@ validée en jeu.
 | 6 | Assets & Polish | Textures, sons, modèles, datagen, équilibrage | 04-09, 12 | Rendu final, aucun placeholder |
 | 7 | Publication | Packaging, changelog, CI | — | Version distribuable |
 
-## Phase 0 — Fondations (déjà réalisée)
+## Phase 0 — Fondations (réalisée, puis corrigée)
 
 Voir dossier `veskorius-mod/`. Ne pas y revenir tant que la Phase 1 n'a pas révélé de manque.
+
+**Correction du 2026-07-20.** La sortie testable « le mod se lance » était affirmée sans avoir
+été vérifiée : le code de la Phase 0 ne compilait pas, et n'aurait pas démarré même corrigé.
+Deux défauts distincts, tous deux trouvés au démarrage de la Phase 1 :
+
+1. `DeferredRegister.create(BuiltInRegistries.ITEM, …)` renvoie un `DeferredRegister<T>`
+   générique, qui n'expose pas `registerSimpleItem` / `registerSimpleBlockItem` /
+   `registerSimpleBlock`. Ces helpers n'existent que sur `DeferredRegister.Items` et
+   `DeferredRegister.Blocks` (`createItems` / `createBlocks`). 6 erreurs de compilation.
+2. `NeoForge.EVENT_BUS.register(this)` sur la classe principale, qui ne porte aucune méthode
+   `@SubscribeEvent` : depuis NeoForge 21.1 c'est une `IllegalArgumentException` au chargement.
+
+Leçon de méthode, pas seulement de code : **une sortie testable n'est validée que si elle a
+été exécutée.** Les phases suivantes ne se ferment pas sur une lecture du code.
 
 ## Phase 1 — Boucle T1-T2
 
@@ -27,8 +41,11 @@ Voir dossier `veskorius-mod/`. Ne pas y revenir tant que la Phase 1 n'a pas rév
 purifie un cristal — sans aide externe.
 
 Tâches, dans l'ordre :
-1. `ResonanceStabilizerBlockEntity` + cycle (30s, craft 4 Cobblestone + 2 Copper + 1 Raw Crystal)
-   — `05-Machines.md` #1.
+1. ✅ `ResonanceStabilizerBlockEntity` + cycle (30s, craft 4 Cobblestone + 2 Copper + 1 Raw
+   Crystal) — `05-Machines.md` #1. Fait avec la tâche 15 (voir ci-dessous), sur un socle
+   `AbstractMachineBlockEntity` / `AbstractMachineMenu` / `AbstractMachineScreen` réutilisable
+   par les 22 machines suivantes. **Pas encore joué en jeu** — la logique du cycle n'est
+   couverte par aucun test automatisé pour l'instant (voir la note GameTest en bas de phase).
 2. `ComponentAssemblerBlockEntity` — #2.
 3. `ResonanceWhetstoneBlockEntity` — #3, le plus simple, bon test de régression du pattern.
 4. Génération des poches de `raw_resonance_crystal` (`07-World-Generation.md`, strate 0/-20).
@@ -50,10 +67,23 @@ Tâches, dans l'ordre :
 15. Slot d'augment générique sur toutes les machines actives + `ResonanceCatalystCoreItem` —
     implémenter le slot dès cette phase, même si son usage réel ne devient intéressant qu'à
     partir de la Phase 2, pour éviter de le retrofit plus tard sur des machines déjà codées.
+    - ✅ **Slot fait** (avec la tâche 1 : la tâche 1 code la première des 23 machines, donc
+      attendre la tâche 15 aurait garanti exactement le retrofit que cette tâche veut éviter —
+      l'ordre initial 1 → 15 était contradictoire sur ce point).
+    - ⬜ **Item `resonance_catalyst_core` restant.** Le slot accepte le tag
+      `veskorius:machine_augments`, aujourd'hui vide : coder l'item et l'ajouter au tag suffira,
+      sans toucher au code d'aucune machine.
 
 **Critère de sortie** : les 15 tâches jouées en jeu sans crash, dans une seule partie continue,
 du spawn jusqu'à la purification d'un cristal, avec au moins un test du mode surchauffe, du
 Crystal Roost, et de l'installation d'un Catalyst Core sur une machine T1.
+
+**Outillage à mettre en place avant de continuer** : un harnais `GameTest` (`runGameTestServer`,
+déjà activé dans `build.gradle`). NeoForge ne fournit aucun template de structure vide, il faut
+donc générer un `.nbt` vide une fois ; ensuite chaque machine peut être validée sans partie
+manuelle (poser le bloc, insérer les entrées, avancer N ticks, vérifier la sortie). Rentabilisé
+dès la 2e ou 3e machine, et seul moyen d'éviter que le critère de sortie ci-dessus se transforme
+en une longue session de test manuel à la fin de la phase.
 
 ## Phase 2 — Réseau régional T3
 
