@@ -44,6 +44,8 @@ public class ModDataGenerators {
         generator.addProvider(event.includeServer(),
             new ModRecipeProvider(output, lookupProvider));
         generator.addProvider(event.includeServer(),
+            new ModStructureTemplateProvider(output));
+        generator.addProvider(event.includeServer(),
             new LootTableProvider(output, Set.of(),
                 List.of(new LootTableProvider.SubProviderEntry(
                     ModBlockLootProvider::new, LootContextParamSets.BLOCK)),

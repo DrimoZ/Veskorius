@@ -42,6 +42,13 @@ neoForge {
             programArgument '--nogui'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
+        // Lance les GameTest sans interface et rend la main : le build echoue si
+        // un test echoue. ModDevGradle n'a pas de raccourci gameTestServer() —
+        // le type est declare par le userdev de NeoForge, on le pose a la main.
+        gameTestServer {
+            type = 'gameTestServer'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
         data {
             data()
             // Génère automatiquement le JSON (blockstates, models, recettes, loot tables, etc.)

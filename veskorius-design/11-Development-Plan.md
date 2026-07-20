@@ -44,8 +44,10 @@ Tâches, dans l'ordre :
 1. ✅ `ResonanceStabilizerBlockEntity` + cycle (30s, craft 4 Cobblestone + 2 Copper + 1 Raw
    Crystal) — `05-Machines.md` #1. Fait avec la tâche 15 (voir ci-dessous), sur un socle
    `AbstractMachineBlockEntity` / `AbstractMachineMenu` / `AbstractMachineScreen` réutilisable
-   par les 22 machines suivantes. **Pas encore joué en jeu** — la logique du cycle n'est
-   couverte par aucun test automatisé pour l'instant (voir la note GameTest en bas de phase).
+   par les 22 machines suivantes. Cycle, consommation des entrées, remise à zéro et blocage
+   sortie pleine couverts par `runGameTestServer`. **Reste à valider en jeu** : uniquement la
+   partie visuelle (ouverture du GUI, barre de progression, orientation) — les GameTest tournent
+   sans client.
 2. `ComponentAssemblerBlockEntity` — #2.
 3. `ResonanceWhetstoneBlockEntity` — #3, le plus simple, bon test de régression du pattern.
 4. Génération des poches de `raw_resonance_crystal` (`07-World-Generation.md`, strate 0/-20).
@@ -78,12 +80,28 @@ Tâches, dans l'ordre :
 du spawn jusqu'à la purification d'un cristal, avec au moins un test du mode surchauffe, du
 Crystal Roost, et de l'installation d'un Catalyst Core sur une machine T1.
 
-**Outillage à mettre en place avant de continuer** : un harnais `GameTest` (`runGameTestServer`,
-déjà activé dans `build.gradle`). NeoForge ne fournit aucun template de structure vide, il faut
-donc générer un `.nbt` vide une fois ; ensuite chaque machine peut être validée sans partie
-manuelle (poser le bloc, insérer les entrées, avancer N ticks, vérifier la sortie). Rentabilisé
-dès la 2e ou 3e machine, et seul moyen d'éviter que le critère de sortie ci-dessus se transforme
-en une longue session de test manuel à la fin de la phase.
+**Outillage — fait.** Le harnais `GameTest` est en place : `./gradlew runGameTestServer` lance
+la suite sans interface et fait échouer le build au moindre test rouge. Coût réel : 24 secondes
+pour toute la suite, boot de Minecraft compris — les cycles de 600 ticks s'exécutent en 2
+secondes, le serveur de test ne tourne pas à 20 tps.
+
+Deux points qui ont demandé une décision, à savoir pour la suite :
+
+- NeoForge 21.1 ne fournit **aucun** template de structure vide (l'annotation `@EmptyTemplate`
+  n'existe que dans des versions plus récentes). Un `ModStructureTemplateProvider` génère donc
+  le `.nbt` vide en datagen, plutôt que de committer une ressource binaire écrite à la main.
+- ModDevGradle n'a pas de raccourci `gameTestServer()` ; le type de run est déclaré par le
+  userdev de NeoForge et posé à la main dans `build.gradle`.
+
+**Ce que le harnais couvre, et ce qu'il ne couvre pas.** Il valide la logique serveur : cycle,
+consommation des entrées, remise à zéro, blocage sortie pleine, filtrage du slot d'augment. Il ne
+valide **rien de visuel** — GUI, barre de progression, orientation, textures se vérifient au
+client. Le critère de sortie de la phase reste donc une partie jouée, mais réduite à ce qui se
+voit, au lieu de tout revérifier à la main.
+
+Règle pour les 22 machines suivantes : **une machine n'est finie que quand ses GameTest passent.**
+La valeur de référence (durée de cycle, quantités) est réécrite dans le test plutôt qu'importée
+depuis la machine, pour qu'un changement de valeur non répercuté ici fasse échouer la suite.
 
 ## Phase 2 — Réseau régional T3
 

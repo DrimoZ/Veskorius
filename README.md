@@ -21,6 +21,7 @@ ce fichier.
   `AbstractMachineMenu`, `AbstractMachineScreen`.
 - Datagen complet : plus aucun blockstate / modèle / recette / loot table / tag / traduction
   n'est écrit à la main.
+- Harnais `GameTest` : 5 tests couvrant le cycle des machines, `./gradlew runGameTestServer`.
 - Textures placeholder (couleur unie) — à remplacer par du vrai pixel art en Phase 6.
 
 Consulter `veskorius-design/13-Registry-Index.md` pour l'état « codé / à coder » de tout le
@@ -33,8 +34,11 @@ deviner où on en est.
    le jeu avec le mod chargé.
 2. `./gradlew runData` après tout ajout de bloc/item/recette : régénère `src/generated/resources/`.
    Ce dossier est volontairement ignoré par git — il se reconstruit à partir du code, et le
-   versionner créerait des conflits sans valeur.
-3. `gradle.properties` : la version `neo_version=21.1.172` est celle utilisée pour valider le
+   versionner créerait des conflits sans valeur. **À lancer avant `runGameTestServer`** : c'est
+   lui qui produit le template de structure vide dont les tests ont besoin.
+3. `./gradlew runGameTestServer` : joue les tests des machines sans interface (~24 s). Le build
+   échoue si un test échoue. Une machine n'est considérée finie que quand ses tests passent.
+4. `gradle.properties` : la version `neo_version=21.1.172` est celle utilisée pour valider le
    build. Si la résolution de dépendance échoue, vérifier la dernière version patch sur
    https://projects.neoforged.net/neoforged/neoforge.
 
@@ -55,12 +59,13 @@ Suivre `veskorius-design/11-Development-Plan.md`, Phase 1 — c'est la liste ord
 jour (recettes exactes, chiffres d'équilibrage, dépendances entre tâches). Les tâches 1 et 15
 (slot d'augment) y sont marquées faites. Les toutes prochaines étapes :
 
-1. **Harnais `GameTest`** (noté en bas de la Phase 1). Rien ne valide aujourd'hui le cycle du
-   Stabilizer automatiquement. À faire avant la 2e ou 3e machine, pas après.
-2. **`ComponentAssemblerBlockEntity`** (tâche 2) — premier vrai test du socle générique, et
+1. **`ComponentAssemblerBlockEntity`** (tâche 2) — premier vrai test du socle générique, et
    première machine consommant de l'énergie.
-3. **`ResonanceWhetstoneBlockEntity`** (tâche 3).
-4. Puis les tâches 4 à 15 dans l'ordre du plan.
+2. **`ResonanceWhetstoneBlockEntity`** (tâche 3).
+3. Puis les tâches 4 à 15 dans l'ordre du plan.
+
+Reste aussi à valider en jeu la partie visuelle du Stabilizer (ouverture du GUI, barre de
+progression, orientation) : les GameTest tournent sans client et ne couvrent rien de graphique.
 
 ## Structure
 
@@ -74,7 +79,8 @@ src/main/java/com/veskorius/
 ├── item/ModItems.java
 ├── menu/                       ← AbstractMachineMenu + menus de machines
 ├── client/                     ← écrans (Dist.CLIENT uniquement)
-├── datagen/                    ← les 7 providers + GatherDataEvent
+├── datagen/                    ← les 8 providers + GatherDataEvent
+├── gametest/                   ← tests joués par runGameTestServer
 └── tag/ModTags.java
 
 src/main/resources/assets/veskorius/textures/  ← seules ressources écrites à la main
