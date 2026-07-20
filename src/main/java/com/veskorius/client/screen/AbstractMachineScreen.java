@@ -1,5 +1,6 @@
 package com.veskorius.client.screen;
 
+import com.veskorius.Veskorius;
 import com.veskorius.menu.AbstractMachineMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -15,6 +16,15 @@ import net.minecraft.world.entity.player.Inventory;
  * ci-dessous reprennent donc exactement celles du four.
  */
 public abstract class AbstractMachineScreen<T extends AbstractMachineMenu> extends AbstractContainerScreen<T> {
+
+    /**
+     * Fond commun aux machines a disposition standard (2 entrees, 1 sortie,
+     * 1 augment). Tant que les textures sont des placeholders, un seul fichier
+     * suffit pour toutes — la Phase 6 pourra en donner un par machine en
+     * surchargeant le constructeur qui prend une ResourceLocation.
+     */
+    public static final ResourceLocation STANDARD_TEXTURE = ResourceLocation.fromNamespaceAndPath(
+        Veskorius.MOD_ID, "textures/gui/container/machine_standard.png");
 
     protected static final int PROGRESS_X = 79;
     protected static final int PROGRESS_Y = 34;
