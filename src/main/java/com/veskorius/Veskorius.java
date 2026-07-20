@@ -1,11 +1,12 @@
 package com.veskorius;
 
 import com.veskorius.block.ModBlocks;
+import com.veskorius.block.entity.ModBlockEntities;
 import com.veskorius.item.ModItems;
+import com.veskorius.menu.ModMenuTypes;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.network.chat.Component;
@@ -17,10 +18,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Point d'entree du mod Veskorius.
  *
- * Ce fichier ne fait qu'enregistrer les items/blocs et declarer un onglet
- * createur dedie. Toute logique de gameplay (machines, energie de Resonance)
- * viendra dans des classes separees au fur et a mesure — voir TECH-SPEC.md
- * pour ce qui reste a coder.
+ * Ce fichier ne fait qu'enregistrer les objets du mod et declarer un onglet
+ * createur dedie. Toute logique de gameplay vit dans des classes separees.
+ *
+ * Source de verite pour le gameplay et l'ordre des taches :
+ * veskorius-design/ (en particulier 11-Development-Plan.md).
  */
 @Mod(Veskorius.MOD_ID)
 public class Veskorius {
@@ -47,11 +49,17 @@ public class Veskorius {
     public Veskorius(IEventBus modEventBus) {
         ModItems.ITEMS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
+        ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
+        ModMenuTypes.MENUS.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
 
-        NeoForge.EVENT_BUS.register(this);
+        // Pas de NeoForge.EVENT_BUS.register(this) ici : depuis NeoForge 21.1,
+        // enregistrer un objet sans aucune methode @SubscribeEvent leve une
+        // IllegalArgumentException et fait echouer le chargement du mod. Les
+        // abonnements au bus de jeu passent par des classes dediees annotees
+        // @EventBusSubscriber (voir client/ClientModEvents et datagen/).
 
         LOGGER.info("Veskorius: enregistrement termine.");
     }
