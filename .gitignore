@@ -16,3 +16,6 @@ src/generated/
 
 # OS
 .DS_Store
+
+# Config locale Claude Code (par machine, non partagee)
+.claude/settings.local.json
