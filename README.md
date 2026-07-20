@@ -14,14 +14,17 @@ ce fichier.
   `./gradlew runData` passent.
 - 4 items enregistrés : `raw_resonance_crystal`, `stable_resonance_crystal`,
   `refined_resonance_crystal`, `resonance_component`.
-- **Resonance Stabilizer fonctionnel** (machine #1) : block entity, cycle de 30 s
-  (Raw Crystal + Quartz → Stable Crystal), GUI avec barre de progression, orientation, slot
-  d'augment, inventaire persistant et vidé au sol quand le bloc est cassé.
-- Un socle réutilisable pour les 22 machines restantes : `AbstractMachineBlockEntity`,
-  `AbstractMachineMenu`, `AbstractMachineScreen`.
+- **2 machines fonctionnelles** : Resonance Stabilizer (#1, Raw Crystal + Quartz → Stable
+  Crystal, 30 s) et Resonance Whetstone (#3, répare un outil de 25 %, 8 s). Block entity, cycle,
+  GUI avec barre de progression, orientation, slot d'augment, inventaire persistant et vidé au
+  sol quand le bloc est cassé.
+- Un socle réutilisable pour les 21 machines restantes : `AbstractMachineBlock`,
+  `AbstractMachineBlockEntity`, `AbstractMachineMenu`, `AbstractMachineScreen`. Ajouter une
+  machine « standard » = une block entity (cycle), un bloc/menu/écran de 3 méthodes chacun, et
+  quelques lignes de datagen.
 - Datagen complet : plus aucun blockstate / modèle / recette / loot table / tag / traduction
   n'est écrit à la main.
-- Harnais `GameTest` : 5 tests couvrant le cycle des machines, `./gradlew runGameTestServer`.
+- Harnais `GameTest` : 9 tests couvrant le cycle des machines, `./gradlew runGameTestServer`.
 - Textures placeholder (couleur unie) — à remplacer par du vrai pixel art en Phase 6.
 
 Consulter `veskorius-design/13-Registry-Index.md` pour l'état « codé / à coder » de tout le
@@ -59,10 +62,11 @@ Suivre `veskorius-design/11-Development-Plan.md`, Phase 1 — c'est la liste ord
 jour (recettes exactes, chiffres d'équilibrage, dépendances entre tâches). Les tâches 1 et 15
 (slot d'augment) y sont marquées faites. Les toutes prochaines étapes :
 
-1. **`ComponentAssemblerBlockEntity`** (tâche 2) — premier vrai test du socle générique, et
-   première machine consommant de l'énergie.
-2. **`ResonanceWhetstoneBlockEntity`** (tâche 3).
-3. Puis les tâches 4 à 15 dans l'ordre du plan.
+1. **`FieldEmitterBlockEntity` + capability `IResonanceField`** (tâche 5) — remontée avant la
+   tâche 2 : le Component Assembler consomme des Osc, donc le système de champ doit exister
+   d'abord (voir la note sur la tâche 2 dans le plan).
+2. **`ComponentAssemblerBlockEntity`** (tâche 2) — une fois le champ disponible.
+3. Puis le reste de la Phase 1 dans l'ordre du plan.
 
 Reste aussi à valider en jeu la partie visuelle du Stabilizer (ouverture du GUI, barre de
 progression, orientation) : les GameTest tournent sans client et ne couvrent rien de graphique.

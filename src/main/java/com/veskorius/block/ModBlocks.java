@@ -28,4 +28,14 @@ public class ModBlocks {
                 .strength(3.5f, 6.0f)
                 .sound(SoundType.AMETHYST)
                 .requiresCorrectToolForDrops());
+
+    /** Machine #3 (05-Machines.md). Bloc actif : block entity + GUI. */
+    public static final DeferredBlock<ResonanceWhetstoneBlock> RESONANCE_WHETSTONE =
+        BLOCKS.registerBlock("resonance_whetstone",
+            ResonanceWhetstoneBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.STONE)
+                .strength(2.5f, 6.0f)
+                .sound(SoundType.STONE)
+                .requiresCorrectToolForDrops());
 }

@@ -19,11 +19,13 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        // Le bloc est declare requiresCorrectToolForDrops : sans ces deux tags,
-        // il ne se drope avec aucun outil.
+        // Les blocs sont declares requiresCorrectToolForDrops : sans ces deux
+        // tags, ils ne se dropent avec aucun outil.
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
-            .add(ModBlocks.RESONANCE_STABILIZER.get());
+            .add(ModBlocks.RESONANCE_STABILIZER.get())
+            .add(ModBlocks.RESONANCE_WHETSTONE.get());
         tag(BlockTags.NEEDS_STONE_TOOL)
-            .add(ModBlocks.RESONANCE_STABILIZER.get());
+            .add(ModBlocks.RESONANCE_STABILIZER.get())
+            .add(ModBlocks.RESONANCE_WHETSTONE.get());
     }
 }

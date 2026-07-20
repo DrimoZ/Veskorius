@@ -23,5 +23,6 @@ public class ModItemModelProvider extends ItemModelProvider {
         // le BlockStateProvider parce que horizontalBlock, contrairement a
         // simpleBlockWithItem, ne cree pas de modele d'objet.
         withExistingParent("resonance_stabilizer", modLoc("block/resonance_stabilizer"));
+        withExistingParent("resonance_whetstone", modLoc("block/resonance_whetstone"));
     }
 }

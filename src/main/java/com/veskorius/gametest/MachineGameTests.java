@@ -4,6 +4,7 @@ import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
 import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
+import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
 import com.veskorius.item.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
@@ -176,6 +177,113 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    // --- Resonance Whetstone (machine #3) ------------------------------------
+
+    /** 8 secondes (05-Machines.md #3). */
+    private static final int WHETSTONE_TICKS = 8 * 20;
+
+    /**
+     * Le Whetstone ne fabrique rien : il repare son entree de 25% de la
+     * durabilite maximale et la deplace en sortie. C'est le cas qui verifie que
+     * le socle ne suppose pas "entrees consommees -> nouvel objet produit".
+     */
+    @GameTest(template = EMPTY, timeoutTicks = WHETSTONE_TICKS + 200)
+    public static void whetstoneRepairsToolByAQuarter(GameTestHelper helper) {
+        ItemStack damaged = new ItemStack(Items.IRON_PICKAXE);
+        int maxDamage = damaged.getMaxDamage();
+        int initialDamage = maxDamage - 10;
+
+        helper.startSequence()
+            .thenExecute(() -> {
+                IItemHandler inventory = placeWhetstone(helper);
+                damaged.setDamageValue(initialDamage);
+                inventory.insertItem(ResonanceWhetstoneBlockEntity.SLOT_TOOL, damaged, false);
+                inventory.insertItem(ResonanceWhetstoneBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+            })
+            .thenExecuteAfter(WHETSTONE_TICKS + 5, () -> {
+                IItemHandler inventory = whetstoneInventory(helper);
+                ItemStack repaired = inventory.getStackInSlot(ResonanceWhetstoneBlockEntity.SLOT_OUTPUT);
+
+                helper.assertTrue(repaired.is(Items.IRON_PICKAXE),
+                    "L'outil repare devrait etre en sortie, trouve : " + repaired);
+
+                int expected = initialDamage - maxDamage / 4;
+                helper.assertTrue(repaired.getDamageValue() == expected,
+                    "Degats attendus " + expected + ", trouve : " + repaired.getDamageValue());
+
+                helper.assertTrue(
+                    inventory.getStackInSlot(ResonanceWhetstoneBlockEntity.SLOT_CRYSTAL).isEmpty(),
+                    "Le cristal stable aurait du etre consomme");
+                helper.assertTrue(
+                    inventory.getStackInSlot(ResonanceWhetstoneBlockEntity.SLOT_TOOL).isEmpty(),
+                    "L'outil ne devrait plus etre dans le slot d'entree");
+            })
+            .thenSucceed();
+    }
+
+    /** Un outil intact ne doit pas consommer de cristal. */
+    @GameTest(template = EMPTY, timeoutTicks = WHETSTONE_TICKS + 200)
+    public static void whetstoneIgnoresUndamagedTool(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                IItemHandler inventory = placeWhetstone(helper);
+                inventory.insertItem(ResonanceWhetstoneBlockEntity.SLOT_TOOL,
+                    new ItemStack(Items.IRON_PICKAXE), false);
+                inventory.insertItem(ResonanceWhetstoneBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+            })
+            .thenExecuteAfter(WHETSTONE_TICKS + 5, () -> {
+                IItemHandler inventory = whetstoneInventory(helper);
+                helper.assertTrue(
+                    !inventory.getStackInSlot(ResonanceWhetstoneBlockEntity.SLOT_CRYSTAL).isEmpty(),
+                    "Un outil intact ne doit pas consommer de cristal");
+                helper.assertTrue(
+                    inventory.getStackInSlot(ResonanceWhetstoneBlockEntity.SLOT_OUTPUT).isEmpty(),
+                    "Aucune sortie ne devrait etre produite pour un outil intact");
+            })
+            .thenSucceed();
+    }
+
+    /** La reparation ne doit jamais depasser l'outil neuf. */
+    @GameTest(template = EMPTY, timeoutTicks = WHETSTONE_TICKS + 200)
+    public static void whetstoneDoesNotOverRepair(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                IItemHandler inventory = placeWhetstone(helper);
+                ItemStack barelyDamaged = new ItemStack(Items.IRON_PICKAXE);
+                barelyDamaged.setDamageValue(1);
+                inventory.insertItem(ResonanceWhetstoneBlockEntity.SLOT_TOOL, barelyDamaged, false);
+                inventory.insertItem(ResonanceWhetstoneBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+            })
+            .thenExecuteAfter(WHETSTONE_TICKS + 5, () -> {
+                ItemStack repaired = whetstoneInventory(helper)
+                    .getStackInSlot(ResonanceWhetstoneBlockEntity.SLOT_OUTPUT);
+                helper.assertTrue(repaired.getDamageValue() == 0,
+                    "Les degats ne doivent pas passer sous zero, trouve : " + repaired.getDamageValue());
+            })
+            .thenSucceed();
+    }
+
+    /** Le slot d'entree n'accepte que des objets endommageables. */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void whetstoneToolSlotRejectsNonTools(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.RESONANCE_WHETSTONE.get());
+        ResonanceWhetstoneBlockEntity machine = helper.getBlockEntity(MACHINE);
+
+        helper.assertFalse(
+            machine.getInventory().isItemValid(ResonanceWhetstoneBlockEntity.SLOT_TOOL,
+                new ItemStack(Items.COBBLESTONE)),
+            "Le slot outil ne doit pas accepter un bloc non endommageable");
+        helper.assertTrue(
+            machine.getInventory().isItemValid(ResonanceWhetstoneBlockEntity.SLOT_TOOL,
+                new ItemStack(Items.IRON_PICKAXE)),
+            "Le slot outil doit accepter une pioche");
+
+        helper.succeed();
+    }
+
     // --- Utilitaires ---------------------------------------------------------
 
     private static ResonanceStabilizerBlockEntity placeAndGet(GameTestHelper helper) {
@@ -185,6 +293,17 @@ public class MachineGameTests {
 
     private static IItemHandler placeStabilizer(GameTestHelper helper) {
         return placeAndGet(helper).getInventory();
+    }
+
+    private static IItemHandler placeWhetstone(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.RESONANCE_WHETSTONE.get());
+        ResonanceWhetstoneBlockEntity machine = helper.getBlockEntity(MACHINE);
+        return machine.getInventory();
+    }
+
+    private static IItemHandler whetstoneInventory(GameTestHelper helper) {
+        ResonanceWhetstoneBlockEntity machine = helper.getBlockEntity(MACHINE);
+        return machine.getInventory();
     }
 
     private static IItemHandler inventoryOf(GameTestHelper helper) {

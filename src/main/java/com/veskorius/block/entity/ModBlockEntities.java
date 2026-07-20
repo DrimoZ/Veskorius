@@ -17,4 +17,10 @@ public class ModBlockEntities {
             () -> BlockEntityType.Builder
                 .of(ResonanceStabilizerBlockEntity::new, ModBlocks.RESONANCE_STABILIZER.get())
                 .build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ResonanceWhetstoneBlockEntity>>
+        RESONANCE_WHETSTONE = BLOCK_ENTITIES.register("resonance_whetstone",
+            () -> BlockEntityType.Builder
+                .of(ResonanceWhetstoneBlockEntity::new, ModBlocks.RESONANCE_WHETSTONE.get())
+                .build(null));
 }

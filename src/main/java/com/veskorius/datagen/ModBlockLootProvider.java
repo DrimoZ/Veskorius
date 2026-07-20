@@ -16,10 +16,11 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
 
     @Override
     protected void generate() {
-        // Le Stabilizer se drop lui-meme. Son inventaire est vide au sol
-        // separement par ResonanceStabilizerBlock.onRemove — la loot table ne
-        // gere que le bloc, pas son contenu.
+        // Les machines se dropent elles-memes. Leur inventaire est vide au sol
+        // separement par AbstractMachineBlock.onRemove — la loot table ne gere
+        // que le bloc, pas son contenu.
         dropSelf(ModBlocks.RESONANCE_STABILIZER.get());
+        dropSelf(ModBlocks.RESONANCE_WHETSTONE.get());
     }
 
     @Override

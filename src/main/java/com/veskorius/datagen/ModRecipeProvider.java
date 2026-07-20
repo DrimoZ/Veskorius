@@ -36,5 +36,19 @@ public class ModRecipeProvider extends RecipeProvider {
             .unlockedBy(getHasName(ModItems.RAW_RESONANCE_CRYSTAL.get()),
                 has(ModItems.RAW_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
+
+        // Resonance Whetstone : 2 Cobblestone + 1 Iron Ingot + 1 Stable
+        // Resonance Crystal (05-Machines.md). Le cristal est pose sur le socle
+        // de pierre, le fer le maintient — meme remarque que ci-dessus sur la
+        // disposition, seules les quantites sont imposees par la conception.
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RESONANCE_WHETSTONE.get())
+            .pattern(" S ")
+            .pattern("CIC")
+            .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
+            .define('C', Items.COBBLESTONE)
+            .define('I', Items.IRON_INGOT)
+            .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
+                has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
+            .save(recipeOutput);
     }
 }

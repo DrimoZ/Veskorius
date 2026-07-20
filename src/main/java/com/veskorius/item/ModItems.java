@@ -34,7 +34,10 @@ public class ModItems {
     public static final DeferredItem<Item> RESONANCE_COMPONENT =
         ITEMS.registerSimpleItem("resonance_component", new Item.Properties().stacksTo(64));
 
-    // BlockItem du Resonance Stabilizer (voir ModBlocks.java)
+    // BlockItems des machines (voir ModBlocks.java)
     public static final DeferredItem<BlockItem> RESONANCE_STABILIZER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_STABILIZER);
+
+    public static final DeferredItem<BlockItem> RESONANCE_WHETSTONE_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_WHETSTONE);
 }

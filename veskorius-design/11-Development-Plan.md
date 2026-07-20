@@ -48,8 +48,15 @@ Tâches, dans l'ordre :
    sortie pleine couverts par `runGameTestServer`. **Reste à valider en jeu** : uniquement la
    partie visuelle (ouverture du GUI, barre de progression, orientation) — les GameTest tournent
    sans client.
-2. `ComponentAssemblerBlockEntity` — #2.
-3. `ResonanceWhetstoneBlockEntity` — #3, le plus simple, bon test de régression du pattern.
+2. `ComponentAssemblerBlockEntity` — #2. **Bloquée jusqu'à la tâche 5** : consomme 3 Osc/tick,
+   or le système de champ n'existe pas avant `IResonanceField`. Coder l'Assembler avant la
+   tâche 5 obligerait à l'écrire sans énergie puis à le retrofit — l'erreur que le slot
+   d'augment vient d'éviter. Fait donc *après* la tâche 5, pas à sa place dans la numérotation.
+3. ✅ `ResonanceWhetstoneBlockEntity` — #3, le plus simple, bon test de régression du pattern.
+   **Codé avant la tâche 2** parce qu'il est autonome (aucun Osc) : il valide le socle sans
+   dépendre du système de champ. Première machine qui *transforme* son entrée (réparation en
+   place) au lieu de la consommer pour produire autre chose — bonne épreuve de généricité du
+   socle. 4 GameTest.
 4. Génération des poches de `raw_resonance_crystal` (`07-World-Generation.md`, strate 0/-20).
 5. `FieldEmitterBlockEntity` + capability `IResonanceField` — #4. Pièce la plus structurante :
    toutes les machines suivantes en dépendent.

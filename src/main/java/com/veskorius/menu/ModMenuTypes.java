@@ -20,4 +20,8 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<ResonanceStabilizerMenu>>
         RESONANCE_STABILIZER = MENUS.register("resonance_stabilizer",
             () -> IMenuTypeExtension.create(ResonanceStabilizerMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<ResonanceWhetstoneMenu>>
+        RESONANCE_WHETSTONE = MENUS.register("resonance_whetstone",
+            () -> IMenuTypeExtension.create(ResonanceWhetstoneMenu::new));
 }
