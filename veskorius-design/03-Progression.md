@@ -1,0 +1,112 @@
+# 03 — Progression complète (T1 → T5)
+
+## Principe
+
+5 tiers (pilier 5). Chaque transition de tier est gardée par une découverte physique (fragment
+de Codex ou observation directe), jamais par un simple compteur de ressources.
+
+## Vue d'ensemble
+
+| Tier | Nom | Âge correspondant | Débloqué par | Change dans la lecture du monde |
+|---|---|---|---|---|
+| T1 | Stabilisation | Éveil | Rien (point de départ) | Reconnaît les poches de cristal brut |
+| T2 | Réseau court | Essor | Fragment trouvé en Avant-poste | Repère les Avant-postes en surface |
+| T3 | Réseau régional | Résonance (début) | Fragment du Sigma Laboratory | Reconnaît les grandes structures à distance |
+| T4 | Synthèse profonde | Résonance (fin) | Fragment de l'Archive Régionale | Accède aux strates profondes en sécurité, relie plusieurs bases |
+| T5 | Rupture de Faille | Effondrement | Découverte d'une Faille active | Voit et peut entrer dans les Failles ; contenu endgame |
+
+## Arbre complet de dépendances
+
+```
+raw_resonance_crystal (trouvé, Y -20 à 0)
+        │
+        ├──▶ [T1] Resonance Stabilizer ──▶ stable_resonance_crystal
+        │         │
+        │         ├──▶ [T1] Component Assembler ──▶ resonance_component
+        │         └──▶ [T1] Resonance Whetstone (réparation d'outils)
+        │
+        └──▶ [T1] Crystal Crusher (alternative) ──▶ resonance_dust
+                  (engrais agricole, ou branche alternative du Component Assembler)
+        │
+        ▼  (fragment Avant-poste)
+[T2] Field Emitter (portée 8) ──▶ champ actif
+        │
+        ├──▶ [T2] Flux Purifier ──▶ refined_resonance_crystal
+        ├──▶ [T2] Resonance Storage Cell (batterie portable)
+        ├──▶ [T2] Resonance Locator (exploration)
+        ├──▶ [T2] Crystal Roost (production passive alternative)
+        ├──▶ [T2] Resonance Catalyst Core (augment, +15% vitesse, une fois posé sur n'importe
+        │         quelle machine déjà construite, y compris T1)
+        │
+        ▼  (fragment Sigma Laboratory)
+[T3] Resonance Relay (portée 20, chaîné, nécessite Veskorian Conductive Alloy Ingot) ──▶ réseau étendu
+        │
+        ├──▶ [T3] Veskorian Alloy Forge ──▶ veskorian_alloy_ingot (Iron) ou
+        │         veskorian_conductive_alloy_ingot (Gold), + Flux Slag
+        │         └──▶ [T3] Slag Vent (maintenance du Slag)
+        ├──▶ [T3] Structural Synthesizer ──▶ veskorian_alloy_block + synthesis_residue
+        ├──▶ [T3] Deep Crystal Driller (accès Y < -40)
+        ├──▶ [T3] Flux Compressor ──▶ concentrated_flux
+        │
+        ▼  (fragment Archive Régionale — 3 Hyper Refined Crystal fournis, voir Bootstrap)
+[T4] Harmonic Amplifier (portée ×2, jusqu'à 3 en chaîne, nécessite Harmonic Lattice)
+        │
+        ├──▶ [T4] Deep Synthesis Chamber ──▶ hyper_refined_crystal (renouvelable dès ce point)
+        ├──▶ [T4] Automated Extraction Array (synchronise les Driller)
+        ├──▶ [T4] Resonance Network Hub (priorité réseau)
+        ├──▶ [T4→T5] Convergence Core (multi-bloc + concentrated_flux, portée 40, alimente le
+        │         Rift Anchor sans base dédiée)
+        │
+        ▼  (découverte d'une Faille active en jeu, pas un craft)
+[T5] Rift Anchor (stabilise une Faille)
+        │
+        ├──▶ [T5] Rift Core Extractor ──▶ rift_essence (fini, 6 max/Faille) + Corrupted Alloy Ingot (15%)
+        └──▶ [T5] Rift Ward Emitter (protection post-extraction)
+```
+
+En parallèle de cet arbre, deux boucles annexes tournent sans dépendre d'un tier précis : la
+récolte/élevage du Fileur de Cristal (Resonance Spore, dès que le joueur en croise un) et
+l'agriculture de l'Ancient Seed trouvé à l'Archive Régionale (Resonance Bloom, voir
+`04-Materials.md`).
+
+## Bootstrap T4 — voir `05-Machines.md`
+
+Le passage T3→T4 a un point de blocage potentiel corrigé explicitement dans `05-Machines.md` :
+le Harmonic Lattice (nécessaire au premier Harmonic Amplifier) consomme du Hyper Refined
+Crystal, qui n'est normalement produit que par la Deep Synthesis Chamber — elle-même un bloc T4.
+L'Archive Régionale fournit exactement 3 Hyper Refined Crystal (2 pour le Lattice, 1 consommé
+comme catalyseur permanent à la construction de la Chamber) pour amorcer les deux sans que le
+joueur reste bloqué. Détail complet : `05-Machines.md`, section "Bootstrap du T4".
+
+## Détail des paliers T4-T5
+
+### T4 — Synthèse profonde
+Débloqué par l'Archive Régionale (voir `08-Structures.md`). Introduit :
+- L'accès sécurisé aux strates profondes (Y < -40), auparavant dangereuses (gaz de Résonance
+  résiduel, voir `06-Energy.md`) sans le Deep Crystal Driller.
+- Une portée de réseau régionale via le Harmonic Amplifier, ou à pleine puissance via le
+  Convergence Core (multi-bloc, voir `05-Machines.md`) plutôt qu'en posant des dizaines de
+  Relais bruts.
+- Deux nouveaux styles de maintenance active : la dérive de calibration (Amplifier, Hub) et le
+  sous-produit à évacuer (Alloy Forge → Flux Slag).
+
+### T5 — Rupture de Faille (endgame)
+Ne se débloque pas par craft mais par **découverte en jeu** d'une Faille active (voir
+`07-World-Generation.md`). Le Rift Anchor est un bloc-ancre à poser au bord de la Faille ; sans
+lui, s'approcher inflige des dégâts de déphasage progressifs. Une fois ancrée, la Faille devient
+traversable et contient le combat de fin (`09-Entities.md`, Gardien de Faille) et la ressource
+finale, non renouvelable une fois la Faille épuisée.
+
+## Règle de déblocage transversale
+
+Aucune machine de tier N+1 n'est craftable sans qu'un fragment ou une observation en jeu ne
+l'ait précédée. À l'intérieur d'un tier déjà débloqué (ex : une fois Harmonic Amplifier obtenu),
+toutes les autres machines du même tier (Deep Synthesis Chamber, Extraction Array, Network Hub,
+Convergence Core) sont librement craftables sans fragment supplémentaire — cohérent avec le
+pilier 1 (la restauration porte sur les catégories de machines par tier, pas sur chaque
+variante).
+
+## Ouvert
+
+- Fréquence exacte des Failles : fixée dans `07-World-Generation.md` (1 / 15000 blocs) — valeur
+  de départ à confirmer en playtest, pas une question ouverte de conception.

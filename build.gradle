@@ -1,0 +1,120 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.141'
+    id 'idea'
+}
+
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+version = mod_version
+group = mod_group_id
+
+sourceSets.main.resources {
+    srcDir('src/generated/resources')
+    exclude("src/generated/**/.cache")
+}
+
+repositories {
+    // Ajouter ici d'éventuels dépôts supplémentaires requis par des dépendances.
+}
+
+base {
+    archivesName = mod_id
+}
+
+// Mojang distribue Java 21 pour 1.21.x — le mod doit cibler Java 21.
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+    version = project.neo_version
+
+    // Configurations de lancement par défaut. À garder telles quelles pour commencer.
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+        data {
+            data()
+            // Génère automatiquement le JSON (blockstates, models, recettes, loot tables, etc.)
+            // dans src/generated/resources/ à partir des DataProvider Java.
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output',
+                file('src/generated/resources/').getAbsolutePath(), '--existing',
+                file('src/main/resources/').getAbsolutePath()
+        }
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    // Ajouter ici les dépendances vers d'autres mods (Thaumcraft, JEI, etc.) une fois
+    // l'intégration décrite dans TECH-SPEC.md prête à être codée.
+    // compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+}
+
+// Génère neoforge.mods.toml à partir de src/main/templates/META-INF/neoforge.mods.toml
+// en remplaçant les ${...} par les valeurs de gradle.properties.
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+        minecraft_version      : minecraft_version,
+        minecraft_version_range: minecraft_version_range,
+        neo_version            : neo_version,
+        loader_version_range   : loader_version_range,
+        mod_id                 : mod_id,
+        mod_name               : mod_name,
+        mod_license            : mod_license,
+        mod_version            : mod_version,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
