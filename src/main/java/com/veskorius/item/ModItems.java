@@ -2,21 +2,25 @@ package com.veskorius.item;
 
 import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * Items du MVP (voir TECH-SPEC.md, section Materiaux).
- * Un seul chemin de recette pour l'instant : Raw -> Stable -> Refined,
- * plus le Resonance Component utilise par les machines T1+.
+ * Items de la chaine de raffinage principale (voir veskorius-design/04-Materials.md,
+ * groupe 1) : Raw -> Stable -> Refined, plus le Resonance Component consomme par
+ * les machines a partir du T1.
+ *
+ * NB : c'est bien {@code DeferredRegister.createItems} et non
+ * {@code DeferredRegister.create(BuiltInRegistries.ITEM, ...)} — seule la
+ * sous-classe {@link DeferredRegister.Items} expose les helpers
+ * {@code registerSimpleItem} / {@code registerSimpleBlockItem}.
  */
 public class ModItems {
 
-    public static final DeferredRegister<Item> ITEMS =
-        DeferredRegister.create(BuiltInRegistries.ITEM, Veskorius.MOD_ID);
+    public static final DeferredRegister.Items ITEMS =
+        DeferredRegister.createItems(Veskorius.MOD_ID);
 
     public static final DeferredItem<Item> RAW_RESONANCE_CRYSTAL =
         ITEMS.registerSimpleItem("raw_resonance_crystal", new Item.Properties().stacksTo(64));

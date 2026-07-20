@@ -1,7 +1,6 @@
 package com.veskorius.block;
 
 import com.veskorius.Veskorius;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -25,8 +24,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  */
 public class ModBlocks {
 
-    public static final DeferredRegister<Block> BLOCKS =
-        DeferredRegister.create(BuiltInRegistries.BLOCK, Veskorius.MOD_ID);
+    public static final DeferredRegister.Blocks BLOCKS =
+        DeferredRegister.createBlocks(Veskorius.MOD_ID);
 
     public static final DeferredBlock<Block> RESONANCE_STABILIZER =
         BLOCKS.registerSimpleBlock("resonance_stabilizer",
