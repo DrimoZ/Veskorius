@@ -141,11 +141,16 @@ valide **rien de visuel** — GUI, barre de progression, orientation, textures s
 client. Le critère de sortie de la phase reste donc une partie jouée, mais réduite à ce qui se
 voit, au lieu de tout revérifier à la main.
 
-**Validation visuelle du 2026-07-21** : `runClient`, les 4 blocs codés (Stabilizer, Component
-Assembler, Whetstone, Field Emitter) posés et ouverts en jeu — GUI, barres de progression,
-orientation et textures placeholder OK, aucune erreur d'asset dans les logs. Reste non couvert
-côté visuel : le GUI du Field Emitter (jauge de réserve, pas encore codé) et l'affichage du
-compteur d'Osc dans les GUI (12-UX, prévu Phase 6).
+**Validation visuelle du 2026-07-21** : `runClient`, deux passes.
+- Passe 1 — les 4 premiers blocs (Stabilizer, Component Assembler, Whetstone, Field Emitter) :
+  GUI, barres de progression, orientation, textures OK.
+- Passe 2 — Flux Purifier + la couche de contrôle : les 3 boutons (manuel, redstone, surchauffe)
+  s'affichent et réagissent, le bouton surchauffe n'apparaît que sur le Purifier, tooltips OK,
+  clic → effet serveur. Aucune erreur d'asset ni de widget dans les logs sur les deux passes.
+
+Reste non couvert côté visuel : le GUI du Field Emitter (jauge de réserve, pas encore codé),
+l'affichage du compteur d'Osc dans les GUI, et l'icône flamme d'état de surchauffe sur la barre
+(distincte du bouton de contrôle) — tous prévus à la passe visuelle de la Phase 6 (12-UX).
 
 Règle pour les 22 machines suivantes : **une machine n'est finie que quand ses GameTest passent.**
 La valeur de référence (durée de cycle, quantités) est réécrite dans le test plutôt qu'importée
