@@ -66,20 +66,26 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     private boolean overheatEnabled = false;
 
     /**
-     * Synchronisation client de la barre de progression. Passe par ContainerData
-     * (mecanisme vanilla du four) plutot que par un packet custom — voir
-     * 12-UX-and-Advancements.md, qui demande une barre "identique au four vanilla".
-     *
-     * DATA_MAX_PROGRESS est recalcule a la lecture au lieu d'etre stocke : le
-     * maximum change des que l'augment est pose ou retire, et un champ stocke
-     * finirait tot ou tard desynchronise.
+     * Durée effective du cycle courant, mise à jour côté serveur à chaque tick et
+     * synchronisée vers le client via la ContainerData. Doit être un champ stocké
+     * (et non un simple recalcul dans le getter) : depuis que le temps vient de la
+     * recette, il dépend des entrées, or l'inventaire de la block entity n'est PAS
+     * synchronisé au client — seule cette valeur l'est. Le client la lit telle
+     * quelle pour dimensionner la barre de progression.
+     */
+    private int maxProgress = 1;
+
+    /**
+     * Synchronisation client de la barre de progression et de l'état des boutons.
+     * Passe par ContainerData (mécanisme vanilla du four) plutôt que par un packet
+     * custom — voir 12-UX-and-Advancements.md.
      */
     private final ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
                 case DATA_PROGRESS -> progress;
-                case DATA_MAX_PROGRESS -> getEffectiveCycleTicks();
+                case DATA_MAX_PROGRESS -> maxProgress;
                 case DATA_MANUAL -> manualEnabled ? 1 : 0;
                 case DATA_REDSTONE_MODE -> redstoneMode.ordinal();
                 case DATA_OVERHEAT -> overheatEnabled ? 1 : 0;
@@ -89,10 +95,11 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
 
         @Override
         public void set(int index, int value) {
-            // Cote client : stocke la valeur synchronisee pour que les boutons du
-            // GUI affichent l'etat reel du serveur.
+            // Cote client : stocke la valeur synchronisee pour que la barre et les
+            // boutons du GUI reflètent l'état réel du serveur.
             switch (index) {
                 case DATA_PROGRESS -> progress = value;
+                case DATA_MAX_PROGRESS -> maxProgress = value;
                 case DATA_MANUAL -> manualEnabled = value != 0;
                 case DATA_REDSTONE_MODE -> redstoneMode = RedstoneMode.byIndex(value);
                 case DATA_OVERHEAT -> overheatEnabled = value != 0;
@@ -113,6 +120,7 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
             @Override
             protected void onContentsChanged(int slot) {
                 setChanged();
+                onSlotChanged(slot);
             }
 
             @Override
@@ -120,6 +128,13 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
                 return AbstractMachineBlockEntity.this.isItemValid(slot, stack);
             }
         };
+    }
+
+    /**
+     * Appelé quand un slot change. Point d'extension : une machine à recette
+     * l'utilise pour invalider sa recette en cache quand une entrée bouge.
+     */
+    protected void onSlotChanged(int slot) {
     }
 
     // --- Contrat des sous-classes -------------------------------------------
@@ -157,6 +172,10 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     }
 
     private void tickCycle() {
+        // Tenu à jour côté serveur pour la synchro de la barre de progression : le
+        // temps de cycle dépend désormais de la recette (donc des entrées).
+        maxProgress = getEffectiveCycleTicks();
+
         if (!canRunCycle()) {
             // Ingredient absent ou sortie pleine : le cycle ne peut pas exister,
             // on remet a zero (contrairement aux pauses ci-dessous).

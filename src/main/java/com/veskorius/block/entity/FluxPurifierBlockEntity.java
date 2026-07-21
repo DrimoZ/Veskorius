@@ -1,29 +1,25 @@
 package com.veskorius.block.entity;
 
-import com.veskorius.item.ModItems;
 import com.veskorius.menu.FluxPurifierMenu;
+import com.veskorius.recipe.ModRecipeTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Machine #5 (05-Machines.md) : Stable Resonance Crystal + Redstone -> Refined
- * Resonance Crystal, 45 s (22 s en surchauffe), 2 Osc/tick (4 en surchauffe).
+ * Machine #5 (05-Machines.md). Recette de fonctionnement en JSON, type
+ * {@code veskorius:purifying} (Stable Crystal + Redstone → Refined Crystal).
  *
- * Première machine à **mode surchauffe** (05-Machines.md, style de craft #1) :
- * temps ÷2 et consommation ×2 sont gérés génériquement par le socle
- * ({@code getEffectiveCycleTicks} / {@code getEffectiveOscPerTick}). Ce qui reste
- * ici, c'est le seul effet que le socle ne peut pas connaître : le **risque de
- * perte de l'input** — 20 % de chance, en surchauffe, que le cycle consomme
- * l'entrée sans produire la sortie.
+ * Première machine à mode surchauffe. Le temps ÷2 et la consommation ×2 sont gérés
+ * génériquement par le socle ({@code getEffectiveCycleTicks} /
+ * {@code getEffectiveOscPerTick}). Il ne reste ici que l'effet que le socle ne peut
+ * pas connaître : le **risque de 20 % de perte de l'input** en surchauffe.
  */
-public class FluxPurifierBlockEntity extends AbstractMachineBlockEntity {
+public class FluxPurifierBlockEntity extends AbstractProcessingMachineBlockEntity {
 
     public static final int SLOT_CRYSTAL = 0;
     public static final int SLOT_REDSTONE = 1;
@@ -31,27 +27,12 @@ public class FluxPurifierBlockEntity extends AbstractMachineBlockEntity {
     public static final int SLOT_AUGMENT = 3;
     public static final int SLOT_COUNT = 4;
 
-    /** 45 secondes hors surchauffe (05-Machines.md #5). */
-    private static final int CYCLE_TICKS = 45 * 20;
-
-    /** 2 Osc/tick hors surchauffe (05-Machines.md #5). */
-    private static final int OSC_PER_TICK = 2;
-
     /** 20 % de chance de perdre l'input en surchauffe (06-Energy.md). */
     private static final float OVERHEAT_LOSS_CHANCE = 0.2f;
 
     public FluxPurifierBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.FLUX_PURIFIER.get(), pos, state, SLOT_COUNT);
-    }
-
-    @Override
-    protected int getBaseCycleTicks() {
-        return CYCLE_TICKS;
-    }
-
-    @Override
-    protected int getOscPerTick() {
-        return OSC_PER_TICK;
+        super(ModBlockEntities.FLUX_PURIFIER.get(), pos, state, SLOT_COUNT,
+            ModRecipeTypes.PURIFYING::get, new int[] {SLOT_CRYSTAL, SLOT_REDSTONE}, SLOT_OUTPUT);
     }
 
     @Override
@@ -60,39 +41,10 @@ public class FluxPurifierBlockEntity extends AbstractMachineBlockEntity {
     }
 
     @Override
-    protected boolean canRunCycle() {
-        if (inventory.getStackInSlot(SLOT_CRYSTAL).isEmpty()
-            || inventory.getStackInSlot(SLOT_REDSTONE).isEmpty()) {
-            return false;
-        }
-        return canInsertInto(SLOT_OUTPUT, result());
-    }
-
-    @Override
-    protected void runCycle() {
-        inventory.extractItem(SLOT_CRYSTAL, 1, false);
-        inventory.extractItem(SLOT_REDSTONE, 1, false);
-
+    protected boolean shouldProduceResult() {
         // En surchauffe, 20 % de chance que l'entrée parte en fumée sans sortie.
         // level est forcément non nul et serveur ici (appelé depuis serverTick).
-        if (isOverheatActive() && level.getRandom().nextFloat() < OVERHEAT_LOSS_CHANCE) {
-            return;
-        }
-        insertInto(SLOT_OUTPUT, result());
-    }
-
-    private static ItemStack result() {
-        return new ItemStack(ModItems.REFINED_RESONANCE_CRYSTAL.get());
-    }
-
-    @Override
-    protected boolean isItemValid(int slot, ItemStack stack) {
-        return switch (slot) {
-            case SLOT_CRYSTAL -> stack.is(ModItems.STABLE_RESONANCE_CRYSTAL.get());
-            case SLOT_REDSTONE -> stack.is(Items.REDSTONE);
-            case SLOT_OUTPUT -> false;
-            default -> super.isItemValid(slot, stack);
-        };
+        return !(isOverheatActive() && level.getRandom().nextFloat() < OVERHEAT_LOSS_CHANCE);
     }
 
     @Override

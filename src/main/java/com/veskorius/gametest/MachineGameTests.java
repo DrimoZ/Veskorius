@@ -186,6 +186,13 @@ public class MachineGameTests {
                 new ItemStack(ModItems.RESONANCE_COMPONENT.get())),
             "Le slot d'augment ne doit pas accepter un composant quelconque du mod");
 
+        // Avec des entrees valides, une recette matche : le cycle dure alors le
+        // temps de la recette (600 ticks). Le temps vient de la recette, pas d'une
+        // constante — donc il faut des entrees pour qu'il soit defini.
+        machine.getInventory().insertItem(ResonanceStabilizerBlockEntity.SLOT_CRYSTAL,
+            new ItemStack(ModItems.RAW_RESONANCE_CRYSTAL.get()), false);
+        machine.getInventory().insertItem(ResonanceStabilizerBlockEntity.SLOT_FLUX,
+            new ItemStack(Items.QUARTZ), false);
         helper.assertTrue(machine.getEffectiveCycleTicks() == CYCLE_TICKS,
             "Sans augment le cycle doit durer " + CYCLE_TICKS + " ticks, vaut : "
                 + machine.getEffectiveCycleTicks());
@@ -618,6 +625,12 @@ public class MachineGameTests {
     public static void purifierOverheatChangesTimeAndCost(GameTestHelper helper) {
         helper.setBlock(MACHINE, ModBlocks.FLUX_PURIFIER.get());
         FluxPurifierBlockEntity purifier = helper.getBlockEntity(MACHINE);
+        // Entrees valides pour qu'une recette matche : le temps et le coût
+        // viennent de la recette, pas de constantes.
+        purifier.getInventory().insertItem(FluxPurifierBlockEntity.SLOT_CRYSTAL,
+            new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+        purifier.getInventory().insertItem(FluxPurifierBlockEntity.SLOT_REDSTONE,
+            new ItemStack(Items.REDSTONE), false);
 
         helper.assertTrue(purifier.supportsOverheat(),
             "Le Flux Purifier doit supporter la surchauffe");

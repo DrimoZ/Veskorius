@@ -5,6 +5,8 @@ import com.veskorius.block.entity.ModBlockEntities;
 import com.veskorius.item.ModDataComponents;
 import com.veskorius.item.ModItems;
 import com.veskorius.menu.ModMenuTypes;
+import com.veskorius.recipe.ModRecipeSerializers;
+import com.veskorius.recipe.ModRecipeTypes;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -58,6 +60,8 @@ public class Veskorius {
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModMenuTypes.MENUS.register(modEventBus);
+        ModRecipeTypes.RECIPE_TYPES.register(modEventBus);
+        ModRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);

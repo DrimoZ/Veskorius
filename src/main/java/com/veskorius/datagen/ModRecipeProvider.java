@@ -1,7 +1,9 @@
 package com.veskorius.datagen;
 
+import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.item.ModItems;
+import com.veskorius.tag.ModTags;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -9,6 +11,7 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 
 public class ModRecipeProvider extends RecipeProvider {
@@ -19,6 +22,8 @@ public class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
+        buildMachineRecipes(recipeOutput);
+
         // Recette de construction du Resonance Stabilizer : 4 Cobblestone +
         // 2 Copper Ingot + 1 Raw Resonance Crystal (05-Machines.md, tableau
         // "Recettes de construction"). Le dossier de conception fixe les
@@ -109,5 +114,42 @@ public class ModRecipeProvider extends RecipeProvider {
             .unlockedBy(getHasName(ModItems.RESONANCE_COMPONENT.get()),
                 has(ModItems.RESONANCE_COMPONENT.get()))
             .save(recipeOutput);
+    }
+
+    /**
+     * Recettes de FONCTIONNEMENT des machines (ce qu'elles transforment une fois
+     * posées), désormais data-driven. Ces valeurs reproduisent celles qui étaient
+     * en dur ; un datapack peut les changer ou en ajouter sans recompiler.
+     */
+    private void buildMachineRecipes(RecipeOutput recipeOutput) {
+        // Stabilizer : Raw Crystal + flux (Quartz via tag) → Stable Crystal, 30 s,
+        // autonome (05-Machines.md #1).
+        MachineRecipeBuilder.stabilizing(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 1)
+            .input(ModItems.RAW_RESONANCE_CRYSTAL.get(), 1)
+            .input(ModTags.Items.STABILIZER_FLUX, 1)
+            .time(30 * 20)
+            .save(recipeOutput, machineRecipe("stabilizing/stable_crystal"));
+
+        // Assembler : 1 Stable Crystal + 2 Iron → 2 Component, 5 s, 3 Osc/tick
+        // (05-Machines.md #2).
+        MachineRecipeBuilder.assembling(ModItems.RESONANCE_COMPONENT.get(), 2)
+            .input(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 1)
+            .input(Items.IRON_INGOT, 2)
+            .time(5 * 20)
+            .osc(3)
+            .save(recipeOutput, machineRecipe("assembling/component"));
+
+        // Purifier : 1 Stable Crystal + 1 Redstone → 1 Refined Crystal, 45 s,
+        // 2 Osc/tick (05-Machines.md #5).
+        MachineRecipeBuilder.purifying(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 1)
+            .input(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 1)
+            .input(Items.REDSTONE, 1)
+            .time(45 * 20)
+            .osc(2)
+            .save(recipeOutput, machineRecipe("purifying/refined_crystal"));
+    }
+
+    private static ResourceLocation machineRecipe(String path) {
+        return ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, path);
     }
 }
