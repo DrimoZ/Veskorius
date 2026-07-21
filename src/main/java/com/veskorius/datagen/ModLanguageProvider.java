@@ -22,6 +22,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("itemGroup.veskorius.main_tab", "Veskorius");
 
         addBlock(ModBlocks.RESONANCE_STABILIZER, "Resonance Stabilizer");
+        addBlock(ModBlocks.COMPONENT_ASSEMBLER, "Component Assembler");
         addBlock(ModBlocks.RESONANCE_WHETSTONE, "Resonance Whetstone");
         addBlock(ModBlocks.FIELD_EMITTER, "Field Emitter");
 

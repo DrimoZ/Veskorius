@@ -3,6 +3,7 @@ package com.veskorius.gametest;
 import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
+import com.veskorius.block.entity.ComponentAssemblerBlockEntity;
 import com.veskorius.block.entity.FieldEmitterBlockEntity;
 import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
 import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
@@ -433,7 +434,133 @@ public class MachineGameTests {
             .thenSucceed();
     }
 
+    // --- Component Assembler (machine #2) : premier consommateur d'Osc -------
+
+    /** Assembleur à 2 blocs de l'émetteur, dans sa portée. */
+    private static final BlockPos ASSEMBLER = new BlockPos(10, 1, 12);
+
+    /** 5 secondes (05-Machines.md #2). */
+    private static final int ASSEMBLER_TICKS = 5 * 20;
+
+    /** 3 Osc/tick × 100 ticks = 300 Osc pour un cycle complet. */
+    private static final int ASSEMBLER_CYCLE_COST = 3 * ASSEMBLER_TICKS;
+
+    /**
+     * Dans un champ : produit 2 Component, consomme 1 cristal + 2 fer, et **prélève
+     * réellement l'énergie** sur l'émetteur (la réserve baisse d'exactement le coût
+     * d'un cycle). C'est le test qui prouve que la machine est bien branchée sur le
+     * système de champ, pas seulement qu'elle tourne.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = ASSEMBLER_TICKS + 200)
+    public static void assemblerRunsInFieldAndConsumesOsc(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                helper.setBlock(ASSEMBLER, ModBlocks.COMPONENT_ASSEMBLER.get());
+                IItemHandler inv = assemblerInventory(helper);
+                inv.insertItem(ComponentAssemblerBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+                inv.insertItem(ComponentAssemblerBlockEntity.SLOT_IRON,
+                    new ItemStack(Items.IRON_INGOT, 2), false);
+            })
+            .thenExecuteAfter(ASSEMBLER_TICKS + 5, () -> {
+                IItemHandler inv = assemblerInventory(helper);
+
+                ItemStack output = inv.getStackInSlot(ComponentAssemblerBlockEntity.SLOT_OUTPUT);
+                helper.assertTrue(output.is(ModItems.RESONANCE_COMPONENT.get()) && output.getCount() == 2,
+                    "La sortie devrait contenir 2 Resonance Component, trouve : " + output);
+                helper.assertTrue(
+                    inv.getStackInSlot(ComponentAssemblerBlockEntity.SLOT_CRYSTAL).isEmpty(),
+                    "Le cristal stable aurait du etre consomme");
+                helper.assertTrue(
+                    inv.getStackInSlot(ComponentAssemblerBlockEntity.SLOT_IRON).isEmpty(),
+                    "Les 2 lingots de fer auraient du etre consommes");
+
+                FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                helper.assertTrue(emitter.getReserve() == 4000 - ASSEMBLER_CYCLE_COST,
+                    "La réserve devrait avoir baissé de " + ASSEMBLER_CYCLE_COST
+                        + " Osc (un cycle), vaut : " + emitter.getReserve());
+            })
+            .thenSucceed();
+    }
+
+    /**
+     * Hors champ : la machine ne progresse pas et ne consomme aucun ingrédient.
+     * Une machine consommatrice d'Osc est inerte sans champ (06-Energy.md).
+     */
+    @GameTest(template = EMPTY, timeoutTicks = ASSEMBLER_TICKS + 200)
+    public static void assemblerIdleWithoutField(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                helper.setBlock(MACHINE, ModBlocks.COMPONENT_ASSEMBLER.get());
+                IItemHandler inv = machineInventory(helper, MACHINE);
+                inv.insertItem(ComponentAssemblerBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+                inv.insertItem(ComponentAssemblerBlockEntity.SLOT_IRON,
+                    new ItemStack(Items.IRON_INGOT, 2), false);
+            })
+            .thenExecuteAfter(ASSEMBLER_TICKS + 20, () -> {
+                IItemHandler inv = machineInventory(helper, MACHINE);
+                helper.assertTrue(
+                    inv.getStackInSlot(ComponentAssemblerBlockEntity.SLOT_OUTPUT).isEmpty(),
+                    "Sans champ, la machine ne devrait rien produire");
+                helper.assertTrue(
+                    !inv.getStackInSlot(ComponentAssemblerBlockEntity.SLOT_CRYSTAL).isEmpty(),
+                    "Sans champ, le cristal ne doit pas etre consomme");
+                helper.assertTrue(machineProgress(helper, MACHINE) == 0,
+                    "Sans champ, la progression doit rester à 0, vaut : "
+                        + machineProgress(helper, MACHINE));
+            })
+            .thenSucceed();
+    }
+
+    /**
+     * Coupure de courant en cours de cycle : la progression est CONSERVÉE (pause),
+     * pas remise à zéro — c'est la décision de conception prise à la tâche 2, et ce
+     * test la verrouille.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = ASSEMBLER_TICKS + 200)
+    public static void assemblerPauseHoldsProgressOnPowerCut(GameTestHelper helper) {
+        int[] progressAtCut = new int[1];
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                helper.setBlock(ASSEMBLER, ModBlocks.COMPONENT_ASSEMBLER.get());
+                IItemHandler inv = assemblerInventory(helper);
+                inv.insertItem(ComponentAssemblerBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+                inv.insertItem(ComponentAssemblerBlockEntity.SLOT_IRON,
+                    new ItemStack(Items.IRON_INGOT, 2), false);
+            })
+            .thenExecuteAfter(40, () -> {
+                progressAtCut[0] = machineProgress(helper, ASSEMBLER);
+                helper.assertTrue(progressAtCut[0] > 0,
+                    "La machine aurait du progresser dans le champ");
+                // Coupe l'alimentation en cassant l'émetteur.
+                helper.destroyBlock(EMITTER);
+            })
+            .thenExecuteAfter(20, () -> helper.assertTrue(
+                machineProgress(helper, ASSEMBLER) == progressAtCut[0],
+                "La progression doit rester figée pendant la coupure, était "
+                    + progressAtCut[0] + ", vaut " + machineProgress(helper, ASSEMBLER)))
+            .thenSucceed();
+    }
+
     // --- Utilitaires ---------------------------------------------------------
+
+    private static IItemHandler assemblerInventory(GameTestHelper helper) {
+        return machineInventory(helper, ASSEMBLER);
+    }
+
+    private static IItemHandler machineInventory(GameTestHelper helper, BlockPos pos) {
+        AbstractMachineBlockEntity machine = helper.getBlockEntity(pos);
+        return machine.getInventory();
+    }
+
+    private static int machineProgress(GameTestHelper helper, BlockPos pos) {
+        AbstractMachineBlockEntity machine = helper.getBlockEntity(pos);
+        return machine.getData().get(AbstractMachineBlockEntity.DATA_PROGRESS);
+    }
 
     private static ResonanceStabilizerBlockEntity placeAndGet(GameTestHelper helper) {
         helper.setBlock(MACHINE, ModBlocks.RESONANCE_STABILIZER.get());

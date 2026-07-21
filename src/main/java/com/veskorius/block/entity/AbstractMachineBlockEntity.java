@@ -1,9 +1,11 @@
 package com.veskorius.block.entity;
 
+import com.veskorius.energy.ResonanceFieldManager;
 import com.veskorius.tag.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -109,6 +111,15 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     /** Consomme les entrees et produit la sortie. Appele une seule fois par cycle. */
     protected abstract void runCycle();
 
+    /**
+     * Osc consommes par tick d'avancement (05-Machines.md, colonne Energie).
+     * 0 = machine autonome (Stabilizer, Whetstone) : elle n'a besoin d'aucun
+     * champ. Redefinir pour une machine qui puise dans le champ de Resonance.
+     */
+    protected int getOscPerTick() {
+        return 0;
+    }
+
     // --- Cycle ---------------------------------------------------------------
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, AbstractMachineBlockEntity machine) {
@@ -117,10 +128,19 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
 
     private void tickCycle() {
         if (!canRunCycle()) {
+            // Ingredient absent ou sortie pleine : le cycle ne peut pas exister,
+            // on remet a zero (contrairement a une coupure d'energie ci-dessous).
             if (progress != 0) {
                 progress = 0;
                 setChanged();
             }
+            return;
+        }
+
+        if (!drawEnergy()) {
+            // Pas assez d'Osc ce tick : on met en PAUSE (la progression est
+            // conservee) plutot que de remettre a zero. Une coupure de courant
+            // breve ne doit pas gacher le travail deja fait.
             return;
         }
 
@@ -130,6 +150,26 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
             progress = 0;
         }
         setChanged();
+    }
+
+    /**
+     * Preleve le cout d'un tick sur le champ de Resonance. Vrai si le plein cout a
+     * ete obtenu (la machine peut avancer), faux sinon (pause).
+     *
+     * Un prelevement partiel (reserve d'emetteur presque vide) est tout de meme
+     * consomme : c'est volontaire, il vide l'emetteur jusqu'a zero pour declencher
+     * son rechargement au tick suivant. Le "gachis" ainsi induit vaut au plus
+     * {@code cout - 1} Osc par cristal brule, soit 1 Osc sur 4000 en pratique.
+     */
+    private boolean drawEnergy() {
+        int cost = getOscPerTick();
+        if (cost <= 0) {
+            return true;
+        }
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+        return ResonanceFieldManager.supply(serverLevel, worldPosition, cost) >= cost;
     }
 
     // --- Augment -------------------------------------------------------------

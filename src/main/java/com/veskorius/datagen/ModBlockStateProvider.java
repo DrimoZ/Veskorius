@@ -19,6 +19,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // Le modele reste un cube uniforme tant que la texture est un placeholder
         // (Phase 6) — l'orientation existe cote etat, pas encore cote rendu.
         horizontalBlock(ModBlocks.RESONANCE_STABILIZER.get(), cubeAll(ModBlocks.RESONANCE_STABILIZER.get()));
+        horizontalBlock(ModBlocks.COMPONENT_ASSEMBLER.get(), cubeAll(ModBlocks.COMPONENT_ASSEMBLER.get()));
         horizontalBlock(ModBlocks.RESONANCE_WHETSTONE.get(), cubeAll(ModBlocks.RESONANCE_WHETSTONE.get()));
         horizontalBlock(ModBlocks.FIELD_EMITTER.get(), cubeAll(ModBlocks.FIELD_EMITTER.get()));
     }

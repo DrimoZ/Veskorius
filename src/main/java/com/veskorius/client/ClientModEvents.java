@@ -1,6 +1,7 @@
 package com.veskorius.client;
 
 import com.veskorius.Veskorius;
+import com.veskorius.client.screen.ComponentAssemblerScreen;
 import com.veskorius.client.screen.ResonanceStabilizerScreen;
 import com.veskorius.client.screen.ResonanceWhetstoneScreen;
 import com.veskorius.menu.ModMenuTypes;
@@ -15,6 +16,7 @@ public class ClientModEvents {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.RESONANCE_STABILIZER.get(), ResonanceStabilizerScreen::new);
+        event.register(ModMenuTypes.COMPONENT_ASSEMBLER.get(), ComponentAssemblerScreen::new);
         event.register(ModMenuTypes.RESONANCE_WHETSTONE.get(), ResonanceWhetstoneScreen::new);
     }
 }

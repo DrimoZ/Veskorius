@@ -37,6 +37,20 @@ public class ModRecipeProvider extends RecipeProvider {
                 has(ModItems.RAW_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
 
+        // Component Assembler : 3 Iron Ingot + 2 Stable Resonance Crystal +
+        // 1 Redstone (05-Machines.md, recette de construction). Le fer forme la
+        // structure, les cristaux l'alimentent, la redstone la pilote. Forme
+        // vérifiée : exactement 3 I, 2 S, 1 R.
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.COMPONENT_ASSEMBLER.get())
+            .pattern("SIS")
+            .pattern("IRI")
+            .define('I', Items.IRON_INGOT)
+            .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
+            .define('R', Items.REDSTONE)
+            .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
+                has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
+            .save(recipeOutput);
+
         // Resonance Whetstone : 2 Cobblestone + 1 Iron Ingot + 1 Stable
         // Resonance Crystal (05-Machines.md). Le cristal est pose sur le socle
         // de pierre, le fer le maintient — meme remarque que ci-dessus sur la

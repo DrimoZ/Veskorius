@@ -29,6 +29,16 @@ public class ModBlocks {
                 .sound(SoundType.AMETHYST)
                 .requiresCorrectToolForDrops());
 
+    /** Machine #2 (05-Machines.md). Bloc actif : block entity + GUI, consomme des Osc. */
+    public static final DeferredBlock<ComponentAssemblerBlock> COMPONENT_ASSEMBLER =
+        BLOCKS.registerBlock("component_assembler",
+            ComponentAssemblerBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops());
+
     /** Machine #3 (05-Machines.md). Bloc actif : block entity + GUI. */
     public static final DeferredBlock<ResonanceWhetstoneBlock> RESONANCE_WHETSTONE =
         BLOCKS.registerBlock("resonance_whetstone",

@@ -48,10 +48,22 @@ Tâches, dans l'ordre :
    sortie pleine couverts par `runGameTestServer`. **Reste à valider en jeu** : uniquement la
    partie visuelle (ouverture du GUI, barre de progression, orientation) — les GameTest tournent
    sans client.
-2. `ComponentAssemblerBlockEntity` — #2. **Bloquée jusqu'à la tâche 5** : consomme 3 Osc/tick,
-   or le système de champ n'existe pas avant `IResonanceField`. Coder l'Assembler avant la
-   tâche 5 obligerait à l'écrire sans énergie puis à le retrofit — l'erreur que le slot
-   d'augment vient d'éviter. Fait donc *après* la tâche 5, pas à sa place dans la numérotation.
+2. ✅ `ComponentAssemblerBlockEntity` — #2. Codé **après** la tâche 5 (le système de champ) :
+   il consomme 3 Osc/tick, donc le champ devait exister d'abord. 1 Stable Crystal + 2 Iron →
+   2 Resonance Component, 5 s.
+   - **Premier consommateur d'Osc.** Le socle `AbstractMachineBlockEntity` a reçu un hook
+     `getOscPerTick()` : chaque tick d'avancement prélève le coût sur le champ via
+     `ResonanceFieldManager.supply`. Les machines autonomes (Stabilizer, Whetstone) gardent le
+     défaut 0 et sont inchangées.
+   - **Décision de conception (le design ne la tranchait pas)** : une coupure d'énergie **met le
+     cycle en pause** (progression conservée), alors qu'un retrait d'ingrédient **réinitialise**.
+     Verrouillé par un GameTest qui coupe le courant à mi-cycle et vérifie que la progression
+     reste figée.
+   - **Branche alternative** (3 Resonance Dust + 2 Iron, `04-Materials.md`) non codée : le
+     `resonance_dust` n'existe pas avant le Crystal Crusher (tâche 13). Comptes différents
+     (1 cristal vs 3 poussières), donc pas un simple tag — à brancher quand la poussière existera.
+   - 3 GameTest (production + prélèvement d'Osc réel sur l'émetteur, inertie hors champ, pause
+     sur coupure).
 3. ✅ `ResonanceWhetstoneBlockEntity` — #3, le plus simple, bon test de régression du pattern.
    **Codé avant la tâche 2** parce qu'il est autonome (aucun Osc) : il valide le socle sans
    dépendre du système de champ. Première machine qui *transforme* son entrée (réparation en

@@ -14,22 +14,23 @@ ce fichier.
   `./gradlew runData` passent.
 - 4 items enregistrés : `raw_resonance_crystal`, `stable_resonance_crystal`,
   `refined_resonance_crystal`, `resonance_component`.
-- **2 machines à cycle fonctionnelles** : Resonance Stabilizer (#1, Raw Crystal + Quartz →
-  Stable Crystal, 30 s) et Resonance Whetstone (#3, répare un outil de 25 %, 8 s). Block entity,
-  cycle, GUI avec barre de progression, orientation, slot d'augment, inventaire persistant et
-  vidé au sol quand le bloc est cassé.
+- **3 machines à cycle fonctionnelles** : Resonance Stabilizer (#1, Raw Crystal + Quartz →
+  Stable Crystal, 30 s, autonome), Component Assembler (#2, 1 Stable Crystal + 2 Iron →
+  2 Component, 5 s, **consomme 3 Osc/tick**) et Resonance Whetstone (#3, répare un outil de
+  25 %, 8 s, autonome). Block entity, cycle, GUI avec barre de progression, orientation, slot
+  d'augment, inventaire persistant et vidé au sol quand le bloc est cassé.
 - Un socle réutilisable pour les machines à cycle restantes : `AbstractMachineBlock`,
   `AbstractMachineBlockEntity`, `AbstractMachineMenu`, `AbstractMachineScreen`. Ajouter une
   machine « standard » = une block entity (cycle), un bloc/menu/écran de 3 méthodes chacun, et
   quelques lignes de datagen.
 - **Système d'énergie de Résonance (le champ)** : capability `IResonanceField`,
-  `ResonanceFieldManager` (routage machine→émetteur par champ, pas de câble), et le **Field
-  Emitter** (#4) — réserve de 4000 Osc rechargée en brûlant des Stable Crystals, portée 8. C'est
-  la base dont dépendent toutes les machines consommatrices à venir. GUI (jauge de réserve)
-  restant.
+  `ResonanceFieldManager` (routage machine→émetteur par champ, pas de câble), le **Field
+  Emitter** (#4) — réserve de 4000 Osc rechargée en brûlant des Stable Crystals, portée 8 — et
+  la consommation d'Osc branchée dans le socle des machines (`getOscPerTick`). Le Component
+  Assembler en est le premier client. GUI de l'émetteur (jauge de réserve) restant.
 - Datagen complet : plus aucun blockstate / modèle / recette / loot table / tag / traduction
   n'est écrit à la main.
-- Harnais `GameTest` : 15 tests (cycles des machines + système de champ), `./gradlew runGameTestServer`.
+- Harnais `GameTest` : 18 tests (cycles des machines, système de champ, consommation d'Osc), `./gradlew runGameTestServer`.
 - Textures placeholder (couleur unie) — à remplacer par du vrai pixel art en Phase 6.
 
 Consulter `veskorius-design/13-Registry-Index.md` pour l'état « codé / à coder » de tout le
@@ -67,11 +68,10 @@ Suivre `veskorius-design/11-Development-Plan.md`, Phase 1 — c'est la liste ord
 jour (recettes exactes, chiffres d'équilibrage, dépendances entre tâches). Les tâches 1 et 15
 (slot d'augment) y sont marquées faites. Les toutes prochaines étapes :
 
-1. **`ComponentAssemblerBlockEntity`** (tâche 2) — désormais débloquée : le système de champ
-   existe, l'Assembler sera le premier *consommateur* d'Osc (3 Osc/tick via
-   `ResonanceFieldManager.supply`). C'est la première vraie mise à l'épreuve du champ côté
-   machine.
-2. Puis le reste de la Phase 1 dans l'ordre du plan (Purifier, Storage Cell, Locator, Tuner…).
+1. **`FluxPurifierBlockEntity` + mode surchauffe** (tâche 6) — Stable Crystal + Redstone →
+   Refined Crystal, 45 s, 2 Osc/tick. Nouveauté : le mode surchauffe (temps ÷2, conso ×2, 20 %
+   de risque de perdre l'input), premier mécanisme risque/récompense du mod.
+2. Puis le reste de la Phase 1 dans l'ordre du plan (Storage Cell, Locator, Tuner…).
 
 Restent à valider **en jeu** (les GameTest tournent sans client, ne couvrent rien de graphique) :
 la partie visuelle du Stabilizer et du Whetstone (GUI, barre de progression, orientation), et le

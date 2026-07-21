@@ -38,6 +38,9 @@ public class ModItems {
     public static final DeferredItem<BlockItem> RESONANCE_STABILIZER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_STABILIZER);
 
+    public static final DeferredItem<BlockItem> COMPONENT_ASSEMBLER_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.COMPONENT_ASSEMBLER);
+
     public static final DeferredItem<BlockItem> RESONANCE_WHETSTONE_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_WHETSTONE);
 
