@@ -42,6 +42,8 @@ public final class ModWorldGen {
     private static final int CRYSTAL_TRIES = 8;
     /** Épaisseur de la coquille de pierre veinée (1 couche). */
     private static final int SHELL_THICKNESS = 1;
+    /** ~15 % des blocs de coquille sont une croûte de flux brossable (04-Materials.md). */
+    private static final float FLUX_CHANCE = 0.15f;
     /** Tentatives de placement par chunk. À valider en playtest. */
     private static final int POCKET_COUNT = 6;
     private static final int MIN_Y = -20;
@@ -62,7 +64,7 @@ public final class ModWorldGen {
         // visuel). La feature *ore* vanilla ne ferait que l'amas, sans coquille.
         context.register(RESONANCE_CRYSTAL_POCKET_CF,
             new ConfiguredFeature<>(ModFeatures.CRYSTAL_POCKET.get(),
-                new CrystalPocketConfiguration(CRYSTAL_TRIES, SHELL_THICKNESS)));
+                new CrystalPocketConfiguration(CRYSTAL_TRIES, SHELL_THICKNESS, FLUX_CHANCE)));
     }
 
     public static void bootstrapPlacedFeatures(BootstrapContext<PlacedFeature> context) {

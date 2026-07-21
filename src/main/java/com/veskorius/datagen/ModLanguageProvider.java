@@ -41,11 +41,13 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.FIELD_EMITTER, "Field Emitter");
         addBlock(ModBlocks.RESONANCE_CRYSTAL_CLUSTER, "Resonance Crystal Cluster");
         addBlock(ModBlocks.RESONANCE_VEINED_STONE, "Resonance Veined Stone");
+        addBlock(ModBlocks.RAW_FLUX_DEPOSIT, "Raw Flux Deposit");
 
         addItem(ModItems.RAW_RESONANCE_CRYSTAL, "Raw Resonance Crystal");
         addItem(ModItems.STABLE_RESONANCE_CRYSTAL, "Stable Resonance Crystal");
         addItem(ModItems.REFINED_RESONANCE_CRYSTAL, "Refined Resonance Crystal");
         addItem(ModItems.RESONANCE_COMPONENT, "Resonance Component");
+        addItem(ModItems.RAW_FLUX_DEPOSIT, "Raw Flux Deposit");
         addItem(ModItems.RESONANCE_TUNER, "Resonance Tuner");
 
         // Resonance Tuner

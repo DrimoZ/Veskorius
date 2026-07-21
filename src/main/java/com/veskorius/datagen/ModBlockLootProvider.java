@@ -8,6 +8,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootTable;
 
 public class ModBlockLootProvider extends BlockLootSubProvider {
 
@@ -32,6 +33,10 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
             block -> createOreDrop(block, ModItems.RAW_RESONANCE_CRYSTAL.get()));
         // La pierre veinée se drop elle-même (bloc de construction).
         dropSelf(ModBlocks.RESONANCE_VEINED_STONE.get());
+
+        // Le dépôt de flux miné ne donne RIEN (la croûte se détruit) — il faut le
+        // brosser pour obtenir le flux (comportement vanilla des blocs suspects).
+        add(ModBlocks.RAW_FLUX_DEPOSIT.get(), LootTable.lootTable());
     }
 
     @Override

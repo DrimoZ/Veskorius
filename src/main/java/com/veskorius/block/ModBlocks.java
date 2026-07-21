@@ -1,6 +1,8 @@
 package com.veskorius.block;
 
 import com.veskorius.Veskorius;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.level.block.BrushableBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -61,6 +63,28 @@ public class ModBlocks {
                 .strength(1.5f, 6.0f)
                 .sound(SoundType.DEEPSLATE)
                 .requiresCorrectToolForDrops());
+
+    /**
+     * Croûte de flux brossable sur les parois des poches (07-World-Generation.md).
+     * Bloc brossable façon sable/gravier suspect : le brosser révèle du Raw Flux
+     * Deposit. Le MINER ne donne rien (la croûte se détruit) — voir le loot ; c'est
+     * le comportement vanilla des blocs suspects, et ça honore la « collecte
+     * silencieuse par observation » du design.
+     *
+     * Le bloc n'a pas d'objet (généré en monde uniquement, jamais posé). Il est
+     * rattaché au type de block entity vanilla BRUSHABLE_BLOCK par
+     * {@link com.veskorius.block.entity.ModBrushableBlocks}.
+     */
+    public static final DeferredBlock<BrushableBlock> RAW_FLUX_DEPOSIT =
+        BLOCKS.registerBlock("raw_flux_deposit",
+            props -> new BrushableBlock(net.minecraft.world.level.block.Blocks.STONE,
+                SoundEvents.BRUSH_GRAVEL, SoundEvents.BRUSH_GRAVEL_COMPLETED, props),
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.TERRACOTTA_PURPLE)
+                .strength(0.6f)
+                .sound(SoundType.GRAVEL)
+                .requiresCorrectToolForDrops()
+                .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
 
     /**
      * Bloc de poche de cristal brut (07-World-Generation.md). Se génère en petites

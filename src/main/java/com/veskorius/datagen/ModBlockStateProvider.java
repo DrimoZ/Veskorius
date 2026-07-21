@@ -29,5 +29,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
             cubeAll(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get()));
         simpleBlockWithItem(ModBlocks.RESONANCE_VEINED_STONE.get(),
             cubeAll(ModBlocks.RESONANCE_VEINED_STONE.get()));
+
+        // Le dépôt de flux n'a pas d'objet : juste la blockstate + le modèle.
+        simpleBlock(ModBlocks.RAW_FLUX_DEPOSIT.get(), cubeAll(ModBlocks.RAW_FLUX_DEPOSIT.get()));
     }
 }

@@ -1,6 +1,7 @@
 package com.veskorius.datagen;
 
 import com.veskorius.Veskorius;
+import com.veskorius.item.ModItems;
 import com.veskorius.tag.ModTags;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
@@ -23,11 +24,13 @@ public class ModItemTagsProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        // Seconde entree du Resonance Stabilizer. Le Raw Flux Deposit rejoindra
-        // ce tag en 1:1 a la tache 14 de la Phase 1 (04-Materials.md, groupe 2) —
-        // aucune modification de code machine ne sera necessaire.
+        // Seconde entree du Resonance Stabilizer : Quartz OU Raw Flux Deposit
+        // (04-Materials.md, groupe 2). Le flux brossable devient ainsi un chemin
+        // T1 alternatif au Quartz, 1:1 — sans une ligne de code machine, exactement
+        // ce que le tag preparait depuis la tache 1.
         tag(ModTags.Items.STABILIZER_FLUX)
-            .add(Items.QUARTZ);
+            .add(Items.QUARTZ)
+            .add(ModItems.RAW_FLUX_DEPOSIT.get());
 
         // Volontairement vide pour l'instant : le Resonance Catalyst Core arrive a
         // la tache 15. Le tag est declare des maintenant pour que le slot

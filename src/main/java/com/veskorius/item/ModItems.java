@@ -34,6 +34,14 @@ public class ModItems {
     public static final DeferredItem<Item> RESONANCE_COMPONENT =
         ITEMS.registerSimpleItem("resonance_component", new Item.Properties().stacksTo(64));
 
+    /**
+     * Flux brut obtenu en brossant un dépôt (voir 04-Materials.md). Membre du tag
+     * {@code stabilizer_flux} : chemin T1 alternatif au Quartz (1:1) fondé sur
+     * l'observation plutôt que le minage.
+     */
+    public static final DeferredItem<Item> RAW_FLUX_DEPOSIT =
+        ITEMS.registerSimpleItem("raw_flux_deposit", new Item.Properties().stacksTo(64));
+
     /** Outil transversal de configuration des machines (05-Machines.md). */
     public static final DeferredItem<ResonanceTunerItem> RESONANCE_TUNER =
         ITEMS.registerItem("resonance_tuner",

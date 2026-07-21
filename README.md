@@ -52,9 +52,11 @@ ce fichier.
 - **Intégration JEI** (dev) : les recettes des 4 machines s'affichent dans JEI, une catégorie par
   machine, avec temps et Osc/tick. JEI est en `compileOnly` (API) + `localRuntime` (mod complet
   dans `runClient`), pas exporté dans le jar. Sert à vérifier les recettes en jeu.
-- **Génération de monde** : le bloc `resonance_crystal_cluster` génère en poches (Y -20 à 0, tout
-  l'Overworld) et se mine en `raw_resonance_crystal`. Worldgen data-driven (ConfiguredFeature +
-  PlacedFeature + BiomeModifier NeoForge), généré par datagen. La boucle T1 est jouable en survie.
+- **Génération de monde** : feature custom `crystal_pocket` (data-driven) — poches de
+  `resonance_crystal_cluster` (Y -20 à 0), enrobées d'une coquille de `resonance_veined_stone`
+  (le « tell » visuel), avec ~15 % de croûtes de `raw_flux_deposit` **brossables** (brosse
+  vanilla → flux, alternative T1 au Quartz). La boucle T1 est jouable en survie, minage comme
+  brossage.
 - Textures placeholder (couleur unie) — à remplacer par du vrai pixel art en Phase 6.
 
 Consulter `veskorius-design/13-Registry-Index.md` pour l'état « codé / à coder » de tout le

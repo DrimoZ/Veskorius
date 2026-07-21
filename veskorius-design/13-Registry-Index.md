@@ -21,7 +21,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | Registry name | Défini dans | Statut code |
 |---|---|---|
 | `resonance_veined_stone` | 04, 07 | À coder (Phase 1) |
-| `raw_flux_deposit` | 04, 07 | À coder (Phase 1) |
+| `raw_flux_deposit` | 04, 07 | ✅ codé (item + bloc brossable ; dans le tag stabilizer_flux) |
 | `ancient_seed` | 04, 08 | À coder (Phase 3) |
 | `meteoric_resonance_shard` | 04, 07 | À coder (Phase 3) |
 
@@ -68,6 +68,8 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | Registry name | Défini dans | Statut code |
 |---|---|---|
 | `resonance_crystal_cluster` | 07 (ajouté 2026-07-21) | ✅ codé (bloc de poche, se mine → `raw_resonance_crystal`) |
+| `resonance_veined_stone` | 04, 07 | ✅ codé (coquille des poches, bloc décoratif) |
+| `raw_flux_deposit` (bloc) | 07 | ✅ codé (croûte brossable → item `raw_flux_deposit`) |
 
 Note : le dossier nommait « poches de Raw Resonance Crystal » sans nommer le bloc généré (l'item
 `raw_resonance_crystal` existait, pas un bloc). `resonance_crystal_cluster` est ce bloc — une

@@ -1,16 +1,22 @@
 package com.veskorius.worldgen;
 
+import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
 import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.entity.BrushableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.storage.loot.LootTable;
 
 /**
  * Poche de Raw Resonance Crystal + sa coquille de Resonance Veined Stone
@@ -25,6 +31,11 @@ import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
  * puis chaque bloc de pierre à portée de la coquille devient de la pierre veinée.
  */
 public class ResonanceCrystalPocketFeature extends Feature<CrystalPocketConfiguration> {
+
+    /** Table de loot du brossage d'un dépôt de flux (voir loot_table/gameplay/). */
+    private static final ResourceKey<LootTable> BRUSH_FLUX_LOOT = ResourceKey.create(
+        Registries.LOOT_TABLE,
+        ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "gameplay/brush_flux_deposit"));
 
     public ResonanceCrystalPocketFeature() {
         super(CrystalPocketConfiguration.CODEC);
@@ -53,8 +64,11 @@ public class ResonanceCrystalPocketFeature extends Feature<CrystalPocketConfigur
             return false;
         }
 
-        // 2. La coquille de pierre veinée autour des cristaux.
+        // 2. La coquille : pierre veinée, avec par endroits une croûte de flux
+        //    brossable (le « tell » + un chemin T1 alternatif au Quartz).
+        BlockState flux = ModBlocks.RAW_FLUX_DEPOSIT.get().defaultBlockState();
         int r = config.shellThickness();
+        Set<BlockPos> shell = new HashSet<>();
         BlockPos.MutableBlockPos shellPos = new BlockPos.MutableBlockPos();
         for (BlockPos c : crystals) {
             for (int dx = -r; dx <= r; dx++) {
@@ -62,10 +76,21 @@ public class ResonanceCrystalPocketFeature extends Feature<CrystalPocketConfigur
                     for (int dz = -r; dz <= r; dz++) {
                         shellPos.set(c.getX() + dx, c.getY() + dy, c.getZ() + dz);
                         if (!crystals.contains(shellPos) && isReplaceable(level.getBlockState(shellPos))) {
-                            level.setBlock(shellPos, veined, 2);
+                            shell.add(shellPos.immutable());
                         }
                     }
                 }
+            }
+        }
+        for (BlockPos s : shell) {
+            if (random.nextFloat() < config.fluxChance()) {
+                level.setBlock(s, flux, 2);
+                if (level.getBlockEntity(s) instanceof BrushableBlockEntity brushable) {
+                    // Le brossage tire de cette table (param set CHEST, 1 objet max).
+                    brushable.setLootTable(BRUSH_FLUX_LOOT, random.nextLong());
+                }
+            } else {
+                level.setBlock(s, veined, 2);
             }
         }
         return true;

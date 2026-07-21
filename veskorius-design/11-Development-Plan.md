@@ -138,8 +138,18 @@ Tâches, dans l'ordre :
     neutre, reproduction via Resonance Spore).
 12. `CrystalRoostBlockEntity` (production passive) — dépend du Fileur de Cristal (tâche 11).
 13. `CrystalCrusherBlockEntity` (#22, alternative au Stabilizer, produit Resonance Dust).
-14. Génération de `resonance_veined_stone` (coquille autour des poches) et de `raw_flux_deposit`
+14. ✅ Génération de `resonance_veined_stone` (coquille autour des poches) et de `raw_flux_deposit`
     (croûte brossable, réutilise le mécanisme de brosse vanilla).
+    - Feature custom `veskorius:crystal_pocket` (remplace l'ore vanilla de la tâche 4) : amas de
+      cristaux + coquille de pierre veinée, ~15 % de la coquille en croûte de flux brossable.
+      Config data-driven (`crystal_tries`, `shell_thickness`, `flux_chance`).
+    - `raw_flux_deposit` : bloc brossable (rattaché au type de BE vanilla BRUSHABLE_BLOCK) +
+      item. **Brosser** donne le flux ; **miner** ne donne rien (croûte détruite) — comportement
+      vanilla des blocs suspects, honore la « collecte silencieuse par observation » (pilier 2).
+      L'item rejoint le tag `stabilizer_flux` → chemin T1 alternatif au Quartz, 1:1, **sans une
+      ligne de code machine** (le tag le préparait depuis la tâche 1).
+    - Validé en jeu : coquille présente, flux visible, brossage fonctionnel, alternative Quartz
+      opérationnelle. Non couvert par GameTest (worldgen + interaction brosse) — vérifié en jeu.
 15. Slot d'augment générique sur toutes les machines actives + `ResonanceCatalystCoreItem` —
     implémenter le slot dès cette phase, même si son usage réel ne devient intéressant qu'à
     partir de la Phase 2, pour éviter de le retrofit plus tard sur des machines déjà codées.
