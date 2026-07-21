@@ -79,8 +79,11 @@ Tâches, dans l'ordre :
    - **Trou de conception comblé** : le design ne disait pas d'où vient l'Osc. Résolu et
      documenté dans `06-Energy.md` (les cristaux sont le carburant), décision validée avec le
      porteur du projet avant de coder.
-   - **Insertion du carburant** : clic droit avec un Stable Crystal, ou hopper (capability
-     ItemHandler exposée). Pas encore de GUI plein écran (jauge de réserve) — noté ci-dessous.
+   - **Insertion du carburant** : clic droit à main nue ouvre un **GUI dédié** (jauge verticale
+     de réserve « X/4000 Osc », slot de carburant) ; clic droit avec un Stable Crystal insère
+     directement ; hopper aussi (capability ItemHandler exposée). Le GUI est autonome
+     (`FieldEmitterMenu`/`Screen`, pas le socle des machines : l'émetteur n'a ni cycle ni
+     augment). Ajouté après coup, une fois les 5 machines codées ; valide en jeu.
    - 6 GameTest, dans une **arène isolée** de 21×21 (le manager est un index global ; sans
      isolation spatiale, les émetteurs de tests voisins se contaminent — problème qui reviendra
      amplifié au Relay T3, rayon 20 : agrandir l'arène à ce moment-là).

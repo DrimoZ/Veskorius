@@ -32,4 +32,8 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<FluxPurifierMenu>>
         FLUX_PURIFIER = MENUS.register("flux_purifier",
             () -> IMenuTypeExtension.create(FluxPurifierMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FieldEmitterMenu>>
+        FIELD_EMITTER = MENUS.register("field_emitter",
+            () -> IMenuTypeExtension.create(FieldEmitterMenu::new));
 }

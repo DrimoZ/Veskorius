@@ -3,16 +3,24 @@ package com.veskorius.block.entity;
 import com.veskorius.energy.IResonanceField;
 import com.veskorius.energy.ResonanceFieldManager;
 import com.veskorius.item.ModItems;
+import com.veskorius.menu.FieldEmitterMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Field Emitter (machine #4, 05-Machines.md) : premier fournisseur de champ de
@@ -27,7 +35,11 @@ import net.neoforged.neoforge.items.ItemStackHandler;
  * (06-Energy.md, section « Source primaire de l'énergie »). Le cristal est le seul
  * carburant accepté.
  */
-public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceField {
+public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceField, MenuProvider {
+
+    public static final int DATA_RESERVE = 0;
+    public static final int DATA_CAPACITY = 1;
+    public static final int DATA_COUNT = 2;
 
     /** Portée du champ (06-Energy.md). */
     private static final int RANGE = 8;
@@ -61,6 +73,30 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
     };
 
     private int reserve;
+
+    /** Synchronise reserve + capacite vers le GUI (jauge « X/4000 Osc », 12-UX). */
+    private final ContainerData data = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case DATA_RESERVE -> reserve;
+                case DATA_CAPACITY -> CAPACITY;
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            if (index == DATA_RESERVE) {
+                reserve = value;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return DATA_COUNT;
+        }
+    };
 
     public FieldEmitterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FIELD_EMITTER.get(), pos, state);
@@ -126,12 +162,29 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
         return fuel;
     }
 
+    public ContainerData getData() {
+        return data;
+    }
+
     public int getReserve() {
         return reserve;
     }
 
     public int getCapacity() {
         return CAPACITY;
+    }
+
+    // --- MenuProvider (GUI : jauge de réserve + slot de carburant) ------------
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("block.veskorius.field_emitter");
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new FieldEmitterMenu(containerId, playerInventory, this);
     }
 
     @Override

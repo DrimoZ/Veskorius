@@ -31,6 +31,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.veskorius.overheat_on", "Overheat: On (÷2 speed, ×2 Osc, 20% input loss)");
         add("gui.veskorius.overheat_off", "Overheat: Off");
 
+        // Field Emitter : jauge de réserve d'Osc.
+        add("gui.veskorius.osc_reserve", "%s/%s Osc");
+
         addBlock(ModBlocks.RESONANCE_STABILIZER, "Resonance Stabilizer");
         addBlock(ModBlocks.COMPONENT_ASSEMBLER, "Component Assembler");
         addBlock(ModBlocks.FLUX_PURIFIER, "Flux Purifier");

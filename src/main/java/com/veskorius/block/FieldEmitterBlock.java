@@ -5,7 +5,9 @@ import com.veskorius.block.entity.FieldEmitterBlockEntity;
 import com.veskorius.block.entity.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -98,7 +100,19 @@ public class FieldEmitterBlock extends BaseEntityBlock {
             FieldEmitterBlockEntity::serverTick);
     }
 
-    // --- Interaction : insertion du carburant --------------------------------
+    // --- Interaction : GUI (main vide) et insertion du carburant (cristal) ---
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+                                               Player player, BlockHitResult hit) {
+        if (level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
+        if (level.getBlockEntity(pos) instanceof MenuProvider provider) {
+            player.openMenu(provider, pos);
+        }
+        return InteractionResult.CONSUME;
+    }
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,

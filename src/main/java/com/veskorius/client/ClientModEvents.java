@@ -2,6 +2,7 @@ package com.veskorius.client;
 
 import com.veskorius.Veskorius;
 import com.veskorius.client.screen.ComponentAssemblerScreen;
+import com.veskorius.client.screen.FieldEmitterScreen;
 import com.veskorius.client.screen.FluxPurifierScreen;
 import com.veskorius.client.screen.ResonanceStabilizerScreen;
 import com.veskorius.client.screen.ResonanceWhetstoneScreen;
@@ -20,5 +21,6 @@ public class ClientModEvents {
         event.register(ModMenuTypes.COMPONENT_ASSEMBLER.get(), ComponentAssemblerScreen::new);
         event.register(ModMenuTypes.RESONANCE_WHETSTONE.get(), ResonanceWhetstoneScreen::new);
         event.register(ModMenuTypes.FLUX_PURIFIER.get(), FluxPurifierScreen::new);
+        event.register(ModMenuTypes.FIELD_EMITTER.get(), FieldEmitterScreen::new);
     }
 }

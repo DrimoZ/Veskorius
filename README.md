@@ -28,9 +28,9 @@ ce fichier.
   quelques lignes de datagen.
 - **Système d'énergie de Résonance (le champ)** : capability `IResonanceField`,
   `ResonanceFieldManager` (routage machine→émetteur par champ, pas de câble), le **Field
-  Emitter** (#4) — réserve de 4000 Osc rechargée en brûlant des Stable Crystals, portée 8 — et
-  la consommation d'Osc branchée dans le socle des machines (`getOscPerTick`). Le Component
-  Assembler en est le premier client. GUI de l'émetteur (jauge de réserve) restant.
+  Emitter** (#4) — réserve de 4000 Osc rechargée en brûlant des Stable Crystals, portée 8, avec
+  un **GUI dédié** (jauge de réserve `X/4000 Osc`) — et la consommation d'Osc branchée dans le
+  socle des machines (`getOscPerTick`). Le Component Assembler en est le premier client.
 - Datagen complet : plus aucun blockstate / modèle / recette / loot table / tag / traduction
   n'est écrit à la main.
 - Harnais `GameTest` : 23 tests (cycles, champ, énergie, contrôles redstone/manuel, surchauffe), `./gradlew runGameTestServer`.
@@ -77,9 +77,12 @@ jour (recettes exactes, chiffres d'équilibrage, dépendances entre tâches). Le
    devra brancher son toggle surchauffe sur le même `toggleOverheat()` que le bouton `H`.
 3. Puis le reste de la Phase 1.
 
-Restent à valider **en jeu** (les GameTest ne couvrent rien de graphique) : les 3 boutons de
-contrôle et le bouton surchauffe du Purifier (nouveaux, jamais vus à l'œil), et le **GUI du Field
-Emitter** (jauge de réserve) toujours pas codé.
+**Trous de conception à trancher avant les items T2** : les tâches 7 (Storage Cell) et 8
+(Locator) supposent un modèle d'« Osc portable » (batterie qui se charge/décharge hors champ,
+outil qui consomme des Osc sans source) **absent du design** — à définir avec le porteur du
+projet, comme l'a été la source d'énergie fixe. La tâche 8 est en plus bloquée sur la génération
+des structures (tâche 10). La tâche 9 (Tuner) a des ambiguïtés d'interaction (clic droit :
+pivoter ou surchauffe ? shift : Catalyst ou surchauffe ?) à lever d'abord.
 
 ## Structure
 
