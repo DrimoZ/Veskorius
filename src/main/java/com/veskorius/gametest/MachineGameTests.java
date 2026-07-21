@@ -13,14 +13,18 @@ import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
 import com.veskorius.energy.ResonanceFieldManager;
 import com.veskorius.item.ModItems;
 import com.veskorius.item.ResonanceTunerItem;
+import com.veskorius.item.TunerInteractions;
 import com.veskorius.item.TunerMode;
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -753,6 +757,68 @@ public class MachineGameTests {
 
     private static final BlockPos PURIFIER_AT_MACHINE = new BlockPos(1, 1, 1);
     private static final BlockPos STABILIZER_AT = new BlockPos(3, 1, 3);
+
+    /**
+     * Démontage : la collecte du contenu vide l'inventaire de la machine et rend
+     * chaque pile. Testé directement sur {@code collectContents} (sans joueur).
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void tunerDismantleCollectsContents(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.COMPONENT_ASSEMBLER.get());
+        ComponentAssemblerBlockEntity be = helper.getBlockEntity(MACHINE);
+        be.getInventory().insertItem(ComponentAssemblerBlockEntity.SLOT_CRYSTAL,
+            new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+        be.getInventory().insertItem(ComponentAssemblerBlockEntity.SLOT_IRON,
+            new ItemStack(Items.IRON_INGOT, 2), false);
+
+        ServerLevel level = helper.getLevel();
+        BlockPos abs = helper.absolutePos(MACHINE);
+        List<ItemStack> contents = TunerInteractions.collectContents(level, abs, level.getBlockState(abs), be);
+
+        helper.assertTrue(contents.size() == 2, "2 piles attendues (cristal + fer), trouve " + contents.size());
+        helper.assertTrue(
+            be.getInventory().getStackInSlot(ComponentAssemblerBlockEntity.SLOT_CRYSTAL).isEmpty()
+                && be.getInventory().getStackInSlot(ComponentAssemblerBlockEntity.SLOT_IRON).isEmpty(),
+            "L'inventaire de la machine devrait être vide après la collecte");
+        helper.succeed();
+    }
+
+    /**
+     * Démontage complet : le bloc est retiré et le joueur reçoit le bloc + son
+     * contenu dans son inventaire.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void tunerDismantleReturnsBlockAndContents(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.COMPONENT_ASSEMBLER.get());
+        ComponentAssemblerBlockEntity be = helper.getBlockEntity(MACHINE);
+        be.getInventory().insertItem(ComponentAssemblerBlockEntity.SLOT_IRON,
+            new ItemStack(Items.IRON_INGOT, 2), false);
+
+        ServerLevel level = helper.getLevel();
+        BlockPos abs = helper.absolutePos(MACHINE);
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+
+        TunerInteractions.dismantle(level, abs, player);
+
+        helper.assertTrue(level.getBlockState(abs).isAir(),
+            "Le bloc aurait dû être retiré");
+        helper.assertTrue(countInInventory(player, ModBlocks.COMPONENT_ASSEMBLER.get().asItem()) == 1,
+            "Le joueur aurait dû recevoir le bloc démonté");
+        helper.assertTrue(countInInventory(player, Items.IRON_INGOT) == 2,
+            "Le joueur aurait dû recevoir les 2 lingots de fer");
+        helper.succeed();
+    }
+
+    private static int countInInventory(Player player, net.minecraft.world.item.Item item) {
+        int total = 0;
+        for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
+            ItemStack stack = player.getInventory().getItem(slot);
+            if (stack.is(item)) {
+                total += stack.getCount();
+            }
+        }
+        return total;
+    }
 
     // --- Utilitaires ---------------------------------------------------------
 

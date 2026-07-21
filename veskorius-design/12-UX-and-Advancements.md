@@ -49,8 +49,22 @@ fois orientée ET à surchauffe (le Purifier : pivoter ou surchauffer ?). Rempla
 **modes**, plus lisible et sans ambiguïté :
 
 - Le Tuner porte un **mode courant** (Data Component sur l'item, affiché dans le tooltip).
-- **Clic droit** sur une machine : applique l'action du mode courant.
-- **Shift-clic droit** (n'importe où) : passe au mode suivant, message en barre d'action.
+- **Clic droit sur une machine** : applique l'action du mode courant, **sans ouvrir le GUI**.
+- **Clic droit dans le vide** : passe au mode suivant, message en barre d'action.
+- **Shift + clic droit sur un bloc-entité** : le **démonte** — rend le bloc et tout son contenu
+  au joueur (priorité à l'inventaire, sol si plein). Valable sur n'importe quel bloc doté d'une
+  block entity, y compris d'autres mods.
+
+Détail technique important : l'action et le démontage passent par
+`PlayerInteractEvent.RightClickBlock`, **pas** par `Item.useOn`. Sinon, sur un clic droit sans
+shift, l'interaction du bloc (ouverture du GUI de la machine) a la priorité et l'action du Tuner
+ne se déclenche jamais. L'événement se produit avant la résolution bloc/item ; le Tuner l'annule
+pour prendre la main.
+
+Le démontage lit le contenu du bloc via, dans l'ordre : la capability ItemHandler (autres mods +
+Field Emitter), l'inventaire direct des machines du mod (qui ne l'exposent pas), puis l'interface
+`Container` vanilla. À surveiller : outil puissant (retrait instantané avec contenu, sans outil
+requis) — sur un serveur, une intégration avec les mods de protection reste à faire.
 
 | Mode | Action au clic droit | Cible |
 |---|---|---|
@@ -64,7 +78,7 @@ Modes à ajouter avec le contenu plus tardif (mêmes fentes, nouveaux modes) :
 - **Recalibration** (T4, Amplifier/Hub) : un mode qui remet la dérive à 100% (coûte 1 Resonance
   Component).
 - **Retrait d'augment** (T2+, Catalyst Core, tâche 15) : un mode qui retire le Catalyst Core sans
-  le détruire — remplace l'ancien « shift-clic droit », désormais réservé au changement de mode.
+  le détruire (le shift-clic droit étant désormais pris par le démontage).
 
 Note : le bouton `H` du GUI (couche de contrôle) et le mode Surchauffe du Tuner agissent sur le
 même état — deux entrées pour la même bascule, voulu. Idem pour On/Off (bouton `I` / mode POWER)

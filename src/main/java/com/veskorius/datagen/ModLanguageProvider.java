@@ -46,14 +46,23 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.RESONANCE_COMPONENT, "Resonance Component");
         addItem(ModItems.RESONANCE_TUNER, "Resonance Tuner");
 
-        // Resonance Tuner : modes, messages et tooltip.
-        add("gui.veskorius.tuner_rotate", "Rotate");
-        add("gui.veskorius.tuner_power", "Power on/off");
-        add("gui.veskorius.tuner_overheat", "Overheat");
-        add("gui.veskorius.tuner_redstone", "Redstone mode");
+        // Resonance Tuner
+        add("gui.veskorius.tuner_rotate", "Rotate Machine");
+        add("gui.veskorius.tuner_power", "Toggle Power");
+        add("gui.veskorius.tuner_overheat", "Toggle Overheat");
+        add("gui.veskorius.tuner_redstone", "Cycle Redstone Mode");
+
+        add("item.veskorius.resonance_tuner.current_mode", "Current Mode");
+        add("item.veskorius.resonance_tuner.available_modes", "Available Modes");
+        add("item.veskorius.resonance_tuner.controls", "Controls");
+        add("item.veskorius.resonance_tuner.ctrl_apply", "Right-click a machine: apply mode");
+        add("item.veskorius.resonance_tuner.ctrl_cycle", "Right-click in air: change mode");
+        add("item.veskorius.resonance_tuner.ctrl_dismantle", "Shift + right-click: dismantle block");
+        add("tooltip.veskorius.hold_shift", "Hold Shift for controls");
+
         add("item.veskorius.resonance_tuner.mode", "Mode: %s");
-        add("item.veskorius.resonance_tuner.hint", "Shift + right-click to change mode");
-        add("item.veskorius.resonance_tuner.rotated", "Rotated");
-        add("item.veskorius.resonance_tuner.no_overheat", "This machine has no overheat mode");
+        add("item.veskorius.resonance_tuner.rotated", "Machine rotated");
+        add("item.veskorius.resonance_tuner.no_overheat", "This machine does not support overheat");
+        add("item.veskorius.resonance_tuner.dismantled", "Dismantled");
     }
 }

@@ -2,16 +2,16 @@ package com.veskorius.item;
 
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,14 +20,18 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Resonance Tuner (05-Machines.md, outil transversal). Outil de configuration à
- * modes : il porte un mode courant (Data Component), un clic droit sur une machine
- * applique l'action du mode, un shift-clic droit change de mode.
+ * modes : il porte un mode courant (Data Component).
  *
- * Modes implémentés maintenant : Pivoter, On/Off manuel, Surchauffe, Redstone —
- * tous adossés à la couche de contrôle de {@link AbstractMachineBlockEntity}. Les
- * fonctions liées à du contenu plus tardif (priorité du Network Hub, recalibration
- * de l'Amplifier, retrait d'un Catalyst Core) s'ajouteront comme nouveaux modes
- * quand ces machines/objets existeront (phases 3-4).
+ * Gestes (voir 12-UX-and-Advancements.md) :
+ * - Clic droit sur une machine : applique le mode courant, SANS ouvrir le GUI.
+ * - Clic droit dans le vide : passe au mode suivant.
+ * - Shift + clic droit sur un bloc-entité : le démonte (bloc + contenu → inventaire).
+ *
+ * Les deux interactions sur un bloc (clic / shift-clic) sont gérées par
+ * {@link TunerInteractions} via {@code PlayerInteractEvent.RightClickBlock}, et
+ * non par {@code useOn} : sinon l'interaction du bloc (ouverture du GUI) gagne la
+ * priorité sur un clic droit sans shift et l'action ne se déclenche jamais. Seul le
+ * changement de mode (clic droit dans le vide) reste dans {@link #use}.
  */
 public class ResonanceTunerItem extends Item {
 
@@ -35,40 +39,15 @@ public class ResonanceTunerItem extends Item {
         super(properties);
     }
 
-    // --- Interaction ---------------------------------------------------------
-
-    @Override
-    public InteractionResult useOn(UseOnContext context) {
-        Level level = context.getLevel();
-        ItemStack stack = context.getItemInHand();
-        Player player = context.getPlayer();
-
-        if (context.isSecondaryUseActive()) {
-            // Shift-clic : change de mode, sans agir sur la machine.
-            if (!level.isClientSide) {
-                cycleMode(stack, player);
-            }
-            return InteractionResult.SUCCESS;
-        }
-
-        if (level.isClientSide) {
-            return InteractionResult.SUCCESS;
-        }
-        boolean applied = applyMode(modeOf(stack), level, context.getClickedPos(), player);
-        return applied ? InteractionResult.CONSUME : InteractionResult.PASS;
-    }
+    // --- Interaction : changement de mode (clic droit dans le vide) ----------
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        // Shift-clic dans le vide : change aussi de mode (pratique loin d'une machine).
-        if (player.isSecondaryUseActive()) {
-            if (!level.isClientSide) {
-                cycleMode(stack, player);
-            }
-            return InteractionResultHolder.success(stack);
+        if (!level.isClientSide) {
+            cycleMode(stack, player);
         }
-        return InteractionResultHolder.pass(stack);
+        return InteractionResultHolder.success(stack);
     }
 
     // --- Logique de mode -----------------------------------------------------
@@ -78,7 +57,7 @@ public class ResonanceTunerItem extends Item {
         return TunerMode.byIndex(index == null ? 0 : index);
     }
 
-    private static void cycleMode(ItemStack stack, @Nullable Player player) {
+    public static void cycleMode(ItemStack stack, @Nullable Player player) {
         TunerMode next = modeOf(stack).next();
         stack.set(ModDataComponents.TUNER_MODE.get(), next.ordinal());
         actionBar(player, Component.translatable("item.veskorius.resonance_tuner.mode", next.label()));
@@ -86,8 +65,8 @@ public class ResonanceTunerItem extends Item {
 
     /**
      * Applique un mode à la machine en {@code pos}. Retourne vrai si quelque chose
-     * a changé. Extrait ici (statique, sans {@link UseOnContext}) pour être
-     * directement testable par GameTest.
+     * a changé. Statique et sans contexte d'interaction pour être directement
+     * testable par GameTest.
      */
     public static boolean applyMode(TunerMode mode, Level level, BlockPos pos, @Nullable Player player) {
         BlockState state = level.getBlockState(pos);
@@ -135,7 +114,7 @@ public class ResonanceTunerItem extends Item {
         return false;
     }
 
-    private static void actionBar(@Nullable Player player, Component message) {
+    static void actionBar(@Nullable Player player, Component message) {
         if (player != null) {
             player.displayClientMessage(message, true);
         }
@@ -145,7 +124,44 @@ public class ResonanceTunerItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.veskorius.resonance_tuner.mode", modeOf(stack).label()));
-        tooltip.add(Component.translatable("item.veskorius.resonance_tuner.hint"));
+        TunerMode currentMode = modeOf(stack);
+
+        tooltip.add(Component.literal("▶ ")
+            .withStyle(ChatFormatting.DARK_AQUA)
+            .append(Component.translatable("item.veskorius.resonance_tuner.current_mode")
+                .withStyle(ChatFormatting.GRAY))
+            .append(Component.literal(" "))
+            .append(currentMode.label().copy().withStyle(ChatFormatting.GOLD)));
+
+        tooltip.add(Component.empty());
+        tooltip.add(Component.translatable("item.veskorius.resonance_tuner.available_modes")
+            .withStyle(ChatFormatting.YELLOW));
+
+        for (TunerMode mode : TunerMode.values()) {
+            boolean selected = mode == currentMode;
+            tooltip.add(Component.literal(selected ? " ● " : " ○ ")
+                .withStyle(selected ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY)
+                .append(mode.label().copy().withStyle(selected ? ChatFormatting.GREEN : ChatFormatting.GRAY)));
+        }
+
+        tooltip.add(Component.empty());
+
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.translatable("item.veskorius.resonance_tuner.controls")
+                .withStyle(ChatFormatting.YELLOW));
+            control(tooltip, "item.veskorius.resonance_tuner.ctrl_apply");
+            control(tooltip, "item.veskorius.resonance_tuner.ctrl_cycle");
+            control(tooltip, "item.veskorius.resonance_tuner.ctrl_dismantle");
+        } else {
+            tooltip.add(Component.literal("⇧ ")
+                .withStyle(ChatFormatting.DARK_GRAY)
+                .append(Component.translatable("tooltip.veskorius.hold_shift")
+                    .withStyle(ChatFormatting.GRAY)));
+        }
+    }
+
+    private static void control(List<Component> tooltip, String key) {
+        tooltip.add(Component.literal(" • ").withStyle(ChatFormatting.DARK_GRAY)
+            .append(Component.translatable(key).withStyle(ChatFormatting.GRAY)));
     }
 }
