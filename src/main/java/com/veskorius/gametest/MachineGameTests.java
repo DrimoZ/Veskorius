@@ -3,12 +3,15 @@ package com.veskorius.gametest;
 import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
+import com.veskorius.block.entity.FieldEmitterBlockEntity;
 import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
 import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
+import com.veskorius.energy.ResonanceFieldManager;
 import com.veskorius.item.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.gametest.GameTestHolder;
@@ -30,6 +33,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 public class MachineGameTests {
 
     private static final String EMPTY = "empty";
+    private static final String FIELD_ARENA = "field_arena";
 
     /** Position de la machine dans le template 5x5x5. */
     private static final BlockPos MACHINE = new BlockPos(2, 1, 2);
@@ -284,6 +288,151 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    // --- Field Emitter + système de champ (machine #4) -----------------------
+
+    /**
+     * Émetteur au CENTRE de l'arène 21x21 (et non dans un coin comme MACHINE dans
+     * le petit template) : les tests sondent jusqu'à 9 blocs autour, il faut donc
+     * de la marge de tous les côtés pour rester dans l'arène et hors de portée des
+     * émetteurs des tests voisins. Voir ModStructureTemplateProvider.
+     */
+    private static final BlockPos EMITTER = new BlockPos(10, 1, 10);
+
+    /**
+     * Recharge : insérer un Stable Crystal fait monter la réserve de 4000 Osc, et
+     * le cristal est consommé (06-Energy.md, source primaire de l'énergie).
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void emitterBurnsCrystalToFillReserve(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                FieldEmitterBlockEntity emitter = placeEmitter(helper);
+                helper.assertTrue(emitter.getReserve() == 0, "La réserve devrait démarrer à 0");
+                emitter.getFuelHandler().insertItem(FieldEmitterBlockEntity.SLOT_FUEL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+            })
+            .thenExecuteAfter(3, () -> {
+                FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                helper.assertTrue(emitter.getReserve() == 4000,
+                    "La réserve devrait être à 4000 après avoir brûlé un cristal, vaut : "
+                        + emitter.getReserve());
+                helper.assertTrue(
+                    emitter.getFuelHandler().getStackInSlot(FieldEmitterBlockEntity.SLOT_FUEL).isEmpty(),
+                    "Le cristal aurait dû être consommé");
+            })
+            .thenSucceed();
+    }
+
+    /** Un émetteur ne brûle pas de cristal tant que sa réserve est pleine (pas de gaspillage). */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void emitterDoesNotWasteFuelWhenFull(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                FieldEmitterBlockEntity emitter = placeEmitter(helper);
+                emitter.getFuelHandler().insertItem(FieldEmitterBlockEntity.SLOT_FUEL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 2), false);
+            })
+            .thenExecuteAfter(10, () -> {
+                FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                helper.assertTrue(emitter.getReserve() == 4000,
+                    "La réserve ne doit pas dépasser 4000, vaut : " + emitter.getReserve());
+                helper.assertTrue(
+                    emitter.getFuelHandler().getStackInSlot(FieldEmitterBlockEntity.SLOT_FUEL).getCount() == 1,
+                    "Un seul cristal aurait dû être brûlé, l'autre reste en réserve de carburant");
+            })
+            .thenSucceed();
+    }
+
+    /**
+     * Portée : une position à 8 blocs est couverte, une position à 9 ne l'est pas.
+     * Teste le routage du manager, pas seulement l'émetteur.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void fieldReachesEightBlocksNotNine(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> chargedEmitter(helper))
+            .thenExecuteAfter(3, () -> {
+                ServerLevel level = helper.getLevel();
+                BlockPos emitterAbs = helper.absolutePos(EMITTER);
+
+                helper.assertTrue(
+                    ResonanceFieldManager.supply(level, emitterAbs.east(8), 10) == 10,
+                    "Une position à 8 blocs devrait être alimentée");
+                helper.assertTrue(
+                    ResonanceFieldManager.supply(level, emitterAbs.east(9), 10) == 0,
+                    "Une position à 9 blocs ne devrait PAS être alimentée");
+            })
+            .thenSucceed();
+    }
+
+    /** La réserve s'épuise : une fois vidée, le champ ne fournit plus rien. */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void fieldStopsSupplyingWhenReserveEmpty(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> chargedEmitter(helper))
+            .thenExecuteAfter(3, () -> {
+                ServerLevel level = helper.getLevel();
+                BlockPos consumer = helper.absolutePos(EMITTER).east(3);
+
+                int first = ResonanceFieldManager.supply(level, consumer, 4000);
+                helper.assertTrue(first == 4000,
+                    "Le premier prélèvement devrait vider la réserve (4000), vaut : " + first);
+
+                int second = ResonanceFieldManager.supply(level, consumer, 10);
+                helper.assertTrue(second == 0,
+                    "Réserve vide : plus rien à fournir, vaut : " + second);
+            })
+            .thenSucceed();
+    }
+
+    /**
+     * Anti-stacking (06-Energy.md) : deux émetteurs couvrant la même position ne
+     * fournissent pas le double. Une demande est servie par un seul émetteur.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void overlappingEmittersDoNotStack(GameTestHelper helper) {
+        // Second émetteur à deux blocs à l'est du premier (au centre de l'arène).
+        BlockPos secondEmitter = EMITTER.east(2);
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                helper.setBlock(secondEmitter, ModBlocks.FIELD_EMITTER.get());
+                FieldEmitterBlockEntity e2 = helper.getBlockEntity(secondEmitter);
+                e2.getFuelHandler().insertItem(FieldEmitterBlockEntity.SLOT_FUEL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+            })
+            .thenExecuteAfter(3, () -> {
+                ServerLevel level = helper.getLevel();
+                // Position entre les deux émetteurs, couverte par les deux.
+                BlockPos consumer = helper.absolutePos(EMITTER.east(1));
+
+                // Demande de 6000 : un seul émetteur (réserve 4000) répond, donc 4000,
+                // jamais 8000. L'intensité ne s'additionne pas.
+                int drawn = ResonanceFieldManager.supply(level, consumer, 6000);
+                helper.assertTrue(drawn == 4000,
+                    "Un seul émetteur devrait servir (4000), pas la somme des deux, vaut : " + drawn);
+            })
+            .thenSucceed();
+    }
+
+    /** Un émetteur cassé sort de l'index : plus aucun champ à sa position. */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void brokenEmitterLeavesNoField(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> chargedEmitter(helper))
+            .thenExecuteAfter(3, () -> {
+                ServerLevel level = helper.getLevel();
+                BlockPos consumer = helper.absolutePos(EMITTER).east(3);
+                helper.assertTrue(ResonanceFieldManager.supply(level, consumer, 10) == 10,
+                    "Le champ devrait être actif avant de casser l'émetteur");
+
+                helper.destroyBlock(EMITTER);
+                helper.assertTrue(ResonanceFieldManager.supply(level, consumer, 10) == 0,
+                    "Après destruction, plus aucun champ ne devrait couvrir la position");
+            })
+            .thenSucceed();
+    }
+
     // --- Utilitaires ---------------------------------------------------------
 
     private static ResonanceStabilizerBlockEntity placeAndGet(GameTestHelper helper) {
@@ -293,6 +442,18 @@ public class MachineGameTests {
 
     private static IItemHandler placeStabilizer(GameTestHelper helper) {
         return placeAndGet(helper).getInventory();
+    }
+
+    private static FieldEmitterBlockEntity placeEmitter(GameTestHelper helper) {
+        helper.setBlock(EMITTER, ModBlocks.FIELD_EMITTER.get());
+        return helper.getBlockEntity(EMITTER);
+    }
+
+    /** Pose un Field Emitter et le charge d'un cristal, prêt à fournir. */
+    private static void chargedEmitter(GameTestHelper helper) {
+        FieldEmitterBlockEntity emitter = placeEmitter(helper);
+        emitter.getFuelHandler().insertItem(FieldEmitterBlockEntity.SLOT_FUEL,
+            new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
     }
 
     private static IItemHandler placeWhetstone(GameTestHelper helper) {

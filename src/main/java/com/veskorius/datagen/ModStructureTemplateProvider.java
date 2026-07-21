@@ -35,10 +35,25 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  */
 public class ModStructureTemplateProvider implements DataProvider {
 
-    /** Assez grand pour poser une machine et tourner autour, assez petit pour rester rapide. */
-    private static final int SIZE = 5;
-
+    /** Petite structure pour les machines à cycle : poser un bloc, tourner autour, rester rapide. */
+    private static final int EMPTY_SIZE = 5;
     public static final String EMPTY_TEMPLATE = "empty";
+
+    /**
+     * Grande arène pour les tests du système de champ. Le
+     * {@link com.veskorius.energy.ResonanceFieldManager} est un index GLOBAL par
+     * dimension : sans isolation spatiale, un émetteur d'un test voisin (le
+     * framework GameTest place les structures à quelques blocs les unes des
+     * autres) fausserait les prélèvements d'un autre test.
+     *
+     * Dimension : émetteur au centre (10,·,10), les tests sondent jusqu'à 9 blocs
+     * de lui. À 21 de côté, l'émetteur d'une arène adjacente est à ≥ 21−9 = 12
+     * blocs de toute position sondée — hors de la portée 8 du Field Emitter, donc
+     * aucune contamination. À réviser quand des portées plus grandes seront
+     * testées (Relay 20, Convergence Core 40) : il faudra agrandir en conséquence.
+     */
+    private static final int ARENA_SIZE = 21;
+    public static final String FIELD_ARENA_TEMPLATE = "field_arena";
 
     private final PackOutput.PathProvider pathProvider;
 
@@ -49,22 +64,24 @@ public class ModStructureTemplateProvider implements DataProvider {
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
-        return write(cache, EMPTY_TEMPLATE, emptyTemplate());
+        return CompletableFuture.allOf(
+            write(cache, EMPTY_TEMPLATE, emptyTemplate(EMPTY_SIZE)),
+            write(cache, FIELD_ARENA_TEMPLATE, emptyTemplate(ARENA_SIZE)));
     }
 
     /**
-     * Structure sans aucun bloc. {@code StructureTemplate.save} accepte
+     * Structure cubique sans aucun bloc. {@code StructureTemplate.save} accepte
      * explicitement une palette vide, et {@code load} relit "size", "blocks",
      * "palette" et "entities" — les quatre cles produites ici.
      */
-    private static CompoundTag emptyTemplate() {
-        ListTag size = new ListTag();
-        size.add(IntTag.valueOf(SIZE));
-        size.add(IntTag.valueOf(SIZE));
-        size.add(IntTag.valueOf(SIZE));
+    private static CompoundTag emptyTemplate(int size) {
+        ListTag sizeTag = new ListTag();
+        sizeTag.add(IntTag.valueOf(size));
+        sizeTag.add(IntTag.valueOf(size));
+        sizeTag.add(IntTag.valueOf(size));
 
         CompoundTag tag = new CompoundTag();
-        tag.put("size", size);
+        tag.put("size", sizeTag);
         tag.put("blocks", new ListTag());
         tag.put("palette", new ListTag());
         tag.put("entities", new ListTag());

@@ -50,5 +50,25 @@ public class ModRecipeProvider extends RecipeProvider {
             .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
                 has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
+
+        // Field Emitter : 4 Resonance Component + 1 Stable Resonance Crystal +
+        // 2 Gold Ingot (05-Machines.md #4). Le cristal au centre (le cœur qui
+        // émet), les composants aux coins, l'or au-dessus et en dessous. La forme
+        // ci-dessous consomme exactement 4 C, 2 G, 1 S — vérifié contre les
+        // quantités du design.
+        // NB : cette recette est débloquée en jeu par le fragment de l'Avant-poste
+        // (advancement veskorius:tier2_field, 12-UX-and-Advancements.md) — le
+        // JSON produit ici reste inerte tant que l'advancement n'est pas obtenu,
+        // ce câblage viendra avec la tâche 10 (structures + fragments).
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.FIELD_EMITTER.get())
+            .pattern("CGC")
+            .pattern("CSC")
+            .pattern(" G ")
+            .define('C', ModItems.RESONANCE_COMPONENT.get())
+            .define('G', Items.GOLD_INGOT)
+            .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
+            .unlockedBy(getHasName(ModItems.RESONANCE_COMPONENT.get()),
+                has(ModItems.RESONANCE_COMPONENT.get()))
+            .save(recipeOutput);
     }
 }

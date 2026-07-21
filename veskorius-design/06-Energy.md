@@ -6,6 +6,34 @@ Pas de câbles. L'énergie (Oscillations, `Osc`) se propage par champ autour d'u
 relais actif. Une machine fonctionne si elle est dans un champ, pas si elle est connectée
 physiquement.
 
+## Source primaire de l'énergie (précisé le 2026-07-21, au codage de la tâche 5)
+
+Les versions précédentes de ce fichier décrivaient la propagation, les portées et les réserves,
+mais **jamais d'où vient l'Osc au départ** : aucune machine de `05-Machines.md` ne *génère*
+d'énergie, toutes en *consomment* (ou sont autonomes). Ce n'était pas un oubli anodin — c'est le
+fondement de l'économie énergétique du mod. Résolu ainsi, cohérent avec les valeurs déjà posées :
+
+**La source d'énergie, c'est la chaîne de cristaux.** Un Stable Resonance Crystal *est* une
+batterie de 4000 Osc (voir le tableau ci-dessous). Le **Field Emitter consomme (brûle) des
+Stable Crystals comme carburant** : 1 cristal → +4000 Osc dans sa réserve interne (plafond
+4000 Osc = exactement un cristal, valeur déjà donnée pour le Field Emitter dans `05-Machines.md`
+#4). Le cristal est détruit, comme du charbon dans un four.
+
+Conséquences cohérentes avec les piliers :
+- **Pas d'énergie infinie** (pilier 1) : produire de l'Osc coûte des Stable Crystals, donc du
+  minage de Raw Crystals puis du temps de Stabilizer. L'énergie est bornée par ces ressources.
+- Le **Stabilizer reste « autonome »** : il ne crée pas d'Osc, il rend simplement utilisable
+  l'énergie latente d'un Raw Crystal (cohérent avec le lore du cristal brut instable/énergétique,
+  `02-Lore.md`). L'Osc « apparaît » au moment où un Stable Crystal est brûlé, pas avant.
+- La **Resonance Storage Cell** (`05-Machines.md` #6) reste la seule batterie *portable et
+  rechargeable* dédiée. Le Stable Crystal, lui, est un carburant à usage unique — deux rôles
+  distincts, pas de doublon.
+
+Alternatives écartées : un Stable Crystal *déchargeable* (état de charge sur l'item — plus
+complexe, demanderait une machine de recharge non prévue) ; un item carburant dédié (ajouterait
+un item et une recette hors registre). Le choix « brûler des Stable Crystals » est le plus simple
+et reste local au Field Emitter — réversible sans toucher au reste du système de champ.
+
 ## Constantes de référence
 
 | Constante | Valeur |

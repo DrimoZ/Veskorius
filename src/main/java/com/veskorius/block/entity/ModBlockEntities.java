@@ -23,4 +23,10 @@ public class ModBlockEntities {
             () -> BlockEntityType.Builder
                 .of(ResonanceWhetstoneBlockEntity::new, ModBlocks.RESONANCE_WHETSTONE.get())
                 .build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FieldEmitterBlockEntity>>
+        FIELD_EMITTER = BLOCK_ENTITIES.register("field_emitter",
+            () -> BlockEntityType.Builder
+                .of(FieldEmitterBlockEntity::new, ModBlocks.FIELD_EMITTER.get())
+                .build(null));
 }

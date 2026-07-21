@@ -21,6 +21,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         // que le bloc, pas son contenu.
         dropSelf(ModBlocks.RESONANCE_STABILIZER.get());
         dropSelf(ModBlocks.RESONANCE_WHETSTONE.get());
+        dropSelf(ModBlocks.FIELD_EMITTER.get());
     }
 
     @Override

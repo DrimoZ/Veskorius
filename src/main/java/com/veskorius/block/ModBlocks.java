@@ -38,4 +38,15 @@ public class ModBlocks {
                 .strength(2.5f, 6.0f)
                 .sound(SoundType.STONE)
                 .requiresCorrectToolForDrops());
+
+    /** Machine #4 (05-Machines.md). Bloc passif : fournit un champ de Résonance. */
+    public static final DeferredBlock<FieldEmitterBlock> FIELD_EMITTER =
+        BLOCKS.registerBlock("field_emitter",
+            FieldEmitterBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_LIGHT_BLUE)
+                .strength(3.0f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .lightLevel(state -> 4));
 }

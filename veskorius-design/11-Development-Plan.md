@@ -58,8 +58,20 @@ Tâches, dans l'ordre :
    place) au lieu de la consommer pour produire autre chose — bonne épreuve de généricité du
    socle. 4 GameTest.
 4. Génération des poches de `raw_resonance_crystal` (`07-World-Generation.md`, strate 0/-20).
-5. `FieldEmitterBlockEntity` + capability `IResonanceField` — #4. Pièce la plus structurante :
+5. ✅ `FieldEmitterBlockEntity` + capability `IResonanceField` — #4. Pièce la plus structurante :
    toutes les machines suivantes en dépendent.
+   - **Système de champ livré** : `IResonanceField` (capability de bloc), `ResonanceFieldManager`
+     (index des émetteurs par dimension + routage machine→émetteur : portée, anti-stacking,
+     « première posée première servie »), `FieldEmitterBlockEntity` (réserve 4000 Osc, portée 8,
+     recharge en brûlant des Stable Crystals — voir `06-Energy.md`, section source primaire).
+   - **Trou de conception comblé** : le design ne disait pas d'où vient l'Osc. Résolu et
+     documenté dans `06-Energy.md` (les cristaux sont le carburant), décision validée avec le
+     porteur du projet avant de coder.
+   - **Insertion du carburant** : clic droit avec un Stable Crystal, ou hopper (capability
+     ItemHandler exposée). Pas encore de GUI plein écran (jauge de réserve) — noté ci-dessous.
+   - 6 GameTest, dans une **arène isolée** de 21×21 (le manager est un index global ; sans
+     isolation spatiale, les émetteurs de tests voisins se contaminent — problème qui reviendra
+     amplifié au Relay T3, rayon 20 : agrandir l'arène à ce moment-là).
 6. `FluxPurifierBlockEntity` + mode surchauffe (toggle, 20% risque) — #5.
 7. `ResonanceStorageCellItem` — #6.
 8. `ResonanceLocatorItem` — #7, dépend de la génération des structures (tâche 10).
@@ -109,6 +121,17 @@ voit, au lieu de tout revérifier à la main.
 Règle pour les 22 machines suivantes : **une machine n'est finie que quand ses GameTest passent.**
 La valeur de référence (durée de cycle, quantités) est réécrite dans le test plutôt qu'importée
 depuis la machine, pour qu'un changement de valeur non répercuté ici fasse échouer la suite.
+
+**Travaux différés, à ne pas oublier :**
+
+- **GUI du Field Emitter** (jauge de réserve `X/4000 Osc`, slot de carburant visible,
+  `12-UX-and-Advancements.md`). Le bloc est jouable sans (clic droit + hopper), mais on ne voit
+  pas sa réserve. À faire avant la fin de la Phase 1, avec les autres passes visuelles.
+- **Perf du `ResonanceFieldManager`** : le routage scanne linéairement tous les émetteurs de la
+  dimension. Correct pour un mod (rarement des centaines d'émetteurs), à indexer par chunk
+  seulement si un playtest révèle un coût réel. Ne pas optimiser à l'aveugle.
+- **GameTest dans `src/main/java`** : ils partiront dans le jar de release. Sans conséquence
+  maintenant, à isoler dans un sourceSet dédié avant la Phase 7 (publication).
 
 ## Phase 2 — Réseau régional T3
 

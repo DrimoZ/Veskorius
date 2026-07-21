@@ -70,7 +70,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | 1 | `resonance_stabilizer` | T1 | ✅ codé (block entity + cycle 30s + GUI + slot d'augment) |
 | 2 | `component_assembler` | T1 | À coder (Phase 1) |
 | 3 | `resonance_whetstone` | T1 | ✅ codé (block entity + cycle 8s + GUI + slot d'augment) |
-| 4 | `field_emitter` | T2 | À coder (Phase 1) |
+| 4 | `field_emitter` | T2 | ✅ codé (réserve + recharge + champ, capability IResonanceField ; GUI restant) |
 | 5 | `flux_purifier` | T2 | À coder (Phase 1) |
 | 8 | `crystal_roost` | T2 | À coder (Phase 1) |
 | 9 | `resonance_relay` | T3 | À coder (Phase 2) |

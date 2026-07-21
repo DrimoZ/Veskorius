@@ -23,9 +23,11 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         // tags, ils ne se dropent avec aucun outil.
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
             .add(ModBlocks.RESONANCE_STABILIZER.get())
-            .add(ModBlocks.RESONANCE_WHETSTONE.get());
+            .add(ModBlocks.RESONANCE_WHETSTONE.get())
+            .add(ModBlocks.FIELD_EMITTER.get());
         tag(BlockTags.NEEDS_STONE_TOOL)
             .add(ModBlocks.RESONANCE_STABILIZER.get())
-            .add(ModBlocks.RESONANCE_WHETSTONE.get());
+            .add(ModBlocks.RESONANCE_WHETSTONE.get())
+            .add(ModBlocks.FIELD_EMITTER.get());
     }
 }

@@ -44,6 +44,7 @@ public class Veskorius {
                 output.accept(ModItems.RESONANCE_COMPONENT.get());
                 output.accept(ModItems.RESONANCE_STABILIZER_ITEM.get());
                 output.accept(ModItems.RESONANCE_WHETSTONE_ITEM.get());
+                output.accept(ModItems.FIELD_EMITTER_ITEM.get());
             })
             .build());
 
