@@ -56,6 +56,14 @@ Mekanism existant, pas une façon rentable de remplacer le réseau de champ par 
 | Recettes des machines T1-T3 (Stabilizer, Assembler, Purifier, Alloy Forge, Synthesizer) | `IRecipeCategory` / `EmiRecipeCategory` standard, affichage input→output classique |
 | Recettes T4-T5 (Deep Synthesis, Rift Core Extractor) | Affichées mais marquées "nécessite déblocage en exploration" — pas de recette visible tant que le fragment correspondant n'a pas été trouvé en jeu, pour ne pas spoiler la découverte (compromis avec le pilier 2 : JEI reste utile sans révéler where-to-find) |
 
+**État du code (2026-07-21)** : une intégration JEI de base est déjà en place (`com.veskorius.compat.jei`),
+en avance sur la Phase 5, parce qu'elle sert d'outil de vérification des recettes pendant le
+développement. Elle couvre les 4 machines actuelles (Stabilizer, Assembler, Purifier, Whetstone)
+avec une catégorie chacune (input→output + temps + Osc). JEI est une dépendance de dev
+(`compileOnly` API + `localRuntime`), pas exportée. Restent à faire en Phase 5 : EMI (miroir
+d'implémentation), le masquage des recettes T4-T5 non débloquées, et le transfert de recette
+(remplissage auto du GUI depuis JEI).
+
 ## Problèmes / Alternatives rejetées
 
 - **Rejeté : capacité d'énergie universelle Forge Energy exposée nativement sur toutes les

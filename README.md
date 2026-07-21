@@ -49,6 +49,9 @@ ce fichier.
 - Datagen complet : plus aucun blockstate / modèle / recette / loot table / tag / traduction
   n'est écrit à la main.
 - Harnais `GameTest` : 29 tests (cycles, champ, énergie, contrôles, surchauffe, Tuner, démontage), `./gradlew runGameTestServer`.
+- **Intégration JEI** (dev) : les recettes des 4 machines s'affichent dans JEI, une catégorie par
+  machine, avec temps et Osc/tick. JEI est en `compileOnly` (API) + `localRuntime` (mod complet
+  dans `runClient`), pas exporté dans le jar. Sert à vérifier les recettes en jeu.
 - Textures placeholder (couleur unie) — à remplacer par du vrai pixel art en Phase 6.
 
 Consulter `veskorius-design/13-Registry-Index.md` pour l'état « codé / à coder » de tout le
@@ -62,7 +65,11 @@ deviner où on en est.
 2. `./gradlew runData` après tout ajout de bloc/item/recette : régénère `src/generated/resources/`.
    Ce dossier est volontairement ignoré par git — il se reconstruit à partir du code, et le
    versionner créerait des conflits sans valeur. **À lancer avant `runGameTestServer`** : c'est
-   lui qui produit le template de structure vide dont les tests ont besoin.
+   lui qui produit le template de structure vide dont les tests ont besoin. Le cache de datagen
+   est vidé automatiquement avant chaque run, donc la sortie correspond toujours au code (une
+   édition manuelle d'un JSON généré, pour tester une recette + `/reload`, est transitoire : le
+   prochain `runData` la remplace). Dépendances déjà en cache → ajouter `--offline` évite un accès
+   réseau.
 3. `./gradlew runGameTestServer` : joue les tests des machines sans interface (~24 s). Le build
    échoue si un test échoue. Une machine n'est considérée finie que quand ses tests passent.
 4. `gradle.properties` : la version `neo_version=21.1.172` est celle utilisée pour valider le
@@ -111,6 +118,7 @@ src/main/java/com/veskorius/
 ├── client/                     ← écrans (Dist.CLIENT uniquement)
 ├── energy/                     ← IResonanceField, ResonanceFieldManager, capabilities
 ├── recipe/                     ← MachineRecipe(Input/Serializer) + RecipeTypes/Serializers
+├── compat/jei/                 ← intégration JEI (chargée seulement si JEI présent)
 ├── datagen/                    ← providers + GatherDataEvent
 ├── gametest/                   ← tests joués par runGameTestServer
 └── tag/ModTags.java

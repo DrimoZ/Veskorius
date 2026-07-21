@@ -18,7 +18,11 @@ sourceSets.main.resources {
 }
 
 repositories {
-    // Ajouter ici d'éventuels dépôts supplémentaires requis par des dépendances.
+    // Dépôt de JEI (mezz.jei) et d'autres mods de l'écosystème.
+    maven {
+        name = "Jared's maven (JEI)"
+        url = "https://maven.blamejared.com/"
+    }
 }
 
 base {
@@ -70,14 +74,27 @@ neoForge {
     }
 }
 
+// Le datagen met en cache les fichiers déjà écrits (HashCache). Or on édite
+// parfois un JSON généré pour tester une recette en jeu (+ /reload) : un cache
+// périmé conserverait alors cette édition manuelle au lieu de régénérer la valeur
+// du code. On vide donc le cache avant chaque runData, pour que la sortie
+// corresponde TOUJOURS aux DataProvider Java.
+tasks.matching { it.name == 'runData' }.configureEach {
+    doFirst {
+        delete "${projectDir}/src/generated/resources/.cache"
+    }
+}
+
 configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
 dependencies {
-    // Ajouter ici les dépendances vers d'autres mods (Thaumcraft, JEI, etc.) une fois
-    // l'intégration décrite dans TECH-SPEC.md prête à être codée.
-    // compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    // JEI — visualisation des recettes en jeu. L'API en compileOnly (pour écrire
+    // le plugin), le mod complet en localRuntime (chargé dans runClient mais pas
+    // exporté dans le jar publié).
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 }
 
 // Génère neoforge.mods.toml à partir de src/main/templates/META-INF/neoforge.mods.toml
