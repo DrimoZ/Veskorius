@@ -35,6 +35,16 @@ Deux défauts distincts, tous deux trouvés au démarrage de la Phase 1 :
 Leçon de méthode, pas seulement de code : **une sortie testable n'est validée que si elle a
 été exécutée.** Les phases suivantes ne se ferment pas sur une lecture du code.
 
+**Architecture — recettes de fonctionnement data-driven (2026-07-21).** Les recettes de
+fonctionnement des machines étaient codées en dur dans chaque `canRunCycle`/`runCycle` :
+impossible de les modifier ou d'en ajouter sans recompiler. Remplacé par un vrai système de
+recettes JSON (API `Recipe` 1.21), **un `RecipeType` par machine** (`veskorius:stabilizing`,
+`assembling`, `purifying`, `sharpening`). Les valeurs de recette de `05-Machines.md` sont
+inchangées ; c'est leur *stockage* qui devient data-driven. Voir `README.md` (section recettes)
+pour l'architecture. Conséquence : les recettes de fonctionnement des futures machines sont du
+datagen, plus du code ; et une variante (branche alternative de l'Assembler, recettes de
+datapack tierces) est un simple JSON. Validé en jeu et par mutation des JSON générés.
+
 ## Phase 1 — Boucle T1-T2
 
 **Objectif de test** : un joueur trouve un cristal brut, le stabilise, pose un premier champ, et
