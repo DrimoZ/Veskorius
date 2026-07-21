@@ -30,6 +30,8 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         // Silk Touch récupère le bloc lui-même) — comportement de minerai standard.
         add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get(),
             block -> createOreDrop(block, ModItems.RAW_RESONANCE_CRYSTAL.get()));
+        // La pierre veinée se drop elle-même (bloc de construction).
+        dropSelf(ModBlocks.RESONANCE_VEINED_STONE.get());
     }
 
     @Override

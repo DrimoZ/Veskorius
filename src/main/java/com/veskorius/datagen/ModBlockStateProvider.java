@@ -24,8 +24,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
         horizontalBlock(ModBlocks.RESONANCE_WHETSTONE.get(), cubeAll(ModBlocks.RESONANCE_WHETSTONE.get()));
         horizontalBlock(ModBlocks.FIELD_EMITTER.get(), cubeAll(ModBlocks.FIELD_EMITTER.get()));
 
-        // Bloc de poche de cristal : cube uniforme simple (pas d'orientation).
+        // Blocs naturels : cubes uniformes simples.
         simpleBlockWithItem(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get(),
             cubeAll(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get()));
+        simpleBlockWithItem(ModBlocks.RESONANCE_VEINED_STONE.get(),
+            cubeAll(ModBlocks.RESONANCE_VEINED_STONE.get()));
     }
 }

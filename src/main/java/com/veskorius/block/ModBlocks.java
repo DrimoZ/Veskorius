@@ -50,6 +50,19 @@ public class ModBlocks {
                 .requiresCorrectToolForDrops());
 
     /**
+     * Pierre veinée qui enrobe les poches de cristal (07-World-Generation.md).
+     * Bloc décoratif + « tell » visuel : le voir, c'est savoir qu'une poche est
+     * proche. Ne rayonne pas — on le reconnaît à sa texture, pas à sa lumière.
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> RESONANCE_VEINED_STONE =
+        BLOCKS.registerSimpleBlock("resonance_veined_stone",
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.DEEPSLATE)
+                .strength(1.5f, 6.0f)
+                .sound(SoundType.DEEPSLATE)
+                .requiresCorrectToolForDrops());
+
+    /**
      * Bloc de poche de cristal brut (07-World-Generation.md). Se génère en petites
      * poches Y -20 à 0 et lâche du Raw Resonance Crystal. Légère luminosité : le
      * cristal instable « rayonne » et se repère une fois la paroi ouverte.

@@ -27,13 +27,15 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             .add(ModBlocks.RESONANCE_WHETSTONE.get())
             .add(ModBlocks.FLUX_PURIFIER.get())
             .add(ModBlocks.FIELD_EMITTER.get())
-            .add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get());
+            .add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get())
+            .add(ModBlocks.RESONANCE_VEINED_STONE.get());
         tag(BlockTags.NEEDS_STONE_TOOL)
             .add(ModBlocks.RESONANCE_STABILIZER.get())
             .add(ModBlocks.COMPONENT_ASSEMBLER.get())
             .add(ModBlocks.RESONANCE_WHETSTONE.get())
             .add(ModBlocks.FLUX_PURIFIER.get())
             .add(ModBlocks.FIELD_EMITTER.get())
-            .add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get());
+            .add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get())
+            .add(ModBlocks.RESONANCE_VEINED_STONE.get());
     }
 }

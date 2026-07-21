@@ -1,7 +1,6 @@
 package com.veskorius.worldgen;
 
 import com.veskorius.Veskorius;
-import com.veskorius.block.ModBlocks;
 import java.util.List;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -11,20 +10,15 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.placement.BiomeFilter;
 import net.minecraft.world.level.levelgen.placement.CountPlacement;
 import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 import net.minecraft.world.level.levelgen.placement.InSquarePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
-import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -44,8 +38,10 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
  */
 public final class ModWorldGen {
 
-    /** Taille d'une veine de poche (nombre de blocs). À valider en playtest. */
-    private static final int POCKET_SIZE = 5;
+    /** Pas de la marche aléatoire posant les cristaux (taille de l'amas). À valider en playtest. */
+    private static final int CRYSTAL_TRIES = 8;
+    /** Épaisseur de la coquille de pierre veinée (1 couche). */
+    private static final int SHELL_THICKNESS = 1;
     /** Tentatives de placement par chunk. À valider en playtest. */
     private static final int POCKET_COUNT = 6;
     private static final int MIN_Y = -20;
@@ -62,16 +58,11 @@ public final class ModWorldGen {
     }
 
     public static void bootstrapConfiguredFeatures(BootstrapContext<ConfiguredFeature<?, ?>> context) {
-        RuleTest stone = new TagMatchTest(BlockTags.STONE_ORE_REPLACEABLES);
-        RuleTest deepslate = new TagMatchTest(BlockTags.DEEPSLATE_ORE_REPLACEABLES);
-        // Le même bloc remplace la pierre ET la deepslate : la tranche Y -20 à 0
-        // chevauche la transition, il faut couvrir les deux.
-        List<OreConfiguration.TargetBlockState> targets = List.of(
-            OreConfiguration.target(stone, ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get().defaultBlockState()),
-            OreConfiguration.target(deepslate, ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get().defaultBlockState()));
-
+        // Feature custom : amas de cristaux + coquille de pierre veinée (le « tell »
+        // visuel). La feature *ore* vanilla ne ferait que l'amas, sans coquille.
         context.register(RESONANCE_CRYSTAL_POCKET_CF,
-            new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(targets, POCKET_SIZE)));
+            new ConfiguredFeature<>(ModFeatures.CRYSTAL_POCKET.get(),
+                new CrystalPocketConfiguration(CRYSTAL_TRIES, SHELL_THICKNESS)));
     }
 
     public static void bootstrapPlacedFeatures(BootstrapContext<PlacedFeature> context) {

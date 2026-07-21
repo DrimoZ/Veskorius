@@ -57,4 +57,7 @@ public class ModItems {
 
     public static final DeferredItem<BlockItem> RESONANCE_CRYSTAL_CLUSTER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_CRYSTAL_CLUSTER);
+
+    public static final DeferredItem<BlockItem> RESONANCE_VEINED_STONE_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_VEINED_STONE);
 }

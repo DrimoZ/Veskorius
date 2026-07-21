@@ -7,6 +7,7 @@ import com.veskorius.item.ModItems;
 import com.veskorius.menu.ModMenuTypes;
 import com.veskorius.recipe.ModRecipeSerializers;
 import com.veskorius.recipe.ModRecipeTypes;
+import com.veskorius.worldgen.ModFeatures;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -43,6 +44,7 @@ public class Veskorius {
             .displayItems((parameters, output) -> {
                 output.accept(ModItems.RAW_RESONANCE_CRYSTAL.get());
                 output.accept(ModItems.RESONANCE_CRYSTAL_CLUSTER_ITEM.get());
+                output.accept(ModItems.RESONANCE_VEINED_STONE_ITEM.get());
                 output.accept(ModItems.STABLE_RESONANCE_CRYSTAL.get());
                 output.accept(ModItems.REFINED_RESONANCE_CRYSTAL.get());
                 output.accept(ModItems.RESONANCE_COMPONENT.get());
@@ -63,6 +65,7 @@ public class Veskorius {
         ModMenuTypes.MENUS.register(modEventBus);
         ModRecipeTypes.RECIPE_TYPES.register(modEventBus);
         ModRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
+        ModFeatures.FEATURES.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
