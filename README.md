@@ -22,9 +22,11 @@ ce fichier.
   contrôle redstone façon Thermal (ignoré / requiert un signal / requiert l'absence), et
   surchauffe pour les machines qui la supportent. Aucun packet custom (canal vanilla
   `clickMenuButton`).
-- **Resonance Tuner** : outil à modes (Pivoter / On-Off / Surchauffe / Redstone). Clic droit
-  applique le mode, shift-clic droit change de mode (stocké sur l'item via Data Component). Une
-  télécommande pour la couche de contrôle ci-dessus + la rotation des machines posées.
+- **Resonance Tuner** : outil à modes (Pivoter / On-Off / Surchauffe / Redstone, stocké sur
+  l'item via Data Component). Clic droit applique le mode, clic droit dans le vide change de
+  mode, **shift-clic droit démonte** n'importe quel bloc-entité (bloc + contenu → inventaire).
+  L'interaction passe par un événement (`RightClickBlock`) pour intercepter avant l'ouverture du
+  GUI du bloc.
 - Un socle réutilisable pour les machines à cycle restantes : `AbstractMachineBlock`,
   `AbstractMachineBlockEntity`, `AbstractMachineMenu`, `AbstractMachineScreen`. Ajouter une
   machine « standard » = une block entity (cycle), un bloc/menu/écran de 3 méthodes chacun, et
@@ -36,7 +38,7 @@ ce fichier.
   socle des machines (`getOscPerTick`). Le Component Assembler en est le premier client.
 - Datagen complet : plus aucun blockstate / modèle / recette / loot table / tag / traduction
   n'est écrit à la main.
-- Harnais `GameTest` : 27 tests (cycles, champ, énergie, contrôles, surchauffe, Tuner), `./gradlew runGameTestServer`.
+- Harnais `GameTest` : 29 tests (cycles, champ, énergie, contrôles, surchauffe, Tuner, démontage), `./gradlew runGameTestServer`.
 - Textures placeholder (couleur unie) — à remplacer par du vrai pixel art en Phase 6.
 
 Consulter `veskorius-design/13-Registry-Index.md` pour l'état « codé / à coder » de tout le

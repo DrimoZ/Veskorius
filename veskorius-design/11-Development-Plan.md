@@ -106,12 +106,15 @@ Tâches, dans l'ordre :
 8. `ResonanceLocatorItem` — #7. Modèle d'énergie résolu (batterie interne + recharge auto par
    champ ou Storage Cell, `06-Energy.md`), mais sa **fonction** de localisation dépend de la
    génération des structures (tâche 10). À coder une fois les structures là.
-9. ✅ `ResonanceTunerItem` — outil transversal, **réimplémenté en outil à modes** (choix du
-   porteur du projet, plus propre que la désambiguïsation par bloc de la version initiale — voir
-   `12-UX-and-Advancements.md`). Modes codés : Pivoter, On/Off, Surchauffe, Redstone, tous
-   adossés à la couche de contrôle. Mode stocké sur l'item via Data Component. Les modes liés au
-   contenu T4 (priorité Hub, recalibration) et au Catalyst Core (retrait, tâche 15) s'ajouteront
-   comme nouveaux modes. 4 GameTest sur `applyMode` (routage de chaque mode).
+9. ✅ `ResonanceTunerItem` — outil transversal, **outil à modes** (choix du porteur du projet,
+   plus propre que la désambiguïsation par bloc — voir `12-UX-and-Advancements.md`). Modes :
+   Pivoter, On/Off, Surchauffe, Redstone, adossés à la couche de contrôle ; mode stocké via Data
+   Component. Gestes : clic droit = applique le mode (sans ouvrir le GUI, intercepté par
+   `RightClickBlock`), clic droit dans le vide = mode suivant, **shift-clic droit = démontage**
+   (rend le bloc + contenu au joueur, générique sur tout bloc-entité). Modes T4 (priorité Hub,
+   recalibration) et retrait de Catalyst Core (tâche 15) à ajouter plus tard. 6 GameTest
+   (routage des 4 modes + collecte et démontage). Validé en jeu (démontage propre, GUI ne
+   s'ouvre plus, aucune exception dans les logs).
 10. Structures « Habitation Modeste » et « Avant-poste » + fragments de déblocage.
 11. Mob « Custode » standard (+ drop Custode Alloy Fragment) et « Fileur de Cristal » (faune
     neutre, reproduction via Resonance Spore).
