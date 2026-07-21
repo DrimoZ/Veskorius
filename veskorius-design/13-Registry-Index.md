@@ -59,7 +59,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | `veskorian_alloy_sword` / `_pickaxe` | 04 | À coder (Phase 2) |
 | `veskorian_alloy_helmet` / `_chestplate` / `_leggings` / `_boots` | 04 | À coder (Phase 2) |
 | `rift_ward_plate` (remplace le `veskorian_alloy_chestplate`, pas cumulatif) | 04 | À coder (Phase 4) |
-| `resonance_tuner` | 05, 12 | À coder (Phase 1) |
+| `resonance_tuner` | 05, 12 | ✅ codé (outil à modes : Pivoter/On-Off/Surchauffe/Redstone) |
 | `resonance_locator` | 05, 07 | À coder (Phase 1) |
 | `resonance_storage_cell` | 05 | À coder (Phase 1) |
 

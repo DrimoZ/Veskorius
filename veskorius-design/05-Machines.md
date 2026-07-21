@@ -61,11 +61,13 @@ tableau "Vue d'ensemble", précédée de `craft:`.
 | 23 | Flux Compressor | T3 | 4 Refined Crystal | 1 Concentrated Flux | 30s | 6 Osc/tick |
 
 **Outil transversal — Resonance Tuner** (T2, non compté dans les 23) : craft 2 Iron Ingot + 1
-Resonance Component + 1 Redstone. Clic droit sur une machine : change son orientation, bascule le
-mode surchauffe (Purifier, Chamber), configure la priorité d'un Network Hub, ou recalibre un
-Amplifier/Hub dérivé (coûte 1 Resonance Component par recalibration). Shift-clic droit : retire
-un Resonance Catalyst Core installé sans le détruire. Un seul outil pour toutes les interactions
-de configuration — voir `12-UX-and-Advancements.md`.
+Resonance Component + 1 Redstone. **Outil à modes** (révisé, voir `12-UX-and-Advancements.md`) :
+il porte un mode courant, le clic droit sur une machine applique ce mode, le shift-clic droit
+change de mode. Modes codés : Pivoter, On/Off, Surchauffe, Redstone. Modes à venir avec leur
+contenu : priorité du Network Hub, recalibration Amplifier/Hub (coûte 1 Resonance Component),
+retrait d'un Catalyst Core sans le détruire (ce dernier remplace l'ancien « shift-clic droit »,
+désormais utilisé pour changer de mode). Un seul outil pour toutes les interactions de
+configuration.
 
 **Augment transversal — Resonance Catalyst Core** (T2, item, non compté dans les 23) : craft 2
 Resonance Component + 1 Refined Crystal + 1 Redstone. Ne se pose pas seul — s'insère dans le

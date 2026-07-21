@@ -34,6 +34,11 @@ public class ModItems {
     public static final DeferredItem<Item> RESONANCE_COMPONENT =
         ITEMS.registerSimpleItem("resonance_component", new Item.Properties().stacksTo(64));
 
+    /** Outil transversal de configuration des machines (05-Machines.md). */
+    public static final DeferredItem<ResonanceTunerItem> RESONANCE_TUNER =
+        ITEMS.registerItem("resonance_tuner",
+            ResonanceTunerItem::new, new Item.Properties().stacksTo(1));
+
     // BlockItems des machines (voir ModBlocks.java)
     public static final DeferredItem<BlockItem> RESONANCE_STABILIZER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_STABILIZER);

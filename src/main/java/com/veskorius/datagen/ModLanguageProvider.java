@@ -44,5 +44,16 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.STABLE_RESONANCE_CRYSTAL, "Stable Resonance Crystal");
         addItem(ModItems.REFINED_RESONANCE_CRYSTAL, "Refined Resonance Crystal");
         addItem(ModItems.RESONANCE_COMPONENT, "Resonance Component");
+        addItem(ModItems.RESONANCE_TUNER, "Resonance Tuner");
+
+        // Resonance Tuner : modes, messages et tooltip.
+        add("gui.veskorius.tuner_rotate", "Rotate");
+        add("gui.veskorius.tuner_power", "Power on/off");
+        add("gui.veskorius.tuner_overheat", "Overheat");
+        add("gui.veskorius.tuner_redstone", "Redstone mode");
+        add("item.veskorius.resonance_tuner.mode", "Mode: %s");
+        add("item.veskorius.resonance_tuner.hint", "Shift + right-click to change mode");
+        add("item.veskorius.resonance_tuner.rotated", "Rotated");
+        add("item.veskorius.resonance_tuner.no_overheat", "This machine has no overheat mode");
     }
 }

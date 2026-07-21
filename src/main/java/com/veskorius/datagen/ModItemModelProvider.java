@@ -18,6 +18,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.STABLE_RESONANCE_CRYSTAL.get());
         basicItem(ModItems.REFINED_RESONANCE_CRYSTAL.get());
         basicItem(ModItems.RESONANCE_COMPONENT.get());
+        basicItem(ModItems.RESONANCE_TUNER.get());
 
         // L'objet du Stabilizer reprend le modele de bloc. Il n'est pas genere par
         // le BlockStateProvider parce que horizontalBlock, contrairement a

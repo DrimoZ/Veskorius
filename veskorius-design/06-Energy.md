@@ -34,6 +34,28 @@ complexe, demanderait une machine de recharge non prévue) ; un item carburant d
 un item et une recette hors registre). Le choix « brûler des Stable Crystals » est le plus simple
 et reste local au Field Emitter — réversible sans toucher au reste du système de champ.
 
+## Osc portable (précisé le 2026-07-21, pas encore codé)
+
+Second trou du même ordre : le stationnaire (champ → machine) était défini, mais pas comment un
+*objet* porté stocke et dépense des Osc. Nécessaire pour la Resonance Storage Cell (`05` #6) et le
+Resonance Locator (`05` #7). Résolu, à coder quand ces items seront implémentés (le Locator
+attend en plus la génération des structures — `07`) :
+
+- **Resonance Storage Cell** (batterie portable, capacité 8000 Osc, état de charge sur l'item) :
+  se **charge dans un champ**. Tant qu'elle est dans l'inventaire d'un joueur situé dans un champ
+  actif, elle absorbe des Osc prélevés sur ce champ (donc sur la réserve d'un émetteur — même
+  source que les machines). Débit de charge à fixer en playtest (première estimation : ~20
+  Osc/tick). Sert de réserve portable pour les outils.
+- **Resonance Locator** (outil) : possède sa **propre petite batterie interne** (~20 utilisations
+  = 100 Osc à 5 Osc/utilisation, `05` #7), qui se **recharge automatiquement** si le joueur est
+  dans un champ **ou** s'il porte une Storage Cell chargée dans son inventaire. Chaque « ping »
+  consomme 5 Osc de cette batterie ; sans charge, l'outil ne fait rien. Sa *fonction* de
+  localisation dépend de la génération des structures (tâche 10), indépendante de ce modèle
+  d'énergie.
+
+Cohérent avec « pas de câble » (pilier 3) : la recharge portable passe elle aussi par le champ,
+jamais par une prise. Aucune conversion cachée.
+
 ## Constantes de référence
 
 | Constante | Valeur |

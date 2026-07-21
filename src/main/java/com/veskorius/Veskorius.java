@@ -2,6 +2,7 @@ package com.veskorius;
 
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.ModBlockEntities;
+import com.veskorius.item.ModDataComponents;
 import com.veskorius.item.ModItems;
 import com.veskorius.menu.ModMenuTypes;
 import net.neoforged.bus.api.IEventBus;
@@ -42,6 +43,7 @@ public class Veskorius {
                 output.accept(ModItems.STABLE_RESONANCE_CRYSTAL.get());
                 output.accept(ModItems.REFINED_RESONANCE_CRYSTAL.get());
                 output.accept(ModItems.RESONANCE_COMPONENT.get());
+                output.accept(ModItems.RESONANCE_TUNER.get());
                 output.accept(ModItems.RESONANCE_STABILIZER_ITEM.get());
                 output.accept(ModItems.COMPONENT_ASSEMBLER_ITEM.get());
                 output.accept(ModItems.RESONANCE_WHETSTONE_ITEM.get());
@@ -52,6 +54,7 @@ public class Veskorius {
 
     public Veskorius(IEventBus modEventBus) {
         ModItems.ITEMS.register(modEventBus);
+        ModDataComponents.COMPONENTS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModMenuTypes.MENUS.register(modEventBus);

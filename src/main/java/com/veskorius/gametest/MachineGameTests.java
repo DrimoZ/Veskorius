@@ -1,6 +1,7 @@
 package com.veskorius.gametest;
 
 import com.veskorius.Veskorius;
+import com.veskorius.block.AbstractMachineBlock;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
 import com.veskorius.block.entity.ComponentAssemblerBlockEntity;
@@ -11,7 +12,10 @@ import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
 import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
 import com.veskorius.energy.ResonanceFieldManager;
 import com.veskorius.item.ModItems;
+import com.veskorius.item.ResonanceTunerItem;
+import com.veskorius.item.TunerMode;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
@@ -677,6 +681,78 @@ public class MachineGameTests {
             })
             .thenSucceed();
     }
+
+    // --- Resonance Tuner (outil transversal, modes) --------------------------
+
+    /** Mode ROTATE : fait pivoter la face de 90° (NORTH → EAST). */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void tunerRotateTurnsFacing(GameTestHelper helper) {
+        BlockPos pos = MACHINE;
+        helper.setBlock(pos, ModBlocks.RESONANCE_STABILIZER.get());
+        ServerLevel level = helper.getLevel();
+        BlockPos abs = helper.absolutePos(pos);
+
+        Direction before = level.getBlockState(abs).getValue(AbstractMachineBlock.FACING);
+        boolean applied = ResonanceTunerItem.applyMode(TunerMode.ROTATE, level, abs, null);
+        Direction after = level.getBlockState(abs).getValue(AbstractMachineBlock.FACING);
+
+        helper.assertTrue(applied, "ROTATE aurait dû s'appliquer");
+        helper.assertTrue(after == before.getClockWise(),
+            "La face aurait dû tourner de " + before + " vers " + before.getClockWise()
+                + ", vaut " + after);
+        helper.succeed();
+    }
+
+    /** Mode POWER : bascule l'interrupteur manuel. */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void tunerPowerTogglesManual(GameTestHelper helper) {
+        ResonanceStabilizerBlockEntity machine = placeAndGet(helper);
+        helper.assertTrue(machine.isManualEnabled(), "La machine démarre allumée");
+
+        ResonanceTunerItem.applyMode(TunerMode.POWER, helper.getLevel(), helper.absolutePos(MACHINE), null);
+        helper.assertTrue(!machine.isManualEnabled(), "POWER aurait dû couper la machine");
+        helper.succeed();
+    }
+
+    /** Mode REDSTONE : fait défiler le mode de contrôle redstone. */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void tunerRedstoneCyclesMode(GameTestHelper helper) {
+        ResonanceStabilizerBlockEntity machine = placeAndGet(helper);
+        helper.assertTrue(machine.getRedstoneMode() == RedstoneMode.IGNORED, "Départ en IGNORED");
+
+        ResonanceTunerItem.applyMode(TunerMode.REDSTONE, helper.getLevel(), helper.absolutePos(MACHINE), null);
+        helper.assertTrue(machine.getRedstoneMode() == RedstoneMode.REQUIRES_SIGNAL,
+            "REDSTONE aurait dû passer à REQUIRES_SIGNAL, vaut " + machine.getRedstoneMode());
+        helper.succeed();
+    }
+
+    /**
+     * Mode OVERHEAT : bascule la surchauffe sur une machine qui la supporte
+     * (Purifier), sans effet sur une machine qui ne la supporte pas (Stabilizer).
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void tunerOverheatOnlyOnSupportingMachines(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+
+        // Sur le Purifier : bascule.
+        helper.setBlock(PURIFIER_AT_MACHINE, ModBlocks.FLUX_PURIFIER.get());
+        FluxPurifierBlockEntity purifier = helper.getBlockEntity(PURIFIER_AT_MACHINE);
+        boolean onPurifier = ResonanceTunerItem.applyMode(TunerMode.OVERHEAT, level,
+            helper.absolutePos(PURIFIER_AT_MACHINE), null);
+        helper.assertTrue(onPurifier && purifier.isOverheatEnabled(),
+            "OVERHEAT aurait dû activer la surchauffe du Purifier");
+
+        // Sur le Stabilizer : aucun effet.
+        helper.setBlock(STABILIZER_AT, ModBlocks.RESONANCE_STABILIZER.get());
+        boolean onStabilizer = ResonanceTunerItem.applyMode(TunerMode.OVERHEAT, level,
+            helper.absolutePos(STABILIZER_AT), null);
+        helper.assertTrue(!onStabilizer,
+            "OVERHEAT ne doit rien faire sur une machine sans surchauffe");
+        helper.succeed();
+    }
+
+    private static final BlockPos PURIFIER_AT_MACHINE = new BlockPos(1, 1, 1);
+    private static final BlockPos STABILIZER_AT = new BlockPos(3, 1, 3);
 
     // --- Utilitaires ---------------------------------------------------------
 

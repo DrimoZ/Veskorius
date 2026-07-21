@@ -22,6 +22,9 @@ ce fichier.
   contrôle redstone façon Thermal (ignoré / requiert un signal / requiert l'absence), et
   surchauffe pour les machines qui la supportent. Aucun packet custom (canal vanilla
   `clickMenuButton`).
+- **Resonance Tuner** : outil à modes (Pivoter / On-Off / Surchauffe / Redstone). Clic droit
+  applique le mode, shift-clic droit change de mode (stocké sur l'item via Data Component). Une
+  télécommande pour la couche de contrôle ci-dessus + la rotation des machines posées.
 - Un socle réutilisable pour les machines à cycle restantes : `AbstractMachineBlock`,
   `AbstractMachineBlockEntity`, `AbstractMachineMenu`, `AbstractMachineScreen`. Ajouter une
   machine « standard » = une block entity (cycle), un bloc/menu/écran de 3 méthodes chacun, et
@@ -33,7 +36,7 @@ ce fichier.
   socle des machines (`getOscPerTick`). Le Component Assembler en est le premier client.
 - Datagen complet : plus aucun blockstate / modèle / recette / loot table / tag / traduction
   n'est écrit à la main.
-- Harnais `GameTest` : 23 tests (cycles, champ, énergie, contrôles redstone/manuel, surchauffe), `./gradlew runGameTestServer`.
+- Harnais `GameTest` : 27 tests (cycles, champ, énergie, contrôles, surchauffe, Tuner), `./gradlew runGameTestServer`.
 - Textures placeholder (couleur unie) — à remplacer par du vrai pixel art en Phase 6.
 
 Consulter `veskorius-design/13-Registry-Index.md` pour l'état « codé / à coder » de tout le
@@ -77,12 +80,10 @@ jour (recettes exactes, chiffres d'équilibrage, dépendances entre tâches). Le
    devra brancher son toggle surchauffe sur le même `toggleOverheat()` que le bouton `H`.
 3. Puis le reste de la Phase 1.
 
-**Trous de conception à trancher avant les items T2** : les tâches 7 (Storage Cell) et 8
-(Locator) supposent un modèle d'« Osc portable » (batterie qui se charge/décharge hors champ,
-outil qui consomme des Osc sans source) **absent du design** — à définir avec le porteur du
-projet, comme l'a été la source d'énergie fixe. La tâche 8 est en plus bloquée sur la génération
-des structures (tâche 10). La tâche 9 (Tuner) a des ambiguïtés d'interaction (clic droit :
-pivoter ou surchauffe ? shift : Catalyst ou surchauffe ?) à lever d'abord.
+Prochaine étape logique : **la génération de monde (tâche 4)** — les poches de `raw_resonance_crystal`.
+C'est le vrai déblocage : aujourd'hui les cristaux ne s'obtiennent qu'en créatif, et la tâche 4
+ouvre le gameplay d'exploration + débloque le Locator (tâche 8) et les Storage Cell (tâche 7),
+dont le design d'énergie portable est déjà résolu dans `06-Energy.md` (section « Osc portable »).
 
 ## Structure
 

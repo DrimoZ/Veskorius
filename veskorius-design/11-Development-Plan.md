@@ -99,11 +99,19 @@ Tâches, dans l'ordre :
      effets déterministes de la surchauffe (temps/conso), doublement de la conso d'Osc en
      surchauffe. **Non testé** : le tirage à 20 % de perte (RNG ; un test fiable exigerait
      ~50 cycles de 450 ticks, trop long ; un test court serait flaky). Vérifié par revue + jeu.
-7. `ResonanceStorageCellItem` — #6.
-8. `ResonanceLocatorItem` — #7, dépend de la génération des structures (tâche 10).
-9. `ResonanceTunerItem` — outil transversal, nécessaire dès cette phase pour activer la
-   surchauffe de la tâche 6 ; implémenter au minimum la rotation + le toggle surchauffe (le
-   reste de ses fonctions arrive avec les machines qui les utilisent, phases 3-4).
+7. `ResonanceStorageCellItem` — #6. Design d'énergie résolu (charge dans un champ, voir
+   `06-Energy.md`, section « Osc portable »), à coder — mais son seul consommateur est le Locator
+   (tâche 8), lui bloqué : à faire en paire avec la tâche 8, idéalement après la génération de
+   monde (tâche 4) pour que le Locator ait un sens.
+8. `ResonanceLocatorItem` — #7. Modèle d'énergie résolu (batterie interne + recharge auto par
+   champ ou Storage Cell, `06-Energy.md`), mais sa **fonction** de localisation dépend de la
+   génération des structures (tâche 10). À coder une fois les structures là.
+9. ✅ `ResonanceTunerItem` — outil transversal, **réimplémenté en outil à modes** (choix du
+   porteur du projet, plus propre que la désambiguïsation par bloc de la version initiale — voir
+   `12-UX-and-Advancements.md`). Modes codés : Pivoter, On/Off, Surchauffe, Redstone, tous
+   adossés à la couche de contrôle. Mode stocké sur l'item via Data Component. Les modes liés au
+   contenu T4 (priorité Hub, recalibration) et au Catalyst Core (retrait, tâche 15) s'ajouteront
+   comme nouveaux modes. 4 GameTest sur `applyMode` (routage de chaque mode).
 10. Structures « Habitation Modeste » et « Avant-poste » + fragments de déblocage.
 11. Mob « Custode » standard (+ drop Custode Alloy Fragment) et « Fileur de Cristal » (faune
     neutre, reproduction via Resonance Spore).

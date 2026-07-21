@@ -65,6 +65,17 @@ public class ModRecipeProvider extends RecipeProvider {
                 has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
 
+        // Resonance Tuner : 2 Iron Ingot + 1 Resonance Component + 1 Redstone
+        // (05-Machines.md, section outil transversal). Sans forme imposée.
+        net.minecraft.data.recipes.ShapelessRecipeBuilder
+            .shapeless(RecipeCategory.TOOLS, ModItems.RESONANCE_TUNER.get())
+            .requires(Items.IRON_INGOT, 2)
+            .requires(ModItems.RESONANCE_COMPONENT.get())
+            .requires(Items.REDSTONE)
+            .unlockedBy(getHasName(ModItems.RESONANCE_COMPONENT.get()),
+                has(ModItems.RESONANCE_COMPONENT.get()))
+            .save(recipeOutput);
+
         // Flux Purifier : 4 Iron Ingot + 2 Stable Resonance Crystal + 1 Redstone
         // Block (05-Machines.md, recette de construction). Forme vérifiée :
         // exactement 4 I, 2 S, 1 B.

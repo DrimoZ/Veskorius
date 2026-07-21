@@ -41,17 +41,34 @@ Note : la ligne « Mode surchauffe : icône flamme sur la barre » du tableau ci
 comme *indicateur d'état en cours* ; le nouveau bouton `H` est le *contrôle*. Les deux coexistent
 (l'un montre, l'autre bascule) — à implémenter ensemble à la passe visuelle de la Phase 6.
 
-## Resonance Tuner — interactions complètes
+## Resonance Tuner — outil à modes (révisé le 2026-07-21)
 
-Voir `05-Machines.md` pour le craft. Table des actions selon la machine ciblée :
+Voir `05-Machines.md` pour le craft. **Changement de modèle d'interaction** : la version
+précédente faisait dépendre l'action du bloc ciblé, ce qui devenait ambigu sur une machine à la
+fois orientée ET à surchauffe (le Purifier : pivoter ou surchauffer ?). Remplacé par un outil à
+**modes**, plus lisible et sans ambiguïté :
 
-| Machine ciblée | Clic droit avec Tuner |
-|---|---|
-| Toute machine avec orientation (Assembler, Purifier, Forge, Synthesizer...) | Fait pivoter la face avant de 90° |
-| Flux Purifier, Deep Synthesis Chamber | Bascule mode surchauffe on/off |
-| Resonance Network Hub | Ouvre l'écran de priorité (glisser-déposer les machines du champ) |
-| Harmonic Amplifier, Resonance Network Hub | Si dérive > 0%, recalibre à 100% (consomme 1 Resonance Component) |
-| Toute autre machine | Aucun effet (pas de message d'erreur intrusif, juste rien ne se passe) |
+- Le Tuner porte un **mode courant** (Data Component sur l'item, affiché dans le tooltip).
+- **Clic droit** sur une machine : applique l'action du mode courant.
+- **Shift-clic droit** (n'importe où) : passe au mode suivant, message en barre d'action.
+
+| Mode | Action au clic droit | Cible |
+|---|---|---|
+| Pivoter (`ROTATE`) | Fait pivoter la face avant de 90° | Toute machine orientée (y compris le Field Emitter) |
+| On/Off (`POWER`) | Bascule l'interrupteur manuel | Toute machine active |
+| Surchauffe (`OVERHEAT`) | Bascule le mode surchauffe | Machines qui le supportent (message « pas de surchauffe » sinon) |
+| Redstone (`REDSTONE`) | Fait défiler le mode de contrôle redstone | Toute machine active |
+
+Modes à ajouter avec le contenu plus tardif (mêmes fentes, nouveaux modes) :
+- **Priorité du Network Hub** (T4) : un mode qui ouvre l'écran de priorité.
+- **Recalibration** (T4, Amplifier/Hub) : un mode qui remet la dérive à 100% (coûte 1 Resonance
+  Component).
+- **Retrait d'augment** (T2+, Catalyst Core, tâche 15) : un mode qui retire le Catalyst Core sans
+  le détruire — remplace l'ancien « shift-clic droit », désormais réservé au changement de mode.
+
+Note : le bouton `H` du GUI (couche de contrôle) et le mode Surchauffe du Tuner agissent sur le
+même état — deux entrées pour la même bascule, voulu. Idem pour On/Off (bouton `I` / mode POWER)
+et Redstone (bouton `R` / mode REDSTONE).
 
 ## Advancements — déblocage de recette par fragment
 
