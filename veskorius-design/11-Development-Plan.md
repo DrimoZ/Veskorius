@@ -84,7 +84,18 @@ Tâches, dans l'ordre :
    - 6 GameTest, dans une **arène isolée** de 21×21 (le manager est un index global ; sans
      isolation spatiale, les émetteurs de tests voisins se contaminent — problème qui reviendra
      amplifié au Relay T3, rayon 20 : agrandir l'arène à ce moment-là).
-6. `FluxPurifierBlockEntity` + mode surchauffe (toggle, 20% risque) — #5.
+6. ✅ `FluxPurifierBlockEntity` + mode surchauffe — #5. Stable Crystal + Redstone → Refined
+   Crystal, 45 s (22 s en surchauffe), 2 Osc/tick (4 en surchauffe). Première machine à
+   surchauffe : temps ÷2 et conso ×2 gérés par le socle (`getEffectiveCycleTicks` /
+   `getEffectiveOscPerTick`), seul le tirage à 20 % de perte d'input vit dans la machine.
+   Toggle par le bouton `H` du GUI (le Resonance Tuner, tâche 9, agira sur le même état).
+   - **Couche de contrôle** ajoutée en même temps (demande hors design, documentée dans
+     `12-UX-and-Advancements.md`) : interrupteur manuel + mode redstone façon Thermal, sur
+     toutes les machines. 3 boutons dans le GUI.
+   - 5 GameTest : gating manuel, gating redstone REQUIRES_SIGNAL, production du Purifier,
+     effets déterministes de la surchauffe (temps/conso), doublement de la conso d'Osc en
+     surchauffe. **Non testé** : le tirage à 20 % de perte (RNG ; un test fiable exigerait
+     ~50 cycles de 450 ticks, trop long ; un test court serait flaky). Vérifié par revue + jeu.
 7. `ResonanceStorageCellItem` — #6.
 8. `ResonanceLocatorItem` — #7, dépend de la génération des structures (tâche 10).
 9. `ResonanceTunerItem` — outil transversal, nécessaire dès cette phase pour activer la

@@ -30,6 +30,12 @@ public class ModBlockEntities {
                 .of(ResonanceWhetstoneBlockEntity::new, ModBlocks.RESONANCE_WHETSTONE.get())
                 .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FluxPurifierBlockEntity>>
+        FLUX_PURIFIER = BLOCK_ENTITIES.register("flux_purifier",
+            () -> BlockEntityType.Builder
+                .of(FluxPurifierBlockEntity::new, ModBlocks.FLUX_PURIFIER.get())
+                .build(null));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FieldEmitterBlockEntity>>
         FIELD_EMITTER = BLOCK_ENTITIES.register("field_emitter",
             () -> BlockEntityType.Builder

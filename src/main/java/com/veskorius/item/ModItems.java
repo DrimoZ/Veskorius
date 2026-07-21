@@ -44,6 +44,9 @@ public class ModItems {
     public static final DeferredItem<BlockItem> RESONANCE_WHETSTONE_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_WHETSTONE);
 
+    public static final DeferredItem<BlockItem> FLUX_PURIFIER_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.FLUX_PURIFIER);
+
     public static final DeferredItem<BlockItem> FIELD_EMITTER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.FIELD_EMITTER);
 }

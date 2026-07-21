@@ -65,6 +65,20 @@ public class ModRecipeProvider extends RecipeProvider {
                 has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
 
+        // Flux Purifier : 4 Iron Ingot + 2 Stable Resonance Crystal + 1 Redstone
+        // Block (05-Machines.md, recette de construction). Forme vérifiée :
+        // exactement 4 I, 2 S, 1 B.
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.FLUX_PURIFIER.get())
+            .pattern("ISI")
+            .pattern("IBI")
+            .pattern(" S ")
+            .define('I', Items.IRON_INGOT)
+            .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
+            .define('B', Items.REDSTONE_BLOCK)
+            .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
+                has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
+            .save(recipeOutput);
+
         // Field Emitter : 4 Resonance Component + 1 Stable Resonance Crystal +
         // 2 Gold Ingot (05-Machines.md #4). Le cristal au centre (le cœur qui
         // émet), les composants aux coins, l'or au-dessus et en dessous. La forme

@@ -49,6 +49,16 @@ public class ModBlocks {
                 .sound(SoundType.STONE)
                 .requiresCorrectToolForDrops());
 
+    /** Machine #5 (05-Machines.md). Bloc actif : block entity + GUI, surchauffe. */
+    public static final DeferredBlock<FluxPurifierBlock> FLUX_PURIFIER =
+        BLOCKS.registerBlock("flux_purifier",
+            FluxPurifierBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_CYAN)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops());
+
     /** Machine #4 (05-Machines.md). Bloc passif : fournit un champ de Résonance. */
     public static final DeferredBlock<FieldEmitterBlock> FIELD_EMITTER =
         BLOCKS.registerBlock("field_emitter",

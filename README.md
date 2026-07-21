@@ -14,11 +14,14 @@ ce fichier.
   `./gradlew runData` passent.
 - 4 items enregistrés : `raw_resonance_crystal`, `stable_resonance_crystal`,
   `refined_resonance_crystal`, `resonance_component`.
-- **3 machines à cycle fonctionnelles** : Resonance Stabilizer (#1, Raw Crystal + Quartz →
-  Stable Crystal, 30 s, autonome), Component Assembler (#2, 1 Stable Crystal + 2 Iron →
-  2 Component, 5 s, **consomme 3 Osc/tick**) et Resonance Whetstone (#3, répare un outil de
-  25 %, 8 s, autonome). Block entity, cycle, GUI avec barre de progression, orientation, slot
+- **4 machines à cycle fonctionnelles** : Resonance Stabilizer (#1, autonome), Component
+  Assembler (#2, 3 Osc/tick), Resonance Whetstone (#3, autonome) et Flux Purifier (#5, 2 Osc/tick,
+  **mode surchauffe**). Block entity, cycle, GUI avec barre de progression, orientation, slot
   d'augment, inventaire persistant et vidé au sol quand le bloc est cassé.
+- **Contrôles sur toutes les machines** (3 boutons dans le GUI) : interrupteur manuel on/off,
+  contrôle redstone façon Thermal (ignoré / requiert un signal / requiert l'absence), et
+  surchauffe pour les machines qui la supportent. Aucun packet custom (canal vanilla
+  `clickMenuButton`).
 - Un socle réutilisable pour les machines à cycle restantes : `AbstractMachineBlock`,
   `AbstractMachineBlockEntity`, `AbstractMachineMenu`, `AbstractMachineScreen`. Ajouter une
   machine « standard » = une block entity (cycle), un bloc/menu/écran de 3 méthodes chacun, et
@@ -30,7 +33,7 @@ ce fichier.
   Assembler en est le premier client. GUI de l'émetteur (jauge de réserve) restant.
 - Datagen complet : plus aucun blockstate / modèle / recette / loot table / tag / traduction
   n'est écrit à la main.
-- Harnais `GameTest` : 18 tests (cycles des machines, système de champ, consommation d'Osc), `./gradlew runGameTestServer`.
+- Harnais `GameTest` : 23 tests (cycles, champ, énergie, contrôles redstone/manuel, surchauffe), `./gradlew runGameTestServer`.
 - Textures placeholder (couleur unie) — à remplacer par du vrai pixel art en Phase 6.
 
 Consulter `veskorius-design/13-Registry-Index.md` pour l'état « codé / à coder » de tout le
@@ -68,14 +71,15 @@ Suivre `veskorius-design/11-Development-Plan.md`, Phase 1 — c'est la liste ord
 jour (recettes exactes, chiffres d'équilibrage, dépendances entre tâches). Les tâches 1 et 15
 (slot d'augment) y sont marquées faites. Les toutes prochaines étapes :
 
-1. **`FluxPurifierBlockEntity` + mode surchauffe** (tâche 6) — Stable Crystal + Redstone →
-   Refined Crystal, 45 s, 2 Osc/tick. Nouveauté : le mode surchauffe (temps ÷2, conso ×2, 20 %
-   de risque de perdre l'input), premier mécanisme risque/récompense du mod.
-2. Puis le reste de la Phase 1 dans l'ordre du plan (Storage Cell, Locator, Tuner…).
+1. **`ResonanceStorageCellItem`** (tâche 7) — une **batterie portable** (item, pas une machine à
+   cycle), stocke 8000 Osc. Registre différent de tout ce qui précède.
+2. **`ResonanceLocatorItem`** (tâche 8) et **`ResonanceTunerItem`** (tâche 9) — outils. Le Tuner
+   devra brancher son toggle surchauffe sur le même `toggleOverheat()` que le bouton `H`.
+3. Puis le reste de la Phase 1.
 
-Restent à valider **en jeu** (les GameTest tournent sans client, ne couvrent rien de graphique) :
-la partie visuelle du Stabilizer et du Whetstone (GUI, barre de progression, orientation), et le
-**GUI du Field Emitter** (jauge de réserve, slot de carburant) qui n'est pas encore codé.
+Restent à valider **en jeu** (les GameTest ne couvrent rien de graphique) : les 3 boutons de
+contrôle et le bouton surchauffe du Purifier (nouveaux, jamais vus à l'œil), et le **GUI du Field
+Emitter** (jauge de réserve) toujours pas codé.
 
 ## Structure
 

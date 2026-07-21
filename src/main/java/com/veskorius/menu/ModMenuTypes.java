@@ -28,4 +28,8 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<ComponentAssemblerMenu>>
         COMPONENT_ASSEMBLER = MENUS.register("component_assembler",
             () -> IMenuTypeExtension.create(ComponentAssemblerMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FluxPurifierMenu>>
+        FLUX_PURIFIER = MENUS.register("flux_purifier",
+            () -> IMenuTypeExtension.create(FluxPurifierMenu::new));
 }

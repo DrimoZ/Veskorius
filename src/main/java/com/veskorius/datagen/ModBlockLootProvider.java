@@ -22,6 +22,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.RESONANCE_STABILIZER.get());
         dropSelf(ModBlocks.COMPONENT_ASSEMBLER.get());
         dropSelf(ModBlocks.RESONANCE_WHETSTONE.get());
+        dropSelf(ModBlocks.FLUX_PURIFIER.get());
         dropSelf(ModBlocks.FIELD_EMITTER.get());
     }
 

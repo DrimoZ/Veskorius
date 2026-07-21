@@ -71,7 +71,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | 2 | `component_assembler` | T1 | ✅ codé (cycle 5s, 3 Osc/tick, premier consommateur du champ) |
 | 3 | `resonance_whetstone` | T1 | ✅ codé (block entity + cycle 8s + GUI + slot d'augment) |
 | 4 | `field_emitter` | T2 | ✅ codé (réserve + recharge + champ, capability IResonanceField ; GUI restant) |
-| 5 | `flux_purifier` | T2 | À coder (Phase 1) |
+| 5 | `flux_purifier` | T2 | ✅ codé (cycle 45s, 2 Osc/tick, mode surchauffe) |
 | 8 | `crystal_roost` | T2 | À coder (Phase 1) |
 | 9 | `resonance_relay` | T3 | À coder (Phase 2) |
 | 10 | `veskorian_alloy_forge` | T3 | À coder (Phase 2) |

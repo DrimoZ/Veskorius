@@ -33,6 +33,7 @@ public class ModLanguageProvider extends LanguageProvider {
 
         addBlock(ModBlocks.RESONANCE_STABILIZER, "Resonance Stabilizer");
         addBlock(ModBlocks.COMPONENT_ASSEMBLER, "Component Assembler");
+        addBlock(ModBlocks.FLUX_PURIFIER, "Flux Purifier");
         addBlock(ModBlocks.RESONANCE_WHETSTONE, "Resonance Whetstone");
         addBlock(ModBlocks.FIELD_EMITTER, "Field Emitter");
 

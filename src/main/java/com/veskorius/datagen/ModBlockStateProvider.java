@@ -20,6 +20,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // (Phase 6) — l'orientation existe cote etat, pas encore cote rendu.
         horizontalBlock(ModBlocks.RESONANCE_STABILIZER.get(), cubeAll(ModBlocks.RESONANCE_STABILIZER.get()));
         horizontalBlock(ModBlocks.COMPONENT_ASSEMBLER.get(), cubeAll(ModBlocks.COMPONENT_ASSEMBLER.get()));
+        horizontalBlock(ModBlocks.FLUX_PURIFIER.get(), cubeAll(ModBlocks.FLUX_PURIFIER.get()));
         horizontalBlock(ModBlocks.RESONANCE_WHETSTONE.get(), cubeAll(ModBlocks.RESONANCE_WHETSTONE.get()));
         horizontalBlock(ModBlocks.FIELD_EMITTER.get(), cubeAll(ModBlocks.FIELD_EMITTER.get()));
     }

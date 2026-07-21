@@ -5,6 +5,7 @@ import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
 import com.veskorius.block.entity.ComponentAssemblerBlockEntity;
 import com.veskorius.block.entity.FieldEmitterBlockEntity;
+import com.veskorius.block.entity.FluxPurifierBlockEntity;
 import com.veskorius.block.entity.RedstoneMode;
 import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
 import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
@@ -591,6 +592,89 @@ public class MachineGameTests {
                 machineProgress(helper, ASSEMBLER) == progressAtCut[0],
                 "La progression doit rester figée pendant la coupure, était "
                     + progressAtCut[0] + ", vaut " + machineProgress(helper, ASSEMBLER)))
+            .thenSucceed();
+    }
+
+    // --- Flux Purifier (machine #5) : surchauffe -----------------------------
+
+    private static final BlockPos PURIFIER = new BlockPos(10, 1, 8);
+    private static final int PURIFIER_TICKS = 45 * 20;
+
+    /**
+     * Effets déterministes de la surchauffe : temps ÷2 (900→450) et conso ×2
+     * (2→4). Testé sur les getters, sans faire tourner la machine — donc sans
+     * dépendre du tirage à 20 % de perte, lui non testé automatiquement (voir la
+     * note dans FluxPurifierBlockEntity).
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void purifierOverheatChangesTimeAndCost(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.FLUX_PURIFIER.get());
+        FluxPurifierBlockEntity purifier = helper.getBlockEntity(MACHINE);
+
+        helper.assertTrue(purifier.supportsOverheat(),
+            "Le Flux Purifier doit supporter la surchauffe");
+        helper.assertTrue(purifier.getEffectiveCycleTicks() == PURIFIER_TICKS,
+            "Hors surchauffe : 900 ticks, vaut " + purifier.getEffectiveCycleTicks());
+        helper.assertTrue(purifier.getEffectiveOscPerTick() == 2,
+            "Hors surchauffe : 2 Osc/tick, vaut " + purifier.getEffectiveOscPerTick());
+
+        purifier.setOverheatEnabled(true);
+        helper.assertTrue(purifier.getEffectiveCycleTicks() == PURIFIER_TICKS / 2,
+            "En surchauffe : 450 ticks, vaut " + purifier.getEffectiveCycleTicks());
+        helper.assertTrue(purifier.getEffectiveOscPerTick() == 4,
+            "En surchauffe : 4 Osc/tick, vaut " + purifier.getEffectiveOscPerTick());
+
+        helper.succeed();
+    }
+
+    /** Fonctionnement normal (hors surchauffe, donc sans perte) : produit un Refined Crystal. */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = PURIFIER_TICKS + 200)
+    public static void purifierProducesRefinedCrystal(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                helper.setBlock(PURIFIER, ModBlocks.FLUX_PURIFIER.get());
+                IItemHandler inv = machineInventory(helper, PURIFIER);
+                inv.insertItem(FluxPurifierBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+                inv.insertItem(FluxPurifierBlockEntity.SLOT_REDSTONE,
+                    new ItemStack(Items.REDSTONE), false);
+            })
+            .thenExecuteAfter(PURIFIER_TICKS + 5, () -> {
+                IItemHandler inv = machineInventory(helper, PURIFIER);
+                ItemStack output = inv.getStackInSlot(FluxPurifierBlockEntity.SLOT_OUTPUT);
+                helper.assertTrue(output.is(ModItems.REFINED_RESONANCE_CRYSTAL.get()) && output.getCount() == 1,
+                    "1 Refined Resonance Crystal attendu, trouve : " + output);
+                helper.assertTrue(
+                    inv.getStackInSlot(FluxPurifierBlockEntity.SLOT_CRYSTAL).isEmpty(),
+                    "Le cristal stable aurait du etre consomme");
+            })
+            .thenSucceed();
+    }
+
+    /**
+     * En surchauffe, la machine prélève 4 Osc/tick (le double) pendant qu'elle
+     * tourne. Vérifié sur 100 ticks, avant qu'un cycle (450 ticks) ne s'achève —
+     * donc indépendant du tirage de perte.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 200)
+    public static void purifierOverheatDoublesOscDrain(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                helper.setBlock(PURIFIER, ModBlocks.FLUX_PURIFIER.get());
+                FluxPurifierBlockEntity purifier = helper.getBlockEntity(PURIFIER);
+                purifier.setOverheatEnabled(true);
+                purifier.getInventory().insertItem(FluxPurifierBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 64), false);
+                purifier.getInventory().insertItem(FluxPurifierBlockEntity.SLOT_REDSTONE,
+                    new ItemStack(Items.REDSTONE, 64), false);
+            })
+            .thenExecuteAfter(100, () -> {
+                FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                helper.assertTrue(emitter.getReserve() == 4000 - 4 * 100,
+                    "Surchauffe : 400 Osc prélevés en 100 ticks, réserve vaut " + emitter.getReserve());
+            })
             .thenSucceed();
     }
 

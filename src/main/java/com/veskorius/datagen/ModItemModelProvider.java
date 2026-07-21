@@ -24,6 +24,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         // simpleBlockWithItem, ne cree pas de modele d'objet.
         withExistingParent("resonance_stabilizer", modLoc("block/resonance_stabilizer"));
         withExistingParent("component_assembler", modLoc("block/component_assembler"));
+        withExistingParent("flux_purifier", modLoc("block/flux_purifier"));
         withExistingParent("resonance_whetstone", modLoc("block/resonance_whetstone"));
         withExistingParent("field_emitter", modLoc("block/field_emitter"));
     }
