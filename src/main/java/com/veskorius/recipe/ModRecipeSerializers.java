@@ -26,4 +26,7 @@ public class ModRecipeSerializers {
     public static final DeferredHolder<RecipeSerializer<?>, MachineRecipeSerializer> PURIFYING =
         RECIPE_SERIALIZERS.register("purifying",
             () -> new MachineRecipeSerializer(ModRecipeTypes.PURIFYING::get));
+
+    public static final DeferredHolder<RecipeSerializer<?>, WhetstoneRecipeSerializer> SHARPENING =
+        RECIPE_SERIALIZERS.register("sharpening", WhetstoneRecipeSerializer::new);
 }

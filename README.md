@@ -31,13 +31,16 @@ ce fichier.
   `AbstractMachineBlockEntity`, `AbstractMachineMenu`, `AbstractMachineScreen`. Ajouter une
   machine « standard » = une block entity (cycle), un bloc/menu/écran de 3 méthodes chacun, et
   quelques lignes de datagen.
-- **Recettes de fonctionnement data-driven** (`com.veskorius.recipe`) : chaque machine
-  input→output a son propre `RecipeType` (`veskorius:stabilizing`, `assembling`, `purifying`) et
-  ses recettes en **JSON** — modifiables/ajoutables par datapack, sans recompiler. Une recette
-  porte ingrédients (item ou tag **+ count**), résultat, **temps de cycle** et **Osc/tick**. La
-  logique de cycle est générique (`AbstractProcessingMachineBlockEntity`) : une nouvelle machine
-  input→output ne code aucune recette. Conséquence directe : la « branche alternative » de
-  l'Assembler (3 poussière + 2 fer) sera un simple second JSON, zéro code.
+- **Recettes de fonctionnement data-driven** (`com.veskorius.recipe`) : **un `RecipeType` par
+  machine**, recettes en **JSON** — modifiables/ajoutables par datapack, sans recompiler.
+  - `veskorius:stabilizing` / `assembling` / `purifying` : recettes input→output partageant la
+    classe `MachineRecipe` (ingrédients item/tag **+ count**, résultat, **temps**, **Osc/tick**).
+    Cycle générique via `AbstractProcessingMachineBlockEntity` — une nouvelle machine input→output
+    ne code aucune recette.
+  - `veskorius:sharpening` : le Whetstone (réparation), forme à part (catalyseur, **% réparé**,
+    temps ; l'outil réparé est calculé, pas un résultat fixe).
+  - Conséquence directe : la « branche alternative » de l'Assembler (3 poussière + 2 fer) sera un
+    simple second JSON, zéro code.
 - **Système d'énergie de Résonance (le champ)** : capability `IResonanceField`,
   `ResonanceFieldManager` (routage machine→émetteur par champ, pas de câble), le **Field
   Emitter** (#4) — réserve de 4000 Osc rechargée en brûlant des Stable Crystals, portée 8, avec

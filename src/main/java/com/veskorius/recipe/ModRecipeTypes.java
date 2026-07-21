@@ -20,6 +20,7 @@ public class ModRecipeTypes {
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> STABILIZING = register("stabilizing");
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> ASSEMBLING = register("assembling");
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> PURIFYING = register("purifying");
+    public static final DeferredHolder<RecipeType<?>, RecipeType<WhetstoneRecipe>> SHARPENING = register("sharpening");
 
     private static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> register(String name) {
         return RECIPE_TYPES.register(name,

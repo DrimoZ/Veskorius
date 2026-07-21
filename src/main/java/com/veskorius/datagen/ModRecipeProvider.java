@@ -147,6 +147,14 @@ public class ModRecipeProvider extends RecipeProvider {
             .time(45 * 20)
             .osc(2)
             .save(recipeOutput, machineRecipe("purifying/refined_crystal"));
+
+        // Whetstone : outil endommagé + 1 Stable Crystal → outil réparé de 25 %,
+        // 8 s, autonome (05-Machines.md #3). Type dédié (réparation, pas input→output).
+        WhetstoneRecipeBuilder.sharpening()
+            .catalyst(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 1)
+            .repairPercent(25)
+            .time(8 * 20)
+            .save(recipeOutput, machineRecipe("sharpening/whetstone"));
     }
 
     private static ResourceLocation machineRecipe(String path) {
