@@ -21,6 +21,16 @@ public class ModLanguageProvider extends LanguageProvider {
     protected void addTranslations() {
         add("itemGroup.veskorius.main_tab", "Veskorius");
 
+        // Boutons de contrôle des machines (voir MachineControlButton).
+        add("gui.veskorius.machine_on", "Machine: On (click to turn off)");
+        add("gui.veskorius.machine_off", "Machine: Off (click to turn on)");
+        add("gui.veskorius.redstone_control", "Redstone control");
+        add("gui.veskorius.redstone_ignored", "Ignored");
+        add("gui.veskorius.redstone_requires_signal", "Requires signal");
+        add("gui.veskorius.redstone_requires_no_signal", "Requires no signal");
+        add("gui.veskorius.overheat_on", "Overheat: On (÷2 speed, ×2 Osc, 20% input loss)");
+        add("gui.veskorius.overheat_off", "Overheat: Off");
+
         addBlock(ModBlocks.RESONANCE_STABILIZER, "Resonance Stabilizer");
         addBlock(ModBlocks.COMPONENT_ASSEMBLER, "Component Assembler");
         addBlock(ModBlocks.RESONANCE_WHETSTONE, "Resonance Whetstone");

@@ -1,6 +1,7 @@
 package com.veskorius.menu;
 
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
+import com.veskorius.block.entity.RedstoneMode;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -77,6 +78,54 @@ public abstract class AbstractMachineMenu extends AbstractContainerMenu {
     public int getScaledProgress(int pixels) {
         int max = getMaxProgress();
         return max <= 0 ? 0 : getProgress() * pixels / max;
+    }
+
+    // --- Boutons de controle -------------------------------------------------
+
+    public static final int BUTTON_MANUAL = 0;
+    public static final int BUTTON_REDSTONE = 1;
+    public static final int BUTTON_OVERHEAT = 2;
+
+    /**
+     * Recoit un clic de bouton du GUI, cote SERVEUR (declenche par
+     * {@code MultiPlayerGameMode.handleInventoryButtonClick} cote client). Aucun
+     * packet custom : on reutilise le canal vanilla des boutons de menu.
+     */
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        switch (id) {
+            case BUTTON_MANUAL -> blockEntity.toggleManual();
+            case BUTTON_REDSTONE -> blockEntity.cycleRedstoneMode();
+            case BUTTON_OVERHEAT -> blockEntity.toggleOverheat();
+            default -> {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Etats lus depuis la ContainerData (synchronisee tant que le menu est ouvert).
+
+    public boolean isManualEnabled() {
+        return data.get(AbstractMachineBlockEntity.DATA_MANUAL) != 0;
+    }
+
+    public RedstoneMode getRedstoneMode() {
+        return RedstoneMode.byIndex(data.get(AbstractMachineBlockEntity.DATA_REDSTONE_MODE));
+    }
+
+    public boolean isOverheatEnabled() {
+        return data.get(AbstractMachineBlockEntity.DATA_OVERHEAT) != 0;
+    }
+
+    /**
+     * Support de la surchauffe : lu directement sur la block entity, qui existe
+     * aussi cote client (le menu la retrouve via la BlockPos du paquet
+     * d'ouverture). C'est une propriete statique de la machine, pas un etat a
+     * synchroniser.
+     */
+    public boolean supportsOverheat() {
+        return blockEntity.supportsOverheat();
     }
 
     // --- Inventaire joueur ---------------------------------------------------

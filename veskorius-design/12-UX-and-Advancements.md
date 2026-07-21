@@ -14,6 +14,33 @@ déblocage par fragment (répété dans tout le dossier) ait une implémentation
 | Indicateur de dérive de calibration (Amplifier, Hub) | Barre secondaire fine sous la barre principale, jamais un pourcentage seul — doit rester visible sans ouvrir un tooltip |
 | Machines sans recette encore débloquée | N'apparaissent pas du tout dans le creative tab tant que le fragment correspondant n'a pas été trouvé (voir Advancements ci-dessous) — cohérent avec pilier 2 |
 
+## Boutons de contrôle dans le GUI (ajout du 2026-07-21, toutes les machines)
+
+Absent des versions précédentes. Une colonne de trois boutons carrés, à gauche des slots, sur
+**toutes** les machines actives. Portés par le socle (`AbstractMachineBlockEntity` +
+`AbstractMachineScreen`), donc gratuits pour chaque nouvelle machine.
+
+| Bouton | Icône / couleur | Effet |
+|---|---|---|
+| Interrupteur manuel | `I` vert (marche) / `O` rouge (arrêt) | Coupe/relance la machine à la main. Coupée = **pause** (progression conservée), jamais un reset |
+| Contrôle redstone | `R`, gris (ignoré) / rouge vif (requiert un signal) / rouge sombre (requiert l'absence de signal) | Trois modes façon Thermal, dans cet ordre de défilement |
+| Surchauffe | `H`, orange (active) / gris (inactive) | **Uniquement sur les machines à surchauffe** (Purifier, Chamber) ; masqué ailleurs |
+
+Règles :
+- La machine tourne si : interrupteur sur marche **ET** condition redstone satisfaite **ET**
+  ingrédients présents **ET** énergie disponible. Les trois premières coupures mettent en pause ;
+  seule l'absence d'ingrédient/de place en sortie réinitialise (cohérent avec la décision prise à
+  la tâche 2).
+- Le bouton surchauffe **double** le toggle prévu au Resonance Tuner (`05-Machines.md`) : les deux
+  agissent sur le même état. Le Tuner arrive à la tâche 9 ; le bouton existe dès maintenant.
+- Réseau : aucun packet custom. Le clic passe par le canal vanilla des boutons de menu
+  (`clickMenuButton`), l'état revient au client par la `ContainerData` déjà en place pour la barre
+  de progression.
+
+Note : la ligne « Mode surchauffe : icône flamme sur la barre » du tableau ci-dessus reste valable
+comme *indicateur d'état en cours* ; le nouveau bouton `H` est le *contrôle*. Les deux coexistent
+(l'un montre, l'autre bascule) — à implémenter ensemble à la passe visuelle de la Phase 6.
+
 ## Resonance Tuner — interactions complètes
 
 Voir `05-Machines.md` pour le craft. Table des actions selon la machine ciblée :

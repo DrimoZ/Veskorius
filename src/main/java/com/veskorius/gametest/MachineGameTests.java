@@ -5,6 +5,7 @@ import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
 import com.veskorius.block.entity.ComponentAssemblerBlockEntity;
 import com.veskorius.block.entity.FieldEmitterBlockEntity;
+import com.veskorius.block.entity.RedstoneMode;
 import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
 import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
 import com.veskorius.energy.ResonanceFieldManager;
@@ -15,6 +16,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -431,6 +433,52 @@ public class MachineGameTests {
                 helper.assertTrue(ResonanceFieldManager.supply(level, consumer, 10) == 0,
                     "Après destruction, plus aucun champ ne devrait couvrir la position");
             })
+            .thenSucceed();
+    }
+
+    // --- Contrôle des machines (redstone + interrupteur manuel) --------------
+
+    /** Interrupteur manuel coupé : la machine ne progresse pas, même tout en ordre. */
+    @GameTest(template = EMPTY, timeoutTicks = 200)
+    public static void manualOffStopsMachine(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                ResonanceStabilizerBlockEntity machine = placeAndGet(helper);
+                machine.setManualEnabled(false);
+                machine.getInventory().insertItem(ResonanceStabilizerBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.RAW_RESONANCE_CRYSTAL.get()), false);
+                machine.getInventory().insertItem(ResonanceStabilizerBlockEntity.SLOT_FLUX,
+                    new ItemStack(Items.QUARTZ), false);
+            })
+            .thenExecuteAfter(100, () -> helper.assertTrue(progressOf(helper) == 0,
+                "Coupée manuellement, la machine ne doit pas progresser, vaut : " + progressOf(helper)))
+            .thenSucceed();
+    }
+
+    /**
+     * Mode REQUIRES_SIGNAL : inerte sans redstone, démarre quand un bloc de
+     * redstone est posé à côté.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 200)
+    public static void redstoneRequiresSignalGatesMachine(GameTestHelper helper) {
+        BlockPos leverPos = MACHINE.above();
+        helper.startSequence()
+            .thenExecute(() -> {
+                ResonanceStabilizerBlockEntity machine = placeAndGet(helper);
+                machine.setRedstoneMode(RedstoneMode.REQUIRES_SIGNAL);
+                machine.getInventory().insertItem(ResonanceStabilizerBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.RAW_RESONANCE_CRYSTAL.get()), false);
+                machine.getInventory().insertItem(ResonanceStabilizerBlockEntity.SLOT_FLUX,
+                    new ItemStack(Items.QUARTZ), false);
+            })
+            .thenExecuteAfter(40, () -> {
+                helper.assertTrue(progressOf(helper) == 0,
+                    "Sans signal, REQUIRES_SIGNAL doit rester à 0, vaut : " + progressOf(helper));
+                // Fournit un signal redstone adjacent.
+                helper.setBlock(leverPos, Blocks.REDSTONE_BLOCK);
+            })
+            .thenExecuteAfter(40, () -> helper.assertTrue(progressOf(helper) > 0,
+                "Avec signal, la machine aurait dû démarrer, progression : " + progressOf(helper)))
             .thenSucceed();
     }
 

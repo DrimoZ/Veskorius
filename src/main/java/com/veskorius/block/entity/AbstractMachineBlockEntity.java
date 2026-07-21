@@ -45,12 +45,25 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
 
     public static final int DATA_PROGRESS = 0;
     public static final int DATA_MAX_PROGRESS = 1;
-    public static final int DATA_COUNT = 2;
+    public static final int DATA_MANUAL = 2;
+    public static final int DATA_REDSTONE_MODE = 3;
+    public static final int DATA_OVERHEAT = 4;
+    public static final int DATA_COUNT = 5;
 
     protected final ItemStackHandler inventory;
 
     private final int augmentSlot;
     private int progress;
+
+    /** Interrupteur manuel (bouton du GUI). Machine allumee par defaut. */
+    private boolean manualEnabled = true;
+    /** Mode de controle redstone (bouton du GUI). */
+    private RedstoneMode redstoneMode = RedstoneMode.IGNORED;
+    /**
+     * Surchauffe active (bouton du GUI + Resonance Tuner, tache 9). N'a d'effet
+     * que sur les machines qui la supportent ({@link #supportsOverheat}).
+     */
+    private boolean overheatEnabled = false;
 
     /**
      * Synchronisation client de la barre de progression. Passe par ContainerData
@@ -67,14 +80,23 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
             return switch (index) {
                 case DATA_PROGRESS -> progress;
                 case DATA_MAX_PROGRESS -> getEffectiveCycleTicks();
+                case DATA_MANUAL -> manualEnabled ? 1 : 0;
+                case DATA_REDSTONE_MODE -> redstoneMode.ordinal();
+                case DATA_OVERHEAT -> overheatEnabled ? 1 : 0;
                 default -> 0;
             };
         }
 
         @Override
         public void set(int index, int value) {
-            if (index == DATA_PROGRESS) {
-                progress = value;
+            // Cote client : stocke la valeur synchronisee pour que les boutons du
+            // GUI affichent l'etat reel du serveur.
+            switch (index) {
+                case DATA_PROGRESS -> progress = value;
+                case DATA_MANUAL -> manualEnabled = value != 0;
+                case DATA_REDSTONE_MODE -> redstoneMode = RedstoneMode.byIndex(value);
+                case DATA_OVERHEAT -> overheatEnabled = value != 0;
+                default -> { }
             }
         }
 
@@ -112,12 +134,20 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     protected abstract void runCycle();
 
     /**
-     * Osc consommes par tick d'avancement (05-Machines.md, colonne Energie).
-     * 0 = machine autonome (Stabilizer, Whetstone) : elle n'a besoin d'aucun
-     * champ. Redefinir pour une machine qui puise dans le champ de Resonance.
+     * Osc consommes par tick d'avancement, hors surchauffe (05-Machines.md,
+     * colonne Energie). 0 = machine autonome (Stabilizer, Whetstone) : elle n'a
+     * besoin d'aucun champ. Redefinir pour une machine qui puise dans le champ.
      */
     protected int getOscPerTick() {
         return 0;
+    }
+
+    /**
+     * Vrai si cette machine possede un mode surchauffe (05-Machines.md #5, #15).
+     * Par defaut non ; le Flux Purifier et la Deep Synthesis Chamber le redefinissent.
+     */
+    public boolean supportsOverheat() {
+        return false;
     }
 
     // --- Cycle ---------------------------------------------------------------
@@ -129,7 +159,7 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     private void tickCycle() {
         if (!canRunCycle()) {
             // Ingredient absent ou sortie pleine : le cycle ne peut pas exister,
-            // on remet a zero (contrairement a une coupure d'energie ci-dessous).
+            // on remet a zero (contrairement aux pauses ci-dessous).
             if (progress != 0) {
                 progress = 0;
                 setChanged();
@@ -137,10 +167,15 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
             return;
         }
 
+        if (!isControlEnabled()) {
+            // Coupee a la main ou par la redstone : PAUSE (progression conservee),
+            // et aucun Osc n'est preleve tant qu'elle est coupee.
+            return;
+        }
+
         if (!drawEnergy()) {
-            // Pas assez d'Osc ce tick : on met en PAUSE (la progression est
-            // conservee) plutot que de remettre a zero. Une coupure de courant
-            // breve ne doit pas gacher le travail deja fait.
+            // Pas assez d'Osc ce tick : PAUSE aussi. Une coupure de courant breve
+            // ne doit pas gacher le travail deja fait.
             return;
         }
 
@@ -162,7 +197,7 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
      * {@code cout - 1} Osc par cristal brule, soit 1 Osc sur 4000 en pratique.
      */
     private boolean drawEnergy() {
-        int cost = getOscPerTick();
+        int cost = getEffectiveOscPerTick();
         if (cost <= 0) {
             return true;
         }
@@ -170,6 +205,78 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
             return false;
         }
         return ResonanceFieldManager.supply(serverLevel, worldPosition, cost) >= cost;
+    }
+
+    /** Cout d'un tick, surchauffe comprise (consommation x2, 06-Energy.md). */
+    public int getEffectiveOscPerTick() {
+        int base = getOscPerTick();
+        return isOverheatActive() ? base * 2 : base;
+    }
+
+    // --- Controle (redstone, interrupteur manuel, surchauffe) ----------------
+
+    /**
+     * Vrai si la machine a le droit d'avancer ce tick, du point de vue du controle
+     * (interrupteur manuel + redstone). Independant des ingredients et de
+     * l'energie, verifies separement.
+     */
+    public boolean isControlEnabled() {
+        if (!manualEnabled) {
+            return false;
+        }
+        if (redstoneMode == RedstoneMode.IGNORED) {
+            return true;
+        }
+        boolean powered = level != null && level.hasNeighborSignal(worldPosition);
+        return redstoneMode.allowsRunning(powered);
+    }
+
+    public boolean isManualEnabled() {
+        return manualEnabled;
+    }
+
+    public RedstoneMode getRedstoneMode() {
+        return redstoneMode;
+    }
+
+    public boolean isOverheatEnabled() {
+        return overheatEnabled;
+    }
+
+    /** Vrai si la surchauffe est active ET supportee — condition d'effet reelle. */
+    public boolean isOverheatActive() {
+        return supportsOverheat() && overheatEnabled;
+    }
+
+    // Mutations, appelees par le menu (boutons) et plus tard par le Resonance Tuner.
+
+    public void toggleManual() {
+        setManualEnabled(!manualEnabled);
+    }
+
+    public void cycleRedstoneMode() {
+        setRedstoneMode(redstoneMode.next());
+    }
+
+    public void toggleOverheat() {
+        if (supportsOverheat()) {
+            setOverheatEnabled(!overheatEnabled);
+        }
+    }
+
+    public void setManualEnabled(boolean enabled) {
+        this.manualEnabled = enabled;
+        setChanged();
+    }
+
+    public void setRedstoneMode(RedstoneMode mode) {
+        this.redstoneMode = mode;
+        setChanged();
+    }
+
+    public void setOverheatEnabled(boolean enabled) {
+        this.overheatEnabled = enabled;
+        setChanged();
     }
 
     // --- Augment -------------------------------------------------------------
@@ -189,7 +296,15 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
      */
     public int getEffectiveCycleTicks() {
         int base = getBaseCycleTicks();
-        return hasAugment() ? Math.max(1, Math.round(base / AUGMENT_SPEED_MULTIPLIER)) : base;
+        // Surchauffe : temps divise par 2 (06-Energy.md). Appliquee avant
+        // l'augment, les deux se cumulent.
+        if (isOverheatActive()) {
+            base = Math.max(1, base / 2);
+        }
+        if (hasAugment()) {
+            base = Math.max(1, Math.round(base / AUGMENT_SPEED_MULTIPLIER));
+        }
+        return Math.max(1, base);
     }
 
     // --- Inventaire ----------------------------------------------------------
@@ -256,6 +371,9 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         super.saveAdditional(tag, registries);
         tag.put("inventory", inventory.serializeNBT(registries));
         tag.putInt("progress", progress);
+        tag.putBoolean("manualEnabled", manualEnabled);
+        tag.putByte("redstoneMode", (byte) redstoneMode.ordinal());
+        tag.putBoolean("overheatEnabled", overheatEnabled);
     }
 
     @Override
@@ -263,5 +381,9 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         super.loadAdditional(tag, registries);
         inventory.deserializeNBT(registries, tag.getCompound("inventory"));
         progress = tag.getInt("progress");
+        // Machine allumee par defaut pour un bloc pose avant l'ajout de ce champ.
+        manualEnabled = !tag.contains("manualEnabled") || tag.getBoolean("manualEnabled");
+        redstoneMode = RedstoneMode.byIndex(tag.getByte("redstoneMode"));
+        overheatEnabled = tag.getBoolean("overheatEnabled");
     }
 }
