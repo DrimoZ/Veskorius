@@ -23,6 +23,12 @@ repositories {
         name = "Jared's maven (JEI)"
         url = "https://maven.blamejared.com/"
     }
+    // Modrinth — pour Jade (HUD d'informations de bloc au survol).
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content { includeGroup "maven.modrinth" }
+    }
 }
 
 base {
@@ -95,6 +101,10 @@ dependencies {
     // exporté dans le jar publié).
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+
+    // Jade — HUD d'informations de bloc au survol (dev). Chargé dans runClient,
+    // pas d'intégration de code requise pour l'affichage de base.
+    localRuntime "maven.modrinth:jade:${jade_version}"
 }
 
 // Génère neoforge.mods.toml à partir de src/main/templates/META-INF/neoforge.mods.toml
