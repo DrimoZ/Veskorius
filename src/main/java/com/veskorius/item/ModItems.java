@@ -54,4 +54,7 @@ public class ModItems {
 
     public static final DeferredItem<BlockItem> FIELD_EMITTER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.FIELD_EMITTER);
+
+    public static final DeferredItem<BlockItem> RESONANCE_CRYSTAL_CLUSTER_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_CRYSTAL_CLUSTER);
 }

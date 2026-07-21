@@ -42,6 +42,7 @@ public class Veskorius {
             .icon(() -> ModItems.STABLE_RESONANCE_CRYSTAL.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(ModItems.RAW_RESONANCE_CRYSTAL.get());
+                output.accept(ModItems.RESONANCE_CRYSTAL_CLUSTER_ITEM.get());
                 output.accept(ModItems.STABLE_RESONANCE_CRYSTAL.get());
                 output.accept(ModItems.REFINED_RESONANCE_CRYSTAL.get());
                 output.accept(ModItems.RESONANCE_COMPONENT.get());

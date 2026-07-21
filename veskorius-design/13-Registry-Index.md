@@ -10,7 +10,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 
 | Registry name | Défini dans | Statut code |
 |---|---|---|
-| `raw_resonance_crystal` | 04 | ✅ codé |
+| `raw_resonance_crystal` | 04 | ✅ codé (item) |
 | `stable_resonance_crystal` | 04 | ✅ codé |
 | `refined_resonance_crystal` | 04 | ✅ codé |
 | `hyper_refined_crystal` | 04 | À coder (Phase 3) |
@@ -62,6 +62,18 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | `resonance_tuner` | 05, 12 | ✅ codé (outil à modes : Pivoter/On-Off/Surchauffe/Redstone) |
 | `resonance_locator` | 05, 07 | À coder (Phase 1) |
 | `resonance_storage_cell` | 05 | À coder (Phase 1) |
+
+## Blocs — génération naturelle
+
+| Registry name | Défini dans | Statut code |
+|---|---|---|
+| `resonance_crystal_cluster` | 07 (ajouté 2026-07-21) | ✅ codé (bloc de poche, se mine → `raw_resonance_crystal`) |
+
+Note : le dossier nommait « poches de Raw Resonance Crystal » sans nommer le bloc généré (l'item
+`raw_resonance_crystal` existait, pas un bloc). `resonance_crystal_cluster` est ce bloc — une
+formation cristalline distinctive (pas un minerai façon fer, rejeté dans `04-Materials.md`), qui
+se génère en petites poches (Y -20 à 0) et lâche l'item quand on la mine. La coquille de
+`resonance_veined_stone` qui la rend reconnaissable de loin est séparée (tâche 14).
 
 ## Blocs — machines (23, voir `05-Machines.md` pour le détail complet)
 

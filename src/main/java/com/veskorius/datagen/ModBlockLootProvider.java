@@ -1,6 +1,7 @@
 package com.veskorius.datagen;
 
 import com.veskorius.block.ModBlocks;
+import com.veskorius.item.ModItems;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.core.HolderLookup;
@@ -24,6 +25,11 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.RESONANCE_WHETSTONE.get());
         dropSelf(ModBlocks.FLUX_PURIFIER.get());
         dropSelf(ModBlocks.FIELD_EMITTER.get());
+
+        // La poche de cristal lâche du Raw Resonance Crystal (Fortune s'applique,
+        // Silk Touch récupère le bloc lui-même) — comportement de minerai standard.
+        add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get(),
+            block -> createOreDrop(block, ModItems.RAW_RESONANCE_CRYSTAL.get()));
     }
 
     @Override

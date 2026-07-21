@@ -52,6 +52,9 @@ ce fichier.
 - **Intégration JEI** (dev) : les recettes des 4 machines s'affichent dans JEI, une catégorie par
   machine, avec temps et Osc/tick. JEI est en `compileOnly` (API) + `localRuntime` (mod complet
   dans `runClient`), pas exporté dans le jar. Sert à vérifier les recettes en jeu.
+- **Génération de monde** : le bloc `resonance_crystal_cluster` génère en poches (Y -20 à 0, tout
+  l'Overworld) et se mine en `raw_resonance_crystal`. Worldgen data-driven (ConfiguredFeature +
+  PlacedFeature + BiomeModifier NeoForge), généré par datagen. La boucle T1 est jouable en survie.
 - Textures placeholder (couleur unie) — à remplacer par du vrai pixel art en Phase 6.
 
 Consulter `veskorius-design/13-Registry-Index.md` pour l'état « codé / à coder » de tout le
@@ -118,6 +121,7 @@ src/main/java/com/veskorius/
 ├── client/                     ← écrans (Dist.CLIENT uniquement)
 ├── energy/                     ← IResonanceField, ResonanceFieldManager, capabilities
 ├── recipe/                     ← MachineRecipe(Input/Serializer) + RecipeTypes/Serializers
+├── worldgen/                   ← ModWorldGen (features + biome modifier, data-driven)
 ├── compat/jei/                 ← intégration JEI (chargée seulement si JEI présent)
 ├── datagen/                    ← providers + GatherDataEvent
 ├── gametest/                   ← tests joués par runGameTestServer

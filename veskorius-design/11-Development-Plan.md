@@ -79,7 +79,15 @@ Tâches, dans l'ordre :
    dépendre du système de champ. Première machine qui *transforme* son entrée (réparation en
    place) au lieu de la consommer pour produire autre chose — bonne épreuve de généricité du
    socle. 4 GameTest.
-4. Génération des poches de `raw_resonance_crystal` (`07-World-Generation.md`, strate 0/-20).
+4. ✅ Génération des poches de `raw_resonance_crystal` (`07-World-Generation.md`, strate 0/-20).
+   Bloc `resonance_crystal_cluster` (ajouté au registre, voir `13-Registry-Index.md`) qui se mine
+   → `raw_resonance_crystal`. Worldgen data-driven par datagen (ConfiguredFeature ore +
+   PlacedFeature Y -20 à 0 + BiomeModifier `neoforge:add_features` sur tout l'Overworld). Densité
+   de départ : poche taille 5, 6/chunk (à valider en playtest — première passe jugée correcte en
+   jeu). La coquille de `resonance_veined_stone` (le « tell » visuel) reste la tâche 14. Non
+   couvert par GameTest (le worldgen se valide en jeu) : vérifié via `/place feature` et
+   génération naturelle en nouveau monde, aucune erreur de datapack. **La boucle T1 est jouable
+   en survie** : miner → Stabilizer → Assembler/Purifier, sans créatif.
 5. ✅ `FieldEmitterBlockEntity` + capability `IResonanceField` — #4. Pièce la plus structurante :
    toutes les machines suivantes en dépendent.
    - **Système de champ livré** : `IResonanceField` (capability de bloc), `ResonanceFieldManager`

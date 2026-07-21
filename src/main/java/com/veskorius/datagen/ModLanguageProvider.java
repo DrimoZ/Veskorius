@@ -39,6 +39,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.FLUX_PURIFIER, "Flux Purifier");
         addBlock(ModBlocks.RESONANCE_WHETSTONE, "Resonance Whetstone");
         addBlock(ModBlocks.FIELD_EMITTER, "Field Emitter");
+        addBlock(ModBlocks.RESONANCE_CRYSTAL_CLUSTER, "Resonance Crystal Cluster");
 
         addItem(ModItems.RAW_RESONANCE_CRYSTAL, "Raw Resonance Crystal");
         addItem(ModItems.STABLE_RESONANCE_CRYSTAL, "Stable Resonance Crystal");

@@ -49,6 +49,20 @@ public class ModBlocks {
                 .sound(SoundType.STONE)
                 .requiresCorrectToolForDrops());
 
+    /**
+     * Bloc de poche de cristal brut (07-World-Generation.md). Se génère en petites
+     * poches Y -20 à 0 et lâche du Raw Resonance Crystal. Légère luminosité : le
+     * cristal instable « rayonne » et se repère une fois la paroi ouverte.
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> RESONANCE_CRYSTAL_CLUSTER =
+        BLOCKS.registerSimpleBlock("resonance_crystal_cluster",
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(3.0f, 3.0f)
+                .sound(SoundType.AMETHYST)
+                .requiresCorrectToolForDrops()
+                .lightLevel(state -> 5));
+
     /** Machine #5 (05-Machines.md). Bloc actif : block entity + GUI, surchauffe. */
     public static final DeferredBlock<FluxPurifierBlock> FLUX_PURIFIER =
         BLOCKS.registerBlock("flux_purifier",
