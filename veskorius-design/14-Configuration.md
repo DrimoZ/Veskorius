@@ -68,6 +68,16 @@ Valeurs exposées (défauts = valeurs de design d'origine) :
 | `machines` | `overheatSpeedMultiplier` | 2.0 | Surchauffe : diviseur de la durée de cycle |
 | `machines` | `overheatOscMultiplier` | 2.0 | Surchauffe : multiplicateur de la conso d'Osc |
 | `machines` | `overheatInputLossChance` | 0.2 | Surchauffe : proba de perdre l'entrée sans sortie |
+| `tools` | `locatorCapacity` | 100 | Batterie interne du Resonance Locator (Osc) |
+| `tools` | `locatorCostPerUse` | 5 | Osc par ping du Locator |
+| `tools` | `locatorRechargeRate` | 5 | Osc/tick de recharge du Locator |
+| `tools` | `locatorRange` | 40 | Portée de détection du Locator (blocs) |
+| `entities` | `custodeHealth` | 30 | PV du Custode (individus nouvellement apparus) |
+| `entities` | `custodeDamage` | 6 | Dégâts d'attaque du Custode |
+| `entities` | `custodeDetectionRange` | 6 | Rayon de ciblage passif du Custode |
+| `entities` | `custodeAlertRange` | 16 | Rayon d'alerte quand une machine du site est cassée |
+| `entities` | `striderMilkCooldown` | 6000 | Cooldown de traite du Fileur (ticks) |
+| `entities` | `roostFileurRange` | 6 | Rayon dans lequel un Fileur active un Crystal Roost |
 
 Chaque défaut est re-testé par le GameTest `configDefaultsMatchDesign` : le changer sans mettre à
 jour ce dossier fait échouer la suite (même discipline que la réécriture des valeurs de référence

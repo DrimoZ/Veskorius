@@ -82,6 +82,7 @@ public class ModLanguageProvider extends LanguageProvider {
         // Entités (09-Entities.md).
         add("entity.veskorius.crystal_strider", "Crystal Strider");
         add("entity.veskorius.custode", "Custode");
+        add("gui.veskorius.strider.milk_cooldown", "The strider needs %s more seconds");
 
         // Progression : plans, fragments, ration (tâche 10).
         addItem(ModItems.RESONANCE_BLUEPRINT, "Resonance Blueprint");

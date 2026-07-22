@@ -15,6 +15,7 @@ import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
 import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
 import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.energy.ResonanceFieldManager;
+import com.veskorius.event.CustodeAlertHandler;
 import com.veskorius.entity.CrystalStriderEntity;
 import com.veskorius.entity.CustodeEntity;
 import com.veskorius.entity.ModEntities;
@@ -1265,11 +1266,11 @@ public class MachineGameTests {
                 player.setPos(near.getX() + 0.5, near.getY(), near.getZ() + 0.5);
                 ModItems.RESONANCE_LOCATOR.get().inventoryTick(loc, helper.getLevel(), player, 0, true);
 
-                helper.assertTrue(ResonanceLocatorItem.getCharge(loc) == ResonanceLocatorItem.RECHARGE_RATE,
-                    "La batterie devrait gagner " + ResonanceLocatorItem.RECHARGE_RATE
+                helper.assertTrue(ResonanceLocatorItem.getCharge(loc) == ResonanceLocatorItem.rechargeRate(),
+                    "La batterie devrait gagner " + ResonanceLocatorItem.rechargeRate()
                         + " Osc dans un champ, vaut " + ResonanceLocatorItem.getCharge(loc));
                 FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
-                helper.assertTrue(emitter.getReserve() == 4000 - ResonanceLocatorItem.RECHARGE_RATE,
+                helper.assertTrue(emitter.getReserve() == 4000 - ResonanceLocatorItem.rechargeRate(),
                     "L'émetteur aurait dû fournir la recharge, réserve vaut " + emitter.getReserve());
             })
             .thenSucceed();
@@ -1291,9 +1292,9 @@ public class MachineGameTests {
         ItemStack loc = new ItemStack(ModItems.RESONANCE_LOCATOR.get());
         ModItems.RESONANCE_LOCATOR.get().inventoryTick(loc, helper.getLevel(), player, 0, true);
 
-        helper.assertTrue(ResonanceLocatorItem.getCharge(loc) == ResonanceLocatorItem.RECHARGE_RATE,
+        helper.assertTrue(ResonanceLocatorItem.getCharge(loc) == ResonanceLocatorItem.rechargeRate(),
             "La batterie devrait se recharger depuis la cellule, vaut " + ResonanceLocatorItem.getCharge(loc));
-        helper.assertTrue(ResonanceStorageCellItem.getCharge(cell) == 500 - ResonanceLocatorItem.RECHARGE_RATE,
+        helper.assertTrue(ResonanceStorageCellItem.getCharge(cell) == 500 - ResonanceLocatorItem.rechargeRate(),
             "La cellule aurait dû fournir la recharge, vaut " + ResonanceStorageCellItem.getCharge(cell));
         helper.succeed();
     }
@@ -1405,6 +1406,34 @@ public class MachineGameTests {
             "Facteur Osc surchauffe défaut 2.0, vaut " + VeskoriusConfig.overheatOscMultiplier());
         helper.assertTrue(Math.abs(VeskoriusConfig.overheatInputLossChance() - 0.2) < 1e-6,
             "Perte surchauffe défaut 0.2, vaut " + VeskoriusConfig.overheatInputLossChance());
+
+        helper.assertTrue(VeskoriusConfig.locatorCapacity() == 100
+                && VeskoriusConfig.locatorCostPerUse() == 5
+                && VeskoriusConfig.locatorRechargeRate() == 5
+                && VeskoriusConfig.locatorRange() == 40,
+            "Défauts Locator : 100 / 5 / 5 / 40");
+        helper.assertTrue(VeskoriusConfig.custodeHealth() == 30.0
+                && VeskoriusConfig.custodeDamage() == 6.0
+                && VeskoriusConfig.custodeDetectionRange() == 6.0
+                && VeskoriusConfig.custodeAlertRange() == 16.0,
+            "Défauts Custode : 30 / 6 / 6 / 16");
+        helper.assertTrue(VeskoriusConfig.striderMilkCooldown() == 6000
+                && VeskoriusConfig.roostFileurRange() == 6.0,
+            "Défauts Fileur/Roost : cooldown 6000, portée Roost 6");
+        helper.succeed();
+    }
+
+    /** Défense de site : casser une machine à portée fait cibler le casseur. */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void custodeAlertsOnMachineBreak(GameTestHelper helper) {
+        CustodeEntity custode = helper.spawn(ModEntities.CUSTODE.get(), MACHINE);
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        BlockPos machineBroken = helper.absolutePos(MACHINE.offset(3, 0, 0));
+
+        CustodeAlertHandler.alertNearbyCustodes(helper.getLevel(), machineBroken, player);
+
+        helper.assertTrue(custode.getTarget() == player,
+            "Casser une machine à portée devrait faire cibler le joueur par le Custode");
         helper.succeed();
     }
 

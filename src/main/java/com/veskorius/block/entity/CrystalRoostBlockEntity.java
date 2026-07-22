@@ -1,5 +1,6 @@
 package com.veskorius.block.entity;
 
+import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.entity.CrystalStriderEntity;
 import com.veskorius.menu.CrystalRoostMenu;
 import com.veskorius.recipe.ModRecipeTypes;
@@ -30,9 +31,6 @@ public class CrystalRoostBlockEntity extends AbstractProcessingMachineBlockEntit
     public static final int SLOT_AUGMENT = 2;
     public static final int SLOT_COUNT = 3;
 
-    /** Rayon dans lequel un Fileur active le Roost (09-Entities.md : « moins de 6 blocs »). */
-    private static final double FILEUR_RANGE = 6.0;
-
     public CrystalRoostBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CRYSTAL_ROOST.get(), pos, state, SLOT_COUNT,
             ModRecipeTypes.ROOSTING::get, new int[] {SLOT_QUARTZ}, SLOT_OUTPUT);
@@ -48,7 +46,7 @@ public class CrystalRoostBlockEntity extends AbstractProcessingMachineBlockEntit
         if (!(level instanceof ServerLevel serverLevel)) {
             return false;
         }
-        AABB area = new AABB(worldPosition).inflate(FILEUR_RANGE);
+        AABB area = new AABB(worldPosition).inflate(VeskoriusConfig.roostFileurRange());
         return !serverLevel.getEntitiesOfClass(CrystalStriderEntity.class, area).isEmpty();
     }
 

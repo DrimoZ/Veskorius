@@ -90,8 +90,12 @@ ce fichier.
   frappé) — jamais agressif à distance. **Posé par la génération de l'Avant-poste** (garde le site),
   pas de spawn errant. Drop 2-4 `custode_alloy_fragment`, **substitut 1:1 du fer** dans les recettes
   Veskorius (tag `iron_substitutes`) — récompense le combat plutôt que le minage.
-- Harnais `GameTest` : 55 tests (… + Fileur, gatekeeping T2, structures, Locator, Crystal Roost,
-  Custode), `./gradlew runGameTestServer`. Le serveur de test charge tout le datapack sans erreur.
+- **Passe de polish** (configs/actions/mécaniques) : config étendue (`tools`/`entities` — Locator,
+  Custode, Fileur, Roost tous tunables) ; **défense de site** (casser une machine Veskorius alerte
+  les Custodes proches) ; retours de la traite du Fileur (son, particules, message de cooldown) ;
+  sons des mobs.
+- Harnais `GameTest` : 56 tests (… + Custode, défense de site, défauts de config étendus),
+  `./gradlew runGameTestServer`. Le serveur de test charge tout le datapack sans erreur.
 - **Intégration JEI** (dev) : les recettes des 4 machines s'affichent dans JEI, une catégorie par
   machine, avec temps et Osc/tick. JEI est en `compileOnly` (API) + `localRuntime` (mod complet
   dans `runClient`), pas exporté dans le jar. Sert à vérifier les recettes en jeu.

@@ -1,6 +1,7 @@
 package com.veskorius.item;
 
 import com.veskorius.block.ModBlocks;
+import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.energy.ResonanceFieldManager;
 import java.util.List;
 import net.minecraft.ChatFormatting;
@@ -32,14 +33,25 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ResonanceLocatorItem extends Item {
 
-    public static final int CAPACITY = 100;
-    public static final int COST_PER_USE = 5;
-    /** Recharge par tick quand une source est disponible. */
-    public static final int RECHARGE_RATE = 5;
-    /** Portée de détection (07-World-Generation.md : « dès 40 blocs »). */
-    public static final int RANGE = 40;
     /** Rayon du scan de blocs pour les poches (borné pour rester peu coûteux). */
     private static final int SCAN_RADIUS = 32;
+
+    // Valeurs configurables (VeskoriusConfig, section tools) — lues à l'exécution.
+    public static int capacity() {
+        return VeskoriusConfig.locatorCapacity();
+    }
+
+    public static int costPerUse() {
+        return VeskoriusConfig.locatorCostPerUse();
+    }
+
+    public static int rechargeRate() {
+        return VeskoriusConfig.locatorRechargeRate();
+    }
+
+    public static int range() {
+        return VeskoriusConfig.locatorRange();
+    }
 
     private static final String[] WINDS = {"n", "ne", "e", "se", "s", "sw", "w", "nw"};
 
@@ -54,7 +66,7 @@ public class ResonanceLocatorItem extends Item {
     }
 
     public static void setCharge(ItemStack stack, int charge) {
-        stack.set(ModDataComponents.LOCATOR_CHARGE.get(), Math.clamp(charge, 0, CAPACITY));
+        stack.set(ModDataComponents.LOCATOR_CHARGE.get(), Math.clamp(charge, 0, capacity()));
     }
 
     // --- Usage : ping ---------------------------------------------------------
@@ -65,7 +77,7 @@ public class ResonanceLocatorItem extends Item {
         if (level.isClientSide) {
             return InteractionResultHolder.success(stack);
         }
-        if (getCharge(stack) < COST_PER_USE) {
+        if (getCharge(stack) < costPerUse()) {
             player.displayClientMessage(Component.translatable("gui.veskorius.locator.empty")
                 .withStyle(ChatFormatting.RED), true);
             return InteractionResultHolder.fail(stack);
@@ -75,7 +87,7 @@ public class ResonanceLocatorItem extends Item {
         BlockPos from = player.blockPosition();
         Hit hit = locateNearest(serverLevel, from);
 
-        setCharge(stack, getCharge(stack) - COST_PER_USE);
+        setCharge(stack, getCharge(stack) - costPerUse());
 
         if (hit == null) {
             player.displayClientMessage(Component.translatable("gui.veskorius.locator.none")
@@ -111,7 +123,7 @@ public class ResonanceLocatorItem extends Item {
         // Poche de cristal la plus proche (scan borné : les cristaux ne sont pas indexés).
         BlockPos crystal = nearestCrystal(level, from);
         // Signature de champ la plus proche (via l'index, sans scan).
-        BlockPos field = ResonanceFieldManager.nearestSource(level, from, RANGE);
+        BlockPos field = ResonanceFieldManager.nearestSource(level, from, range());
 
         double crystalSq = crystal == null ? Double.MAX_VALUE : crystal.distSqr(from);
         double fieldSq = field == null ? Double.MAX_VALUE : field.distSqr(from);
@@ -125,7 +137,7 @@ public class ResonanceLocatorItem extends Item {
     private static BlockPos nearestCrystal(ServerLevel level, BlockPos from) {
         BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
         BlockPos best = null;
-        long bestSq = (long) RANGE * RANGE;
+        long bestSq = (long) range() * range();
         for (int dx = -SCAN_RADIUS; dx <= SCAN_RADIUS; dx++) {
             for (int dy = -SCAN_RADIUS; dy <= SCAN_RADIUS; dy++) {
                 for (int dz = -SCAN_RADIUS; dz <= SCAN_RADIUS; dz++) {
@@ -157,11 +169,11 @@ public class ResonanceLocatorItem extends Item {
         if (!(level instanceof ServerLevel serverLevel) || !(entity instanceof Player player)) {
             return;
         }
-        int room = CAPACITY - getCharge(stack);
+        int room = capacity() - getCharge(stack);
         if (room <= 0) {
             return;
         }
-        int want = Math.min(room, RECHARGE_RATE);
+        int want = Math.min(room, rechargeRate());
         // Priorité au champ (06-Energy.md), sinon une Storage Cell portée.
         int drawn = ResonanceFieldManager.supply(serverLevel, entity.blockPosition(), want);
         if (drawn <= 0) {
@@ -186,7 +198,7 @@ public class ResonanceLocatorItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.veskorius.resonance_locator.charge", getCharge(stack), CAPACITY)
+        tooltip.add(Component.translatable("item.veskorius.resonance_locator.charge", getCharge(stack), capacity())
             .withStyle(ChatFormatting.AQUA));
     }
 
@@ -197,7 +209,7 @@ public class ResonanceLocatorItem extends Item {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0f * getCharge(stack) / CAPACITY);
+        return Math.round(13.0f * getCharge(stack) / capacity());
     }
 
     @Override

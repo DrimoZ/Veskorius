@@ -42,6 +42,22 @@ public final class VeskoriusConfig {
     public static final ModConfigSpec.DoubleValue OVERHEAT_OSC_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue OVERHEAT_INPUT_LOSS_CHANCE;
 
+    // --- Outils (05-Machines.md, 06-Energy.md) -------------------------------
+
+    public static final ModConfigSpec.IntValue LOCATOR_CAPACITY;
+    public static final ModConfigSpec.IntValue LOCATOR_COST_PER_USE;
+    public static final ModConfigSpec.IntValue LOCATOR_RECHARGE_RATE;
+    public static final ModConfigSpec.IntValue LOCATOR_RANGE;
+
+    // --- Entités (09-Entities.md) --------------------------------------------
+
+    public static final ModConfigSpec.DoubleValue CUSTODE_HEALTH;
+    public static final ModConfigSpec.DoubleValue CUSTODE_DAMAGE;
+    public static final ModConfigSpec.DoubleValue CUSTODE_DETECTION_RANGE;
+    public static final ModConfigSpec.DoubleValue CUSTODE_ALERT_RANGE;
+    public static final ModConfigSpec.IntValue STRIDER_MILK_COOLDOWN;
+    public static final ModConfigSpec.DoubleValue ROOST_FILEUR_RANGE;
+
     static {
         ModConfigSpec.Builder b = new ModConfigSpec.Builder();
 
@@ -92,6 +108,48 @@ public final class VeskoriusConfig {
 
         b.pop();
 
+        b.comment("Outils portables (Resonance Locator).").push("tools");
+
+        LOCATOR_CAPACITY = b
+            .comment("Batterie interne du Resonance Locator, en Osc. Défaut design : 100.")
+            .defineInRange("locatorCapacity", 100, 1, 1_000_000_000);
+        LOCATOR_COST_PER_USE = b
+            .comment("Osc consommés par ping du Locator. Défaut design : 5 (~20 pings).")
+            .defineInRange("locatorCostPerUse", 5, 1, 1_000_000_000);
+        LOCATOR_RECHARGE_RATE = b
+            .comment("Osc rechargés par tick (champ ou Storage Cell portée). Défaut : 5.")
+            .defineInRange("locatorRechargeRate", 5, 1, 1_000_000_000);
+        LOCATOR_RANGE = b
+            .comment("Portée de détection du Locator, en blocs (07 : « dès 40 blocs »). Défaut : 40.")
+            .defineInRange("locatorRange", 40, 1, 512);
+
+        b.pop();
+
+        b.comment("Entités (09-Entities.md). Les stats du Custode s'appliquent aux",
+                "individus nouvellement apparus.").push("entities");
+
+        CUSTODE_HEALTH = b
+            .comment("Points de vie du Custode. Défaut design : 30.")
+            .defineInRange("custodeHealth", 30.0, 1.0, 1024.0);
+        CUSTODE_DAMAGE = b
+            .comment("Dégâts d'attaque du Custode. Défaut design : 6.")
+            .defineInRange("custodeDamage", 6.0, 0.0, 1024.0);
+        CUSTODE_DETECTION_RANGE = b
+            .comment("Rayon (blocs) dans lequel un Custode cible un joueur (réactif). Défaut : 6.")
+            .defineInRange("custodeDetectionRange", 6.0, 1.0, 128.0);
+        CUSTODE_ALERT_RANGE = b
+            .comment("Rayon (blocs) dans lequel casser une machine Veskorius alerte les Custodes",
+                "(défense de site — plus large que la détection passive). Défaut : 16.")
+            .defineInRange("custodeAlertRange", 16.0, 1.0, 128.0);
+        STRIDER_MILK_COOLDOWN = b
+            .comment("Cooldown de traite du Fileur de Cristal, en ticks (20 = 1 s). Défaut : 6000 (5 min).")
+            .defineInRange("striderMilkCooldown", 6000, 1, 100_000_000);
+        ROOST_FILEUR_RANGE = b
+            .comment("Rayon (blocs) dans lequel un Fileur active un Crystal Roost. Défaut : 6.")
+            .defineInRange("roostFileurRange", 6.0, 1.0, 128.0);
+
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -128,5 +186,45 @@ public final class VeskoriusConfig {
 
     public static double overheatInputLossChance() {
         return OVERHEAT_INPUT_LOSS_CHANCE.getAsDouble();
+    }
+
+    public static int locatorCapacity() {
+        return LOCATOR_CAPACITY.getAsInt();
+    }
+
+    public static int locatorCostPerUse() {
+        return LOCATOR_COST_PER_USE.getAsInt();
+    }
+
+    public static int locatorRechargeRate() {
+        return LOCATOR_RECHARGE_RATE.getAsInt();
+    }
+
+    public static int locatorRange() {
+        return LOCATOR_RANGE.getAsInt();
+    }
+
+    public static double custodeHealth() {
+        return CUSTODE_HEALTH.getAsDouble();
+    }
+
+    public static double custodeDamage() {
+        return CUSTODE_DAMAGE.getAsDouble();
+    }
+
+    public static double custodeDetectionRange() {
+        return CUSTODE_DETECTION_RANGE.getAsDouble();
+    }
+
+    public static double custodeAlertRange() {
+        return CUSTODE_ALERT_RANGE.getAsDouble();
+    }
+
+    public static int striderMilkCooldown() {
+        return STRIDER_MILK_COOLDOWN.getAsInt();
+    }
+
+    public static double roostFileurRange() {
+        return ROOST_FILEUR_RANGE.getAsDouble();
     }
 }

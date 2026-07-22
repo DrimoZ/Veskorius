@@ -1,10 +1,17 @@
 package com.veskorius.entity;
 
+import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.item.ModItems;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -40,9 +47,6 @@ import org.jetbrains.annotations.Nullable;
  * La proximité d'un Crystal Roost (tâche 12) est gérée côté Roost, pas ici.
  */
 public class CrystalStriderEntity extends Animal {
-
-    /** Cooldown de traite : 5 minutes (09-Entities.md). */
-    public static final int MILK_COOLDOWN_TICKS = 5 * 60 * 20;
 
     private int milkCooldown;
 
@@ -107,10 +111,19 @@ public class CrystalStriderEntity extends Animal {
                 if (!player.addItem(crystal)) {
                     player.drop(crystal, false);
                 }
-                milkCooldown = MILK_COOLDOWN_TICKS;
+                milkCooldown = VeskoriusConfig.striderMilkCooldown();
+                // Retour visuel/sonore de la traite.
+                playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 1.0f, 1.4f);
+                if (level() instanceof ServerLevel serverLevel) {
+                    serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
+                        getX(), getY() + 0.8, getZ(), 6, 0.3, 0.3, 0.3, 0.02);
+                }
                 return InteractionResult.CONSUME;
             }
-            // Encore en cooldown : rien à récolter.
+            // Encore en cooldown : indique le temps restant.
+            player.displayClientMessage(Component.translatable(
+                "gui.veskorius.strider.milk_cooldown", (milkCooldown + 19) / 20)
+                .withStyle(ChatFormatting.GRAY), true);
             return InteractionResult.PASS;
         }
 
@@ -120,6 +133,16 @@ public class CrystalStriderEntity extends Animal {
     /** Exposé pour les GameTest : temps restant avant la prochaine traite. */
     public int getMilkCooldown() {
         return milkCooldown;
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return SoundEvents.AMETHYST_BLOCK_HIT;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.AMETHYST_CLUSTER_BREAK;
     }
 
     @Override

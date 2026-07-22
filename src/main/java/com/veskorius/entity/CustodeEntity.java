@@ -1,6 +1,14 @@
 package com.veskorius.entity;
 
+import com.veskorius.config.VeskoriusConfig;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -13,6 +21,8 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Custode (09-Entities.md) : garde standard des sites veskoriens. **Réactif, pas
@@ -57,5 +67,39 @@ public class CustodeEntity extends Monster {
         targetSelector.addGoal(1, new HurtByTargetGoal(this));
         // Sinon, ne cible un joueur que dans la portée de suivi (6 blocs) : réactif.
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+    }
+
+    /**
+     * Applique les stats configurées aux individus nouvellement apparus (les attributs
+     * de base sont posés au chargement du mod, avant la config SERVER — on les
+     * réécrit ici, quand le monde et la config sont chargés).
+     */
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
+                                        MobSpawnType reason, @Nullable SpawnGroupData spawnData) {
+        AttributeInstance health = getAttribute(Attributes.MAX_HEALTH);
+        if (health != null) {
+            health.setBaseValue(VeskoriusConfig.custodeHealth());
+        }
+        setHealth(getMaxHealth());
+        AttributeInstance damage = getAttribute(Attributes.ATTACK_DAMAGE);
+        if (damage != null) {
+            damage.setBaseValue(VeskoriusConfig.custodeDamage());
+        }
+        AttributeInstance range = getAttribute(Attributes.FOLLOW_RANGE);
+        if (range != null) {
+            range.setBaseValue(VeskoriusConfig.custodeDetectionRange());
+        }
+        return super.finalizeSpawn(level, difficulty, reason, spawnData);
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return SoundEvents.IRON_GOLEM_HURT;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.IRON_GOLEM_DEATH;
     }
 }
