@@ -77,7 +77,8 @@ Valeurs exposées (défauts = valeurs de design d'origine) :
 | `entities` | `custodeDetectionRange` | 6 | Rayon de ciblage passif du Custode |
 | `entities` | `custodeAlertRange` | 16 | Rayon d'alerte quand une machine du site est cassée |
 | `entities` | `striderMilkCooldown` | 6000 | Cooldown de traite du Fileur (ticks) |
-| `entities` | `roostFileurRange` | 6 | Rayon dans lequel un Fileur active un Crystal Roost |
+| `entities` | `roostStriderRange` | 6 | Rayon dans lequel un Fileur active un Crystal Roost |
+| `world` | `sporeGrowthChance` | 0.05 | Chance par random tick que la pierre veinée pousse un spore (face exposée, faible lumière) |
 
 Chaque défaut est re-testé par le GameTest `configDefaultsMatchDesign` : le changer sans mettre à
 jour ce dossier fait échouer la suite (même discipline que la réécriture des valeurs de référence

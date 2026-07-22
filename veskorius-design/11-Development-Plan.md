@@ -200,10 +200,12 @@ Tâches, dans l'ordre :
       `BlockEvent.BreakEvent`, rayon d'alerte configurable). **Patrouille** faite : il reste dans un
       rayon de 12 blocs autour de son point de garde (`restrictTo` + `MoveTowardsRestrictionGoal`,
       persisté). Il ne s'éloigne donc pas de son Avant-poste.
-    - ⬜ **Bloc de récolte du `resonance_spore`** : l'item existe, mais sa source (pousse sur
-      `resonance_veined_stone` en faible luminosité, façon glow lichen, repousse ~2 jours MC —
-      `04-Materials.md`) est un bloc à part, non codé. Tant qu'il manque, la reproduction du Fileur
-      n'est accessible qu'en créatif ; la traite, elle, est jouable en survie (Fileurs sauvages).
+    - ✅ **Récolte du `resonance_spore`** (2026-07-22) : implémentée comme un **état sur la Resonance
+      Veined Stone** (`ResonanceVeinedStoneBlock`, propriété `spored`) plutôt qu'un bloc glow-lichen
+      séparé — plus simple et fidèle (« le spore pousse sur la pierre veinée »). Random tick : une
+      face exposée en faible luminosité (≤ 7) fait pousser un spore (chance configurable). Clic droit
+      = récolte à la main (donne 1 spore, ne casse pas la pierre), puis ça repousse. La reproduction
+      du Fileur est donc **jouable en survie**. 2 GameTest (récolte, pas de pousse si enfermé).
 12. ✅ `CrystalRoostBlockEntity` (production passive) — machine « traitement » autonome
     (`veskorius:roosting` : 2 Quartz → 1 Raw Crystal, 600 s) réutilisant le socle process, avec
     **une condition en plus** codée dans la machine (`canRunCycle`) : au moins un Fileur de Cristal

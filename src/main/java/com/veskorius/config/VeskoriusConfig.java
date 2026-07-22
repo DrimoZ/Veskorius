@@ -58,6 +58,10 @@ public final class VeskoriusConfig {
     public static final ModConfigSpec.IntValue STRIDER_MILK_COOLDOWN;
     public static final ModConfigSpec.DoubleValue ROOST_STRIDER_RANGE;
 
+    // --- World interactions (04-Materials.md) --------------------------------
+
+    public static final ModConfigSpec.DoubleValue SPORE_GROWTH_CHANCE;
+
     static {
         ModConfigSpec.Builder b = new ModConfigSpec.Builder();
 
@@ -150,6 +154,16 @@ public final class VeskoriusConfig {
 
         b.pop();
 
+        b.comment("World interactions.").push("world");
+
+        SPORE_GROWTH_CHANCE = b
+            .comment("Chance per random tick that Resonance Veined Stone grows a spore, when it has",
+                "an exposed face in low light. Higher = faster (about 2 MC days at the default).",
+                "Default: 0.05.")
+            .defineInRange("sporeGrowthChance", 0.05, 0.0, 1.0);
+
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -226,5 +240,9 @@ public final class VeskoriusConfig {
 
     public static double roostStriderRange() {
         return ROOST_STRIDER_RANGE.getAsDouble();
+    }
+
+    public static double sporeGrowthChance() {
+        return SPORE_GROWTH_CHANCE.getAsDouble();
     }
 }

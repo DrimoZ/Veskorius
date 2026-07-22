@@ -94,7 +94,10 @@ ce fichier.
   Custode, Fileur, Roost tous tunables) ; **défense de site** (casser une machine Veskorius alerte
   les Custodes proches) ; retours de la traite du Fileur (son, particules, message de cooldown) ;
   sons des mobs.
-- Harnais `GameTest` : 56 tests (… + Custode, défense de site, défauts de config étendus),
+- **Récolte de spore** : la Resonance Veined Stone pousse un `resonance_spore` (état `spored`) sur
+  une face exposée en faible luminosité, récolté au clic droit (sans casser la pierre), puis
+  repousse — la reproduction du Fileur devient jouable en survie. Taux de pousse configurable.
+- Harnais `GameTest` : 58 tests (… + Custode, défense de site, récolte de spore, défauts de config),
   `./gradlew runGameTestServer`. Le serveur de test charge tout le datapack sans erreur.
 - **Intégration JEI** (dev) : les recettes des 4 machines s'affichent dans JEI, une catégorie par
   machine, avec temps et Osc/tick. JEI est en `compileOnly` (API) + `localRuntime` (mod complet

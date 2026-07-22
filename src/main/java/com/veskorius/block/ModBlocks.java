@@ -56,12 +56,14 @@ public class ModBlocks {
      * Bloc décoratif + « tell » visuel : le voir, c'est savoir qu'une poche est
      * proche. Ne rayonne pas — on le reconnaît à sa texture, pas à sa lumière.
      */
-    public static final DeferredBlock<net.minecraft.world.level.block.Block> RESONANCE_VEINED_STONE =
-        BLOCKS.registerSimpleBlock("resonance_veined_stone",
+    public static final DeferredBlock<ResonanceVeinedStoneBlock> RESONANCE_VEINED_STONE =
+        BLOCKS.registerBlock("resonance_veined_stone",
+            ResonanceVeinedStoneBlock::new,
             BlockBehaviour.Properties.of()
                 .mapColor(MapColor.DEEPSLATE)
                 .strength(1.5f, 6.0f)
                 .sound(SoundType.DEEPSLATE)
+                .randomTicks()
                 .requiresCorrectToolForDrops());
 
     /**

@@ -2,8 +2,10 @@ package com.veskorius.datagen;
 
 import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
+import com.veskorius.block.ResonanceVeinedStoneBlock;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class ModBlockStateProvider extends BlockStateProvider {
@@ -29,8 +31,14 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // Blocs naturels : cubes uniformes simples.
         simpleBlockWithItem(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get(),
             cubeAll(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get()));
-        simpleBlockWithItem(ModBlocks.RESONANCE_VEINED_STONE.get(),
-            cubeAll(ModBlocks.RESONANCE_VEINED_STONE.get()));
+        // Veined stone has a SPORED state: plain vs a spore-speckled variant.
+        var plainVeined = cubeAll(ModBlocks.RESONANCE_VEINED_STONE.get());
+        var sporedVeined = models().cubeAll("resonance_veined_stone_spored",
+            modLoc("block/resonance_veined_stone_spored"));
+        getVariantBuilder(ModBlocks.RESONANCE_VEINED_STONE.get()).forAllStates(state ->
+            ConfiguredModel.builder().modelFile(
+                state.getValue(ResonanceVeinedStoneBlock.SPORED) ? sporedVeined : plainVeined).build());
+        itemModels().withExistingParent("resonance_veined_stone", modLoc("block/resonance_veined_stone"));
 
         // Le dépôt de flux n'a pas d'objet : juste la blockstate + le modèle.
         simpleBlock(ModBlocks.RAW_FLUX_DEPOSIT.get(), cubeAll(ModBlocks.RAW_FLUX_DEPOSIT.get()));

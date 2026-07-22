@@ -4,6 +4,7 @@ import com.veskorius.Veskorius;
 import com.veskorius.block.AbstractMachineBlock;
 import com.veskorius.block.AttunementConsoleBlock;
 import com.veskorius.block.ModBlocks;
+import com.veskorius.block.ResonanceVeinedStoneBlock;
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
 import com.veskorius.block.entity.ComponentAssemblerBlockEntity;
 import com.veskorius.block.entity.CrystalCrusherBlockEntity;
@@ -1131,6 +1132,45 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    // --- Resonance Spore growth on veined stone (04-Materials.md) -------------
+
+    /** Hand-harvesting a spored veined stone gives a spore and clears the state. */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void veinedStoneHarvestGivesSpore(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.RESONANCE_VEINED_STONE.get().defaultBlockState()
+            .setValue(ResonanceVeinedStoneBlock.SPORED, true));
+        ServerLevel level = helper.getLevel();
+        BlockPos abs = helper.absolutePos(MACHINE);
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+
+        boolean harvested = ResonanceVeinedStoneBlock.tryHarvest(level.getBlockState(abs), level, abs, player);
+
+        helper.assertTrue(harvested, "Harvest should succeed on a spored block");
+        helper.assertTrue(countInInventory(player, ModItems.RESONANCE_SPORE.get()) == 1,
+            "The player should receive 1 spore");
+        helper.assertFalse(level.getBlockState(abs).getValue(ResonanceVeinedStoneBlock.SPORED),
+            "The stone should no longer be spored after harvest");
+        helper.succeed();
+    }
+
+    /** Fully enclosed veined stone has no exposed face, so it never grows a spore. */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void veinedStoneDoesNotGrowWhenEnclosed(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.RESONANCE_VEINED_STONE.get());
+        for (Direction dir : Direction.values()) {
+            helper.setBlock(MACHINE.relative(dir), Blocks.STONE);
+        }
+        ServerLevel level = helper.getLevel();
+        BlockPos abs = helper.absolutePos(MACHINE);
+
+        helper.assertFalse(ResonanceVeinedStoneBlock.canGrowHere(level, abs),
+            "Fully enclosed veined stone must not be able to grow spore");
+        ResonanceVeinedStoneBlock.tryGrowSpore(level.getBlockState(abs), level, abs);
+        helper.assertFalse(level.getBlockState(abs).getValue(ResonanceVeinedStoneBlock.SPORED),
+            "Enclosed stone should stay unspored");
+        helper.succeed();
+    }
+
     // --- Custode (garde réactif, tâche 11) -----------------------------------
 
     /** Stats du garde standard : 30 PV, 6 de dégâts, réactivité limitée à 6 blocs. */
@@ -1420,6 +1460,8 @@ public class MachineGameTests {
         helper.assertTrue(VeskoriusConfig.striderMilkCooldown() == 6000
                 && VeskoriusConfig.roostStriderRange() == 6.0,
             "Défauts Fileur/Roost : cooldown 6000, portée Roost 6");
+        helper.assertTrue(Math.abs(VeskoriusConfig.sporeGrowthChance() - 0.05) < 1e-6,
+            "Défaut croissance de spore 0.05, vaut " + VeskoriusConfig.sporeGrowthChance());
         helper.succeed();
     }
 

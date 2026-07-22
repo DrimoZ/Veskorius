@@ -30,7 +30,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | Registry name | Défini dans | Statut code |
 |---|---|---|
 | `custode_alloy_fragment` | 04, 09 | ✅ codé (drop du Custode ; substitut du fer via tag `iron_substitutes`) |
-| `resonance_spore` | 04, 09 | ✅ item codé (nourriture du Fileur) ; bloc de récolte (pousse sur veined stone) à coder |
+| `resonance_spore` | 04, 09 | ✅ codé — item (nourriture du Fileur) + récolte : la Resonance Veined Stone pousse un spore (état `spored`) en faible luminosité sur une face exposée, récolté au clic droit, repousse ensuite |
 | `resonance_bloom` | 04 | À coder (Phase 3) |
 
 ## Items — progression (plans, fragments, loot de structure)
