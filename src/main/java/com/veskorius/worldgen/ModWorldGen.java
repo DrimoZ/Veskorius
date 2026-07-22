@@ -17,7 +17,6 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.placement.BiomeFilter;
-import net.minecraft.world.level.levelgen.placement.CountPlacement;
 import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 import net.minecraft.world.level.levelgen.placement.InSquarePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
@@ -36,8 +35,9 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
  * Passer par le datagen valide le format contre les codecs — plus fiable que du
  * JSON écrit à la main.
  *
- * Densités de départ (« à valider en playtest », 07-World-Generation.md) : poche
- * de taille 5, 6 tentatives par chunk.
+ * Densité de départ (« à valider en playtest », 07-World-Generation.md) : nœud de
+ * ~8 cristaux, une poche en moyenne tous les {@code POCKET_RARITY} chunks (un peu
+ * plus rare que le diamant).
  */
 public final class ModWorldGen {
 
@@ -47,8 +47,14 @@ public final class ModWorldGen {
     private static final int SHELL_THICKNESS = 1;
     /** ~15 % des blocs de coquille sont une croûte de flux brossable (04-Materials.md). */
     private static final float FLUX_CHANCE = 0.15f;
-    /** Tentatives de placement par chunk. À valider en playtest. */
-    private static final int POCKET_COUNT = 6;
+    /**
+     * Rareté des poches : une tentative en moyenne tous les {@code POCKET_RARITY}
+     * chunks (et non plusieurs par chunk). Réglé pour que les poches soient **un peu
+     * plus rares que le diamant** — une poche reste un gros nœud (plusieurs cristaux
+     * + coquille), donc rare ne veut pas dire avare. À affiner en playtest ;
+     * surchargeable par datapack (PlacedFeature JSON).
+     */
+    private static final int POCKET_RARITY = 10;
     private static final int MIN_Y = -20;
     private static final int MAX_Y = 0;
 
@@ -103,7 +109,7 @@ public final class ModWorldGen {
         Holder<ConfiguredFeature<?, ?>> pocket = configured.getOrThrow(RESONANCE_CRYSTAL_POCKET_CF);
 
         context.register(RESONANCE_CRYSTAL_POCKET_PF, new PlacedFeature(pocket, List.of(
-            CountPlacement.of(POCKET_COUNT),
+            RarityFilter.onAverageOnceEvery(POCKET_RARITY),
             InSquarePlacement.spread(),
             HeightRangePlacement.uniform(VerticalAnchor.absolute(MIN_Y), VerticalAnchor.absolute(MAX_Y)),
             BiomeFilter.biome())));
