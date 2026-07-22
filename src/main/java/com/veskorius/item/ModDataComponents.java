@@ -46,4 +46,9 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceLocation>> CODEX_ENTRY =
         COMPONENTS.registerComponentType("codex_entry",
             builder -> builder.persistent(ResourceLocation.CODEC).networkSynchronized(ResourceLocation.STREAM_CODEC));
+
+    /** Charge en Osc de la batterie interne d'un Resonance Locator (06-Energy.md). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> LOCATOR_CHARGE =
+        COMPONENTS.registerComponentType("locator_charge",
+            builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT));
 }

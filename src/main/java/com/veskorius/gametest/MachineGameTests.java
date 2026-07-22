@@ -20,6 +20,7 @@ import com.veskorius.item.CodexEntries;
 import com.veskorius.item.CodexFragmentItem;
 import com.veskorius.item.ModItems;
 import com.veskorius.item.ResonanceBlueprintItem;
+import com.veskorius.item.ResonanceLocatorItem;
 import com.veskorius.item.ResonanceStorageCellItem;
 import com.veskorius.item.ResonanceTunerItem;
 import com.veskorius.item.TunerInteractions;
@@ -37,6 +38,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -1122,6 +1124,105 @@ public class MachineGameTests {
         var baby = parent.getBreedOffspring(helper.getLevel(), parent);
         helper.assertTrue(baby instanceof CrystalStriderEntity,
             "Le bébé devrait être un Crystal Strider, trouve : " + baby);
+        helper.succeed();
+    }
+
+    // --- Resonance Locator (outil #7, tâche 8) -------------------------------
+
+    /** Un ping consomme 5 Osc de la batterie interne. */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void locatorUseConsumesCharge(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        ItemStack loc = new ItemStack(ModItems.RESONANCE_LOCATOR.get());
+        ResonanceLocatorItem.setCharge(loc, 100);
+        player.setItemInHand(InteractionHand.MAIN_HAND, loc);
+
+        ModItems.RESONANCE_LOCATOR.get().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+
+        helper.assertTrue(ResonanceLocatorItem.getCharge(loc) == 95,
+            "Un ping devrait retirer 5 Osc (100 -> 95), vaut " + ResonanceLocatorItem.getCharge(loc));
+        helper.succeed();
+    }
+
+    /** Sans charge suffisante, le locator ne fait rien et ne consomme pas. */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void locatorBlocksWhenEmpty(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        ItemStack loc = new ItemStack(ModItems.RESONANCE_LOCATOR.get());
+        ResonanceLocatorItem.setCharge(loc, 4);
+        player.setItemInHand(InteractionHand.MAIN_HAND, loc);
+
+        ModItems.RESONANCE_LOCATOR.get().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+
+        helper.assertTrue(ResonanceLocatorItem.getCharge(loc) == 4,
+            "Sans charge suffisante, rien n'est consommé, vaut " + ResonanceLocatorItem.getCharge(loc));
+        helper.succeed();
+    }
+
+    /** Le locator pointe la poche de cristal la plus proche (source de résonance). */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void locatorFindsNearestCrystal(GameTestHelper helper) {
+        BlockPos crystal = MACHINE.offset(1, 0, 0);
+        helper.setBlock(crystal, ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get());
+
+        BlockPos found = ResonanceLocatorItem.locateForTest(helper.getLevel(), helper.absolutePos(MACHINE));
+        helper.assertTrue(found != null && found.equals(helper.absolutePos(crystal)),
+            "Le locator devrait pointer la poche adjacente, trouve : " + found);
+        helper.succeed();
+    }
+
+    /** La direction rendue suit le vecteur (est/nord/sud/ouest = +X/-Z/+Z/-X). */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void locatorWindDirections(GameTestHelper helper) {
+        helper.assertTrue("e".equals(ResonanceLocatorItem.windForTest(new Vec3(10, 0, 0))), "+X = est");
+        helper.assertTrue("w".equals(ResonanceLocatorItem.windForTest(new Vec3(-10, 0, 0))), "-X = ouest");
+        helper.assertTrue("n".equals(ResonanceLocatorItem.windForTest(new Vec3(0, 0, -10))), "-Z = nord");
+        helper.assertTrue("s".equals(ResonanceLocatorItem.windForTest(new Vec3(0, 0, 10))), "+Z = sud");
+        helper.succeed();
+    }
+
+    /** Dans un champ, la batterie interne se recharge en puisant sur l'émetteur. */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void locatorRechargesFromField(GameTestHelper helper) {
+        ItemStack loc = new ItemStack(ModItems.RESONANCE_LOCATOR.get());
+        helper.startSequence()
+            .thenExecute(() -> chargedEmitter(helper))
+            .thenExecuteAfter(3, () -> {
+                Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+                BlockPos near = helper.absolutePos(EMITTER).east(2);
+                player.setPos(near.getX() + 0.5, near.getY(), near.getZ() + 0.5);
+                ModItems.RESONANCE_LOCATOR.get().inventoryTick(loc, helper.getLevel(), player, 0, true);
+
+                helper.assertTrue(ResonanceLocatorItem.getCharge(loc) == ResonanceLocatorItem.RECHARGE_RATE,
+                    "La batterie devrait gagner " + ResonanceLocatorItem.RECHARGE_RATE
+                        + " Osc dans un champ, vaut " + ResonanceLocatorItem.getCharge(loc));
+                FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                helper.assertTrue(emitter.getReserve() == 4000 - ResonanceLocatorItem.RECHARGE_RATE,
+                    "L'émetteur aurait dû fournir la recharge, réserve vaut " + emitter.getReserve());
+            })
+            .thenSucceed();
+    }
+
+    /** Hors champ, la recharge puise dans une Storage Cell portée. */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 20)
+    public static void locatorRechargesFromStorageCell(GameTestHelper helper) {
+        // Coin de l'arène, loin de tout émetteur (aucun posé) : pas de champ.
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        BlockPos corner = helper.absolutePos(new BlockPos(1, 1, 1));
+        player.setPos(corner.getX() + 0.5, corner.getY(), corner.getZ() + 0.5);
+
+        ItemStack cell = new ItemStack(ModItems.RESONANCE_STORAGE_CELL.get());
+        ResonanceStorageCellItem.setCharge(cell, 500);
+        // setItem (et non add) : garde la même référence pour lire sa charge après.
+        player.getInventory().setItem(0, cell);
+
+        ItemStack loc = new ItemStack(ModItems.RESONANCE_LOCATOR.get());
+        ModItems.RESONANCE_LOCATOR.get().inventoryTick(loc, helper.getLevel(), player, 0, true);
+
+        helper.assertTrue(ResonanceLocatorItem.getCharge(loc) == ResonanceLocatorItem.RECHARGE_RATE,
+            "La batterie devrait se recharger depuis la cellule, vaut " + ResonanceLocatorItem.getCharge(loc));
+        helper.assertTrue(ResonanceStorageCellItem.getCharge(cell) == 500 - ResonanceLocatorItem.RECHARGE_RATE,
+            "La cellule aurait dû fournir la recharge, vaut " + ResonanceStorageCellItem.getCharge(cell));
         helper.succeed();
     }
 

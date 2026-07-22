@@ -106,11 +106,19 @@ public class ModItems {
     /**
      * Batterie portable d'Osc (05-Machines.md #6, 06-Energy.md). Non empilable :
      * chaque cellule porte son propre état de charge. Se recharge dans un champ,
-     * alimentera le Resonance Locator (tâche 8).
+     * alimente le Resonance Locator (tâche 8).
      */
     public static final DeferredItem<ResonanceStorageCellItem> RESONANCE_STORAGE_CELL =
         ITEMS.registerItem("resonance_storage_cell",
             ResonanceStorageCellItem::new, new Item.Properties().stacksTo(1));
+
+    /**
+     * Détecteur de résonance à courte portée (05-Machines.md #7, 06-Energy.md).
+     * Batterie interne, recharge par champ ou Storage Cell. Ping directionnel.
+     */
+    public static final DeferredItem<ResonanceLocatorItem> RESONANCE_LOCATOR =
+        ITEMS.registerItem("resonance_locator",
+            ResonanceLocatorItem::new, new Item.Properties().stacksTo(1));
 
     // BlockItems des machines (voir ModBlocks.java)
     public static final DeferredItem<BlockItem> RESONANCE_STABILIZER_ITEM =

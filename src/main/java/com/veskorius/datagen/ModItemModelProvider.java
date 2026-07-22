@@ -23,6 +23,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.RESONANCE_CATALYST_CORE.get());
         basicItem(ModItems.RESONANCE_TUNER.get());
         basicItem(ModItems.RESONANCE_STORAGE_CELL.get());
+        basicItem(ModItems.RESONANCE_LOCATOR.get());
         basicItem(ModItems.RESONANCE_SPORE.get());
         basicItem(ModItems.RESONANCE_BLUEPRINT.get());
         basicItem(ModItems.CODEX_FRAGMENT.get());

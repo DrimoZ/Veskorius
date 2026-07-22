@@ -104,6 +104,31 @@ public final class ResonanceFieldManager {
     }
 
     /**
+     * Émetteur actif le plus proche de {@code from} dans un rayon de {@code maxRange}
+     * blocs, ou {@code null}. Sert au Resonance Locator (détection de signature de
+     * champ, 07-World-Generation.md). Parcourt l'index — pas de scan de blocs.
+     */
+    @org.jetbrains.annotations.Nullable
+    public static BlockPos nearestSource(ServerLevel level, BlockPos from, int maxRange) {
+        Set<BlockPos> set = EMITTERS.get(level.dimension());
+        if (set == null || set.isEmpty()) {
+            return null;
+        }
+        double bestSq = (double) maxRange * maxRange;
+        BlockPos best = null;
+        for (BlockPos p : set.toArray(BlockPos[]::new)) {
+            if (level.getBlockEntity(p) instanceof IResonanceField field && field.isActive()) {
+                double d = p.distSqr(from);
+                if (d <= bestSq) {
+                    bestSq = d;
+                    best = p;
+                }
+            }
+        }
+        return best;
+    }
+
+    /**
      * Vrai si au moins un émetteur actif couvre {@code consumerPos}. Pour une
      * machine qui veut savoir si elle est dans un champ sans encore rien prélever.
      */

@@ -57,6 +57,7 @@ public class Veskorius {
                 output.accept(ModItems.RESONANCE_CATALYST_CORE.get());
                 output.accept(ModItems.RESONANCE_TUNER.get());
                 output.accept(ModItems.RESONANCE_STORAGE_CELL.get());
+                output.accept(ModItems.RESONANCE_LOCATOR.get());
                 output.accept(ModItems.RESONANCE_SPORE.get());
                 output.accept(ModItems.CRYSTAL_STRIDER_SPAWN_EGG.get());
                 output.accept(ModItems.FOSSILIZED_RATION.get());

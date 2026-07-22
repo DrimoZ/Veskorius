@@ -57,6 +57,21 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.RESONANCE_TUNER, "Resonance Tuner");
         addItem(ModItems.RESONANCE_STORAGE_CELL, "Resonance Storage Cell");
         add("item.veskorius.resonance_storage_cell.charge", "%s / %s Osc");
+        addItem(ModItems.RESONANCE_LOCATOR, "Resonance Locator");
+        add("item.veskorius.resonance_locator.charge", "%s / %s Osc");
+        add("gui.veskorius.locator.empty", "The locator has no charge");
+        add("gui.veskorius.locator.none", "No resonance within range");
+        add("gui.veskorius.locator.found", "%s to the %s (%s blocks)");
+        add("gui.veskorius.locator.type_crystal", "Crystal resonance");
+        add("gui.veskorius.locator.type_field", "Field signature");
+        add("gui.veskorius.dir.n", "north");
+        add("gui.veskorius.dir.ne", "north-east");
+        add("gui.veskorius.dir.e", "east");
+        add("gui.veskorius.dir.se", "south-east");
+        add("gui.veskorius.dir.s", "south");
+        add("gui.veskorius.dir.sw", "south-west");
+        add("gui.veskorius.dir.w", "west");
+        add("gui.veskorius.dir.nw", "north-west");
         addItem(ModItems.RESONANCE_SPORE, "Resonance Spore");
         addItem(ModItems.CRYSTAL_STRIDER_SPAWN_EGG, "Crystal Strider Spawn Egg");
 

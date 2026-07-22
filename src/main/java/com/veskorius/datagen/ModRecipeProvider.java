@@ -94,6 +94,21 @@ public class ModRecipeProvider extends RecipeProvider {
                 has(ModItems.REFINED_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
 
+        // Resonance Locator : outil T2 (le design ne fixe pas la recette, #7 « craft »).
+        // Proposé : 1 Stable Crystal (l'antenne) + 2 Component + 1 Iron + blueprint T2
+        // (rendu). Forme sans contrainte de design.
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.RESONANCE_LOCATOR.get())
+            .pattern(" S ")
+            .pattern("CIC")
+            .pattern(" P ")
+            .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
+            .define('C', ModItems.RESONANCE_COMPONENT.get())
+            .define('I', Items.IRON_INGOT)
+            .define('P', ModItems.RESONANCE_BLUEPRINT.get())
+            .unlockedBy(getHasName(ModItems.RESONANCE_COMPONENT.get()),
+                has(ModItems.RESONANCE_COMPONENT.get()))
+            .save(recipeOutput);
+
         // Resonance Storage Cell : 2 Resonance Component + 1 Stable Resonance
         // Crystal (05-Machines.md #6) + le blueprint T2 (gate physique, rendu au
         // craft — 03-Progression.md). Batterie portable, sans forme imposée.

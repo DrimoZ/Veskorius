@@ -131,9 +131,19 @@ Tâches, dans l'ordre :
      le Locator arrivera ; d'ici là la cellule se charge sans avoir encore où se vider.
    - 4 GameTest (recharge réelle prélevée sur l'émetteur, aucune charge hors champ, plafond de
      capacité sans gaspillage, `extractCharge` borné à la charge). Suite : **37 tests** verts.
-8. `ResonanceLocatorItem` — #7. Modèle d'énergie résolu (batterie interne + recharge auto par
-   champ ou Storage Cell, `06-Energy.md`), mais sa **fonction** de localisation dépend de la
-   génération des structures (tâche 10). À coder une fois les structures là.
+8. ✅ `ResonanceLocatorItem` — #7. Détecteur de résonance à **courte portée** (~40 blocs, `07`).
+   Clic droit → ping directionnel (message barre d'action : type + direction 8-vents + distance,
+   + son) vers la **source de résonance la plus proche** : une poche de cristal brut (scan borné,
+   les cristaux rayonnent) ou une **signature de champ** (Field Emitter actif, via l'index du
+   `ResonanceFieldManager`, sans scan). Batterie interne 100 Osc, 5/ping (~20 pings), rechargée
+   dans un champ ou en puisant sur une Storage Cell portée (valide enfin le consommateur de la
+   tâche 7). Craft T2 gaté par le blueprint (recette proposée, le design n'en fixait pas). 6
+   GameTest (conso, batterie vide, détection cristal, 8-vents, recharge champ, recharge cellule).
+   - **Interprétation assumée** : le design disait « localiser les structures ». Comme mes
+     structures (tâche 10) sont des features sans signature de champ, le Locator détecte pour
+     l'instant les sources de résonance **indexables/scannables** (cristaux + émetteurs). Détecter
+     spécifiquement les structures (Avant-poste, plus tard Sigma Laboratory) viendra quand elles
+     porteront une signature de champ — cohérent avec « signature de champ détectable » (`07`).
 9. ✅ `ResonanceTunerItem` — outil transversal, **outil à modes** (choix du porteur du projet,
    plus propre que la désambiguïsation par bloc — voir `12-UX-and-Advancements.md`). Modes :
    Pivoter, On/Off, Surchauffe, Redstone, adossés à la couche de contrôle ; mode stocké via Data

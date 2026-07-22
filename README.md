@@ -79,9 +79,12 @@ ce fichier.
   du tier (aucune recette masquée, tout est visible dans JEI ; ce qui bloque, c'est de ne pas avoir
   le plan). Le T2 s'obtient en **réveillant la console** (`attunement_console`) de l'Avant-poste sur
   place. Les `codex_fragment` sont du lore lisible, pas un gate. Advancements de feedback.
-- Harnais `GameTest` : 46 tests (… + Fileur de Cristal, blueprint rendu au craft, recette T2 gatée,
-  console, fragment de Codex), `./gradlew runGameTestServer`. Le serveur de test charge tout le
-  datapack (worldgen inclus) sans erreur.
+- **Resonance Locator** (#7) : détecteur de résonance à courte portée (~40 blocs). Clic droit →
+  ping directionnel vers la source la plus proche — poche de cristal (utile maintenant qu'elles
+  sont rares) ou signature de champ (Field Emitter). Batterie interne 100 Osc (5/ping), rechargée
+  dans un champ ou en puisant sur une Storage Cell portée.
+- Harnais `GameTest` : 52 tests (… + Fileur, gatekeeping T2, structures, Locator), `./gradlew
+  runGameTestServer`. Le serveur de test charge tout le datapack (worldgen inclus) sans erreur.
 - **Intégration JEI** (dev) : les recettes des 4 machines s'affichent dans JEI, une catégorie par
   machine, avec temps et Osc/tick. JEI est en `compileOnly` (API) + `localRuntime` (mod complet
   dans `runClient`), pas exporté dans le jar. Sert à vérifier les recettes en jeu.
