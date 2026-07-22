@@ -24,6 +24,7 @@ public class ModEntityEvents {
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.CRYSTAL_STRIDER.get(), CrystalStriderEntity.createAttributes().build());
+        event.put(ModEntities.CUSTODE.get(), CustodeEntity.createAttributes().build());
     }
 
     @SubscribeEvent

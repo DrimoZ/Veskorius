@@ -76,8 +76,12 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.RESONANCE_SPORE, "Resonance Spore");
         addItem(ModItems.CRYSTAL_STRIDER_SPAWN_EGG, "Crystal Strider Spawn Egg");
 
+        addItem(ModItems.CUSTODE_ALLOY_FRAGMENT, "Custode Alloy Fragment");
+        addItem(ModItems.CUSTODE_SPAWN_EGG, "Custode Spawn Egg");
+
         // Entités (09-Entities.md).
         add("entity.veskorius.crystal_strider", "Crystal Strider");
+        add("entity.veskorius.custode", "Custode");
 
         // Progression : plans, fragments, ration (tâche 10).
         addItem(ModItems.RESONANCE_BLUEPRINT, "Resonance Blueprint");

@@ -29,9 +29,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.CODEX_FRAGMENT.get());
         basicItem(ModItems.FOSSILIZED_RATION.get());
 
-        // Œuf d'apparition : réutilise le modèle vanilla template_spawn_egg (les
-        // deux couleurs viennent du DeferredSpawnEggItem, pas d'une texture).
+        basicItem(ModItems.CUSTODE_ALLOY_FRAGMENT.get());
+
+        // Œufs d'apparition : modèle vanilla template_spawn_egg (couleurs = item).
         withExistingParent("crystal_strider_spawn_egg", mcLoc("item/template_spawn_egg"));
+        withExistingParent("custode_spawn_egg", mcLoc("item/template_spawn_egg"));
 
         // L'objet du Stabilizer reprend le modele de bloc. Il n'est pas genere par
         // le BlockStateProvider parce que horizontalBlock, contrairement a

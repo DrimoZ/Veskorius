@@ -189,8 +189,14 @@ Tâches, dans l'ordre :
       spawn souterrain d'une créature étant limité par l'algo vanilla). Mise en place du **registre
       d'entités** (`ModEntities`, `ModEntityEvents` pour attributs + placement, rendu client). 3
       GameTest (traite + cooldown, nourriture = spore uniquement, bébé = Fileur). Suite : **42**.
-    - ⬜ **Custode** (garde réactif, drop `custode_alloy_fragment`) : reste à coder — sa présence
-      naturelle dépend des structures (tâche 10, Poste de Garde/Avant-poste).
+    - ✅ **Custode** codé (2026-07-22) : garde réactif (`Monster`), 30 PV / 6 dégâts, **réactif à
+      6 blocs** (via `FOLLOW_RANGE`) + riposte si frappé — jamais agressif à distance (pilier 4).
+      **Posé par la génération de l'Avant-poste** (`RuinFeature`, persistant), pas de spawn naturel
+      errant (« garde un site, pas un territoire »). Drop 2-4 `custode_alloy_fragment`, **substitut
+      1:1 du fer** dans toutes les recettes Veskorius via le nouveau tag `veskorius:iron_substitutes`
+      (les recettes qui codaient le fer en dur ont été migrées vers ce tag). Œuf d'apparition,
+      modèle/renderer placeholder. 2 GameTest (stats du garde, fragment ↔ fer). Différé : réagir
+      quand une machine du site est endommagée, et patrouiller/retour à un point fixe.
     - ⬜ **Bloc de récolte du `resonance_spore`** : l'item existe, mais sa source (pousse sur
       `resonance_veined_stone` en faible luminosité, façon glow lichen, repousse ~2 jours MC —
       `04-Materials.md`) est un bloc à part, non codé. Tant qu'il manque, la reproduction du Fileur

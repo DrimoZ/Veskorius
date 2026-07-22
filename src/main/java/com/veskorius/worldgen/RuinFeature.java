@@ -1,7 +1,10 @@
 package com.veskorius.worldgen;
 
 import com.veskorius.block.ModBlocks;
+import com.veskorius.entity.CustodeEntity;
+import com.veskorius.entity.ModEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
@@ -65,11 +68,26 @@ public class RuinFeature extends Feature<RuinConfiguration> {
             chest.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, config.lootTable()), random.nextLong());
         }
 
-        // Console d'attunement (Avant-poste) : au centre, sur le sol.
+        // Console d'attunement + un Custode de garde (Avant-poste).
         if (config.console()) {
             level.setBlock(origin.above(), ModBlocks.ATTUNEMENT_CONSOLE.get().defaultBlockState(), 2);
+            spawnGuardian(level, origin);
         }
 
         return true;
+    }
+
+    /** Pose un Custode persistant qui garde l'Avant-poste (09-Entities.md). */
+    private static void spawnGuardian(WorldGenLevel level, BlockPos origin) {
+        CustodeEntity custode = ModEntities.CUSTODE.get().create(level.getLevel());
+        if (custode == null) {
+            return;
+        }
+        BlockPos spot = origin.offset(1, 1, 1);
+        custode.moveTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5, 0.0f, 0.0f);
+        // Persistant : il garde le site, il ne doit pas disparaître au despawn.
+        custode.setPersistenceRequired();
+        custode.finalizeSpawn(level, level.getCurrentDifficultyAt(spot), MobSpawnType.STRUCTURE, null);
+        level.addFreshEntity(custode);
     }
 }

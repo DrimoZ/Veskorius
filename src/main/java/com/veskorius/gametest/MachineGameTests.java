@@ -16,6 +16,7 @@ import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
 import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.energy.ResonanceFieldManager;
 import com.veskorius.entity.CrystalStriderEntity;
+import com.veskorius.entity.CustodeEntity;
 import com.veskorius.entity.ModEntities;
 import com.veskorius.item.CodexEntries;
 import com.veskorius.item.CodexFragmentItem;
@@ -33,6 +34,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -1126,6 +1128,51 @@ public class MachineGameTests {
         helper.assertTrue(baby instanceof CrystalStriderEntity,
             "Le bébé devrait être un Crystal Strider, trouve : " + baby);
         helper.succeed();
+    }
+
+    // --- Custode (garde réactif, tâche 11) -----------------------------------
+
+    /** Stats du garde standard : 30 PV, 6 de dégâts, réactivité limitée à 6 blocs. */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void custodeIsReactiveGuard(GameTestHelper helper) {
+        CustodeEntity custode = helper.spawn(ModEntities.CUSTODE.get(), MACHINE);
+        helper.assertTrue(custode.getAttributeValue(Attributes.MAX_HEALTH) == 30.0,
+            "30 PV attendus, vaut " + custode.getAttributeValue(Attributes.MAX_HEALTH));
+        helper.assertTrue(custode.getAttributeValue(Attributes.ATTACK_DAMAGE) == 6.0,
+            "6 de dégâts attendus, vaut " + custode.getAttributeValue(Attributes.ATTACK_DAMAGE));
+        helper.assertTrue(custode.getAttributeValue(Attributes.FOLLOW_RANGE) == 6.0,
+            "Rayon de réactivité 6 attendu, vaut " + custode.getAttributeValue(Attributes.FOLLOW_RANGE));
+        helper.succeed();
+    }
+
+    /**
+     * Le Custode Alloy Fragment remplace le fer 1:1 dans une recette Veskorius (ici
+     * le Crystal Crusher), via le tag {@code veskorius:iron_substitutes} — le fer
+     * marche toujours aussi.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void custodeFragmentSubstitutesIron(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ItemStack cobble = new ItemStack(Items.COBBLESTONE);
+        ItemStack empty = ItemStack.EMPTY;
+
+        // Motif du Crusher : " C " / "CIC" (I = fer ou fragment).
+        helper.assertTrue(craftsCrusher(level, cobble, new ItemStack(ModItems.CUSTODE_ALLOY_FRAGMENT.get()), empty),
+            "Le fragment du Custode devrait remplacer le fer dans la recette du Crusher");
+        helper.assertTrue(craftsCrusher(level, cobble, new ItemStack(Items.IRON_INGOT), empty),
+            "Le fer devrait toujours fonctionner");
+        helper.succeed();
+    }
+
+    private static boolean craftsCrusher(ServerLevel level, ItemStack cobble, ItemStack iron, ItemStack empty) {
+        CraftingInput input = CraftingInput.of(3, 2, List.of(
+            empty, cobble, empty,
+            cobble, iron, cobble));
+        return level.getRecipeManager()
+            .getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, level)
+            .map(holder -> holder.value().getResultItem(level.registryAccess())
+                .is(ModBlocks.CRYSTAL_CRUSHER.get().asItem()))
+            .orElse(false);
     }
 
     // --- Crystal Roost (machine #8, tâche 12) --------------------------------

@@ -68,7 +68,9 @@ public class ModDataGenerators {
                     new LootTableProvider.SubProviderEntry(
                         ModBlockLootProvider::new, LootContextParamSets.BLOCK),
                     new LootTableProvider.SubProviderEntry(
-                        ModChestLootProvider::new, LootContextParamSets.CHEST)),
+                        ModChestLootProvider::new, LootContextParamSets.CHEST),
+                    new LootTableProvider.SubProviderEntry(
+                        ModEntityLootProvider::new, LootContextParamSets.ENTITY)),
                 lookupProvider));
 
         // Les tags d'objets referencent les tags de blocs (mecanisme de copie de

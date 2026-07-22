@@ -78,6 +78,20 @@ public class ModItems {
             props -> new DeferredSpawnEggItem(ModEntities.CRYSTAL_STRIDER, 0x6A3FA0, 0xB58AD6, props),
             new Item.Properties());
 
+    /**
+     * Fragment d'alliage lâché par le Custode (04-Materials.md, 09-Entities.md) :
+     * substitut 1:1 du lingot de fer dans les recettes Veskorius (via le tag
+     * {@code veskorius:iron_substitutes}) — récompense le combat plutôt que le minage.
+     */
+    public static final DeferredItem<Item> CUSTODE_ALLOY_FRAGMENT =
+        ITEMS.registerSimpleItem("custode_alloy_fragment", new Item.Properties().stacksTo(64));
+
+    /** Œuf d'apparition du Custode. */
+    public static final DeferredItem<DeferredSpawnEggItem> CUSTODE_SPAWN_EGG =
+        ITEMS.registerItem("custode_spawn_egg",
+            props -> new DeferredSpawnEggItem(ModEntities.CUSTODE, 0x3A3F4A, 0x8C6A2F, props),
+            new Item.Properties());
+
     // --- Progression : plans, fragments, loot de structure (tâche 10) --------
 
     /**

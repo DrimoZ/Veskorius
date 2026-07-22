@@ -40,6 +40,14 @@ public final class ModTags {
          */
         public static final TagKey<Item> STABILIZER_FLUX = tag("stabilizer_flux");
 
+        /**
+         * Substituts du lingot de fer dans les recettes Veskorius : le fer, plus le
+         * {@code custode_alloy_fragment} (04-Materials.md, drop du Custode). Toutes
+         * les recettes Veskorius qui demandaient du fer passent par ce tag, pour que
+         * le fragment y soit accepte 1:1 sans toucher les recettes vanilla.
+         */
+        public static final TagKey<Item> IRON_SUBSTITUTES = tag("iron_substitutes");
+
         private Items() {
         }
 

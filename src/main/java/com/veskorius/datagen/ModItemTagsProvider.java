@@ -38,5 +38,11 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         // s'applique — aucun code machine touche, comme prevu.
         tag(ModTags.Items.MACHINE_AUGMENTS)
             .add(ModItems.RESONANCE_CATALYST_CORE.get());
+
+        // Substituts du fer dans les recettes Veskorius : le fer lui-même + le
+        // fragment du Custode (04-Materials.md, drop de combat 1:1).
+        tag(ModTags.Items.IRON_SUBSTITUTES)
+            .add(Items.IRON_INGOT)
+            .add(ModItems.CUSTODE_ALLOY_FRAGMENT.get());
     }
 }

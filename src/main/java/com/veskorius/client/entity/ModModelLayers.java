@@ -12,4 +12,7 @@ public final class ModModelLayers {
 
     public static final ModelLayerLocation CRYSTAL_STRIDER = new ModelLayerLocation(
         ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "crystal_strider"), "main");
+
+    public static final ModelLayerLocation CUSTODE = new ModelLayerLocation(
+        ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "custode"), "main");
 }

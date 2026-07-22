@@ -22,4 +22,11 @@ public class ModEntities {
                 .sized(0.6f, 0.7f)
                 .clientTrackingRange(10)
                 .build("crystal_strider"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<CustodeEntity>> CUSTODE =
+        ENTITIES.register("custode",
+            () -> EntityType.Builder.of(CustodeEntity::new, MobCategory.MONSTER)
+                .sized(0.6f, 1.9f)
+                .clientTrackingRange(8)
+                .build("custode"));
 }

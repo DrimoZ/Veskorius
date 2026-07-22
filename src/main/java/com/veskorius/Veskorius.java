@@ -59,7 +59,9 @@ public class Veskorius {
                 output.accept(ModItems.RESONANCE_STORAGE_CELL.get());
                 output.accept(ModItems.RESONANCE_LOCATOR.get());
                 output.accept(ModItems.RESONANCE_SPORE.get());
+                output.accept(ModItems.CUSTODE_ALLOY_FRAGMENT.get());
                 output.accept(ModItems.CRYSTAL_STRIDER_SPAWN_EGG.get());
+                output.accept(ModItems.CUSTODE_SPAWN_EGG.get());
                 output.accept(ModItems.FOSSILIZED_RATION.get());
                 output.accept(com.veskorius.item.ResonanceBlueprintItem.of(2));
                 output.accept(com.veskorius.item.CodexFragmentItem.of(

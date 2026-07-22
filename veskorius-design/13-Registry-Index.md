@@ -29,7 +29,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 
 | Registry name | Défini dans | Statut code |
 |---|---|---|
-| `custode_alloy_fragment` | 04, 09 | À coder (Phase 1) |
+| `custode_alloy_fragment` | 04, 09 | ✅ codé (drop du Custode ; substitut du fer via tag `iron_substitutes`) |
 | `resonance_spore` | 04, 09 | ✅ item codé (nourriture du Fileur) ; bloc de récolte (pousse sur veined stone) à coder |
 | `resonance_bloom` | 04 | À coder (Phase 3) |
 
@@ -122,7 +122,7 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 
 | Nom en jeu (prose) | Registry name proposé | Défini dans |
 |---|---|---|
-| Custode | `custode` | 09 |
+| Custode | `custode` | 09 (✅ codé : garde réactif 30 PV / 6 dég., spawn en Avant-poste, drop fragment) |
 | Custode Lourd | `heavy_custode` | 09 |
 | Fileur de Cristal | `crystal_strider` | 09 (✅ codé : faune neutre, traite, reproduction, spawn) |
 | Custode Archiviste | `custode_archivist` | 09 |

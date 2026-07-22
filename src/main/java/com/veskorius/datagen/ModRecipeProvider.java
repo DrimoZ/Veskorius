@@ -49,7 +49,7 @@ public class ModRecipeProvider extends RecipeProvider {
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.COMPONENT_ASSEMBLER.get())
             .pattern("SIS")
             .pattern("IRI")
-            .define('I', Items.IRON_INGOT)
+            .define('I', ModTags.Items.IRON_SUBSTITUTES)
             .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
             .define('R', Items.REDSTONE)
             .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
@@ -65,7 +65,7 @@ public class ModRecipeProvider extends RecipeProvider {
             .pattern("CIC")
             .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
             .define('C', Items.COBBLESTONE)
-            .define('I', Items.IRON_INGOT)
+            .define('I', ModTags.Items.IRON_SUBSTITUTES)
             .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
                 has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
@@ -74,7 +74,8 @@ public class ModRecipeProvider extends RecipeProvider {
         // (05-Machines.md, section outil transversal). Sans forme imposée.
         net.minecraft.data.recipes.ShapelessRecipeBuilder
             .shapeless(RecipeCategory.TOOLS, ModItems.RESONANCE_TUNER.get())
-            .requires(Items.IRON_INGOT, 2)
+            .requires(ModTags.Items.IRON_SUBSTITUTES)
+            .requires(ModTags.Items.IRON_SUBSTITUTES)
             .requires(ModItems.RESONANCE_COMPONENT.get())
             .requires(Items.REDSTONE)
             .unlockedBy(getHasName(ModItems.RESONANCE_COMPONENT.get()),
@@ -103,7 +104,7 @@ public class ModRecipeProvider extends RecipeProvider {
             .pattern(" P ")
             .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
             .define('C', ModItems.RESONANCE_COMPONENT.get())
-            .define('I', Items.IRON_INGOT)
+            .define('I', ModTags.Items.IRON_SUBSTITUTES)
             .define('P', ModItems.RESONANCE_BLUEPRINT.get())
             .unlockedBy(getHasName(ModItems.RESONANCE_COMPONENT.get()),
                 has(ModItems.RESONANCE_COMPONENT.get()))
@@ -129,7 +130,7 @@ public class ModRecipeProvider extends RecipeProvider {
             .pattern("ISI")
             .pattern("IBI")
             .pattern("PS ")
-            .define('I', Items.IRON_INGOT)
+            .define('I', ModTags.Items.IRON_SUBSTITUTES)
             .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
             .define('B', Items.REDSTONE_BLOCK)
             .define('P', ModItems.RESONANCE_BLUEPRINT.get())
@@ -181,7 +182,7 @@ public class ModRecipeProvider extends RecipeProvider {
             .pattern(" C ")
             .pattern("CIC")
             .define('C', Items.COBBLESTONE)
-            .define('I', Items.IRON_INGOT)
+            .define('I', ModTags.Items.IRON_SUBSTITUTES)
             .unlockedBy(getHasName(ModItems.RAW_RESONANCE_CRYSTAL.get()),
                 has(ModItems.RAW_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
@@ -205,7 +206,7 @@ public class ModRecipeProvider extends RecipeProvider {
         // (05-Machines.md #2).
         MachineRecipeBuilder.assembling(ModItems.RESONANCE_COMPONENT.get(), 2)
             .input(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 1)
-            .input(Items.IRON_INGOT, 2)
+            .input(ModTags.Items.IRON_SUBSTITUTES, 2)
             .time(5 * 20)
             .osc(3)
             .save(recipeOutput, machineRecipe("assembling/component"));
@@ -235,7 +236,7 @@ public class ModRecipeProvider extends RecipeProvider {
         // au Stable Crystal — c'est une entrée alternative, pas un meilleur chemin.
         MachineRecipeBuilder.assembling(ModItems.RESONANCE_COMPONENT.get(), 2)
             .input(ModItems.RESONANCE_DUST.get(), 3)
-            .input(Items.IRON_INGOT, 2)
+            .input(ModTags.Items.IRON_SUBSTITUTES, 2)
             .time(5 * 20)
             .osc(3)
             .save(recipeOutput, machineRecipe("assembling/component_from_dust"));
