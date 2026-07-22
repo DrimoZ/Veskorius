@@ -170,12 +170,12 @@ Tâches, dans l'ordre :
       vanilla : réutilise le pipeline éprouvé des poches (ConfiguredFeature + PlacedFeature +
       BiomeModifier), donc peu de risque et validable au datagen. Compromis : pas de `/locate`
       vanilla → repérage par blocs (tell de surface, Locator). Deux ruines (avec/sans console),
-      butin de coffre, souterraines. **Densité/placement à valider en playtest** ; le tell de
-      surface de l'Avant-poste reste à ajouter. Non couvert par GameTest (worldgen), mais le
-      datapack se charge sans erreur au boot du serveur de test.
-    - **10e** — Débloque la tâche 8 (le Locator a enfin une cible). Reste à coder (tâche 8).
+      butin de coffre, souterraines, **tell de surface** (amorce de pierre veinée au-dessus de
+      l'Avant-poste). **Densité/placement à valider en playtest**. Non couvert par GameTest
+      (worldgen), mais le datapack se charge sans erreur au boot du serveur de test.
+    - **10e** — Débloque la tâche 8 (le Locator a enfin une cible). ✅ fait (tâche 8).
 
-    **Suites immédiates** : tell de surface de l'Avant-poste ; migration vers un `DataComponentIngredient`
+    **Suites immédiates** : migration vers un `DataComponentIngredient`
     (tier ≥ N) quand le blueprint T3 arrivera, pour empêcher un blueprint de tier inférieur de
     crafter une machine de tier supérieur (aujourd'hui : match par item, sûr tant que seul le T2
     existe).
@@ -197,7 +197,9 @@ Tâches, dans l'ordre :
       (les recettes qui codaient le fer en dur ont été migrées vers ce tag). Œuf d'apparition,
       modèle/renderer placeholder. 3 GameTest (stats du garde, fragment ↔ fer, alerte sur casse de
       machine). Réaction à la casse d'une machine du site **faite** (`CustodeAlertHandler` sur
-      `BlockEvent.BreakEvent`, rayon d'alerte configurable). Différé : patrouille/retour à un point fixe.
+      `BlockEvent.BreakEvent`, rayon d'alerte configurable). **Patrouille** faite : il reste dans un
+      rayon de 12 blocs autour de son point de garde (`restrictTo` + `MoveTowardsRestrictionGoal`,
+      persisté). Il ne s'éloigne donc pas de son Avant-poste.
     - ⬜ **Bloc de récolte du `resonance_spore`** : l'item existe, mais sa source (pousse sur
       `resonance_veined_stone` en faible luminosité, façon glow lichen, repousse ~2 jours MC —
       `04-Materials.md`) est un bloc à part, non codé. Tant qu'il manque, la reproduction du Fileur

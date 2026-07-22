@@ -6,6 +6,7 @@ import com.veskorius.energy.ResonanceFieldManager;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -104,6 +105,7 @@ public class ResonanceLocatorItem extends Item {
         player.displayClientMessage(Component.translatable("gui.veskorius.locator.found", type, dir, dist)
             .withStyle(ChatFormatting.AQUA), true);
         level.playSound(null, from, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.6f, 1.4f);
+        emitPointer(serverLevel, player, hit.pos);
         return InteractionResultHolder.success(stack);
     }
 
@@ -154,6 +156,16 @@ public class ResonanceLocatorItem extends Item {
             }
         }
         return best;
+    }
+
+    /** Traînée de particules du joueur vers la source : retour directionnel visuel. */
+    private static void emitPointer(ServerLevel level, Player player, BlockPos target) {
+        Vec3 start = player.getEyePosition();
+        Vec3 dir = Vec3.atCenterOf(target).subtract(start).normalize();
+        for (int i = 1; i <= 6; i++) {
+            Vec3 p = start.add(dir.scale(i));
+            level.sendParticles(ParticleTypes.WAX_ON, p.x, p.y, p.z, 1, 0.0, 0.0, 0.0, 0.0);
+        }
     }
 
     private static String windOf(int dx, int dz) {

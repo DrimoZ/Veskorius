@@ -4,7 +4,9 @@ import com.veskorius.block.ModBlocks;
 import com.veskorius.entity.CustodeEntity;
 import com.veskorius.entity.ModEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
@@ -68,13 +70,29 @@ public class RuinFeature extends Feature<RuinConfiguration> {
             chest.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, config.lootTable()), random.nextLong());
         }
 
-        // Console d'attunement + un Custode de garde (Avant-poste).
+        // Console d'attunement + un Custode de garde + un « tell » de surface (Avant-poste).
         if (config.console()) {
             level.setBlock(origin.above(), ModBlocks.ATTUNEMENT_CONSOLE.get().defaultBlockState(), 2);
             spawnGuardian(level, origin);
+            placeSurfaceMarker(level, origin);
         }
 
         return true;
+    }
+
+    /**
+     * Petite amorce de pilier en pierre veinée à la surface, au-dessus de l'Avant-poste
+     * (08-Structures.md, tell de surface) : rend la structure repérable une fois le T2
+     * acquis (pilier 5). Le sol souterrain reste à trouver, mais le marqueur oriente.
+     */
+    private static void placeSurfaceMarker(WorldGenLevel level, BlockPos origin) {
+        int surfaceY = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, origin.getX(), origin.getZ());
+        BlockState veined = ModBlocks.RESONANCE_VEINED_STONE.get().defaultBlockState();
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos(origin.getX(), surfaceY, origin.getZ());
+        for (int i = 0; i < 3; i++) {
+            level.setBlock(cursor, veined, 2);
+            cursor.move(Direction.UP);
+        }
     }
 
     /** Pose un Custode persistant qui garde l'Avant-poste (09-Entities.md). */

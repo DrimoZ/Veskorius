@@ -1,6 +1,8 @@
 package com.veskorius.entity;
 
 import com.veskorius.config.VeskoriusConfig;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
@@ -14,6 +16,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
@@ -42,6 +45,9 @@ public class CustodeEntity extends Monster {
     /** Rayon de détection (09-Entities.md), exprimé via la portée de suivi. */
     private static final double DETECTION_RANGE = 6.0;
 
+    /** Rayon dans lequel le Custode reste autour de son point de garde (patrouille). */
+    private static final int GUARD_RADIUS = 12;
+
     public CustodeEntity(EntityType<? extends Monster> type, Level level) {
         super(type, level);
     }
@@ -59,6 +65,8 @@ public class CustodeEntity extends Monster {
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0, false));
+        // Reste près de son point de garde (patrouille, ne s'éloigne pas du site).
+        goalSelector.addGoal(6, new MoveTowardsRestrictionGoal(this, 0.9));
         goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.7));
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0f));
         goalSelector.addGoal(8, new RandomLookAroundGoal(this));
@@ -77,6 +85,8 @@ public class CustodeEntity extends Monster {
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
                                         MobSpawnType reason, @Nullable SpawnGroupData spawnData) {
+        // Point de garde = là où il apparaît (l'Avant-poste).
+        restrictTo(blockPosition(), GUARD_RADIUS);
         AttributeInstance health = getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
             health.setBaseValue(VeskoriusConfig.custodeHealth());
@@ -101,5 +111,28 @@ public class CustodeEntity extends Monster {
     @Override
     protected SoundEvent getDeathSound() {
         return SoundEvents.IRON_GOLEM_DEATH;
+    }
+
+    // --- Persistance du point de garde (sinon perdu au rechargement) ----------
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        if (hasRestriction()) {
+            BlockPos home = getRestrictCenter();
+            tag.putInt("HomeX", home.getX());
+            tag.putInt("HomeY", home.getY());
+            tag.putInt("HomeZ", home.getZ());
+            tag.putInt("HomeRadius", (int) getRestrictRadius());
+        }
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("HomeRadius")) {
+            restrictTo(new BlockPos(tag.getInt("HomeX"), tag.getInt("HomeY"), tag.getInt("HomeZ")),
+                tag.getInt("HomeRadius"));
+        }
     }
 }
