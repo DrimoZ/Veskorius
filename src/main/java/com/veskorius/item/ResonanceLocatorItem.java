@@ -137,18 +137,23 @@ public class ResonanceLocatorItem extends Item {
 
     @Nullable
     private static BlockPos nearestCrystal(ServerLevel level, BlockPos from) {
+        // Bound the scan cost: crystal detection is capped at SCAN_RADIUS even if the
+        // configured range is larger (a full config-range box would be far too big).
+        int scan = Math.min(range(), SCAN_RADIUS);
         BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
         BlockPos best = null;
-        long bestSq = (long) range() * range();
-        for (int dx = -SCAN_RADIUS; dx <= SCAN_RADIUS; dx++) {
-            for (int dy = -SCAN_RADIUS; dy <= SCAN_RADIUS; dy++) {
-                for (int dz = -SCAN_RADIUS; dz <= SCAN_RADIUS; dz++) {
+        long bestSq = (long) scan * scan;
+        for (int dx = -scan; dx <= scan; dx++) {
+            for (int dy = -scan; dy <= scan; dy++) {
+                for (int dz = -scan; dz <= scan; dz++) {
                     long sq = (long) dx * dx + (long) dy * dy + (long) dz * dz;
                     if (sq >= bestSq) {
                         continue;
                     }
                     cursor.set(from.getX() + dx, from.getY() + dy, from.getZ() + dz);
-                    if (level.getBlockState(cursor).is(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get())) {
+                    // isLoaded first: never force-load a chunk from a scan (avoids a stall).
+                    if (level.isLoaded(cursor)
+                        && level.getBlockState(cursor).is(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get())) {
                         bestSq = sq;
                         best = cursor.immutable();
                     }

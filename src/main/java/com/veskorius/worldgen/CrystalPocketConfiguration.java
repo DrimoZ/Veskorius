@@ -6,15 +6,13 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
 /**
- * Configuration de la feature de poche de cristal. Data-driven (dans le
- * ConfiguredFeature JSON) pour permettre de régler la taille sans recompiler.
+ * Configuration of the crystal-pocket feature. Data-driven (in the ConfiguredFeature
+ * JSON) so the size can be tuned without recompiling.
  *
- * @param crystalTries   épaisseur du « pas » aléatoire posant les cristaux : plus
- *                       grand = poche plus grosse.
- * @param shellThickness rayon de la coquille de Resonance Veined Stone autour des
- *                       cristaux (1 = une couche).
- * @param fluxChance     probabilité qu'un bloc de la coquille soit une croûte de
- *                       Raw Flux Deposit (brossable) plutôt que de la pierre veinée.
+ * @param crystalTries   number of random-walk steps placing crystals: higher = bigger pocket.
+ * @param shellThickness radius of the Resonance Veined Stone shell around the crystals (1 = one layer).
+ * @param fluxChance     probability that a shell block is a Raw Flux Deposit crust
+ *                       (brushable) rather than plain veined stone.
  */
 public record CrystalPocketConfiguration(int crystalTries, int shellThickness, float fluxChance)
         implements FeatureConfiguration {

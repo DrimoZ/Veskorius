@@ -1418,7 +1418,7 @@ public class MachineGameTests {
                 && VeskoriusConfig.custodeAlertRange() == 16.0,
             "Défauts Custode : 30 / 6 / 6 / 16");
         helper.assertTrue(VeskoriusConfig.striderMilkCooldown() == 6000
-                && VeskoriusConfig.roostFileurRange() == 6.0,
+                && VeskoriusConfig.roostStriderRange() == 6.0,
             "Défauts Fileur/Roost : cooldown 6000, portée Roost 6");
         helper.succeed();
     }

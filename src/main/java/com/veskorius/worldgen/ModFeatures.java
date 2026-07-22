@@ -14,7 +14,7 @@ public class ModFeatures {
     public static final DeferredHolder<Feature<?>, ResonanceCrystalPocketFeature> CRYSTAL_POCKET =
         FEATURES.register("crystal_pocket", ResonanceCrystalPocketFeature::new);
 
-    /** Petites ruines (Habitation Modeste, Avant-poste) — voir {@link RuinFeature}. */
+    /** Small ruins (Modest Dwelling, Outpost) — see {@link RuinFeature}. */
     public static final DeferredHolder<Feature<?>, RuinFeature> RUIN =
         FEATURES.register("ruin", RuinFeature::new);
 }

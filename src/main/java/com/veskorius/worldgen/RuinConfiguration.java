@@ -7,15 +7,15 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
 /**
- * Configuration d'une petite ruine veskorienne bâtie par {@link RuinFeature}.
+ * Configuration of a small Veskorian ruin built by {@link RuinFeature}.
  *
- * Data-driven : un datapack peut changer la taille, activer/désactiver la console
- * ou pointer une autre table de butin sans recompiler.
+ * Data-driven: a datapack can change the size, enable/disable the console or point
+ * to another loot table without recompiling.
  *
- * @param radius     demi-largeur de l'emprise (rayon → footprint 2r+1).
- * @param height     hauteur intérieure des murs.
- * @param console    place une {@code attunement_console} à l'intérieur (Avant-poste).
- * @param lootTable  table de butin du coffre de la ruine.
+ * @param radius     half-width of the footprint (radius -> footprint 2r+1).
+ * @param height     interior wall height.
+ * @param console    places an {@code attunement_console} inside (Outpost).
+ * @param lootTable  loot table of the ruin's chest.
  */
 public record RuinConfiguration(int radius, int height, boolean console, ResourceLocation lootTable)
         implements FeatureConfiguration {

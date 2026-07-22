@@ -19,20 +19,19 @@ import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.storage.loot.LootTable;
 
 /**
- * Poche de Raw Resonance Crystal + sa coquille de Resonance Veined Stone
- * (07-World-Generation.md, tâche 14).
+ * A pocket of Raw Resonance Crystal + its Resonance Veined Stone shell
+ * (07-World-Generation.md, task 14).
  *
- * La feature *ore* vanilla ne sait faire qu'un amas ; il faut une feature custom
- * pour enrober l'amas d'une coquille — c'est cette coquille qui est le « tell »
- * visuel du pilier 2 (connaissance spatiale) : voir la pierre veinée, c'est savoir
- * qu'une poche est proche sans avoir encore rien miné.
+ * The vanilla ore feature can only make a cluster; a custom feature is needed to
+ * wrap the cluster in a shell — that shell is the visual "tell" of pillar 2 (spatial
+ * knowledge): seeing veined stone means a pocket is near, before mining anything.
  *
- * Algorithme : une marche aléatoire pose les cristaux (amas compact et connexe),
- * puis chaque bloc de pierre à portée de la coquille devient de la pierre veinée.
+ * Algorithm: a random walk places the crystals (compact, connected cluster), then
+ * every stone block within the shell radius becomes veined stone.
  */
 public class ResonanceCrystalPocketFeature extends Feature<CrystalPocketConfiguration> {
 
-    /** Table de loot du brossage d'un dépôt de flux (voir loot_table/gameplay/). */
+    /** Loot table for brushing a flux deposit (see loot_table/gameplay/). */
     private static final ResourceKey<LootTable> BRUSH_FLUX_LOOT = ResourceKey.create(
         Registries.LOOT_TABLE,
         ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "gameplay/brush_flux_deposit"));
@@ -50,7 +49,7 @@ public class ResonanceCrystalPocketFeature extends Feature<CrystalPocketConfigur
         BlockState crystal = ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get().defaultBlockState();
         BlockState veined = ModBlocks.RESONANCE_VEINED_STONE.get().defaultBlockState();
 
-        // 1. Les cristaux, par marche aléatoire depuis l'origine.
+        // 1. The crystals, via a random walk from the origin.
         Set<BlockPos> crystals = new HashSet<>();
         BlockPos.MutableBlockPos cursor = context.origin().mutable();
         for (int i = 0; i < config.crystalTries(); i++) {
@@ -64,8 +63,8 @@ public class ResonanceCrystalPocketFeature extends Feature<CrystalPocketConfigur
             return false;
         }
 
-        // 2. La coquille : pierre veinée, avec par endroits une croûte de flux
-        //    brossable (le « tell » + un chemin T1 alternatif au Quartz).
+        // 2. The shell: veined stone, with here and there a brushable flux crust
+        //    (the "tell" + an alternative T1 path to Quartz).
         BlockState flux = ModBlocks.RAW_FLUX_DEPOSIT.get().defaultBlockState();
         int r = config.shellThickness();
         Set<BlockPos> shell = new HashSet<>();
@@ -86,7 +85,7 @@ public class ResonanceCrystalPocketFeature extends Feature<CrystalPocketConfigur
             if (random.nextFloat() < config.fluxChance()) {
                 level.setBlock(s, flux, 2);
                 if (level.getBlockEntity(s) instanceof BrushableBlockEntity brushable) {
-                    // Le brossage tire de cette table (param set CHEST, 1 objet max).
+                    // Brushing draws from this table (CHEST param set, 1 item max).
                     brushable.setLootTable(BRUSH_FLUX_LOOT, random.nextLong());
                 }
             } else {

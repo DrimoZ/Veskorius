@@ -55,6 +55,8 @@ public class ModDataGenerators {
             new ModItemModelProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(),
             new ModLanguageProvider(output));
+        generator.addProvider(event.includeClient(),
+            new ModFrenchLangProvider(output));
 
         generator.addProvider(event.includeServer(),
             new ModRecipeProvider(output, lookupProvider));

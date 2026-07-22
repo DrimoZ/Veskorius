@@ -26,33 +26,30 @@ import net.neoforged.neoforge.common.world.BiomeModifiers;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 /**
- * Génération des poches de Raw Resonance Crystal (07-World-Generation.md, tâche 4).
+ * World generation of the mod, built by datagen (07-World-Generation.md).
  *
- * Tout est data-driven : ces bootstraps produisent, par datagen, le
- * {@code ConfiguredFeature} (la poche : quel bloc, quelle taille), le
- * {@code PlacedFeature} (où : nombre par chunk, tranche Y -20 à 0) et le
- * {@code BiomeModifier} NeoForge qui ajoute le tout aux biomes de l'Overworld.
- * Passer par le datagen valide le format contre les codecs — plus fiable que du
- * JSON écrit à la main.
+ * Everything is data-driven: these bootstraps produce, via datagen, the
+ * {@code ConfiguredFeature} (the pocket/ruin: which blocks, which size), the
+ * {@code PlacedFeature} (where: rarity, Y band) and the NeoForge
+ * {@code BiomeModifier} that adds it all to the Overworld biomes. Going through
+ * datagen validates the format against the codecs — more reliable than hand-written
+ * JSON.
  *
- * Densité de départ (« à valider en playtest », 07-World-Generation.md) : nœud de
- * ~8 cristaux, une poche en moyenne tous les {@code POCKET_RARITY} chunks (un peu
- * plus rare que le diamant).
+ * Starting densities are marked "validate in playtest" (07-World-Generation.md).
  */
 public final class ModWorldGen {
 
-    /** Pas de la marche aléatoire posant les cristaux (taille de l'amas). À valider en playtest. */
+    /** Step count of the random walk placing crystals (cluster size). Validate in playtest. */
     private static final int CRYSTAL_TRIES = 8;
-    /** Épaisseur de la coquille de pierre veinée (1 couche). */
+    /** Thickness of the veined-stone shell (1 layer). */
     private static final int SHELL_THICKNESS = 1;
-    /** ~15 % des blocs de coquille sont une croûte de flux brossable (04-Materials.md). */
+    /** ~15% of shell blocks are a brushable flux crust (04-Materials.md). */
     private static final float FLUX_CHANCE = 0.15f;
     /**
-     * Rareté des poches : une tentative en moyenne tous les {@code POCKET_RARITY}
-     * chunks (et non plusieurs par chunk). Réglé pour que les poches soient **un peu
-     * plus rares que le diamant** — une poche reste un gros nœud (plusieurs cristaux
-     * + coquille), donc rare ne veut pas dire avare. À affiner en playtest ;
-     * surchargeable par datapack (PlacedFeature JSON).
+     * Pocket rarity: one attempt on average every {@code POCKET_RARITY} chunks (not
+     * several per chunk). Tuned so pockets are a bit rarer than diamond — a pocket
+     * is still a large node (several crystals + shell), so rare is not stingy.
+     * Validate in playtest; overridable by datapack (PlacedFeature JSON).
      */
     private static final int POCKET_RARITY = 10;
     private static final int MIN_Y = -20;
@@ -67,7 +64,7 @@ public final class ModWorldGen {
     public static final ResourceKey<BiomeModifier> ADD_CRYSTAL_STRIDER =
         ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, id("add_crystal_strider"));
 
-    // Ruines (tâche 10) : Habitation Modeste + Avant-poste, en feature (voir RuinFeature).
+    // Ruins (task 10): Modest Dwelling + Outpost, as a feature (see RuinFeature).
     public static final ResourceLocation MODEST_DWELLING_LOOT = id("chests/modest_dwelling");
     public static final ResourceLocation OUTPOST_LOOT = id("chests/outpost");
 
@@ -88,14 +85,14 @@ public final class ModWorldGen {
     }
 
     public static void bootstrapConfiguredFeatures(BootstrapContext<ConfiguredFeature<?, ?>> context) {
-        // Feature custom : amas de cristaux + coquille de pierre veinée (le « tell »
-        // visuel). La feature *ore* vanilla ne ferait que l'amas, sans coquille.
+        // Custom feature: crystal cluster + veined-stone shell (the visual "tell").
+        // The vanilla ore feature would only make the cluster, without the shell.
         context.register(RESONANCE_CRYSTAL_POCKET_CF,
             new ConfiguredFeature<>(ModFeatures.CRYSTAL_POCKET.get(),
                 new CrystalPocketConfiguration(CRYSTAL_TRIES, SHELL_THICKNESS, FLUX_CHANCE)));
 
-        // Ruines : Habitation Modeste (sans console, butin quotidien) et Avant-poste
-        // (avec console → blueprint T2). Pièces 7×7, hauteur 4 (voir RuinFeature).
+        // Ruins: Modest Dwelling (no console, daily loot) and Outpost (console ->
+        // T2 blueprint). 7x7 rooms, height 4 (see RuinFeature).
         context.register(MODEST_DWELLING_CF,
             new ConfiguredFeature<>(ModFeatures.RUIN.get(),
                 new RuinConfiguration(3, 4, false, MODEST_DWELLING_LOOT)));
@@ -114,9 +111,9 @@ public final class ModWorldGen {
             HeightRangePlacement.uniform(VerticalAnchor.absolute(MIN_Y), VerticalAnchor.absolute(MAX_Y)),
             BiomeFilter.biome())));
 
-        // Ruines : rares, souterraines. Fréquences de départ à VALIDER EN PLAYTEST
-        // (le spawn est une feature, pas une structure vanilla : pas de garantie
-        // d'espacement, juste une rareté par chunk).
+        // Ruins: rare, underground. Starting frequencies to VALIDATE IN PLAYTEST
+        // (this is a feature, not a vanilla structure: no spacing guarantee, just a
+        // per-chunk rarity).
         Holder<ConfiguredFeature<?, ?>> dwelling = configured.getOrThrow(MODEST_DWELLING_CF);
         context.register(MODEST_DWELLING_PF, new PlacedFeature(dwelling, List.of(
             RarityFilter.onAverageOnceEvery(40),
@@ -141,15 +138,15 @@ public final class ModWorldGen {
             HolderSet.direct(placed.getOrThrow(RESONANCE_CRYSTAL_POCKET_PF)),
             GenerationStep.Decoration.UNDERGROUND_ORES));
 
-        // Faune neutre des poches : le Fileur de Cristal (09-Entities.md). Ajouté aux
-        // spawns CREATURE de tout l'Overworld ; la restriction à la strate Y 0/-40 est
-        // dans la règle de placement (ModEntityEvents). Poids/effectif à valider en
-        // playtest (le spawn souterrain d'une créature est limité par l'algo vanilla).
+        // Neutral fauna of the pockets: the Crystal Strider (09-Entities.md). Added to
+        // the CREATURE spawns of the whole Overworld; the Y 0/-40 band restriction is
+        // in the spawn placement rule (ModEntityEvents). Weight/count to validate in
+        // playtest (underground creature spawning is limited by the vanilla algorithm).
         context.register(ADD_CRYSTAL_STRIDER, new BiomeModifiers.AddSpawnsBiomeModifier(
             biomes.getOrThrow(BiomeTags.IS_OVERWORLD),
             List.of(new MobSpawnSettings.SpawnerData(ModEntities.CRYSTAL_STRIDER.get(), 8, 1, 3))));
 
-        // Ruines ajoutées à l'Overworld, au pas des structures souterraines.
+        // Ruins added to the Overworld, at the underground-structures decoration step.
         context.register(ADD_MODEST_DWELLING, new BiomeModifiers.AddFeaturesBiomeModifier(
             biomes.getOrThrow(BiomeTags.IS_OVERWORLD),
             HolderSet.direct(placed.getOrThrow(MODEST_DWELLING_PF)),

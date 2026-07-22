@@ -46,7 +46,7 @@ public class CrystalRoostBlockEntity extends AbstractProcessingMachineBlockEntit
         if (!(level instanceof ServerLevel serverLevel)) {
             return false;
         }
-        AABB area = new AABB(worldPosition).inflate(VeskoriusConfig.roostFileurRange());
+        AABB area = new AABB(worldPosition).inflate(VeskoriusConfig.roostStriderRange());
         return !serverLevel.getEntitiesOfClass(CrystalStriderEntity.class, area).isEmpty();
     }
 
