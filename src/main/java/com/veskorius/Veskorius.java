@@ -70,6 +70,7 @@ public class Veskorius {
                 output.accept(ModItems.FLUX_PURIFIER_ITEM.get());
                 output.accept(ModItems.FIELD_EMITTER_ITEM.get());
                 output.accept(ModItems.CRYSTAL_CRUSHER_ITEM.get());
+                output.accept(ModItems.CRYSTAL_ROOST_ITEM.get());
             })
             .build());
 

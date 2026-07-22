@@ -144,4 +144,7 @@ public class ModItems {
 
     public static final DeferredItem<BlockItem> CRYSTAL_CRUSHER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_CRUSHER);
+
+    public static final DeferredItem<BlockItem> CRYSTAL_ROOST_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_ROOST);
 }

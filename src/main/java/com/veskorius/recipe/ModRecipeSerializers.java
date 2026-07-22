@@ -31,6 +31,10 @@ public class ModRecipeSerializers {
         RECIPE_SERIALIZERS.register("crushing",
             () -> new MachineRecipeSerializer(ModRecipeTypes.CRUSHING::get));
 
+    public static final DeferredHolder<RecipeSerializer<?>, MachineRecipeSerializer> ROOSTING =
+        RECIPE_SERIALIZERS.register("roosting",
+            () -> new MachineRecipeSerializer(ModRecipeTypes.ROOSTING::get));
+
     public static final DeferredHolder<RecipeSerializer<?>, WhetstoneRecipeSerializer> SHARPENING =
         RECIPE_SERIALIZERS.register("sharpening", WhetstoneRecipeSerializer::new);
 

@@ -136,6 +136,19 @@ public class ModBlocks {
                 .sound(SoundType.METAL)
                 .lightLevel(state -> 3));
 
+    /**
+     * Machine #8 (05-Machines.md). Production passive de cristal brut : 2 Quartz →
+     * 1 Raw Crystal (600 s), à condition qu'un Fileur de Cristal soit à proximité.
+     */
+    public static final DeferredBlock<CrystalRoostBlock> CRYSTAL_ROOST =
+        BLOCKS.registerBlock("crystal_roost",
+            CrystalRoostBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.WOOD)
+                .strength(2.5f, 3.0f)
+                .sound(SoundType.WOOD)
+                .requiresCorrectToolForDrops());
+
     /** Machine #4 (05-Machines.md). Bloc passif : fournit un champ de Résonance. */
     public static final DeferredBlock<FieldEmitterBlock> FIELD_EMITTER =
         BLOCKS.registerBlock("field_emitter",

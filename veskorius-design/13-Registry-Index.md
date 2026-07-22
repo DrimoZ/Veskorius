@@ -98,7 +98,7 @@ se génère en petites poches (Y -20 à 0) et lâche l'item quand on la mine. La
 | 3 | `resonance_whetstone` | T1 | ✅ codé (block entity + cycle 8s + GUI + slot d'augment) |
 | 4 | `field_emitter` | T2 | ✅ codé (réserve + recharge + champ + GUI jauge, capability IResonanceField) |
 | 5 | `flux_purifier` | T2 | ✅ codé (cycle 45s, 2 Osc/tick, mode surchauffe) |
-| 8 | `crystal_roost` | T2 | À coder (Phase 1) |
+| 8 | `crystal_roost` | T2 | ✅ codé (production passive : 2 Quartz → 1 Raw Crystal 600s, si un Fileur < 6 blocs) |
 | 9 | `resonance_relay` | T3 | À coder (Phase 2) |
 | 10 | `veskorian_alloy_forge` | T3 | À coder (Phase 2) |
 | 11 | `structural_synthesizer` | T3 | À coder (Phase 2) |

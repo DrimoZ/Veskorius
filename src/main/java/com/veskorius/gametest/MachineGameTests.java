@@ -7,6 +7,7 @@ import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
 import com.veskorius.block.entity.ComponentAssemblerBlockEntity;
 import com.veskorius.block.entity.CrystalCrusherBlockEntity;
+import com.veskorius.block.entity.CrystalRoostBlockEntity;
 import com.veskorius.block.entity.FieldEmitterBlockEntity;
 import com.veskorius.block.entity.FluxPurifierBlockEntity;
 import com.veskorius.block.entity.RedstoneMode;
@@ -1125,6 +1126,30 @@ public class MachineGameTests {
         helper.assertTrue(baby instanceof CrystalStriderEntity,
             "Le bébé devrait être un Crystal Strider, trouve : " + baby);
         helper.succeed();
+    }
+
+    // --- Crystal Roost (machine #8, tâche 12) --------------------------------
+
+    /**
+     * Le Roost ne produit que si un Fileur de Cristal est à proximité (< 6 blocs) :
+     * sans Fileur, avec du Quartz, la progression reste à 0 ; un Fileur posé à côté
+     * la débloque. C'est la seule condition que le socle ne connaît pas.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 200)
+    public static void roostProgressesOnlyWithFileur(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                helper.setBlock(MACHINE, ModBlocks.CRYSTAL_ROOST.get());
+                machineInventory(helper, MACHINE).insertItem(
+                    CrystalRoostBlockEntity.SLOT_QUARTZ, new ItemStack(Items.QUARTZ, 8), false);
+            })
+            .thenExecuteAfter(40, () -> helper.assertTrue(machineProgress(helper, MACHINE) == 0,
+                "Sans Fileur, le Roost ne doit pas progresser, vaut " + machineProgress(helper, MACHINE)))
+            .thenExecute(() -> helper.spawn(ModEntities.CRYSTAL_STRIDER.get(), MACHINE.offset(2, 0, 0)))
+            .thenExecuteAfter(40, () -> helper.assertTrue(machineProgress(helper, MACHINE) > 0,
+                "Avec un Fileur à proximité, le Roost devrait progresser, vaut "
+                    + machineProgress(helper, MACHINE)))
+            .thenSucceed();
     }
 
     // --- Resonance Locator (outil #7, tâche 8) -------------------------------

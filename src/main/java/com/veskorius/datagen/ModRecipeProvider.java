@@ -158,6 +158,21 @@ public class ModRecipeProvider extends RecipeProvider {
                 has(ModItems.RESONANCE_COMPONENT.get()))
             .save(recipeOutput);
 
+        // Crystal Roost : 4 Planches + 2 Stable Crystal + 1 Botte de Foin
+        // (05-Machines.md #8) + blueprint T2 (gate physique, rendu). Sans forme.
+        net.minecraft.data.recipes.ShapelessRecipeBuilder
+            .shapeless(RecipeCategory.MISC, ModBlocks.CRYSTAL_ROOST.get())
+            .requires(net.minecraft.tags.ItemTags.PLANKS)
+            .requires(net.minecraft.tags.ItemTags.PLANKS)
+            .requires(net.minecraft.tags.ItemTags.PLANKS)
+            .requires(net.minecraft.tags.ItemTags.PLANKS)
+            .requires(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 2)
+            .requires(Items.HAY_BLOCK)
+            .requires(ModItems.RESONANCE_BLUEPRINT.get())
+            .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
+                has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
+            .save(recipeOutput);
+
         // Crystal Crusher : 3 Cobblestone + 1 Iron Ingot (05-Machines.md #22,
         // tableau "Recettes de construction"). Le design fixe les quantités mais
         // pas la disposition — le fer au cœur (le broyeur), la pierre autour.
@@ -224,6 +239,15 @@ public class ModRecipeProvider extends RecipeProvider {
             .time(5 * 20)
             .osc(3)
             .save(recipeOutput, machineRecipe("assembling/component_from_dust"));
+
+        // Roost : 2 Quartz → 1 Raw Crystal, 600 s, autonome (05-Machines.md #8). La
+        // condition « un Fileur à proximité » n'est pas dans la recette : elle vit
+        // dans la machine (CrystalRoostBlockEntity.canRunCycle). 2 Quartz par cycle,
+        // 2 cycles par jour MC = 4 Quartz/jour, cohérent avec le design.
+        MachineRecipeBuilder.roosting(ModItems.RAW_RESONANCE_CRYSTAL.get(), 1)
+            .input(Items.QUARTZ, 2)
+            .time(600 * 20)
+            .save(recipeOutput, machineRecipe("roosting/raw_crystal"));
 
         // Whetstone : outil endommagé + 1 Stable Crystal → outil réparé de 25 %,
         // 8 s, autonome (05-Machines.md #3). Type dédié (réparation, pas input→output).

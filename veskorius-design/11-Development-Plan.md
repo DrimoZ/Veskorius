@@ -195,7 +195,15 @@ Tâches, dans l'ordre :
       `resonance_veined_stone` en faible luminosité, façon glow lichen, repousse ~2 jours MC —
       `04-Materials.md`) est un bloc à part, non codé. Tant qu'il manque, la reproduction du Fileur
       n'est accessible qu'en créatif ; la traite, elle, est jouable en survie (Fileurs sauvages).
-12. `CrystalRoostBlockEntity` (production passive) — dépend du Fileur de Cristal (tâche 11).
+12. ✅ `CrystalRoostBlockEntity` (production passive) — machine « traitement » autonome
+    (`veskorius:roosting` : 2 Quartz → 1 Raw Crystal, 600 s) réutilisant le socle process, avec
+    **une condition en plus** codée dans la machine (`canRunCycle`) : au moins un Fileur de Cristal
+    à moins de 6 blocs. Sans Fileur, inerte (et pas de Quartz consommé). Interprétation des chiffres
+    du design : 2 Quartz/cycle × 2 cycles par jour MC = 4 Quartz/jour, 1 Raw Crystal/600 s — les
+    deux valeurs de `05-Machines.md` #8 réconciliées. Craft T2 gaté par le blueprint (4 Planches +
+    2 Stable Crystal + 1 Botte de Foin). GUI + slot d'augment gratuits (socle). Intégré à JEI.
+    1 GameTest (le gate Fileur : progresse avec, pas sans). Utile maintenant que les poches sont
+    rares. Débloqué par le Fileur (fait à la tâche 11).
 13. ✅ `CrystalCrusherBlockEntity` (#22, alternative au Stabilizer, produit Resonance Dust).
     Cycle 10 s, autonome (aucun Osc) : 1 Raw Crystal → 3 Resonance Dust. Première machine
     « traitement » à **une seule entrée** — elle prouve que le socle

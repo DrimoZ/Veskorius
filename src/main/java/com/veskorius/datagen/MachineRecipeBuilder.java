@@ -58,6 +58,11 @@ public class MachineRecipeBuilder {
             ModRecipeSerializers.CRUSHING::get, new ItemStack(result, count));
     }
 
+    public static MachineRecipeBuilder roosting(ItemLike result, int count) {
+        return new MachineRecipeBuilder(ModRecipeTypes.ROOSTING::get,
+            ModRecipeSerializers.ROOSTING::get, new ItemStack(result, count));
+    }
+
     public MachineRecipeBuilder input(ItemLike item, int count) {
         ingredients.add(SizedIngredient.of(item, count));
         return this;

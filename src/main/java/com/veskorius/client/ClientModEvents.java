@@ -3,6 +3,7 @@ package com.veskorius.client;
 import com.veskorius.Veskorius;
 import com.veskorius.client.screen.ComponentAssemblerScreen;
 import com.veskorius.client.screen.CrystalCrusherScreen;
+import com.veskorius.client.screen.CrystalRoostScreen;
 import com.veskorius.client.screen.FieldEmitterScreen;
 import com.veskorius.client.screen.FluxPurifierScreen;
 import com.veskorius.client.entity.CrystalStriderModel;
@@ -29,6 +30,7 @@ public class ClientModEvents {
         event.register(ModMenuTypes.FLUX_PURIFIER.get(), FluxPurifierScreen::new);
         event.register(ModMenuTypes.FIELD_EMITTER.get(), FieldEmitterScreen::new);
         event.register(ModMenuTypes.CRYSTAL_CRUSHER.get(), CrystalCrusherScreen::new);
+        event.register(ModMenuTypes.CRYSTAL_ROOST.get(), CrystalRoostScreen::new);
     }
 
     @SubscribeEvent

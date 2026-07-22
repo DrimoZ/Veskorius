@@ -47,4 +47,10 @@ public class ModBlockEntities {
             () -> BlockEntityType.Builder
                 .of(CrystalCrusherBlockEntity::new, ModBlocks.CRYSTAL_CRUSHER.get())
                 .build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CrystalRoostBlockEntity>>
+        CRYSTAL_ROOST = BLOCK_ENTITIES.register("crystal_roost",
+            () -> BlockEntityType.Builder
+                .of(CrystalRoostBlockEntity::new, ModBlocks.CRYSTAL_ROOST.get())
+                .build(null));
 }

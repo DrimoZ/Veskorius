@@ -83,8 +83,11 @@ ce fichier.
   ping directionnel vers la source la plus proche — poche de cristal (utile maintenant qu'elles
   sont rares) ou signature de champ (Field Emitter). Batterie interne 100 Osc (5/ping), rechargée
   dans un champ ou en puisant sur une Storage Cell portée.
-- Harnais `GameTest` : 52 tests (… + Fileur, gatekeeping T2, structures, Locator), `./gradlew
-  runGameTestServer`. Le serveur de test charge tout le datapack (worldgen inclus) sans erreur.
+- **Crystal Roost** (#8) : production passive de cristal brut (2 Quartz → 1 Raw Crystal, 600 s) à
+  condition qu'un **Fileur de Cristal** soit à moins de 6 blocs — alternative lente au minage,
+  pertinente maintenant que les poches sont rares. Réutilise le socle process + un gate de proximité.
+- Harnais `GameTest` : 53 tests (… + Fileur, gatekeeping T2, structures, Locator, Crystal Roost),
+  `./gradlew runGameTestServer`. Le serveur de test charge tout le datapack (worldgen inclus) sans erreur.
 - **Intégration JEI** (dev) : les recettes des 4 machines s'affichent dans JEI, une catégorie par
   machine, avec temps et Osc/tick. JEI est en `compileOnly` (API) + `localRuntime` (mod complet
   dans `runClient`), pas exporté dans le jar. Sert à vérifier les recettes en jeu.

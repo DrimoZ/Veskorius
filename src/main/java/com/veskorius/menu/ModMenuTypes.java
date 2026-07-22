@@ -40,4 +40,8 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<CrystalCrusherMenu>>
         CRYSTAL_CRUSHER = MENUS.register("crystal_crusher",
             () -> IMenuTypeExtension.create(CrystalCrusherMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<CrystalRoostMenu>>
+        CRYSTAL_ROOST = MENUS.register("crystal_roost",
+            () -> IMenuTypeExtension.create(CrystalRoostMenu::new));
 }

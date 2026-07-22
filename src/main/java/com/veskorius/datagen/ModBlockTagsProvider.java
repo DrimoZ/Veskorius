@@ -28,6 +28,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             .add(ModBlocks.FLUX_PURIFIER.get())
             .add(ModBlocks.FIELD_EMITTER.get())
             .add(ModBlocks.CRYSTAL_CRUSHER.get())
+            .add(ModBlocks.CRYSTAL_ROOST.get())
             .add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get())
             .add(ModBlocks.RESONANCE_VEINED_STONE.get())
             .add(ModBlocks.RAW_FLUX_DEPOSIT.get())
@@ -39,6 +40,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             .add(ModBlocks.FLUX_PURIFIER.get())
             .add(ModBlocks.FIELD_EMITTER.get())
             .add(ModBlocks.CRYSTAL_CRUSHER.get())
+            .add(ModBlocks.CRYSTAL_ROOST.get())
             .add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get())
             .add(ModBlocks.RESONANCE_VEINED_STONE.get());
     }
