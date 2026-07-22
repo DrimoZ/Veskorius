@@ -69,9 +69,10 @@ Tâches, dans l'ordre :
      cycle en pause** (progression conservée), alors qu'un retrait d'ingrédient **réinitialise**.
      Verrouillé par un GameTest qui coupe le courant à mi-cycle et vérifie que la progression
      reste figée.
-   - **Branche alternative** (3 Resonance Dust + 2 Iron, `04-Materials.md`) non codée : le
-     `resonance_dust` n'existe pas avant le Crystal Crusher (tâche 13). Comptes différents
-     (1 cristal vs 3 poussières), donc pas un simple tag — à brancher quand la poussière existera.
+   - **Branche alternative** (3 Resonance Dust + 2 Iron, `04-Materials.md`) : ✅ codée avec la
+     tâche 13, une fois le `resonance_dust` créé. Comptes différents (1 cristal vs 3 poussières)
+     donc pas un tag, mais **zéro code machine** : un second JSON `assembling/component_from_dust`
+     a suffi, le slot d'entrée acceptant la poussière du seul fait de la recette.
    - 3 GameTest (production + prélèvement d'Osc réel sur l'émetteur, inertie hors champ, pause
      sur coupure).
 3. ✅ `ResonanceWhetstoneBlockEntity` — #3, le plus simple, bon test de régression du pattern.
@@ -117,10 +118,19 @@ Tâches, dans l'ordre :
      effets déterministes de la surchauffe (temps/conso), doublement de la conso d'Osc en
      surchauffe. **Non testé** : le tirage à 20 % de perte (RNG ; un test fiable exigerait
      ~50 cycles de 450 ticks, trop long ; un test court serait flaky). Vérifié par revue + jeu.
-7. `ResonanceStorageCellItem` — #6. Design d'énergie résolu (charge dans un champ, voir
-   `06-Energy.md`, section « Osc portable »), à coder — mais son seul consommateur est le Locator
-   (tâche 8), lui bloqué : à faire en paire avec la tâche 8, idéalement après la génération de
-   monde (tâche 4) pour que le Locator ait un sens.
+7. ✅ `ResonanceStorageCellItem` — #6. Batterie portable, capacité 8000 Osc, état de charge sur
+   l'item (Data Component `storage_cell_charge`, persistant + synchronisé réseau). Se recharge
+   dans un champ : tant qu'elle est dans l'inventaire d'un joueur couvert par un émetteur actif,
+   elle prélève au plus 20 Osc/tick **sur la réserve de cet émetteur** — la même source que les
+   machines, via `ResonanceFieldManager.supply` (cohérent avec « pas de câble », pilier 3).
+   Craft : 2 Resonance Component + 1 Stable Crystal. Tooltip + barre de charge (réutilise la barre
+   de durabilité). L'API `extractCharge` est prête pour son unique consommateur, le Locator.
+   - **Codée seule (pas en paire avec la tâche 8)** : le Locator dépend des structures (tâche 10),
+     encore à faire. La batterie, elle, est entièrement spécifiée (`06-Energy.md`, « Osc portable »)
+     et testable sans lui — la recharge se valide contre un émetteur réel. La paire se ferme quand
+     le Locator arrivera ; d'ici là la cellule se charge sans avoir encore où se vider.
+   - 4 GameTest (recharge réelle prélevée sur l'émetteur, aucune charge hors champ, plafond de
+     capacité sans gaspillage, `extractCharge` borné à la charge). Suite : **37 tests** verts.
 8. `ResonanceLocatorItem` — #7. Modèle d'énergie résolu (batterie interne + recharge auto par
    champ ou Storage Cell, `06-Energy.md`), mais sa **fonction** de localisation dépend de la
    génération des structures (tâche 10). À coder une fois les structures là.
@@ -133,11 +143,63 @@ Tâches, dans l'ordre :
    recalibration) et retrait de Catalyst Core (tâche 15) à ajouter plus tard. 6 GameTest
    (routage des 4 modes + collecte et démontage). Validé en jeu (démontage propre, GUI ne
    s'ouvre plus, aucune exception dans les logs).
-10. Structures « Habitation Modeste » et « Avant-poste » + fragments de déblocage.
+10. ✅ Structures « Habitation Modeste » et « Avant-poste » + **gatekeeping physique** (2026-07-22,
+    voir `03`/`08`/`12`). Le déblocage d'un tier passe par un objet-clé, le `resonance_blueprint`
+    (ingrédient **rendu** dans les recettes du tier), obtenu par un défi différent à chaque
+    structure ; **aucune recette n'est masquée**. Sous-tâches :
+    - ✅ **10a** — Items : `resonance_blueprint` (Data Component `blueprint_tier`, rendu au craft via
+      `hasCraftingRemainingItem`/`getCraftingRemainingItem`), `codex_fragment` (lore, Data Component
+      `codex_entry`, lisible au clic droit, non consommé), `fossilized_ration` (nourriture flavor).
+    - ✅ **10b** — Recettes T2 gatées : `resonance_blueprint` ajouté comme ingrédient **rendu** aux 4
+      recettes T2 existantes (Field Emitter, Flux Purifier, Storage Cell, Catalyst Core). Visible
+      dans JEI, rien de masqué. GameTest : la recette échoue sans blueprint, réussit avec.
+    - ✅ **10c** — Bloc `attunement_console` (généré en Avant-poste, clic droit sur place → blueprint
+      T2 si le joueur n'en a pas ; sans objet, non récupérable), advancements de **feedback**
+      (`tier1_awakening`, `tier2_field`) déclenchés par la possession de l'objet-repère.
+    - ✅ **10d** — Structures **en tant que feature** (`RuinFeature`), pas le système Structure/jigsaw
+      vanilla : réutilise le pipeline éprouvé des poches (ConfiguredFeature + PlacedFeature +
+      BiomeModifier), donc peu de risque et validable au datagen. Compromis : pas de `/locate`
+      vanilla → repérage par blocs (tell de surface, Locator). Deux ruines (avec/sans console),
+      butin de coffre, souterraines. **Densité/placement à valider en playtest** ; le tell de
+      surface de l'Avant-poste reste à ajouter. Non couvert par GameTest (worldgen), mais le
+      datapack se charge sans erreur au boot du serveur de test.
+    - **10e** — Débloque la tâche 8 (le Locator a enfin une cible). Reste à coder (tâche 8).
+
+    **Suites immédiates** : tell de surface de l'Avant-poste ; migration vers un `DataComponentIngredient`
+    (tier ≥ N) quand le blueprint T3 arrivera, pour empêcher un blueprint de tier inférieur de
+    crafter une machine de tier supérieur (aujourd'hui : match par item, sûr tant que seul le T2
+    existe).
 11. Mob « Custode » standard (+ drop Custode Alloy Fragment) et « Fileur de Cristal » (faune
     neutre, reproduction via Resonance Spore).
+    - ✅ **Fileur de Cristal (`crystal_strider`) codé** (2026-07-22) : faune neutre (aucun goal de
+      cible, fuit quand blessé), **traite** au clic droit à main nue (1 Raw Crystal, cooldown 5 min,
+      persistant), **reproduction** au `resonance_spore` (élevage vanilla). Attributs (10 PV),
+      œuf d'apparition, modèle/renderer placeholder, spawn souterrain Overworld (biome modifier
+      `add_crystal_strider` + règle de placement Y 0/-40 ; **densité à valider en playtest**, le
+      spawn souterrain d'une créature étant limité par l'algo vanilla). Mise en place du **registre
+      d'entités** (`ModEntities`, `ModEntityEvents` pour attributs + placement, rendu client). 3
+      GameTest (traite + cooldown, nourriture = spore uniquement, bébé = Fileur). Suite : **42**.
+    - ⬜ **Custode** (garde réactif, drop `custode_alloy_fragment`) : reste à coder — sa présence
+      naturelle dépend des structures (tâche 10, Poste de Garde/Avant-poste).
+    - ⬜ **Bloc de récolte du `resonance_spore`** : l'item existe, mais sa source (pousse sur
+      `resonance_veined_stone` en faible luminosité, façon glow lichen, repousse ~2 jours MC —
+      `04-Materials.md`) est un bloc à part, non codé. Tant qu'il manque, la reproduction du Fileur
+      n'est accessible qu'en créatif ; la traite, elle, est jouable en survie (Fileurs sauvages).
 12. `CrystalRoostBlockEntity` (production passive) — dépend du Fileur de Cristal (tâche 11).
-13. `CrystalCrusherBlockEntity` (#22, alternative au Stabilizer, produit Resonance Dust).
+13. ✅ `CrystalCrusherBlockEntity` (#22, alternative au Stabilizer, produit Resonance Dust).
+    Cycle 10 s, autonome (aucun Osc) : 1 Raw Crystal → 3 Resonance Dust. Première machine
+    « traitement » à **une seule entrée** — elle prouve que le socle
+    `AbstractProcessingMachineBlockEntity` ne suppose pas deux slots d'entrée. Réutilise
+    intégralement le socle : block + menu + écran de 3 lignes chacun, le reste est du datagen.
+    Item `resonance_dust` ajouté (04-Materials.md : voie T1 plus rapide que le Stabilizer, mais
+    sans Stable Crystal en sortie ; sert aussi d'engrais T3 et de la branche alt de l'Assembler).
+    - **Branche alternative de l'Assembler débloquée** (voir tâche 2) : 3 Resonance Dust + 2 Iron
+      → 2 Component est désormais un simple second JSON (`assembling/component_from_dust`), **zéro
+      code machine** — le slot d'entrée 0 accepte la poussière du seul fait de la recette
+      (`isItemValid` piloté par les recettes). Exactement ce que le socle data-driven promettait.
+    - 3 GameTest (production 3 poussières + entrée unique, fonctionnement sans champ, branche alt
+      de l'Assembler). Suite complète : **32 tests** verts. Reste la validation visuelle du GUI
+      (barre + boutons), reportée à la passe `runClient` comme les autres machines.
 14. ✅ Génération de `resonance_veined_stone` (coquille autour des poches) et de `raw_flux_deposit`
     (croûte brossable, réutilise le mécanisme de brosse vanilla).
     - Feature custom `veskorius:crystal_pocket` (remplace l'ore vanilla de la tâche 4) : amas de
@@ -156,9 +218,13 @@ Tâches, dans l'ordre :
     - ✅ **Slot fait** (avec la tâche 1 : la tâche 1 code la première des 23 machines, donc
       attendre la tâche 15 aurait garanti exactement le retrofit que cette tâche veut éviter —
       l'ordre initial 1 → 15 était contradictoire sur ce point).
-    - ⬜ **Item `resonance_catalyst_core` restant.** Le slot accepte le tag
-      `veskorius:machine_augments`, aujourd'hui vide : coder l'item et l'ajouter au tag suffira,
-      sans toucher au code d'aucune machine.
+    - ✅ **Item `resonance_catalyst_core`** (craft 2 Resonance Component + 1 Refined Crystal +
+      1 Redstone). Ajouté au tag `veskorius:machine_augments` : l'effet +15% était déjà porté par
+      le socle (`AUGMENT_SPEED_MULTIPLIER` + `hasAugment()`), **aucun code machine touché** — la
+      prédiction de la tâche 1 vérifiée. Récupérable via le démontage au Tuner (shift-clic) ou en
+      cassant le bloc ; le **mode Tuner « retrait d'augment en place »** reste différé (groupé avec
+      le contenu T4 dans `12-UX-and-Advancements.md`). 1 GameTest (acceptation dans le slot + cycle
+      600 → 522 ticks). Couvre le critère de sortie « installation d'un Catalyst Core sur une T1 ».
 
 **Critère de sortie** : les 15 tâches jouées en jeu sans crash, dans une seule partie continue,
 du spawn jusqu'à la purification d'un cristal, avec au moins un test du mode surchauffe, du
@@ -296,13 +362,41 @@ JEI/EMI d'abord, puis Thaumcraft, puis Mekanism, puis Create et AE2 en dernier.
 - Implémenter les conventions d'interface de `12-UX-and-Advancements.md` (barres de
   progression, icône surchauffe, indicateur de dérive) sur les 23 machines.
 - Implémenter les 6 `Advancement` de `12-UX-and-Advancements.md`.
-- Passe d'équilibrage complète sur toutes les valeurs marquées « à valider en playtest ».
+- Passe d'équilibrage complète sur toutes les valeurs marquées « à valider en playtest » (les
+  constantes de `VeskoriusConfig` se règlent alors sans recompiler — voir `14-Configuration.md`).
+- Finir la roadmap config de `14-Configuration.md` : registre de carburants data-driven, intensité
+  de champ, granularité par machine si besoin, config CLIENT si une option visuelle apparaît.
 - Sons et musique (hors périmètre, futur fichier dédié si besoin).
 
 ## Phase 7 — Publication
 
 CI GitHub Actions, changelog, publication Modrinth/CurseForge — patterns déjà documentés dans
 `references/common-patterns.md` du skill `minecraft-mod-dev`.
+
+## Configuration — pilotable par modpack (transversal, voir `14-Configuration.md`)
+
+Préoccupation transversale, pas une phase : le mod doit être rééquilibrable et adaptable par un
+modpack maker sans recompiler. Deux leviers, répartis par `14-Configuration.md` : **datapack** pour
+tout ce qui est contenu (recettes, tags, loot, worldgen — déjà en place depuis les tâches 1-14), et
+**config TOML SERVER** (`VeskoriusConfig`) pour les constantes d'équilibrage codées en dur.
+
+**Première passe faite (2026-07-22).** `VeskoriusConfig` (type SERVER, synchronisé, par monde,
+livrable via `defaultconfigs/`) expose 9 constantes jusque-là en dur : portée / capacité / Osc par
+cristal du champ, capacité et débit de la Storage Cell, bonus d'augment, et les trois facteurs de
+surchauffe (vitesse, Osc, perte). Câblées dans `FieldEmitterBlockEntity`, `AbstractMachineBlockEntity`,
+`FluxPurifierBlockEntity` et `ResonanceStorageCellItem`, lues à l'exécution (jamais en `static final`).
+GameTest `configDefaultsMatchDesign` verrouille les défauts sur les valeurs de design.
+
+**Registre de carburants data-driven fait (2026-07-22).** Le Field Emitter n'accepte plus un item
+codé en dur : ses carburants sont un `RecipeType` `veskorius:fueling` (`ingredient → osc` par JSON),
+surchargeable par datapack, affiché dans JEI. A remplacé le `stableCrystalOsc` de la config. Défaut
+inchangé : Stable Crystal = 4000 Osc.
+
+**Reste à faire** (détail dans `14-Configuration.md`, section roadmap) : intensité de champ quand
+l'Amplifier l'utilisera (Phase 3) ; granularité par machine si un playtest la réclame ; config
+CLIENT le jour où une option visuelle existe. **Règle** : toute nouvelle constante d'équilibrage des
+Phases 2-4 passe par `VeskoriusConfig` (ou par un type de recette data-driven quand c'est du
+contenu, comme les carburants) dès son écriture, pas en retrofit.
 
 ## Comment utiliser ce plan au quotidien
 

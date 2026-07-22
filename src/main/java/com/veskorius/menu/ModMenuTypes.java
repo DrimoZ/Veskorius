@@ -36,4 +36,8 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<FieldEmitterMenu>>
         FIELD_EMITTER = MENUS.register("field_emitter",
             () -> IMenuTypeExtension.create(FieldEmitterMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<CrystalCrusherMenu>>
+        CRYSTAL_CRUSHER = MENUS.register("crystal_crusher",
+            () -> IMenuTypeExtension.create(CrystalCrusherMenu::new));
 }

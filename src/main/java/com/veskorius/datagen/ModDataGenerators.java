@@ -61,9 +61,14 @@ public class ModDataGenerators {
         generator.addProvider(event.includeServer(),
             new ModStructureTemplateProvider(output));
         generator.addProvider(event.includeServer(),
+            new ModAdvancementProvider(output, lookupProvider, existingFileHelper));
+        generator.addProvider(event.includeServer(),
             new LootTableProvider(output, Set.of(),
-                List.of(new LootTableProvider.SubProviderEntry(
-                    ModBlockLootProvider::new, LootContextParamSets.BLOCK)),
+                List.of(
+                    new LootTableProvider.SubProviderEntry(
+                        ModBlockLootProvider::new, LootContextParamSets.BLOCK),
+                    new LootTableProvider.SubProviderEntry(
+                        ModChestLootProvider::new, LootContextParamSets.CHEST)),
                 lookupProvider));
 
         // Les tags d'objets referencent les tags de blocs (mecanisme de copie de

@@ -18,8 +18,19 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.STABLE_RESONANCE_CRYSTAL.get());
         basicItem(ModItems.REFINED_RESONANCE_CRYSTAL.get());
         basicItem(ModItems.RESONANCE_COMPONENT.get());
+        basicItem(ModItems.RESONANCE_DUST.get());
         basicItem(ModItems.RAW_FLUX_DEPOSIT.get());
+        basicItem(ModItems.RESONANCE_CATALYST_CORE.get());
         basicItem(ModItems.RESONANCE_TUNER.get());
+        basicItem(ModItems.RESONANCE_STORAGE_CELL.get());
+        basicItem(ModItems.RESONANCE_SPORE.get());
+        basicItem(ModItems.RESONANCE_BLUEPRINT.get());
+        basicItem(ModItems.CODEX_FRAGMENT.get());
+        basicItem(ModItems.FOSSILIZED_RATION.get());
+
+        // Œuf d'apparition : réutilise le modèle vanilla template_spawn_egg (les
+        // deux couleurs viennent du DeferredSpawnEggItem, pas d'une texture).
+        withExistingParent("crystal_strider_spawn_egg", mcLoc("item/template_spawn_egg"));
 
         // L'objet du Stabilizer reprend le modele de bloc. Il n'est pas genere par
         // le BlockStateProvider parce que horizontalBlock, contrairement a
@@ -29,5 +40,6 @@ public class ModItemModelProvider extends ItemModelProvider {
         withExistingParent("flux_purifier", modLoc("block/flux_purifier"));
         withExistingParent("resonance_whetstone", modLoc("block/resonance_whetstone"));
         withExistingParent("field_emitter", modLoc("block/field_emitter"));
+        withExistingParent("crystal_crusher", modLoc("block/crystal_crusher"));
     }
 }

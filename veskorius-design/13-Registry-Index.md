@@ -30,21 +30,32 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | Registry name | Défini dans | Statut code |
 |---|---|---|
 | `custode_alloy_fragment` | 04, 09 | À coder (Phase 1) |
-| `resonance_spore` | 04, 09 | À coder (Phase 1) |
+| `resonance_spore` | 04, 09 | ✅ item codé (nourriture du Fileur) ; bloc de récolte (pousse sur veined stone) à coder |
 | `resonance_bloom` | 04 | À coder (Phase 3) |
+
+## Items — progression (plans, fragments, loot de structure)
+
+Ajoutés 2026-07-22 (tâche 10, voir `03`/`08`/`12`). Le gatekeeping est **physique** : le blueprint
+est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments de Codex sont du lore.
+
+| Registry name | Défini dans | Statut code |
+|---|---|---|
+| `resonance_blueprint` | 03, 08 | ✅ codé — clé de craft T2, Data Component `blueprint_tier`, rendu au craft |
+| `codex_fragment` | 02, 08 | ✅ codé — lore pur, Data Component `codex_entry`, lisible (clic droit) |
+| `fossilized_ration` | 08 | ✅ codé — nourriture flavor (Habitation Modeste) |
 
 ## Items — procédé (sous-produits, alliages, augments)
 
 | Registry name | Défini dans | Statut code |
 |---|---|---|
 | `resonance_component` | 04 | ✅ codé |
-| `resonance_dust` | 04, 05 | À coder (Phase 1) |
+| `resonance_dust` | 04, 05 | ✅ codé (produit par le Crystal Crusher ; entrée de la branche alt de l'Assembler) |
 | `veskorian_alloy_ingot` | 04, 05 | À coder (Phase 2) |
 | `veskorian_conductive_alloy_ingot` | 04, 05 | À coder (Phase 2) |
 | `veskorian_alloy_block` | 04 | À coder (Phase 2) |
 | `harmonic_lattice` | 04, 05 | À coder (Phase 3) |
 | `concentrated_flux` | 04, 05 | À coder (Phase 2) |
-| `resonance_catalyst_core` | 04, 05 | À coder (Phase 1) |
+| `resonance_catalyst_core` | 04, 05 | ✅ codé (augment +15% ; craft 2 Component + 1 Refined Crystal + 1 Redstone) |
 | `flux_slag` | 04, 05 | À coder (Phase 2) |
 | `synthesis_residue` | 04, 05 | À coder (Phase 2) |
 | `luminous_extract` | 04 | À coder (Phase 3) |
@@ -61,7 +72,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | `rift_ward_plate` (remplace le `veskorian_alloy_chestplate`, pas cumulatif) | 04 | À coder (Phase 4) |
 | `resonance_tuner` | 05, 12 | ✅ codé (outil à modes : Pivoter/On-Off/Surchauffe/Redstone) |
 | `resonance_locator` | 05, 07 | À coder (Phase 1) |
-| `resonance_storage_cell` | 05 | À coder (Phase 1) |
+| `resonance_storage_cell` | 05 | ✅ codé (batterie portable 8000 Osc, se recharge dans un champ ; consommateur Locator à venir) |
 
 ## Blocs — génération naturelle
 
@@ -70,6 +81,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | `resonance_crystal_cluster` | 07 (ajouté 2026-07-21) | ✅ codé (bloc de poche, se mine → `raw_resonance_crystal`) |
 | `resonance_veined_stone` | 04, 07 | ✅ codé (coquille des poches, bloc décoratif) |
 | `raw_flux_deposit` (bloc) | 07 | ✅ codé (croûte brossable → item `raw_flux_deposit`) |
+| `attunement_console` | 08 | ✅ codé — bloc de l'Avant-poste, clic droit sur place → blueprint T2 ; miné = gravats, sans objet |
 
 Note : le dossier nommait « poches de Raw Resonance Crystal » sans nommer le bloc généré (l'item
 `raw_resonance_crystal` existait, pas un bloc). `resonance_crystal_cluster` est ce bloc — une
@@ -100,7 +112,7 @@ se génère en petites poches (Y -20 à 0) et lâche l'item quand on la mine. La
 | 19 | `rift_anchor` | T5 | À coder (Phase 4) |
 | 20 | `rift_core_extractor` | T5 | À coder (Phase 4) |
 | 21 | `rift_ward_emitter` | T5 | À coder (Phase 4) |
-| 22 | `crystal_crusher` | T1 | À coder (Phase 1) |
+| 22 | `crystal_crusher` | T1 | ✅ codé (cycle 10s autonome, 1 Raw Crystal → 3 Resonance Dust) |
 | 23 | `flux_compressor` | T3 | À coder (Phase 2) |
 
 Note : les # 6 et 7 (Resonance Storage Cell, Resonance Locator) sont des items, pas des blocs —
@@ -112,7 +124,7 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 |---|---|---|
 | Custode | `custode` | 09 |
 | Custode Lourd | `heavy_custode` | 09 |
-| Fileur de Cristal | `crystal_strider` | 09 |
+| Fileur de Cristal | `crystal_strider` | 09 (✅ codé : faune neutre, traite, reproduction, spawn) |
 | Custode Archiviste | `custode_archivist` | 09 |
 | Gardien de Faille | `rift_guardian` | 09 |
 
@@ -120,8 +132,8 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 
 | Nom en jeu (prose) | Registry name proposé | Défini dans |
 |---|---|---|
-| Habitation Modeste | `modest_dwelling` | 08 |
-| Avant-poste | `outpost` | 08 |
+| Habitation Modeste | `modest_dwelling` | 08 (✅ codé — **feature** `veskorius:ruin`, pas une Structure vanilla) |
+| Avant-poste | `outpost` | 08 (✅ codé — feature `veskorius:ruin` avec console) |
 | Poste de Garde | `guard_post` | 08 |
 | Sigma Laboratory | `sigma_laboratory` | 08 |
 | Archive Régionale | `regional_archive` | 08 |

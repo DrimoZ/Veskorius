@@ -110,6 +110,32 @@ public class ModBlocks {
                 .sound(SoundType.METAL)
                 .requiresCorrectToolForDrops());
 
+    /**
+     * Machine #22 (05-Machines.md). Bloc actif : block entity + GUI. Voie T1
+     * alternative au Stabilizer (1 Raw Crystal → 3 Resonance Dust, 10 s, autonome).
+     */
+    public static final DeferredBlock<CrystalCrusherBlock> CRYSTAL_CRUSHER =
+        BLOCKS.registerBlock("crystal_crusher",
+            CrystalCrusherBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.STONE)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.STONE)
+                .requiresCorrectToolForDrops());
+
+    /**
+     * Console d'attunement de l'Avant-poste (08-Structures.md). Générée uniquement en
+     * structure, sans objet (non récupérable). Clic droit sur place → blueprint T2.
+     */
+    public static final DeferredBlock<AttunementConsoleBlock> ATTUNEMENT_CONSOLE =
+        BLOCKS.registerBlock("attunement_console",
+            AttunementConsoleBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_LIGHT_BLUE)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .lightLevel(state -> 3));
+
     /** Machine #4 (05-Machines.md). Bloc passif : fournit un champ de Résonance. */
     public static final DeferredBlock<FieldEmitterBlock> FIELD_EMITTER =
         BLOCKS.registerBlock("field_emitter",

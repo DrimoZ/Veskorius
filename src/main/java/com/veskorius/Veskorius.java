@@ -2,6 +2,8 @@ package com.veskorius;
 
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.ModBlockEntities;
+import com.veskorius.config.VeskoriusConfig;
+import com.veskorius.entity.ModEntities;
 import com.veskorius.item.ModDataComponents;
 import com.veskorius.item.ModItems;
 import com.veskorius.menu.ModMenuTypes;
@@ -9,7 +11,9 @@ import com.veskorius.recipe.ModRecipeSerializers;
 import com.veskorius.recipe.ModRecipeTypes;
 import com.veskorius.worldgen.ModFeatures;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTab;
@@ -45,23 +49,39 @@ public class Veskorius {
                 output.accept(ModItems.RAW_RESONANCE_CRYSTAL.get());
                 output.accept(ModItems.RESONANCE_CRYSTAL_CLUSTER_ITEM.get());
                 output.accept(ModItems.RESONANCE_VEINED_STONE_ITEM.get());
+                output.accept(ModItems.RAW_FLUX_DEPOSIT.get());
                 output.accept(ModItems.STABLE_RESONANCE_CRYSTAL.get());
                 output.accept(ModItems.REFINED_RESONANCE_CRYSTAL.get());
                 output.accept(ModItems.RESONANCE_COMPONENT.get());
+                output.accept(ModItems.RESONANCE_DUST.get());
+                output.accept(ModItems.RESONANCE_CATALYST_CORE.get());
                 output.accept(ModItems.RESONANCE_TUNER.get());
+                output.accept(ModItems.RESONANCE_STORAGE_CELL.get());
+                output.accept(ModItems.RESONANCE_SPORE.get());
+                output.accept(ModItems.CRYSTAL_STRIDER_SPAWN_EGG.get());
+                output.accept(ModItems.FOSSILIZED_RATION.get());
+                output.accept(com.veskorius.item.ResonanceBlueprintItem.of(2));
+                output.accept(com.veskorius.item.CodexFragmentItem.of(
+                    com.veskorius.item.CodexEntries.DAILY_LIFE_LAMPS));
                 output.accept(ModItems.RESONANCE_STABILIZER_ITEM.get());
                 output.accept(ModItems.COMPONENT_ASSEMBLER_ITEM.get());
                 output.accept(ModItems.RESONANCE_WHETSTONE_ITEM.get());
                 output.accept(ModItems.FLUX_PURIFIER_ITEM.get());
                 output.accept(ModItems.FIELD_EMITTER_ITEM.get());
+                output.accept(ModItems.CRYSTAL_CRUSHER_ITEM.get());
             })
             .build());
 
-    public Veskorius(IEventBus modEventBus) {
+    public Veskorius(IEventBus modEventBus, ModContainer modContainer) {
+        // Config d'équilibrage exposée aux modpack makers (type SERVER : synchronisée,
+        // par monde, livrable via defaultconfigs/). Voir VeskoriusConfig.
+        modContainer.registerConfig(ModConfig.Type.SERVER, VeskoriusConfig.SPEC);
+
         ModItems.ITEMS.register(modEventBus);
         ModDataComponents.COMPONENTS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
+        ModEntities.ENTITIES.register(modEventBus);
         ModMenuTypes.MENUS.register(modEventBus);
         ModRecipeTypes.RECIPE_TYPES.register(modEventBus);
         ModRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);

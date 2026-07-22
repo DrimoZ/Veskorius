@@ -23,6 +23,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         horizontalBlock(ModBlocks.FLUX_PURIFIER.get(), cubeAll(ModBlocks.FLUX_PURIFIER.get()));
         horizontalBlock(ModBlocks.RESONANCE_WHETSTONE.get(), cubeAll(ModBlocks.RESONANCE_WHETSTONE.get()));
         horizontalBlock(ModBlocks.FIELD_EMITTER.get(), cubeAll(ModBlocks.FIELD_EMITTER.get()));
+        horizontalBlock(ModBlocks.CRYSTAL_CRUSHER.get(), cubeAll(ModBlocks.CRYSTAL_CRUSHER.get()));
 
         // Blocs naturels : cubes uniformes simples.
         simpleBlockWithItem(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get(),
@@ -32,5 +33,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
         // Le dépôt de flux n'a pas d'objet : juste la blockstate + le modèle.
         simpleBlock(ModBlocks.RAW_FLUX_DEPOSIT.get(), cubeAll(ModBlocks.RAW_FLUX_DEPOSIT.get()));
+        // La console d'attunement non plus (générée en structure, non récupérable).
+        simpleBlock(ModBlocks.ATTUNEMENT_CONSOLE.get(), cubeAll(ModBlocks.ATTUNEMENT_CONSOLE.get()));
     }
 }

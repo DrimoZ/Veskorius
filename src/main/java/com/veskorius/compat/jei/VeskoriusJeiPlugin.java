@@ -2,6 +2,7 @@ package com.veskorius.compat.jei;
 
 import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
+import com.veskorius.recipe.EmitterFuelRecipe;
 import com.veskorius.recipe.MachineRecipe;
 import com.veskorius.recipe.ModRecipeTypes;
 import com.veskorius.recipe.WhetstoneRecipe;
@@ -38,8 +39,12 @@ public class VeskoriusJeiPlugin implements IModPlugin {
         RecipeType.create(Veskorius.MOD_ID, "assembling", MachineRecipe.class);
     public static final RecipeType<MachineRecipe> PURIFYING =
         RecipeType.create(Veskorius.MOD_ID, "purifying", MachineRecipe.class);
+    public static final RecipeType<MachineRecipe> CRUSHING =
+        RecipeType.create(Veskorius.MOD_ID, "crushing", MachineRecipe.class);
     public static final RecipeType<WhetstoneRecipe> SHARPENING =
         RecipeType.create(Veskorius.MOD_ID, "sharpening", WhetstoneRecipe.class);
+    public static final RecipeType<EmitterFuelRecipe> FUELING =
+        RecipeType.create(Veskorius.MOD_ID, "fueling", EmitterFuelRecipe.class);
 
     @Override
     public ResourceLocation getPluginUid() {
@@ -59,7 +64,13 @@ public class VeskoriusJeiPlugin implements IModPlugin {
             new MachineRecipeCategory(gui, PURIFYING,
                 Component.translatable("block.veskorius.flux_purifier"),
                 ModBlocks.FLUX_PURIFIER.get()),
-            new WhetstoneRecipeCategory(gui, SHARPENING));
+            new MachineRecipeCategory(gui, CRUSHING,
+                Component.translatable("block.veskorius.crystal_crusher"),
+                ModBlocks.CRYSTAL_CRUSHER.get()),
+            new WhetstoneRecipeCategory(gui, SHARPENING),
+            new EmitterFuelRecipeCategory(gui, FUELING,
+                Component.translatable("block.veskorius.field_emitter"),
+                ModBlocks.FIELD_EMITTER.get()));
     }
 
     @Override
@@ -72,7 +83,10 @@ public class VeskoriusJeiPlugin implements IModPlugin {
         registration.addRecipes(STABILIZING, machineRecipes(recipeManager, ModRecipeTypes.STABILIZING.get()));
         registration.addRecipes(ASSEMBLING, machineRecipes(recipeManager, ModRecipeTypes.ASSEMBLING.get()));
         registration.addRecipes(PURIFYING, machineRecipes(recipeManager, ModRecipeTypes.PURIFYING.get()));
+        registration.addRecipes(CRUSHING, machineRecipes(recipeManager, ModRecipeTypes.CRUSHING.get()));
         registration.addRecipes(SHARPENING, recipeManager.getAllRecipesFor(ModRecipeTypes.SHARPENING.get())
+            .stream().map(RecipeHolder::value).toList());
+        registration.addRecipes(FUELING, recipeManager.getAllRecipesFor(ModRecipeTypes.FUELING.get())
             .stream().map(RecipeHolder::value).toList());
     }
 
@@ -82,7 +96,9 @@ public class VeskoriusJeiPlugin implements IModPlugin {
         catalyst(registration, ModBlocks.RESONANCE_STABILIZER.get(), STABILIZING);
         catalyst(registration, ModBlocks.COMPONENT_ASSEMBLER.get(), ASSEMBLING);
         catalyst(registration, ModBlocks.FLUX_PURIFIER.get(), PURIFYING);
+        catalyst(registration, ModBlocks.CRYSTAL_CRUSHER.get(), CRUSHING);
         catalyst(registration, ModBlocks.RESONANCE_WHETSTONE.get(), SHARPENING);
+        catalyst(registration, ModBlocks.FIELD_EMITTER.get(), FUELING);
     }
 
     private static List<MachineRecipe> machineRecipes(RecipeManager manager,

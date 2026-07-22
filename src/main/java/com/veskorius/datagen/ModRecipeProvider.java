@@ -81,16 +81,43 @@ public class ModRecipeProvider extends RecipeProvider {
                 has(ModItems.RESONANCE_COMPONENT.get()))
             .save(recipeOutput);
 
+        // Resonance Catalyst Core : 2 Resonance Component + 1 Refined Crystal +
+        // 1 Redstone (05-Machines.md, augment transversal). Item non consommé qui
+        // s'insère dans le slot d'augment (+15% de vitesse). Sans forme imposée.
+        net.minecraft.data.recipes.ShapelessRecipeBuilder
+            .shapeless(RecipeCategory.MISC, ModItems.RESONANCE_CATALYST_CORE.get())
+            .requires(ModItems.RESONANCE_COMPONENT.get(), 2)
+            .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get())
+            .requires(Items.REDSTONE)
+            .requires(ModItems.RESONANCE_BLUEPRINT.get())
+            .unlockedBy(getHasName(ModItems.REFINED_RESONANCE_CRYSTAL.get()),
+                has(ModItems.REFINED_RESONANCE_CRYSTAL.get()))
+            .save(recipeOutput);
+
+        // Resonance Storage Cell : 2 Resonance Component + 1 Stable Resonance
+        // Crystal (05-Machines.md #6) + le blueprint T2 (gate physique, rendu au
+        // craft — 03-Progression.md). Batterie portable, sans forme imposée.
+        net.minecraft.data.recipes.ShapelessRecipeBuilder
+            .shapeless(RecipeCategory.TOOLS, ModItems.RESONANCE_STORAGE_CELL.get())
+            .requires(ModItems.RESONANCE_COMPONENT.get(), 2)
+            .requires(ModItems.STABLE_RESONANCE_CRYSTAL.get())
+            .requires(ModItems.RESONANCE_BLUEPRINT.get())
+            .unlockedBy(getHasName(ModItems.RESONANCE_COMPONENT.get()),
+                has(ModItems.RESONANCE_COMPONENT.get()))
+            .save(recipeOutput);
+
         // Flux Purifier : 4 Iron Ingot + 2 Stable Resonance Crystal + 1 Redstone
         // Block (05-Machines.md, recette de construction). Forme vérifiée :
         // exactement 4 I, 2 S, 1 B.
+        // + blueprint T2 (P), rendu au craft — gate physique (03-Progression.md).
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.FLUX_PURIFIER.get())
             .pattern("ISI")
             .pattern("IBI")
-            .pattern(" S ")
+            .pattern("PS ")
             .define('I', Items.IRON_INGOT)
             .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
             .define('B', Items.REDSTONE_BLOCK)
+            .define('P', ModItems.RESONANCE_BLUEPRINT.get())
             .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
                 has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
@@ -100,19 +127,33 @@ public class ModRecipeProvider extends RecipeProvider {
         // émet), les composants aux coins, l'or au-dessus et en dessous. La forme
         // ci-dessous consomme exactement 4 C, 2 G, 1 S — vérifié contre les
         // quantités du design.
-        // NB : cette recette est débloquée en jeu par le fragment de l'Avant-poste
-        // (advancement veskorius:tier2_field, 12-UX-and-Advancements.md) — le
-        // JSON produit ici reste inerte tant que l'advancement n'est pas obtenu,
-        // ce câblage viendra avec la tâche 10 (structures + fragments).
+        // Gate T2 : la recette exige le blueprint T2 (P), obtenu à la console de
+        // l'Avant-poste et RENDU au craft (03-Progression.md). Rien n'est masqué :
+        // la recette est visible, il « suffit » d'avoir le plan. Le blueprint occupe
+        // une case libre du motif du design (les quantités C/G/S sont inchangées).
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.FIELD_EMITTER.get())
             .pattern("CGC")
             .pattern("CSC")
-            .pattern(" G ")
+            .pattern("PG ")
             .define('C', ModItems.RESONANCE_COMPONENT.get())
             .define('G', Items.GOLD_INGOT)
             .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
+            .define('P', ModItems.RESONANCE_BLUEPRINT.get())
             .unlockedBy(getHasName(ModItems.RESONANCE_COMPONENT.get()),
                 has(ModItems.RESONANCE_COMPONENT.get()))
+            .save(recipeOutput);
+
+        // Crystal Crusher : 3 Cobblestone + 1 Iron Ingot (05-Machines.md #22,
+        // tableau "Recettes de construction"). Le design fixe les quantités mais
+        // pas la disposition — le fer au cœur (le broyeur), la pierre autour.
+        // Forme vérifiée : exactement 3 C, 1 I.
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.CRYSTAL_CRUSHER.get())
+            .pattern(" C ")
+            .pattern("CIC")
+            .define('C', Items.COBBLESTONE)
+            .define('I', Items.IRON_INGOT)
+            .unlockedBy(getHasName(ModItems.RAW_RESONANCE_CRYSTAL.get()),
+                has(ModItems.RAW_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
     }
 
@@ -148,6 +189,27 @@ public class ModRecipeProvider extends RecipeProvider {
             .osc(2)
             .save(recipeOutput, machineRecipe("purifying/refined_crystal"));
 
+        // Crusher : 1 Raw Crystal → 3 Resonance Dust, 10 s, autonome
+        // (05-Machines.md #22). Plus rapide que le Stabilizer (10 s contre 30 s)
+        // mais ne produit pas de Stable Crystal (04-Materials.md).
+        MachineRecipeBuilder.crushing(ModItems.RESONANCE_DUST.get(), 3)
+            .input(ModItems.RAW_RESONANCE_CRYSTAL.get(), 1)
+            .time(10 * 20)
+            .save(recipeOutput, machineRecipe("crushing/resonance_dust"));
+
+        // Assembler, branche alternative : 3 Resonance Dust + 2 Iron → 2 Component,
+        // 5 s, 3 Osc/tick (04-Materials.md + note tâche 2 de 11-Development-Plan.md).
+        // Désormais possible sans une ligne de code machine : la poussière existe,
+        // le slot d'entrée 0 de l'Assembler l'accepte du seul fait de cette recette
+        // (isItemValid piloté par les recettes). Mêmes sortie/temps/Osc que la voie
+        // au Stable Crystal — c'est une entrée alternative, pas un meilleur chemin.
+        MachineRecipeBuilder.assembling(ModItems.RESONANCE_COMPONENT.get(), 2)
+            .input(ModItems.RESONANCE_DUST.get(), 3)
+            .input(Items.IRON_INGOT, 2)
+            .time(5 * 20)
+            .osc(3)
+            .save(recipeOutput, machineRecipe("assembling/component_from_dust"));
+
         // Whetstone : outil endommagé + 1 Stable Crystal → outil réparé de 25 %,
         // 8 s, autonome (05-Machines.md #3). Type dédié (réparation, pas input→output).
         WhetstoneRecipeBuilder.sharpening()
@@ -155,6 +217,13 @@ public class ModRecipeProvider extends RecipeProvider {
             .repairPercent(25)
             .time(8 * 20)
             .save(recipeOutput, machineRecipe("sharpening/whetstone"));
+
+        // Field Emitter : carburants data-driven (14-Configuration.md). Par défaut, un
+        // seul carburant, le Stable Crystal à 4000 Osc (06-Energy.md, source primaire).
+        // Un datapack en ajoute (ex. Refined Crystal à 9000 Osc, capacité à augmenter
+        // en conséquence), en retire ou change les valeurs — sans une ligne de code.
+        EmitterFuelRecipeBuilder.fuel(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 4000)
+            .save(recipeOutput, machineRecipe("fueling/stable_crystal"));
     }
 
     private static ResourceLocation machineRecipe(String path) {

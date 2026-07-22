@@ -26,6 +26,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.RESONANCE_WHETSTONE.get());
         dropSelf(ModBlocks.FLUX_PURIFIER.get());
         dropSelf(ModBlocks.FIELD_EMITTER.get());
+        dropSelf(ModBlocks.CRYSTAL_CRUSHER.get());
 
         // La poche de cristal lâche du Raw Resonance Crystal (Fortune s'applique,
         // Silk Touch récupère le bloc lui-même) — comportement de minerai standard.
@@ -37,6 +38,9 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         // Le dépôt de flux miné ne donne RIEN (la croûte se détruit) — il faut le
         // brosser pour obtenir le flux (comportement vanilla des blocs suspects).
         add(ModBlocks.RAW_FLUX_DEPOSIT.get(), LootTable.lootTable());
+        // La console d'attunement minée ne donne RIEN (« machine morte non
+        // récupérable » — 08-Structures.md) : que des gravats, aucun objet.
+        add(ModBlocks.ATTUNEMENT_CONSOLE.get(), LootTable.lootTable());
     }
 
     @Override

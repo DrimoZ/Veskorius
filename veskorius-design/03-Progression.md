@@ -10,7 +10,7 @@ de Codex ou observation directe), jamais par un simple compteur de ressources.
 | Tier | Nom | Âge correspondant | Débloqué par | Change dans la lecture du monde |
 |---|---|---|---|---|
 | T1 | Stabilisation | Éveil | Rien (point de départ) | Reconnaît les poches de cristal brut |
-| T2 | Réseau court | Essor | Fragment trouvé en Avant-poste | Repère les Avant-postes en surface |
+| T2 | Réseau court | Essor | Blueprint restauré à l'Avant-poste (console sur place) | Repère les Avant-postes en surface |
 | T3 | Réseau régional | Résonance (début) | Fragment du Sigma Laboratory | Reconnaît les grandes structures à distance |
 | T4 | Synthèse profonde | Résonance (fin) | Fragment de l'Archive Régionale | Accède aux strates profondes en sécurité, relie plusieurs bases |
 | T5 | Rupture de Faille | Effondrement | Découverte d'une Faille active | Voit et peut entrer dans les Failles ; contenu endgame |
@@ -105,6 +105,29 @@ toutes les autres machines du même tier (Deep Synthesis Chamber, Extraction Arr
 Convergence Core) sont librement craftables sans fragment supplémentaire — cohérent avec le
 pilier 1 (la restauration porte sur les catégories de machines par tier, pas sur chaque
 variante).
+
+## Mécanique de déblocage — clé physique, pas recette masquée (révisé 2026-07-22)
+
+La « découverte physique » qui garde chaque tier est **un objet-clé, le `resonance_blueprint` du
+tier**, pas un drapeau invisible : **aucune recette n'est jamais masquée**. Les recettes des
+machines d'un tier sont visibles dès le départ (JEI, recipe book) et **exigent le blueprint du
+tier comme ingrédient — qui est *rendu* après le craft** (un seul blueprint sert pour un nombre
+illimité de machines). Ce qui manque pour crafter est donc *visible* et pointe vers un lieu :
+c'est le pilier 2 rendu littéral. Perdre son blueprint = retourner dans une structure du tier
+(non bloquant, cohérent avec « retour à la ruine »).
+
+La grammaire de craft est constante (toujours le blueprint), mais **l'acquisition du blueprint
+varie par tier**, pour que le gatekeeping ne soit pas répétitif :
+
+| Tier | Structure | Comment on obtient le blueprint |
+|---|---|---|
+| T2 | Avant-poste | **Restaurer** une console ancienne sur place (clic droit) |
+| T3 | Sigma Laboratory | **Réparer** 2 Relais → ouvre la salle centrale → le blueprint y est |
+| T4 | Archive Régionale | **Collecter/ordonner** 4 fragments → ouvre la salle → blueprint + 3 Hyper Refined |
+| T5 | Faille | Pas de blueprint : la **découverte + pose** du Rift Anchor *est* la porte |
+
+Les **fragments de Codex** (`codex_fragment`) ne gatent plus rien : ce sont du **lore lisible** et,
+parfois, des **indices** d'exploration (facultatifs). Détail complet : `08-Structures.md`.
 
 ## Ouvert
 

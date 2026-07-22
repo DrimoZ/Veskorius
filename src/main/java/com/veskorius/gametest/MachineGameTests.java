@@ -2,28 +2,39 @@ package com.veskorius.gametest;
 
 import com.veskorius.Veskorius;
 import com.veskorius.block.AbstractMachineBlock;
+import com.veskorius.block.AttunementConsoleBlock;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
 import com.veskorius.block.entity.ComponentAssemblerBlockEntity;
+import com.veskorius.block.entity.CrystalCrusherBlockEntity;
 import com.veskorius.block.entity.FieldEmitterBlockEntity;
 import com.veskorius.block.entity.FluxPurifierBlockEntity;
 import com.veskorius.block.entity.RedstoneMode;
 import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
 import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
+import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.energy.ResonanceFieldManager;
+import com.veskorius.entity.CrystalStriderEntity;
+import com.veskorius.entity.ModEntities;
+import com.veskorius.item.CodexEntries;
+import com.veskorius.item.CodexFragmentItem;
 import com.veskorius.item.ModItems;
+import com.veskorius.item.ResonanceBlueprintItem;
+import com.veskorius.item.ResonanceStorageCellItem;
 import com.veskorius.item.ResonanceTunerItem;
 import com.veskorius.item.TunerInteractions;
 import com.veskorius.item.TunerMode;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.gametest.GameTestHolder;
@@ -163,12 +174,10 @@ public class MachineGameTests {
     // --- Slot d'augment ------------------------------------------------------
 
     /**
-     * Le slot d'augment n'accepte que le tag {@code veskorius:machine_augments},
-     * aujourd'hui vide : il doit donc tout refuser, y compris les objets du mod.
-     *
-     * A completer a la tache 15 de la Phase 1, quand le Resonance Catalyst Core
-     * existera : verifier qu'il est accepte, et que le cycle passe alors de 600
-     * a 522 ticks (+15%).
+     * Le slot d'augment n'accepte que le tag {@code veskorius:machine_augments} :
+     * il doit refuser tout objet hors du tag, y compris les objets du mod. Le cas
+     * « accepte le Catalyst Core et accelere le cycle » est couvert par
+     * {@link #augmentSlotAcceptsCatalystCoreAndSpeedsUp}.
      */
     @GameTest(template = EMPTY, timeoutTicks = 40)
     public static void augmentSlotRejectsNonAugments(GameTestHelper helper) {
@@ -197,6 +206,41 @@ public class MachineGameTests {
             "Sans augment le cycle doit durer " + CYCLE_TICKS + " ticks, vaut : "
                 + machine.getEffectiveCycleTicks());
 
+        helper.succeed();
+    }
+
+    /**
+     * Tache 15 : le Resonance Catalyst Core est accepte dans le slot d'augment, et
+     * sa presence accelere le cycle de +15% (600 -> 522 ticks, 600/1.15 arrondi).
+     * L'effet vient du socle ({@code AUGMENT_SPEED_MULTIPLIER}) : ajouter l'item au
+     * tag a suffi, aucun code machine touche. Couvre le critere de sortie de la
+     * phase « installation d'un Catalyst Core sur une machine T1 ».
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void augmentSlotAcceptsCatalystCoreAndSpeedsUp(GameTestHelper helper) {
+        ResonanceStabilizerBlockEntity machine = placeAndGet(helper);
+        int augmentSlot = machine.getAugmentSlot();
+
+        // Entrees valides : le temps de base (600 ticks) vient de la recette.
+        machine.getInventory().insertItem(ResonanceStabilizerBlockEntity.SLOT_CRYSTAL,
+            new ItemStack(ModItems.RAW_RESONANCE_CRYSTAL.get()), false);
+        machine.getInventory().insertItem(ResonanceStabilizerBlockEntity.SLOT_FLUX,
+            new ItemStack(Items.QUARTZ), false);
+        helper.assertTrue(machine.getEffectiveCycleTicks() == CYCLE_TICKS,
+            "Sans augment : " + CYCLE_TICKS + " ticks, vaut " + machine.getEffectiveCycleTicks());
+
+        // Le slot accepte le Catalyst Core, et l'insertion aboutit.
+        ItemStack core = new ItemStack(ModItems.RESONANCE_CATALYST_CORE.get());
+        helper.assertTrue(machine.getInventory().isItemValid(augmentSlot, core),
+            "Le slot d'augment doit accepter le Resonance Catalyst Core");
+        ItemStack leftover = machine.getInventory().insertItem(augmentSlot, core, false);
+        helper.assertTrue(leftover.isEmpty(), "Le Catalyst Core aurait du entrer dans le slot");
+        helper.assertTrue(machine.hasAugment(), "La machine devrait se voir augmentee");
+
+        int expected = Math.round(CYCLE_TICKS / 1.15f); // 522
+        helper.assertTrue(machine.getEffectiveCycleTicks() == expected,
+            "Avec augment : " + expected + " ticks attendus (+15%), vaut "
+                + machine.getEffectiveCycleTicks());
         helper.succeed();
     }
 
@@ -452,6 +496,26 @@ public class MachineGameTests {
             .thenSucceed();
     }
 
+    /**
+     * Carburants data-driven : le slot n'accepte que ce que déclare une recette
+     * {@code veskorius:fueling} (par défaut le Stable Crystal), et refuse le reste —
+     * y compris le Raw Crystal, proche mais non enregistré. Verrouille le fait que
+     * le filtre suit le registre, plus un item codé en dur.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
+    public static void emitterFuelSlotFollowsRegistry(GameTestHelper helper) {
+        FieldEmitterBlockEntity emitter = placeEmitter(helper);
+        helper.assertTrue(
+            emitter.getFuelHandler().isItemValid(FieldEmitterBlockEntity.SLOT_FUEL,
+                new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get())),
+            "Le Stable Crystal est un carburant enregistré : il doit être accepté");
+        helper.assertFalse(
+            emitter.getFuelHandler().isItemValid(FieldEmitterBlockEntity.SLOT_FUEL,
+                new ItemStack(ModItems.RAW_RESONANCE_CRYSTAL.get())),
+            "Le Raw Crystal n'est pas un carburant enregistré : il doit être refusé");
+        helper.succeed();
+    }
+
     // --- Contrôle des machines (redstone + interrupteur manuel) --------------
 
     /** Interrupteur manuel coupé : la machine ne progresse pas, même tout en ordre. */
@@ -699,6 +763,183 @@ public class MachineGameTests {
             .thenSucceed();
     }
 
+    // --- Crystal Crusher (machine #22) : entrée unique, sortie multiple --------
+
+    /** 10 secondes (05-Machines.md #22). */
+    private static final int CRUSHER_TICKS = 10 * 20;
+
+    /**
+     * Une seule entrée (Raw Crystal), une sortie de 3 (Resonance Dust), autonome.
+     * Vérifie que le socle « traitement » gère une machine à un seul slot d'entrée
+     * et un résultat de count > 1.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = CRUSHER_TICKS + 200)
+    public static void crusherProducesThreeDust(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                helper.setBlock(MACHINE, ModBlocks.CRYSTAL_CRUSHER.get());
+                IItemHandler inv = machineInventory(helper, MACHINE);
+                inv.insertItem(CrystalCrusherBlockEntity.SLOT_INPUT,
+                    new ItemStack(ModItems.RAW_RESONANCE_CRYSTAL.get()), false);
+            })
+            .thenExecuteAfter(CRUSHER_TICKS + 5, () -> {
+                IItemHandler inv = machineInventory(helper, MACHINE);
+                ItemStack output = inv.getStackInSlot(CrystalCrusherBlockEntity.SLOT_OUTPUT);
+                helper.assertTrue(output.is(ModItems.RESONANCE_DUST.get()) && output.getCount() == 3,
+                    "3 Resonance Dust attendus, trouve : " + output);
+                helper.assertTrue(
+                    inv.getStackInSlot(CrystalCrusherBlockEntity.SLOT_INPUT).isEmpty(),
+                    "Le cristal brut aurait du etre consomme");
+            })
+            .thenSucceed();
+    }
+
+    /** Autonome : aucun champ requis, contrairement à l'Assembler ou au Purifier. */
+    @GameTest(template = EMPTY, timeoutTicks = 60)
+    public static void crusherRunsWithoutField(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.CRYSTAL_CRUSHER.get());
+        CrystalCrusherBlockEntity crusher = helper.getBlockEntity(MACHINE);
+        crusher.getInventory().insertItem(CrystalCrusherBlockEntity.SLOT_INPUT,
+            new ItemStack(ModItems.RAW_RESONANCE_CRYSTAL.get()), false);
+
+        helper.assertTrue(crusher.getEffectiveOscPerTick() == 0,
+            "Le Crusher est autonome : 0 Osc/tick, vaut " + crusher.getEffectiveOscPerTick());
+        helper.assertTrue(crusher.getEffectiveCycleTicks() == CRUSHER_TICKS,
+            "Cycle de " + CRUSHER_TICKS + " ticks attendu, vaut " + crusher.getEffectiveCycleTicks());
+        helper.succeed();
+    }
+
+    /**
+     * Branche alternative de l'Assembler (04-Materials.md + tâche 2) : 3 Resonance
+     * Dust + 2 Iron → 2 Component, sans une ligne de code machine. Ce test verrouille
+     * la promesse « zéro code » : le slot d'entrée 0 de l'Assembler accepte la
+     * poussière du seul fait de la recette JSON, exactement comme le Stable Crystal.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = ASSEMBLER_TICKS + 200)
+    public static void assemblerAlternativeBranchUsesDust(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                helper.setBlock(ASSEMBLER, ModBlocks.COMPONENT_ASSEMBLER.get());
+                IItemHandler inv = assemblerInventory(helper);
+                inv.insertItem(ComponentAssemblerBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.RESONANCE_DUST.get(), 3), false);
+                inv.insertItem(ComponentAssemblerBlockEntity.SLOT_IRON,
+                    new ItemStack(Items.IRON_INGOT, 2), false);
+            })
+            .thenExecuteAfter(ASSEMBLER_TICKS + 5, () -> {
+                IItemHandler inv = assemblerInventory(helper);
+                ItemStack output = inv.getStackInSlot(ComponentAssemblerBlockEntity.SLOT_OUTPUT);
+                helper.assertTrue(output.is(ModItems.RESONANCE_COMPONENT.get()) && output.getCount() == 2,
+                    "La branche alternative devrait produire 2 Resonance Component, trouve : " + output);
+                helper.assertTrue(
+                    inv.getStackInSlot(ComponentAssemblerBlockEntity.SLOT_CRYSTAL).isEmpty(),
+                    "Les 3 poussieres auraient du etre consommees");
+                helper.assertTrue(
+                    inv.getStackInSlot(ComponentAssemblerBlockEntity.SLOT_IRON).isEmpty(),
+                    "Les 2 lingots de fer auraient du etre consommes");
+            })
+            .thenSucceed();
+    }
+
+    // --- Resonance Storage Cell (item #6) : batterie portable ----------------
+
+    /** Capacité et débit re-écrits ici (06-Energy.md) : un changement non répercuté fait échouer. */
+    private static final int CELL_CAPACITY = 8000;
+    private static final int CELL_CHARGE_RATE = 20;
+
+    /**
+     * Dans un champ, la cellule absorbe {@code CELL_CHARGE_RATE} Osc en un tick, et
+     * ces Osc sont bien prélevés sur la réserve de l'émetteur (même source que les
+     * machines, 06-Energy.md). Teste le transfert réel, pas seulement l'incrément.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void storageCellChargesFromField(GameTestHelper helper) {
+        ItemStack cell = new ItemStack(ModItems.RESONANCE_STORAGE_CELL.get());
+        helper.startSequence()
+            // L'émetteur a besoin de quelques ticks pour s'enregistrer dans le
+            // manager et brûler son cristal (réserve à 0 au tick de pose).
+            .thenExecute(() -> chargedEmitter(helper))
+            .thenExecuteAfter(3, () -> {
+                ServerLevel level = helper.getLevel();
+                int drawn = ResonanceStorageCellItem.tickCharge(
+                    level, helper.absolutePos(EMITTER).east(3), cell);
+
+                helper.assertTrue(drawn == CELL_CHARGE_RATE,
+                    "Un tick devrait transférer " + CELL_CHARGE_RATE + " Osc, vaut " + drawn);
+                helper.assertTrue(ResonanceStorageCellItem.getCharge(cell) == CELL_CHARGE_RATE,
+                    "La charge devrait valoir " + CELL_CHARGE_RATE + ", vaut "
+                        + ResonanceStorageCellItem.getCharge(cell));
+                FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                helper.assertTrue(emitter.getReserve() == 4000 - CELL_CHARGE_RATE,
+                    "La réserve de l'émetteur aurait dû baisser de " + CELL_CHARGE_RATE
+                        + ", vaut " + emitter.getReserve());
+            })
+            .thenSucceed();
+    }
+
+    /** Hors champ : aucune charge (pas de conversion cachée, pilier 3). */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void storageCellDoesNotChargeWithoutField(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ItemStack cell = new ItemStack(ModItems.RESONANCE_STORAGE_CELL.get());
+
+        int drawn = ResonanceStorageCellItem.tickCharge(level, helper.absolutePos(MACHINE), cell);
+
+        helper.assertTrue(drawn == 0, "Hors champ, rien ne devrait être transféré, vaut " + drawn);
+        helper.assertTrue(ResonanceStorageCellItem.getCharge(cell) == 0,
+            "La charge devrait rester à 0, vaut " + ResonanceStorageCellItem.getCharge(cell));
+        helper.succeed();
+    }
+
+    /**
+     * Près de la capacité, un tick ne prend que la place restante (pas le débit
+     * plein) : ni dépassement de capacité, ni Osc gaspillé sur l'émetteur.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void storageCellStopsAtCapacity(GameTestHelper helper) {
+        ItemStack cell = new ItemStack(ModItems.RESONANCE_STORAGE_CELL.get());
+        ResonanceStorageCellItem.setCharge(cell, CELL_CAPACITY - 5);
+        helper.startSequence()
+            .thenExecute(() -> chargedEmitter(helper))
+            .thenExecuteAfter(3, () -> {
+                ServerLevel level = helper.getLevel();
+                int drawn = ResonanceStorageCellItem.tickCharge(
+                    level, helper.absolutePos(EMITTER).east(3), cell);
+
+                helper.assertTrue(drawn == 5,
+                    "Seuls les 5 Osc de place restante devraient être pris, vaut " + drawn);
+                helper.assertTrue(ResonanceStorageCellItem.getCharge(cell) == CELL_CAPACITY,
+                    "La cellule devrait être pleine (" + CELL_CAPACITY + "), vaut "
+                        + ResonanceStorageCellItem.getCharge(cell));
+                FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                helper.assertTrue(emitter.getReserve() == 4000 - 5,
+                    "Seuls 5 Osc auraient dû être prélevés sur l'émetteur, réserve vaut "
+                        + emitter.getReserve());
+            })
+            .thenSucceed();
+    }
+
+    /**
+     * {@code extractCharge} rend l'Osc demandé, borné par la charge disponible —
+     * c'est le point d'entrée du futur Resonance Locator (tâche 8).
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void storageCellExtractIsClampedToCharge(GameTestHelper helper) {
+        ItemStack cell = new ItemStack(ModItems.RESONANCE_STORAGE_CELL.get());
+        ResonanceStorageCellItem.setCharge(cell, 100);
+
+        helper.assertTrue(ResonanceStorageCellItem.extractCharge(cell, 30) == 30,
+            "extractCharge(30) devrait rendre 30");
+        helper.assertTrue(ResonanceStorageCellItem.getCharge(cell) == 70,
+            "Après retrait de 30, charge = 70, vaut " + ResonanceStorageCellItem.getCharge(cell));
+        helper.assertTrue(ResonanceStorageCellItem.extractCharge(cell, 100) == 70,
+            "extractCharge(100) sur 70 dispo devrait rendre 70 (borné)");
+        helper.assertTrue(ResonanceStorageCellItem.getCharge(cell) == 0,
+            "La cellule devrait être vide, vaut " + ResonanceStorageCellItem.getCharge(cell));
+        helper.succeed();
+    }
+
     // --- Resonance Tuner (outil transversal, modes) --------------------------
 
     /** Mode ROTATE : fait pivoter la face de 90° (NORTH → EAST). */
@@ -831,6 +1072,167 @@ public class MachineGameTests {
             }
         }
         return total;
+    }
+
+    // --- Fileur de Cristal (entité #Fileur, 09-Entities.md) ------------------
+
+    /** 5 minutes de cooldown de traite, re-écrit ici (09-Entities.md). */
+    private static final int MILK_COOLDOWN = 5 * 60 * 20;
+
+    /**
+     * Traite : un clic droit à main nue sur un adulte rend 1 Raw Resonance Crystal
+     * puis pose un cooldown de 5 minutes ; un second clic immédiat ne rend rien.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void striderMilkGivesCrystalThenCoolsDown(GameTestHelper helper) {
+        CrystalStriderEntity strider = helper.spawn(ModEntities.CRYSTAL_STRIDER.get(), MACHINE);
+        strider.setAge(0); // adulte
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+
+        strider.mobInteract(player, InteractionHand.MAIN_HAND);
+        helper.assertTrue(countInInventory(player, ModItems.RAW_RESONANCE_CRYSTAL.get()) == 1,
+            "La traite aurait dû donner 1 Raw Resonance Crystal");
+        helper.assertTrue(strider.getMilkCooldown() == MILK_COOLDOWN,
+            "Le cooldown de traite devrait être armé à " + MILK_COOLDOWN
+                + ", vaut " + strider.getMilkCooldown());
+
+        strider.mobInteract(player, InteractionHand.MAIN_HAND);
+        helper.assertTrue(countInInventory(player, ModItems.RAW_RESONANCE_CRYSTAL.get()) == 1,
+            "Une seconde traite immédiate ne doit rien rendre (cooldown)");
+        helper.succeed();
+    }
+
+    /** Reproduction : le Fileur accepte le Resonance Spore comme nourriture, rien d'autre. */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void striderFoodIsResonanceSpore(GameTestHelper helper) {
+        CrystalStriderEntity strider = helper.spawn(ModEntities.CRYSTAL_STRIDER.get(), MACHINE);
+        helper.assertTrue(strider.isFood(new ItemStack(ModItems.RESONANCE_SPORE.get())),
+            "Le Resonance Spore doit être une nourriture de reproduction");
+        helper.assertFalse(strider.isFood(new ItemStack(ModItems.RAW_RESONANCE_CRYSTAL.get())),
+            "Le Raw Crystal ne doit pas être une nourriture");
+        helper.assertFalse(strider.isFood(new ItemStack(Items.WHEAT)),
+            "Le blé (nourriture d'animal vanilla) ne doit pas convenir");
+        helper.succeed();
+    }
+
+    /** Le bébé issu de la reproduction est bien un autre Fileur de Cristal. */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void striderBreedsIntoStrider(GameTestHelper helper) {
+        CrystalStriderEntity parent = helper.spawn(ModEntities.CRYSTAL_STRIDER.get(), MACHINE);
+        var baby = parent.getBreedOffspring(helper.getLevel(), parent);
+        helper.assertTrue(baby instanceof CrystalStriderEntity,
+            "Le bébé devrait être un Crystal Strider, trouve : " + baby);
+        helper.succeed();
+    }
+
+    // --- Gatekeeping T2 : blueprint, recette, console (tâche 10) -------------
+
+    /**
+     * Le blueprint est une clé **réutilisable** : le craft le rend au lieu de le
+     * consommer. C'est ce qui évite qu'un seul plan trouvé ne serve qu'une fois.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void blueprintIsReturnedNotConsumed(GameTestHelper helper) {
+        ItemStack bp = ResonanceBlueprintItem.of(2);
+        helper.assertTrue(bp.getItem().hasCraftingRemainingItem(bp),
+            "Le blueprint doit déclarer un rendu de craft");
+        ItemStack remainder = bp.getItem().getCraftingRemainingItem(bp);
+        helper.assertTrue(remainder.is(ModItems.RESONANCE_BLUEPRINT.get()),
+            "Le rendu du craft doit être le blueprint lui-même, trouve : " + remainder);
+        helper.succeed();
+    }
+
+    /**
+     * La recette du Field Emitter (T2) exige le blueprint — rien n'est masqué, c'est
+     * un ingrédient : sans lui la recette ne matche pas, avec lui elle produit le bloc.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void fieldEmitterRecipeRequiresBlueprint(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ItemStack c = new ItemStack(ModItems.RESONANCE_COMPONENT.get());
+        ItemStack g = new ItemStack(Items.GOLD_INGOT);
+        ItemStack s = new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get());
+        ItemStack p = ResonanceBlueprintItem.of(2);
+        ItemStack e = ItemStack.EMPTY;
+
+        // Motif CGC / CSC / PG_ (voir ModRecipeProvider).
+        CraftingInput withBlueprint = CraftingInput.of(3, 3, List.of(
+            c, g, c,
+            c, s, c,
+            p, g, e));
+        CraftingInput withoutBlueprint = CraftingInput.of(3, 3, List.of(
+            c, g, c,
+            c, s, c,
+            e, g, e));
+
+        helper.assertTrue(craftsFieldEmitter(level, withBlueprint),
+            "Avec le blueprint, la recette doit produire un Field Emitter");
+        helper.assertFalse(craftsFieldEmitter(level, withoutBlueprint),
+            "Sans le blueprint, la recette ne doit pas matcher");
+        helper.succeed();
+    }
+
+    private static boolean craftsFieldEmitter(ServerLevel level, CraftingInput input) {
+        return level.getRecipeManager()
+            .getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, level)
+            .map(holder -> holder.value().getResultItem(level.registryAccess())
+                .is(ModBlocks.FIELD_EMITTER.get().asItem()))
+            .orElse(false);
+    }
+
+    /** La console de l'Avant-poste donne le blueprint T2 une fois, jamais en double. */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void attunementConsoleGivesBlueprintOnce(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+
+        helper.assertTrue(AttunementConsoleBlock.tryGiveBlueprint(player, 2),
+            "La première interaction doit donner un blueprint");
+        helper.assertTrue(countInInventory(player, ModItems.RESONANCE_BLUEPRINT.get()) == 1,
+            "Le joueur devrait avoir 1 blueprint");
+        helper.assertFalse(AttunementConsoleBlock.tryGiveBlueprint(player, 2),
+            "Une seconde interaction ne doit pas donner de doublon");
+        helper.assertTrue(countInInventory(player, ModItems.RESONANCE_BLUEPRINT.get()) == 1,
+            "Le joueur devrait toujours avoir 1 seul blueprint");
+        helper.succeed();
+    }
+
+    /** Un fragment de Codex porte son entrée de lore (Data Component, round-trip). */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void codexFragmentCarriesEntry(GameTestHelper helper) {
+        ItemStack frag = CodexFragmentItem.of(CodexEntries.DAILY_LIFE_LAMPS);
+        helper.assertTrue(CodexEntries.DAILY_LIFE_LAMPS.equals(CodexFragmentItem.entryOf(frag)),
+            "Le fragment devrait porter l'entrée de Codex qu'on lui a donnée");
+        helper.succeed();
+    }
+
+    // --- Configuration (VeskoriusConfig) -------------------------------------
+
+    /**
+     * Les défauts de config reproduisent EXACTEMENT les valeurs de design (celles
+     * qui étaient codées en dur avant la config). Ce test échoue si un défaut est
+     * changé sans mise à jour du dossier — même rôle que la réécriture des valeurs
+     * de référence dans les autres tests. Vérifie aussi, indirectement, que le
+     * ModConfigSpec SERVER est bien chargé quand le jeu tourne.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void configDefaultsMatchDesign(GameTestHelper helper) {
+        helper.assertTrue(VeskoriusConfig.fieldEmitterRange() == 8,
+            "Portée émetteur défaut 8, vaut " + VeskoriusConfig.fieldEmitterRange());
+        helper.assertTrue(VeskoriusConfig.fieldEmitterCapacity() == 4000,
+            "Capacité émetteur défaut 4000, vaut " + VeskoriusConfig.fieldEmitterCapacity());
+        helper.assertTrue(VeskoriusConfig.storageCellCapacity() == 8000,
+            "Capacité cellule défaut 8000, vaut " + VeskoriusConfig.storageCellCapacity());
+        helper.assertTrue(VeskoriusConfig.storageCellChargeRate() == 20,
+            "Débit cellule défaut 20, vaut " + VeskoriusConfig.storageCellChargeRate());
+        helper.assertTrue(Math.abs(VeskoriusConfig.augmentSpeedMultiplier() - 1.15) < 1e-6,
+            "Multiplicateur augment défaut 1.15, vaut " + VeskoriusConfig.augmentSpeedMultiplier());
+        helper.assertTrue(Math.abs(VeskoriusConfig.overheatSpeedMultiplier() - 2.0) < 1e-6,
+            "Facteur vitesse surchauffe défaut 2.0, vaut " + VeskoriusConfig.overheatSpeedMultiplier());
+        helper.assertTrue(Math.abs(VeskoriusConfig.overheatOscMultiplier() - 2.0) < 1e-6,
+            "Facteur Osc surchauffe défaut 2.0, vaut " + VeskoriusConfig.overheatOscMultiplier());
+        helper.assertTrue(Math.abs(VeskoriusConfig.overheatInputLossChance() - 0.2) < 1e-6,
+            "Perte surchauffe défaut 0.2, vaut " + VeskoriusConfig.overheatInputLossChance());
+        helper.succeed();
     }
 
     // --- Utilitaires ---------------------------------------------------------

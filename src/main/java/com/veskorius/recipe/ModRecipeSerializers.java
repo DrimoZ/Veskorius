@@ -27,6 +27,13 @@ public class ModRecipeSerializers {
         RECIPE_SERIALIZERS.register("purifying",
             () -> new MachineRecipeSerializer(ModRecipeTypes.PURIFYING::get));
 
+    public static final DeferredHolder<RecipeSerializer<?>, MachineRecipeSerializer> CRUSHING =
+        RECIPE_SERIALIZERS.register("crushing",
+            () -> new MachineRecipeSerializer(ModRecipeTypes.CRUSHING::get));
+
     public static final DeferredHolder<RecipeSerializer<?>, WhetstoneRecipeSerializer> SHARPENING =
         RECIPE_SERIALIZERS.register("sharpening", WhetstoneRecipeSerializer::new);
+
+    public static final DeferredHolder<RecipeSerializer<?>, EmitterFuelRecipeSerializer> FUELING =
+        RECIPE_SERIALIZERS.register("fueling", EmitterFuelRecipeSerializer::new);
 }

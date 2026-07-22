@@ -1,5 +1,6 @@
 package com.veskorius.block.entity;
 
+import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.menu.FluxPurifierMenu;
 import com.veskorius.recipe.ModRecipeTypes;
 import net.minecraft.core.BlockPos;
@@ -27,9 +28,6 @@ public class FluxPurifierBlockEntity extends AbstractProcessingMachineBlockEntit
     public static final int SLOT_AUGMENT = 3;
     public static final int SLOT_COUNT = 4;
 
-    /** 20 % de chance de perdre l'input en surchauffe (06-Energy.md). */
-    private static final float OVERHEAT_LOSS_CHANCE = 0.2f;
-
     public FluxPurifierBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FLUX_PURIFIER.get(), pos, state, SLOT_COUNT,
             ModRecipeTypes.PURIFYING::get, new int[] {SLOT_CRYSTAL, SLOT_REDSTONE}, SLOT_OUTPUT);
@@ -42,9 +40,10 @@ public class FluxPurifierBlockEntity extends AbstractProcessingMachineBlockEntit
 
     @Override
     protected boolean shouldProduceResult() {
-        // En surchauffe, 20 % de chance que l'entrée parte en fumée sans sortie.
-        // level est forcément non nul et serveur ici (appelé depuis serverTick).
-        return !(isOverheatActive() && level.getRandom().nextFloat() < OVERHEAT_LOSS_CHANCE);
+        // En surchauffe, une chance configurable (défaut 20 %) que l'entrée parte en
+        // fumée sans sortie. level est forcément non nul et serveur ici (serverTick).
+        return !(isOverheatActive()
+            && level.getRandom().nextFloat() < VeskoriusConfig.overheatInputLossChance());
     }
 
     @Override

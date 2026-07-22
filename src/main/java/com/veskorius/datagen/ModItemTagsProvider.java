@@ -32,9 +32,11 @@ public class ModItemTagsProvider extends ItemTagsProvider {
             .add(Items.QUARTZ)
             .add(ModItems.RAW_FLUX_DEPOSIT.get());
 
-        // Volontairement vide pour l'instant : le Resonance Catalyst Core arrive a
-        // la tache 15. Le tag est declare des maintenant pour que le slot
-        // d'augment existe et refuse tout, plutot que d'accepter n'importe quoi.
-        tag(ModTags.Items.MACHINE_AUGMENTS);
+        // Augment transversal des machines actives (05-Machines.md). Le slot
+        // d'augment existe sur toutes les machines depuis la tache 1 ; il a suffi
+        // d'ajouter l'item au tag pour que l'effet +15% (deja code dans le socle)
+        // s'applique — aucun code machine touche, comme prevu.
+        tag(ModTags.Items.MACHINE_AUGMENTS)
+            .add(ModItems.RESONANCE_CATALYST_CORE.get());
     }
 }

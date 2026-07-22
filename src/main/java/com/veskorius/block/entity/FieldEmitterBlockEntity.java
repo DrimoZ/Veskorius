@@ -1,9 +1,11 @@
 package com.veskorius.block.entity;
 
+import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.energy.IResonanceField;
 import com.veskorius.energy.ResonanceFieldManager;
-import com.veskorius.item.ModItems;
 import com.veskorius.menu.FieldEmitterMenu;
+import com.veskorius.recipe.EmitterFuelRecipe;
+import com.veskorius.recipe.ModRecipeTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -16,6 +18,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -24,16 +28,19 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Field Emitter (machine #4, 05-Machines.md) : premier fournisseur de champ de
- * Résonance. Portée 8, réserve interne de 4000 Osc.
+ * Résonance. Portée et réserve par défaut : 8 blocs / 4000 Osc — désormais
+ * configurables (voir {@link com.veskorius.config.VeskoriusConfig}, section energy).
  *
  * Ce n'est PAS une machine à cycle : elle ne transforme rien en sortie. Elle
  * n'hérite donc pas d'{@link AbstractMachineBlockEntity} (pas de progression, pas
  * de slot d'augment — le Field Emitter est un « bloc passif » au sens du design,
  * les blocs passifs n'acceptent pas le Catalyst Core).
  *
- * Source d'énergie : elle brûle des Stable Resonance Crystal, 4000 Osc chacun
- * (06-Energy.md, section « Source primaire de l'énergie »). Le cristal est le seul
- * carburant accepté.
+ * Source d'énergie : elle brûle des carburants **data-driven** (type de recette
+ * {@code veskorius:fueling} : ingrédient → Osc). Par défaut, un seul carburant, le
+ * Stable Resonance Crystal à 4000 Osc (06-Energy.md, « Source primaire de
+ * l'énergie ») ; un datapack en ajoute/retire ou change les valeurs sans recompiler
+ * (voir {@code 14-Configuration.md}).
  */
 public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceField, MenuProvider {
 
@@ -41,14 +48,10 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
     public static final int DATA_CAPACITY = 1;
     public static final int DATA_COUNT = 2;
 
-    /** Portée du champ (06-Energy.md). */
-    private static final int RANGE = 8;
-
-    /** Réserve max = exactement un Stable Crystal (05-Machines.md #4, « réserve 4000 Osc »). */
-    private static final int CAPACITY = 4000;
-
-    /** Osc rendus par un Stable Crystal brûlé (06-Energy.md). */
-    private static final int OSC_PER_CRYSTAL = 4000;
+    // Portée, capacité de réserve et Osc/cristal sont désormais configurables
+    // (VeskoriusConfig, section "energy"). Défauts design : 8 / 4000 / 4000. Lues à
+    // l'exécution (jamais mises en cache) : la config SERVER n'est pas chargée au
+    // moment où la classe l'est.
 
     /**
      * Intensité de tous les Field Emitter T2. La valeur exacte n'a pas encore
@@ -68,7 +71,7 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return stack.is(ModItems.STABLE_RESONANCE_CRYSTAL.get());
+            return isFuel(stack);
         }
     };
 
@@ -80,7 +83,7 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
         public int get(int index) {
             return switch (index) {
                 case DATA_RESERVE -> reserve;
-                case DATA_CAPACITY -> CAPACITY;
+                case DATA_CAPACITY -> VeskoriusConfig.fieldEmitterCapacity();
                 default -> 0;
             };
         }
@@ -113,20 +116,46 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
     }
 
     /**
-     * Ne brûle un cristal que lorsque la réserve peut en absorber un plein (donc,
-     * capacité et charge par cristal étant égales, uniquement à réserve nulle) :
-     * jamais de cristal gaspillé pour combler un petit déficit.
+     * Ne brûle une unité de carburant que lorsque la réserve peut en absorber la
+     * pleine valeur : jamais de carburant gaspillé pour combler un petit déficit.
+     * Avec les défauts (capacité = valeur d'un cristal), cela revient à « uniquement
+     * à réserve nulle » ; si un modpack augmente la capacité, l'émetteur fait le
+     * plein de plusieurs unités d'avance. La valeur en Osc vient de la recette de
+     * carburant (data-driven), plus d'une constante.
      */
     private void refuelIfEmpty() {
-        if (reserve + OSC_PER_CRYSTAL > CAPACITY) {
+        ItemStack fuelStack = fuel.getStackInSlot(SLOT_FUEL);
+        if (fuelStack.isEmpty() || level == null) {
             return;
         }
-        if (fuel.getStackInSlot(SLOT_FUEL).isEmpty()) {
+        EmitterFuelRecipe recipe = findFuel(level, fuelStack);
+        if (recipe == null) {
+            return;
+        }
+        if (reserve + recipe.osc() > VeskoriusConfig.fieldEmitterCapacity()) {
             return;
         }
         fuel.extractItem(SLOT_FUEL, 1, false);
-        reserve += OSC_PER_CRYSTAL;
+        reserve += recipe.osc();
         setChanged();
+    }
+
+    /** Vrai si {@code stack} est un carburant enregistré (recette {@code veskorius:fueling}). */
+    private boolean isFuel(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+        // Avant que le niveau soit disponible (rare) : permissif, comme le socle des
+        // machines pour ses slots d'entrée.
+        return level == null || findFuel(level, stack) != null;
+    }
+
+    @Nullable
+    private static EmitterFuelRecipe findFuel(Level level, ItemStack stack) {
+        return level.getRecipeManager()
+            .getRecipeFor(ModRecipeTypes.FUELING.get(), new SingleRecipeInput(stack), level)
+            .map(RecipeHolder::value)
+            .orElse(null);
     }
 
     // --- IResonanceField -----------------------------------------------------
@@ -138,7 +167,7 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
 
     @Override
     public int getRange() {
-        return RANGE;
+        return VeskoriusConfig.fieldEmitterRange();
     }
 
     @Override
@@ -171,7 +200,7 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
     }
 
     public int getCapacity() {
-        return CAPACITY;
+        return VeskoriusConfig.fieldEmitterCapacity();
     }
 
     // --- MenuProvider (GUI : jauge de réserve + slot de carburant) ------------

@@ -14,10 +14,11 @@ ce fichier.
   `./gradlew runData` passent.
 - 4 items enregistrés : `raw_resonance_crystal`, `stable_resonance_crystal`,
   `refined_resonance_crystal`, `resonance_component`.
-- **4 machines à cycle fonctionnelles** : Resonance Stabilizer (#1, autonome), Component
-  Assembler (#2, 3 Osc/tick), Resonance Whetstone (#3, autonome) et Flux Purifier (#5, 2 Osc/tick,
-  **mode surchauffe**). Block entity, cycle, GUI avec barre de progression, orientation, slot
-  d'augment, inventaire persistant et vidé au sol quand le bloc est cassé.
+- **5 machines à cycle fonctionnelles** : Resonance Stabilizer (#1, autonome), Component
+  Assembler (#2, 3 Osc/tick), Resonance Whetstone (#3, autonome), Flux Purifier (#5, 2 Osc/tick,
+  **mode surchauffe**) et Crystal Crusher (#22, autonome, 1 Raw Crystal → 3 Resonance Dust en
+  10 s, alternative rapide au Stabilizer). Block entity, cycle, GUI avec barre de progression,
+  orientation, slot d'augment, inventaire persistant et vidé au sol quand le bloc est cassé.
 - **Contrôles sur toutes les machines** (3 boutons dans le GUI) : interrupteur manuel on/off,
   contrôle redstone façon Thermal (ignoré / requiert un signal / requiert l'absence), et
   surchauffe pour les machines qui la supportent. Aucun packet custom (canal vanilla
@@ -36,11 +37,14 @@ ce fichier.
   - `veskorius:stabilizing` / `assembling` / `purifying` : recettes input→output partageant la
     classe `MachineRecipe` (ingrédients item/tag **+ count**, résultat, **temps**, **Osc/tick**).
     Cycle générique via `AbstractProcessingMachineBlockEntity` — une nouvelle machine input→output
-    ne code aucune recette.
+    ne code aucune recette. Le Crystal Crusher (`veskorius:crushing`) en est le dernier exemple :
+    première machine à **une seule entrée**, elle a réutilisé le socle sans le modifier. Sa
+    poussière a aussi débloqué la **branche alternative de l'Assembler** (3 Resonance Dust + 2 Iron)
+    en un simple second JSON, sans une ligne de code — la promesse annoncée ci-dessous, réalisée.
   - `veskorius:sharpening` : le Whetstone (réparation), forme à part (catalyseur, **% réparé**,
     temps ; l'outil réparé est calculé, pas un résultat fixe).
-  - Conséquence directe : la « branche alternative » de l'Assembler (3 poussière + 2 fer) sera un
-    simple second JSON, zéro code.
+  - Conséquence directe : la « branche alternative » de l'Assembler (3 poussière + 2 fer) est un
+    simple second JSON, zéro code — désormais faite (avec le Crystal Crusher).
 - **Système d'énergie de Résonance (le champ)** : capability `IResonanceField`,
   `ResonanceFieldManager` (routage machine→émetteur par champ, pas de câble), le **Field
   Emitter** (#4) — réserve de 4000 Osc rechargée en brûlant des Stable Crystals, portée 8, avec
@@ -48,7 +52,36 @@ ce fichier.
   socle des machines (`getOscPerTick`). Le Component Assembler en est le premier client.
 - Datagen complet : plus aucun blockstate / modèle / recette / loot table / tag / traduction
   n'est écrit à la main.
-- Harnais `GameTest` : 29 tests (cycles, champ, énergie, contrôles, surchauffe, Tuner, démontage), `./gradlew runGameTestServer`.
+- **Resonance Storage Cell** (#6) : batterie portable (item, 8000 Osc, charge sur l'item via Data
+  Component). Se recharge dans un champ — tant qu'elle est dans l'inventaire d'un joueur couvert
+  par un émetteur, elle prélève ≤20 Osc/tick sur la réserve de celui-ci (même source que les
+  machines, aucune conversion cachée). Tooltip + barre de charge ; `extractCharge` prêt pour le
+  Locator (tâche 8). Son consommateur viendra avec les structures.
+- **Configuration modpack** (`14-Configuration.md`) : philosophie « data-driven d'abord ». Tout le
+  contenu (recettes de fonctionnement/craft, tags, loot, worldgen) est déjà surchargeable par
+  **datapack**. Les constantes d'équilibrage codées en dur (portée/capacité du champ, capacité
+  et débit de la Storage Cell, bonus d'augment, facteurs de surchauffe) passent par un
+  `ModConfigSpec` **SERVER** (`VeskoriusConfig`, `veskorius-server.toml`) — synchronisé, par monde,
+  livrable via `defaultconfigs/`. Lues à l'exécution ; défauts verrouillés sur le design par un test.
+- **Carburants du Field Emitter data-driven** : type de recette `veskorius:fueling`
+  (`ingredient → osc`). Par défaut un seul carburant (Stable Crystal, 4000 Osc) ; un datapack en
+  ajoute/retire ou change les valeurs sans recompiler. Affiché dans JEI (carburant → Osc). A
+  remplacé le filtre d'item et la valeur d'Osc jusque-là en dur.
+- **Première entité — Fileur de Cristal** (`crystal_strider`, 09-Entities.md) : faune neutre des
+  poches (ne combat jamais, fuit quand blessé). **Traite** au clic droit à main nue (1 Raw Crystal,
+  cooldown 5 min) et **reproduction** au `resonance_spore` (élevage vanilla). Œuf d'apparition,
+  spawn souterrain (densité à valider en playtest), modèle/renderer placeholder. Met en place le
+  socle entités (`ModEntities`, événements d'attributs/placement, rendu client) réutilisable pour
+  les mobs suivants. Le Custode et le bloc de récolte du spore restent à coder.
+- **Structures T1-T2 + gatekeeping physique** (`03`/`08`, tâche 10) : deux ruines (Habitation
+  Modeste, Avant-poste) générées comme **feature** (réutilise le pipeline des poches). Le déblocage
+  d'un tier passe par un objet-clé, le `resonance_blueprint` — **ingrédient rendu** dans les recettes
+  du tier (aucune recette masquée, tout est visible dans JEI ; ce qui bloque, c'est de ne pas avoir
+  le plan). Le T2 s'obtient en **réveillant la console** (`attunement_console`) de l'Avant-poste sur
+  place. Les `codex_fragment` sont du lore lisible, pas un gate. Advancements de feedback.
+- Harnais `GameTest` : 46 tests (… + Fileur de Cristal, blueprint rendu au craft, recette T2 gatée,
+  console, fragment de Codex), `./gradlew runGameTestServer`. Le serveur de test charge tout le
+  datapack (worldgen inclus) sans erreur.
 - **Intégration JEI** (dev) : les recettes des 4 machines s'affichent dans JEI, une catégorie par
   machine, avec temps et Osc/tick. JEI est en `compileOnly` (API) + `localRuntime` (mod complet
   dans `runClient`), pas exporté dans le jar. Sert à vérifier les recettes en jeu.
@@ -95,19 +128,22 @@ Elles ne sont pas décoratives — s'en écarter casse le socle générique :
 ## Ce qui n'est PAS encore fait (dans l'ordre à coder)
 
 Suivre `veskorius-design/11-Development-Plan.md`, Phase 1 — c'est la liste ordonnée complète et à
-jour (recettes exactes, chiffres d'équilibrage, dépendances entre tâches). Les tâches 1 et 15
-(slot d'augment) y sont marquées faites. Les toutes prochaines étapes :
+jour (recettes exactes, chiffres d'équilibrage, dépendances entre tâches). Faites : tâches 1, 2,
+3, 4, 5, 6, 7, 9, 10, 13, 14, 15. Restent, avec leurs dépendances :
 
-1. **`ResonanceStorageCellItem`** (tâche 7) — une **batterie portable** (item, pas une machine à
-   cycle), stocke 8000 Osc. Registre différent de tout ce qui précède.
-2. **`ResonanceLocatorItem`** (tâche 8) et **`ResonanceTunerItem`** (tâche 9) — outils. Le Tuner
-   devra brancher son toggle surchauffe sur le même `toggleOverheat()` que le bouton `H`.
-3. Puis le reste de la Phase 1.
+1. **`ResonanceLocatorItem`** (tâche 8) — outil de localisation ; désormais **débloqué** (les
+   structures existent, il a une cible). Modèle d'énergie déjà résolu (batterie interne + recharge
+   par champ/Storage Cell). Prochain candidat naturel.
+2. **Mobs** (tâche 11) — le *Fileur de Cristal* est fait ; reste le *Custode* (garde réactif,
+   dépend des structures pour son spawn). Puis le **Crystal Roost** (tâche 12, débloqué par le
+   Fileur).
+3. **Finitions tâche 10** : tell de surface de l'Avant-poste ; migration du match blueprint vers
+   `DataComponentIngredient` quand le T3 arrivera. Bloc de récolte du `resonance_spore`.
 
-Prochaine étape logique : **la génération de monde (tâche 4)** — les poches de `raw_resonance_crystal`.
-C'est le vrai déblocage : aujourd'hui les cristaux ne s'obtiennent qu'en créatif, et la tâche 4
-ouvre le gameplay d'exploration + débloque le Locator (tâche 8) et les Storage Cell (tâche 7),
-dont le design d'énergie portable est déjà résolu dans `06-Energy.md` (section « Osc portable »).
+La boucle T1-T2 est jouable en survie de bout en bout : miner → stabiliser → **trouver un
+Avant-poste, réveiller la console → blueprint T2** → poser un champ → purifier. L'augment +15%, la
+Storage Cell et les carburants data-driven sont en place. Reste surtout du contenu (Locator, Custode,
+Roost) ; le mode Tuner « retrait d'augment en place » reste différé.
 
 ## Structure
 
@@ -121,6 +157,8 @@ src/main/java/com/veskorius/
 ├── item/ModItems.java
 ├── menu/                       ← AbstractMachineMenu + menus de machines
 ├── client/                     ← écrans (Dist.CLIENT uniquement)
+├── config/                     ← VeskoriusConfig (ModConfigSpec SERVER, réglages modpack)
+├── entity/                     ← ModEntities + mobs (CrystalStrider) + événements (attributs/spawn)
 ├── energy/                     ← IResonanceField, ResonanceFieldManager, capabilities
 ├── recipe/                     ← MachineRecipe(Input/Serializer) + RecipeTypes/Serializers
 ├── worldgen/                   ← ModWorldGen (features + biome modifier, data-driven)

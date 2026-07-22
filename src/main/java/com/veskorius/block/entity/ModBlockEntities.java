@@ -41,4 +41,10 @@ public class ModBlockEntities {
             () -> BlockEntityType.Builder
                 .of(FieldEmitterBlockEntity::new, ModBlocks.FIELD_EMITTER.get())
                 .build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CrystalCrusherBlockEntity>>
+        CRYSTAL_CRUSHER = BLOCK_ENTITIES.register("crystal_crusher",
+            () -> BlockEntityType.Builder
+                .of(CrystalCrusherBlockEntity::new, ModBlocks.CRYSTAL_CRUSHER.get())
+                .build(null));
 }

@@ -1,5 +1,6 @@
 package com.veskorius.block.entity;
 
+import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.energy.ResonanceFieldManager;
 import com.veskorius.tag.ModTags;
 import net.minecraft.core.BlockPos;
@@ -39,9 +40,6 @@ import net.neoforged.neoforge.items.ItemStackHandler;
  * {@link #canRunCycle()} a ce moment-la.
  */
 public abstract class AbstractMachineBlockEntity extends BlockEntity implements MenuProvider {
-
-    /** +15% de vitesse permanents quand un augment occupe le slot (05-Machines.md). */
-    private static final float AUGMENT_SPEED_MULTIPLIER = 1.15f;
 
     public static final int DATA_PROGRESS = 0;
     public static final int DATA_MAX_PROGRESS = 1;
@@ -226,10 +224,12 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         return ResonanceFieldManager.supply(serverLevel, worldPosition, cost) >= cost;
     }
 
-    /** Cout d'un tick, surchauffe comprise (consommation x2, 06-Energy.md). */
+    /** Cout d'un tick, surchauffe comprise (consommation multipliee, 06-Energy.md ; facteur configurable). */
     public int getEffectiveOscPerTick() {
         int base = getOscPerTick();
-        return isOverheatActive() ? base * 2 : base;
+        return isOverheatActive()
+            ? (int) Math.round(base * VeskoriusConfig.overheatOscMultiplier())
+            : base;
     }
 
     // --- Controle (redstone, interrupteur manuel, surchauffe) ----------------
@@ -315,13 +315,13 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
      */
     public int getEffectiveCycleTicks() {
         int base = getBaseCycleTicks();
-        // Surchauffe : temps divise par 2 (06-Energy.md). Appliquee avant
-        // l'augment, les deux se cumulent.
+        // Surchauffe : temps divise par un facteur configurable (06-Energy.md,
+        // defaut 2). Appliquee avant l'augment, les deux se cumulent.
         if (isOverheatActive()) {
-            base = Math.max(1, base / 2);
+            base = Math.max(1, (int) Math.round(base / VeskoriusConfig.overheatSpeedMultiplier()));
         }
         if (hasAugment()) {
-            base = Math.max(1, Math.round(base / AUGMENT_SPEED_MULTIPLIER));
+            base = Math.max(1, (int) Math.round(base / VeskoriusConfig.augmentSpeedMultiplier()));
         }
         return Math.max(1, base);
     }
