@@ -87,7 +87,78 @@ public class RuinFeature extends Feature<RuinConfiguration> {
             placeSurfaceMarker(level, origin);
         }
 
+        // Interior dressing so a ruin reads as a lived-in place, not an empty box.
+        // Full buildings are still Phase 6; this is a cheap interim pass.
+        decorateInterior(level, origin, r, h, random, config.console());
+
         return true;
+    }
+
+    /**
+     * Scatters a little themed furniture, rubble and cobwebs inside the room so it
+     * feels like a dwelling (or a workshop, for the Outpost) rather than a hollow
+     * shell. Skips reserved cells (chest corner, console centre) and only writes into
+     * air, so it never overwrites the loot chest or the console.
+     */
+    private static void decorateInterior(WorldGenLevel level, BlockPos origin, int r, int h,
+                                         RandomSource random, boolean outpost) {
+        BlockState[] furniture = outpost
+            ? new BlockState[] {
+                Blocks.CRAFTING_TABLE.defaultBlockState(),
+                Blocks.FURNACE.defaultBlockState(),
+                Blocks.BARREL.defaultBlockState(),
+                Blocks.CHIPPED_ANVIL.defaultBlockState(),
+                Blocks.SMITHING_TABLE.defaultBlockState()}
+            : new BlockState[] {
+                Blocks.CRAFTING_TABLE.defaultBlockState(),
+                Blocks.BARREL.defaultBlockState(),
+                Blocks.CAULDRON.defaultBlockState(),
+                Blocks.COMPOSTER.defaultBlockState(),
+                Blocks.BOOKSHELF.defaultBlockState()};
+        BlockState[] rubble = {
+            Blocks.COBBLESTONE.defaultBlockState(),
+            Blocks.MOSSY_COBBLESTONE.defaultBlockState(),
+            Blocks.GRAVEL.defaultBlockState()};
+        int span = r - 1;
+
+        int pieces = 3 + random.nextInt(2);
+        int placed = 0;
+        for (int attempt = 0; attempt < 30 && placed < pieces; attempt++) {
+            int dx = random.nextInt(2 * span + 1) - span;
+            int dz = random.nextInt(2 * span + 1) - span;
+            BlockPos p = origin.offset(dx, 1, dz);
+            if (!isReserved(dx, dz, r, outpost) && level.getBlockState(p).isAir()) {
+                level.setBlock(p, furniture[random.nextInt(furniture.length)], 2);
+                placed++;
+            }
+        }
+
+        int rubblePiles = 2 + random.nextInt(3);
+        for (int i = 0; i < rubblePiles; i++) {
+            int dx = random.nextInt(2 * span + 1) - span;
+            int dz = random.nextInt(2 * span + 1) - span;
+            BlockPos p = origin.offset(dx, 1, dz);
+            if (!isReserved(dx, dz, r, outpost) && level.getBlockState(p).isAir()) {
+                level.setBlock(p, rubble[random.nextInt(rubble.length)], 2);
+            }
+        }
+
+        int webs = 1 + random.nextInt(2);
+        for (int i = 0; i < webs; i++) {
+            int sx = random.nextBoolean() ? span : -span;
+            int sz = random.nextBoolean() ? span : -span;
+            BlockPos p = origin.offset(sx, h - 1, sz);
+            if (level.getBlockState(p).isAir()) {
+                level.setBlock(p, Blocks.COBWEB.defaultBlockState(), 2);
+            }
+        }
+    }
+
+    /** Cells kept clear of decoration: the loot chest corner and the console centre. */
+    private static boolean isReserved(int dx, int dz, int r, boolean outpost) {
+        boolean chestCorner = dx == -r + 1 && dz == -r + 1;
+        boolean consoleCentre = outpost && dx == 0 && dz == 0;
+        return chestCorner || consoleCentre;
     }
 
     /** True if the footprint at floor level is mostly solid ground (avoids floating ruins). */
