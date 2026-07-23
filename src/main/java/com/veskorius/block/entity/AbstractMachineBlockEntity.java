@@ -1,7 +1,10 @@
 package com.veskorius.block.entity;
 
 import com.veskorius.block.AbstractMachineBlock;
+import com.veskorius.config.HarmonicsConfig;
 import com.veskorius.config.VeskoriusConfig;
+import com.veskorius.energy.HarmonicBand;
+import com.veskorius.energy.IResonanceField;
 import com.veskorius.energy.ResonanceFieldManager;
 import com.veskorius.tag.ModTags;
 import net.minecraft.core.BlockPos;
@@ -87,6 +90,10 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     private final SideMode[] sideModes = defaultSideModes();
     private boolean autoInput = false;
     private boolean autoOutput = false;
+
+    /** Bande harmonique ; {@code null} = machine universelle (défaut, tout le T1). */
+    @Nullable
+    private HarmonicBand harmonicBand;
 
     private static SideMode[] defaultSideModes() {
         SideMode[] modes = new SideMode[6];
@@ -288,7 +295,77 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         if (!(level instanceof ServerLevel serverLevel)) {
             return false;
         }
-        return ResonanceFieldManager.supply(serverLevel, worldPosition, cost) >= cost;
+
+        // Harmoniques (06-Energy.md) : puiser sur une bande différente de la sienne
+        // coûte plus cher et injecte de la dissonance dans le champ. Ça ne bloque
+        // JAMAIS la machine — elle tourne, elle grince.
+        IResonanceField source = ResonanceFieldManager.findSource(serverLevel, worldPosition);
+        boolean detuned = isDetunedFrom(source);
+        if (detuned) {
+            cost = (int) Math.ceil(cost * HarmonicsConfig.detuneOscMultiplier());
+        }
+
+        boolean powered = ResonanceFieldManager.supply(serverLevel, worldPosition, cost) >= cost;
+        if (powered && detuned && source != null) {
+            source.addDissonance(HarmonicsConfig.dissonancePerDetunedTick());
+        }
+        return powered;
+    }
+
+    /**
+     * Vrai si cette machine tourne sur une bande différente de celle du champ qui la
+     * sert. Faux dans tous les cas « simples » : harmoniques désactivées, machine
+     * universelle (tout le T1), ou recette marquée {@code stable} — ces recettes sont
+     * increvables quel que soit le déréglage.
+     */
+    public boolean isDetunedFrom(@Nullable IResonanceField source) {
+        if (!HarmonicsConfig.enabled() || source == null || harmonicBand == null) {
+            return false;
+        }
+        if (isCurrentRecipeStable()) {
+            return false;
+        }
+        return harmonicBand != source.getBand();
+    }
+
+    /**
+     * Vrai si la recette en cours est déclarée increvable (`stable`). Redéfini par les
+     * machines à recette ; par défaut non.
+     */
+    protected boolean isCurrentRecipeStable() {
+        return false;
+    }
+
+    // --- Bande harmonique de la machine --------------------------------------
+
+    /**
+     * Vrai si cette machine peut porter une bande (donc être accordée/désaccordée).
+     * Faux par défaut : **tout le T1 reste universel**, aucune complexité imposée au
+     * début de partie (06-Energy.md, courbe d'introduction).
+     */
+    public boolean supportsHarmonicBand() {
+        return false;
+    }
+
+    /** Bande courante, ou {@code null} = machine universelle (accepte tout champ). */
+    @Nullable
+    public HarmonicBand getHarmonicBand() {
+        return harmonicBand;
+    }
+
+    public void setHarmonicBand(@Nullable HarmonicBand band) {
+        this.harmonicBand = band;
+        setChanged();
+    }
+
+    /** Fait défiler la bande (mode « Accorder » du Resonance Tuner). */
+    public void cycleHarmonicBand() {
+        if (!supportsHarmonicBand()) {
+            return;
+        }
+        setHarmonicBand(harmonicBand == null
+            ? HarmonicBand.FUNDAMENTAL
+            : harmonicBand.next(HarmonicsConfig.bandCount()));
     }
 
     /** Cout d'un tick, surchauffe comprise (consommation multipliee, 06-Energy.md ; facteur configurable). */
@@ -640,6 +717,8 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         tag.putByteArray("sideModes", modes);
         tag.putBoolean("autoInput", autoInput);
         tag.putBoolean("autoOutput", autoOutput);
+        // -1 = machine universelle (aucune bande).
+        tag.putByte("harmonicBand", (byte) (harmonicBand == null ? -1 : harmonicBand.ordinal()));
     }
 
     @Override
@@ -660,5 +739,7 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         }
         autoInput = tag.getBoolean("autoInput");
         autoOutput = tag.getBoolean("autoOutput");
+        byte band = tag.getByte("harmonicBand");
+        harmonicBand = band < 0 ? null : HarmonicBand.byIndex(band);
     }
 }

@@ -124,6 +124,34 @@ public final class ResonanceFieldManager {
     }
 
     /**
+     * L'émetteur qui <b>servirait</b> un consommateur à cette position — même ordre de
+     * sélection que {@link #supply}. Sert à lire la <b>bande harmonique</b> du champ
+     * avant d'y puiser (accord/désaccord, 06-Energy.md) et à y réinjecter de la
+     * dissonance. Ne prélève rien.
+     */
+    @org.jetbrains.annotations.Nullable
+    public static IResonanceField findSource(ServerLevel level, BlockPos consumerPos) {
+        Set<BlockPos> set = EMITTERS.get(level.dimension());
+        if (set == null || set.isEmpty()) {
+            return null;
+        }
+        for (BlockPos emitterPos : set.toArray(BlockPos[]::new)) {
+            if (!(level.getBlockEntity(emitterPos) instanceof IResonanceField field)) {
+                set.remove(emitterPos);
+                continue;
+            }
+            if (!field.isActive()) {
+                continue;
+            }
+            long rangeSqr = (long) field.getRange() * field.getRange();
+            if (emitterPos.distSqr(consumerPos) <= rangeSqr) {
+                return field;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Émetteur actif le plus proche de {@code from} dans un rayon de {@code maxRange}
      * blocs, ou {@code null}. Sert au Resonance Locator (détection de signature de
      * champ, 07-World-Generation.md). Parcourt l'index — pas de scan de blocs.

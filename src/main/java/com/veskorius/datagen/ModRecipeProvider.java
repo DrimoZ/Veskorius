@@ -212,6 +212,7 @@ public class ModRecipeProvider extends RecipeProvider {
             .input(ModItems.RAW_RESONANCE_CRYSTAL.get(), 1)
             .input(ModTags.Items.STABILIZER_FLUX, 1)
             .time(30 * 20)
+            .stable()
             .save(recipeOutput, machineRecipe("stabilizing/stable_crystal"));
 
         // Assembler : 1 Stable Crystal + 2 Iron → 2 Component, 5 s, 3 Osc/tick
@@ -221,6 +222,7 @@ public class ModRecipeProvider extends RecipeProvider {
             .input(ModTags.Items.IRON_SUBSTITUTES, 2)
             .time(5 * 20)
             .osc(3)
+            .stable()
             .save(recipeOutput, machineRecipe("assembling/component"));
 
         // Purifier : 1 Stable Crystal + 1 Redstone → 1 Refined Crystal, 45 s,
@@ -238,6 +240,7 @@ public class ModRecipeProvider extends RecipeProvider {
         MachineRecipeBuilder.crushing(ModItems.RESONANCE_DUST.get(), 3)
             .input(ModItems.RAW_RESONANCE_CRYSTAL.get(), 1)
             .time(10 * 20)
+            .stable()
             .save(recipeOutput, machineRecipe("crushing/resonance_dust"));
 
         // Assembler, branche alternative : 3 Resonance Dust + 2 Iron → 2 Component,
@@ -251,6 +254,7 @@ public class ModRecipeProvider extends RecipeProvider {
             .input(ModTags.Items.IRON_SUBSTITUTES, 2)
             .time(5 * 20)
             .osc(3)
+            .stable()
             .save(recipeOutput, machineRecipe("assembling/component_from_dust"));
 
         // Roost : 2 Quartz → 1 Raw Crystal, 600 s, autonome (05-Machines.md #8). La
@@ -260,6 +264,7 @@ public class ModRecipeProvider extends RecipeProvider {
         MachineRecipeBuilder.roosting(ModItems.RAW_RESONANCE_CRYSTAL.get(), 1)
             .input(Items.QUARTZ, 2)
             .time(600 * 20)
+            .stable()
             .save(recipeOutput, machineRecipe("roosting/raw_crystal"));
 
         // Whetstone : outil endommagé + 1 Stable Crystal → outil réparé de 25 %,

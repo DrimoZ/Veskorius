@@ -30,6 +30,7 @@ public class MachineRecipeBuilder {
     private final ItemStack result;
     private int time = 1;
     private int oscPerTick = 0;
+    private boolean stable = false;
 
     private MachineRecipeBuilder(Supplier<? extends RecipeType<?>> type,
                                  Supplier<? extends RecipeSerializer<?>> serializer, ItemStack result) {
@@ -83,9 +84,18 @@ public class MachineRecipeBuilder {
         return this;
     }
 
+    /**
+     * Marque la recette « increvable » : aucun surcoût ni dissonance quel que soit le
+     * déréglage harmonique de la machine (06-Energy.md). À mettre sur tout le T1.
+     */
+    public MachineRecipeBuilder stable() {
+        this.stable = true;
+        return this;
+    }
+
     public void save(RecipeOutput output, ResourceLocation id) {
         MachineRecipe recipe = new MachineRecipe(
-            type, serializer, List.copyOf(ingredients), result, time, oscPerTick);
+            type, serializer, List.copyOf(ingredients), result, time, oscPerTick, stable);
         // Pas d'advancement de déblocage pour une recette de machine (elle n'est
         // pas au recipe book vanilla) : null en 3e argument.
         output.accept(id, recipe, null);

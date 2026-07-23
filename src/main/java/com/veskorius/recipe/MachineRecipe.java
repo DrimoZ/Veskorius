@@ -39,15 +39,18 @@ public class MachineRecipe implements Recipe<MachineRecipeInput> {
     private final ItemStack result;
     private final int time;
     private final int oscPerTick;
+    private final boolean stable;
 
     public MachineRecipe(Supplier<? extends RecipeType<?>> type, Supplier<? extends RecipeSerializer<?>> serializer,
-                         List<SizedIngredient> ingredients, ItemStack result, int time, int oscPerTick) {
+                         List<SizedIngredient> ingredients, ItemStack result, int time, int oscPerTick,
+                         boolean stable) {
         this.type = type;
         this.serializer = serializer;
         this.ingredients = List.copyOf(ingredients);
         this.result = result;
         this.time = time;
         this.oscPerTick = oscPerTick;
+        this.stable = stable;
     }
 
     // --- Champs (getters nommés pour les codecs) -----------------------------
@@ -66,6 +69,16 @@ public class MachineRecipe implements Recipe<MachineRecipeInput> {
 
     public int oscPerTick() {
         return oscPerTick;
+    }
+
+    /**
+     * Recette « increvable » (06-Energy.md) : elle réussit toujours, quel que soit le
+     * déréglage harmonique de la machine — aucun surcoût de désaccord, aucune
+     * dissonance produite. Toutes les recettes T1 le sont, pour que la boucle de
+     * départ ne puisse jamais frustrer ; un modpack peut en marquer d'autres.
+     */
+    public boolean stable() {
+        return stable;
     }
 
     // --- Recipe --------------------------------------------------------------

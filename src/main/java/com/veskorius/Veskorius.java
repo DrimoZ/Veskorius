@@ -90,6 +90,8 @@ public class Veskorius {
         modContainer.registerConfig(ModConfig.Type.SERVER, MachinesConfig.SPEC, "veskorius-machines.toml");
         modContainer.registerConfig(ModConfig.Type.SERVER, GenerationConfig.SPEC, "veskorius-generation.toml");
         modContainer.registerConfig(ModConfig.Type.SERVER, MobsConfig.SPEC, "veskorius-mobs.toml");
+        modContainer.registerConfig(ModConfig.Type.SERVER,
+            com.veskorius.config.HarmonicsConfig.SPEC, "veskorius-harmonics.toml");
 
         ModItems.ITEMS.register(modEventBus);
         ModDataComponents.COMPONENTS.register(modEventBus);

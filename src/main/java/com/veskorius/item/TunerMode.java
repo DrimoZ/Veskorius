@@ -23,7 +23,13 @@ public enum TunerMode {
     OVERHEAT("tuner_overheat"),
 
     /** Fait défiler le mode de contrôle redstone. */
-    REDSTONE("tuner_redstone");
+    REDSTONE("tuner_redstone"),
+
+    /**
+     * Fait défiler la <b>bande harmonique</b> de la machine (06-Energy.md). Sans effet
+     * sur les machines universelles (tout le T1) : elles n'ont pas de bande.
+     */
+    ATTUNE("tuner_attune");
 
     private static final TunerMode[] VALUES = values();
 

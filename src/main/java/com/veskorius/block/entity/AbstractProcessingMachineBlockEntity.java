@@ -51,6 +51,13 @@ public abstract class AbstractProcessingMachineBlockEntity extends AbstractMachi
 
     // --- Automatisation (item I/O) : entrées = slots d'entrée, sortie = slot de sortie ---
 
+    /** La recette en cours est-elle déclarée increvable ? (harmoniques, 06-Energy.md) */
+    @Override
+    protected boolean isCurrentRecipeStable() {
+        RecipeHolder<MachineRecipe> recipe = currentRecipe();
+        return recipe != null && recipe.value().stable();
+    }
+
     @Override
     protected int[] getAutomationInputSlots() {
         return inputSlots;

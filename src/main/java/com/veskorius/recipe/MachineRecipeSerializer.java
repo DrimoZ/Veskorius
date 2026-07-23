@@ -41,16 +41,19 @@ public class MachineRecipeSerializer implements RecipeSerializer<MachineRecipe> 
             SizedIngredient.FLAT_CODEC.listOf().fieldOf("ingredients").forGetter(MachineRecipe::ingredients),
             ItemStack.CODEC.fieldOf("result").forGetter(MachineRecipe::result),
             ExtraCodecs.POSITIVE_INT.fieldOf("time").forGetter(MachineRecipe::time),
-            ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("osc_per_tick", 0).forGetter(MachineRecipe::oscPerTick)
-        ).apply(instance, (ingredients, result, time, osc) ->
-            new MachineRecipe(type, self, ingredients, result, time, osc)));
+            ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("osc_per_tick", 0).forGetter(MachineRecipe::oscPerTick),
+            com.mojang.serialization.Codec.BOOL.optionalFieldOf("stable", false).forGetter(MachineRecipe::stable)
+        ).apply(instance, (ingredients, result, time, osc, stable) ->
+            new MachineRecipe(type, self, ingredients, result, time, osc, stable)));
 
         this.streamCodec = StreamCodec.composite(
             SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), MachineRecipe::ingredients,
             ItemStack.STREAM_CODEC, MachineRecipe::result,
             ByteBufCodecs.VAR_INT, MachineRecipe::time,
             ByteBufCodecs.VAR_INT, MachineRecipe::oscPerTick,
-            (ingredients, result, time, osc) -> new MachineRecipe(type, self, ingredients, result, time, osc));
+            ByteBufCodecs.BOOL, MachineRecipe::stable,
+            (ingredients, result, time, osc, stable) ->
+                new MachineRecipe(type, self, ingredients, result, time, osc, stable));
     }
 
     @Override

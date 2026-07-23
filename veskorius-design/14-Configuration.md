@@ -107,7 +107,7 @@ trouve immédiatement ce qu'il cherche, et surcharge un thème sans toucher aux 
 | `veskorius-machines.toml` | augments, surchauffe ; accueillera **slots d'augment / règles de cumul / recettes increvables** | ✅ **fait** (`MachinesConfig`) |
 | `veskorius-generation.toml` | croissance et aléas lus à l'exécution ; accueillera **gaz par strate** et rareté du biome | ✅ **fait** (`GenerationConfig`) |
 | `veskorius-mobs.toml` | Custodes (PV/dégâts/portées), Fileur, Roost | ✅ **fait** (`MobsConfig`) |
-| `veskorius-harmonics.toml` | **bandes, accord/désaccord, dissonance, damping** — avec **interrupteur maître** | à livrer **avec** le système (`06`) |
+| `veskorius-harmonics.toml` | **bandes, accord/désaccord, dissonance** — avec **interrupteur maître** (`enabled`) | ✅ **fait** (`HarmonicsConfig`) ; clés de damping à l'arrivée du Damping Array |
 | `veskorius-structures.toml` | fréquence/espacement/biomes des structures, densité de mobs | à livrer **avec** la migration Structures (`08`) |
 
 **Règle tenue** : une config est livrée **avec le code qu'elle pilote**, jamais en avance — une clé

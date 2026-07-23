@@ -95,6 +95,15 @@ public class ModFrenchLangProvider extends LanguageProvider {
         add("gui.veskorius.tuner_power", "Marche/Arrêt");
         add("gui.veskorius.tuner_overheat", "Basculer la surchauffe");
         add("gui.veskorius.tuner_redstone", "Cycle du mode redstone");
+        add("gui.veskorius.tuner_attune", "Accorder la bande harmonique");
+
+        // Harmoniques : les bandes sont des COULEURS côté joueur (12-UX).
+        add("gui.veskorius.band.fundamental", "Fondamentale (violet)");
+        add("gui.veskorius.band.median", "Médiane (cyan)");
+        add("gui.veskorius.band.high", "Haute (ambre)");
+        add("gui.veskorius.band.universal", "Universelle (toute bande)");
+        add("item.veskorius.resonance_tuner.attuned", "Accordée sur : %s");
+        add("item.veskorius.resonance_tuner.no_band", "Cette machine n'a pas de bande harmonique");
         add("item.veskorius.resonance_tuner.current_mode", "Mode courant");
         add("item.veskorius.resonance_tuner.available_modes", "Modes disponibles");
         add("item.veskorius.resonance_tuner.controls", "Commandes");

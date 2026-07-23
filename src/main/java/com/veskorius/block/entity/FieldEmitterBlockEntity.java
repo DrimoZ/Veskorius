@@ -1,5 +1,6 @@
 package com.veskorius.block.entity;
 
+import com.veskorius.config.HarmonicsConfig;
 import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.energy.IResonanceField;
 import com.veskorius.energy.ResonanceFieldManager;
@@ -90,6 +91,14 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
 
     private int reserve;
 
+    /**
+     * Dissonance accumulée (06-Energy.md). Injectée par les machines désaccordées qui
+     * puisent ici. Au-delà du seuil, le champ devient <b>instable</b> : il saute des
+     * ticks d'alimentation, donc les machines hoquettent — un symptôme qu'on voit, pas
+     * une dégradation silencieuse. Décroît lentement toute seule.
+     */
+    private int dissonance;
+
     /** Synchronise reserve + capacite vers le GUI (jauge « X/4000 Osc », 12-UX). */
     private final ContainerData data = new ContainerData() {
         @Override
@@ -126,6 +135,7 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
         // exact des callbacks de cycle de vie.
         ResonanceFieldManager.register(level, pos);
         emitter.refuelIfEmpty();
+        emitter.decayDissonance();
 
         // Coupole visuelle : montre la portée du champ actif (pilier 3).
         if (level instanceof ServerLevel serverLevel && emitter.isActive()) {
@@ -217,7 +227,49 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
 
     @Override
     public boolean isActive() {
-        return reserve > 0;
+        // Un champ instable saute la moitié des ticks : la machine alimentée hoquette
+        // visiblement (son glow clignote) au lieu de se dégrader en silence.
+        return reserve > 0 && !(isUnstable() && level != null && level.getGameTime() % 4 < 2);
+    }
+
+    // --- Harmoniques & Dissonance -------------------------------------------
+
+    @Override
+    public int getDissonance() {
+        return dissonance;
+    }
+
+    @Override
+    public void addDissonance(int amount) {
+        if (amount <= 0) {
+            return;
+        }
+        int capped = Math.min(dissonance + amount, HarmonicsConfig.dissonanceCapacity());
+        if (capped != dissonance) {
+            dissonance = capped;
+            setChanged();
+        }
+    }
+
+    @Override
+    public boolean isUnstable() {
+        if (!HarmonicsConfig.enabled()) {
+            return false;
+        }
+        return dissonance >= HarmonicsConfig.dissonanceCapacity()
+            * HarmonicsConfig.dissonanceUnstableThreshold();
+    }
+
+    /** Décroissance naturelle : une base qui cesse de mal se comporter se rétablit seule. */
+    private void decayDissonance() {
+        if (dissonance <= 0 || level == null || level.getGameTime() % 20 != 0) {
+            return;
+        }
+        int decayed = Math.max(0, dissonance - HarmonicsConfig.dissonanceDecayPerSecond());
+        if (decayed != dissonance) {
+            dissonance = decayed;
+            setChanged();
+        }
     }
 
     @Override
@@ -288,6 +340,7 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
         super.saveAdditional(tag, registries);
         tag.put("fuel", fuel.serializeNBT(registries));
         tag.putInt("reserve", reserve);
+        tag.putInt("dissonance", dissonance);
     }
 
     @Override
@@ -295,5 +348,6 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
         super.loadAdditional(tag, registries);
         fuel.deserializeNBT(registries, tag.getCompound("fuel"));
         reserve = tag.getInt("reserve");
+        dissonance = tag.getInt("dissonance");
     }
 }

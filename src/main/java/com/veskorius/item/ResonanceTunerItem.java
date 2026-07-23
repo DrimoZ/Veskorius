@@ -101,6 +101,19 @@ public class ResonanceTunerItem extends Item {
                     ? "gui.veskorius.overheat_on" : "gui.veskorius.overheat_off"));
                 return true;
             }
+            case ATTUNE -> {
+                if (!(be instanceof AbstractMachineBlockEntity machine)
+                    || !machine.supportsHarmonicBand()) {
+                    actionBar(player, Component.translatable("item.veskorius.resonance_tuner.no_band"));
+                    return false;
+                }
+                machine.cycleHarmonicBand();
+                com.veskorius.energy.HarmonicBand band = machine.getHarmonicBand();
+                actionBar(player, Component.translatable("item.veskorius.resonance_tuner.attuned",
+                    band == null ? Component.translatable("gui.veskorius.band.universal")
+                        : Component.translatable(band.labelKey())));
+                return true;
+            }
             case REDSTONE -> {
                 if (!(be instanceof AbstractMachineBlockEntity machine)) {
                     return false;

@@ -34,4 +34,34 @@ public interface IResonanceField {
      * été retiré (0 si la réserve est vide). Le prélèvement est immédiat.
      */
     int extractOsc(int maxOsc);
+
+    // --- Harmoniques & Dissonance (06-Energy.md) -----------------------------
+
+    /**
+     * Bande harmonique émise. Une machine accordée sur la même bande travaille
+     * proprement ; une machine sur une autre bande tourne quand même, mais coûte plus
+     * cher et injecte de la dissonance ici. Défaut : la Fondamentale (le Field Emitter
+     * T2 est mono-bande, sans choix — la complexité arrive avec l'Émetteur Accordable).
+     */
+    default HarmonicBand getBand() {
+        return HarmonicBand.FUNDAMENTAL;
+    }
+
+    /** Dissonance accumulée dans ce champ (0 = propre). */
+    default int getDissonance() {
+        return 0;
+    }
+
+    /** Injecte de la dissonance (appelé quand une machine désaccordée y puise). */
+    default void addDissonance(int amount) {
+    }
+
+    /**
+     * Vrai quand la dissonance dépasse le seuil : le champ devient <b>instable</b> et
+     * saute des ticks d'alimentation — les machines hoquettent visiblement au lieu de
+     * se dégrader en silence. Ne bloque jamais définitivement.
+     */
+    default boolean isUnstable() {
+        return false;
+    }
 }
