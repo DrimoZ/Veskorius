@@ -251,6 +251,57 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    // --- Retour visuel « en marche » (blockstate LIT + glow) -----------------
+
+    /**
+     * Une machine qui avance un cycle s'ALLUME ({@link AbstractMachineBlock#LIT}),
+     * et s'éteint dès qu'elle s'arrête (ici : entrée retirée). C'est le retour
+     * visuel « en marche » lisible sans ouvrir le GUI. Joué sur le Stabilizer
+     * (autonome) pour isoler l'état de marche du système de champ.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = TIMEOUT)
+    public static void machineLightsUpWhileRunning(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                IItemHandler inventory = placeStabilizer(helper);
+                helper.assertFalse(machineLit(helper, MACHINE),
+                    "Une machine vide ne doit pas être allumée");
+                inventory.insertItem(ResonanceStabilizerBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.RAW_RESONANCE_CRYSTAL.get()), false);
+                inventory.insertItem(ResonanceStabilizerBlockEntity.SLOT_FLUX,
+                    new ItemStack(Items.QUARTZ), false);
+            })
+            .thenExecuteAfter(5, () -> helper.assertTrue(machineLit(helper, MACHINE),
+                "La machine devrait être allumée pendant qu'elle avance un cycle"))
+            .thenExecute(() -> inventoryOf(helper)
+                .extractItem(ResonanceStabilizerBlockEntity.SLOT_CRYSTAL, 1, false))
+            .thenExecuteAfter(5, () -> helper.assertFalse(machineLit(helper, MACHINE),
+                "Entrée retirée : la machine doit s'éteindre"))
+            .thenSucceed();
+    }
+
+    /**
+     * Une machine consommatrice d'Osc, ingrédients en place mais HORS champ, reste
+     * ÉTEINTE : c'est le seul retour « pas d'énergie » que voit le joueur sans
+     * ouvrir le GUI (pilier 3). Verrouille que le glow suit l'énergie réelle, pas la
+     * simple présence d'ingrédients.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = ASSEMBLER_TICKS + 200)
+    public static void machineStaysDarkWithoutField(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                helper.setBlock(MACHINE, ModBlocks.COMPONENT_ASSEMBLER.get());
+                IItemHandler inv = machineInventory(helper, MACHINE);
+                inv.insertItem(ComponentAssemblerBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+                inv.insertItem(ComponentAssemblerBlockEntity.SLOT_IRON,
+                    new ItemStack(Items.IRON_INGOT, 2), false);
+            })
+            .thenExecuteAfter(20, () -> helper.assertFalse(machineLit(helper, MACHINE),
+                "Hors champ, ingrédients présents : la machine doit rester éteinte (pas d'énergie)"))
+            .thenSucceed();
+    }
+
     // --- Resonance Whetstone (machine #3) ------------------------------------
 
     /** 8 secondes (05-Machines.md #3). */
@@ -770,6 +821,33 @@ public class MachineGameTests {
             .thenSucceed();
     }
 
+    /**
+     * Logique de perte d'entrée en surchauffe (05-Machines.md), extraite en fonction
+     * pure pour être testée sans RNG ni config : le plan notait ce cas comme non
+     * couvert. Hors surchauffe : jamais de perte. En surchauffe : perte ssi le tirage
+     * tombe STRICTEMENT sous la chance.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void purifierInputLossLogic(GameTestHelper helper) {
+        helper.assertFalse(FluxPurifierBlockEntity.losesInput(false, 0.2f, 0.0f),
+            "Hors surchauffe : aucune perte même au tirage 0");
+        helper.assertFalse(FluxPurifierBlockEntity.losesInput(false, 0.2f, 0.99f),
+            "Hors surchauffe : aucune perte");
+        helper.assertTrue(FluxPurifierBlockEntity.losesInput(true, 0.2f, 0.0f),
+            "Surchauffe, tirage 0 < 0.2 : perte");
+        helper.assertTrue(FluxPurifierBlockEntity.losesInput(true, 0.2f, 0.19f),
+            "Surchauffe, tirage 0.19 < 0.2 : perte");
+        helper.assertFalse(FluxPurifierBlockEntity.losesInput(true, 0.2f, 0.2f),
+            "Surchauffe, tirage == chance : pas de perte (comparaison stricte)");
+        helper.assertFalse(FluxPurifierBlockEntity.losesInput(true, 0.2f, 0.5f),
+            "Surchauffe, tirage 0.5 >= 0.2 : pas de perte");
+        helper.assertFalse(FluxPurifierBlockEntity.losesInput(true, 0.0f, 0.0f),
+            "Chance 0 : jamais de perte");
+        helper.assertTrue(FluxPurifierBlockEntity.losesInput(true, 1.0f, 0.999f),
+            "Chance 1 : toujours perte en surchauffe");
+        helper.succeed();
+    }
+
     // --- Crystal Crusher (machine #22) : entrée unique, sortie multiple --------
 
     /** 10 secondes (05-Machines.md #22). */
@@ -1284,6 +1362,37 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    /** Outil à modes (16 §1) : le mode se lit, se pose et cycle Ressources ↔ Structures. */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void locatorModeCyclesAndPersists(GameTestHelper helper) {
+        ItemStack loc = new ItemStack(ModItems.RESONANCE_LOCATOR.get());
+        helper.assertTrue(ResonanceLocatorItem.getMode(loc) == com.veskorius.item.LocatorMode.RESOURCES,
+            "Mode par défaut = Ressources");
+        ResonanceLocatorItem.setMode(loc, com.veskorius.item.LocatorMode.STRUCTURES);
+        helper.assertTrue(ResonanceLocatorItem.getMode(loc) == com.veskorius.item.LocatorMode.STRUCTURES,
+            "Le mode posé doit être relu");
+        helper.assertTrue(com.veskorius.item.LocatorMode.RESOURCES.next()
+                == com.veskorius.item.LocatorMode.STRUCTURES
+            && com.veskorius.item.LocatorMode.STRUCTURES.next()
+                == com.veskorius.item.LocatorMode.RESOURCES,
+            "Le cycle doit alterner Ressources ↔ Structures");
+        helper.succeed();
+    }
+
+    /**
+     * Mode Structures : détection via l'API de structure vanilla (aucun scan de blocs).
+     * Tant qu'aucune vraie structure n'est taguée {@code #veskorius:locatable} (elles sont
+     * encore des features), la recherche retourne {@code null} proprement, sans crash.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void locatorStructureModeGracefulWithoutStructures(GameTestHelper helper) {
+        BlockPos found = ResonanceLocatorItem.nearestLocatableStructure(
+            helper.getLevel(), helper.absolutePos(MACHINE));
+        helper.assertTrue(found == null,
+            "Sans structure taguée, le mode Structures ne doit rien trouver (et ne pas crasher)");
+        helper.succeed();
+    }
+
     /** La direction rendue suit le vecteur (est/nord/sud/ouest = +X/-Z/+Z/-X). */
     @GameTest(template = EMPTY, timeoutTicks = 20)
     public static void locatorWindDirections(GameTestHelper helper) {
@@ -1493,6 +1602,11 @@ public class MachineGameTests {
     private static int machineProgress(GameTestHelper helper, BlockPos pos) {
         AbstractMachineBlockEntity machine = helper.getBlockEntity(pos);
         return machine.getData().get(AbstractMachineBlockEntity.DATA_PROGRESS);
+    }
+
+    /** État du glow « en marche » (blockstate LIT) d'une machine. */
+    private static boolean machineLit(GameTestHelper helper, BlockPos pos) {
+        return helper.getBlockState(pos).getValue(AbstractMachineBlock.LIT);
     }
 
     private static ResonanceStabilizerBlockEntity placeAndGet(GameTestHelper helper) {
