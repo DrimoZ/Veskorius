@@ -41,6 +41,58 @@ Note : la ligne « Mode surchauffe : icône flamme sur la barre » du tableau ci
 comme *indicateur d'état en cours* ; le nouveau bouton `H` est le *contrôle*. Les deux coexistent
 (l'un montre, l'autre bascule) — à implémenter ensemble à la passe visuelle de la Phase 6.
 
+## Retours visuels dans le monde (ajout du 2026-07-22)
+
+Le pilier 3 (« pas de câbles, des champs invisibles ») laissait le joueur sans aucun signal hors GUI :
+une machine hors champ ne bougeait simplement pas sa barre. Trois retours **dans le monde**, portés par
+le socle donc gratuits pour les machines à venir :
+
+| Retour | Convention | Où |
+|---|---|---|
+| Glow « en marche » | Une machine active **rayonne** (lumière 7) uniquement le temps qu'elle avance un cycle ; noire à l'arrêt. Comme le glow suit l'énergie *réelle*, une machine consommatrice d'Osc **hors champ reste éteinte** — c'est le retour « pas d'énergie » lisible sans ouvrir le GUI. | blockstate `LIT` sur `AbstractMachineBlock`, piloté par `AbstractMachineBlockEntity.setLit` |
+| Coupole de champ | Le Field Emitter actif sème quelques particules éparses sur sa **sphère de portée**, traçant le dôme au fil du temps : on voit jusqu'où le champ porte. | `FieldEmitterBlockEntity.pulseFieldDome`, purement client |
+| Indice d'onboarding | Ligne de tooltip **grisée** sur les objets clés du début (chaîne T1), pointant l'étape suivante sans tout dévoiler. | `ItemHintHandler` (client), clés `item.veskorius.<id>.hint` |
+
+Règle pour la suite : toute nouvelle machine active hérite du glow sans code ; une source de champ future
+(Relay, Amplifier, Convergence Core) devrait réutiliser le motif de coupole avec sa propre portée.
+
+## Automatisation d'objets — capability sidée + config par face (2026-07-23)
+
+**Distinction cardinale : l'ÉNERGIE n'a jamais de tuyaux** (champs de résonance, pilier 3) — mais les
+**OBJETS**, eux, circulent par hopper/automatisation, comme dans tout mod technique. Les deux ne se
+mélangent pas : l'énergie ne passe jamais par une capability.
+
+Chaque machine active expose une capability `ItemHandler` **par face**, via une vue sidée
+(`MachineItemHandler`) pilotée par un mode de face (`SideMode`) :
+
+| Mode | Effet sur la face |
+|---|---|
+| `DISABLED` | aucune capability exposée (rien ne peut entrer ni sortir par là) |
+| `INPUT` | insertion autorisée dans les **slots d'entrée** (filtrée par recette via `isItemValid`) ; extraction interdite |
+| `OUTPUT` | extraction autorisée du **slot de sortie** ; insertion interdite |
+
+Le **slot d'augment n'est jamais exposé** : l'automatisation ne peut pas voler le Catalyst Core.
+Défaut « façon four » pour marcher immédiatement avec un hopper, sans config : **sortie sous le bloc,
+entrée par les autres faces**. Le socle (`AbstractMachineBlockEntity`) porte tout : chaque nouvelle
+machine hérite du système sans code (elle déclare juste ses slots d'entrée/sortie).
+
+**Auto-I/O par bloc** : deux bascules opt-in, `autoInput` / `autoOutput`, tickées à débit réduit
+(1/8 tick). `autoOutput` pousse la sortie vers l'inventaire adjacent des faces `OUTPUT` ; `autoInput`
+tire depuis l'adjacent des faces `INPUT` (toujours filtré par recette). État (modes des 6 faces +
+bascules) persisté en NBT ; la capability en cache est invalidée à chaque changement de mode.
+
+**UI de config (2026-07-23, fonctionnelle).** Un **bouton « C »** dans la colonne de contrôle ouvre un
+**panneau de config** intégré au GUI de la machine (pas un écran séparé, pour ne pas fermer le
+conteneur) : 6 boutons de face (cycle Désactivé/Entrée/Sortie, couleur + tooltip) + 2 bascules auto
+(auto-entrée ↓ / auto-sortie ↑). Tout passe par le **canal vanilla des boutons de menu**
+(`clickMenuButton`, aucun packet custom) ; l'état des 6 faces + 2 bascules est synchronisé au client
+par la `ContainerData` déjà en place (comme la barre de progression). Le socle serveur est complet et
+testé (comportement sidé, filtrage recette, augment protégé, auto-push/pull, et le câblage
+bouton→état). **Reste (passe visuelle Phase 6) :** un vrai patron de faces en croix plutôt qu'une
+grille placeholder, et des textures. Voir aussi le démontage au Tuner, qui lit volontairement
+l'inventaire **interne complet** de nos machines (et non la capability sidée, qui ne rendrait pas les
+entrées ni l'augment).
+
 ## Resonance Tuner — outil à modes (révisé le 2026-07-21)
 
 Voir `05-Machines.md` pour le craft. **Changement de modèle d'interaction** : la version

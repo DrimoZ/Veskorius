@@ -42,11 +42,11 @@ tableau "Vue d'ensemble", précédée de `craft:`.
 | 4 | Field Emitter | T2 | craft: 4 Component + Stable Crystal + 2 Gold Ingot | champ, portée 8 | — | réserve 4000 Osc |
 | 5 | Flux Purifier | T2 | Stable Crystal + Redstone | Refined Crystal | 45s (22s en surchauffe) | 2 Osc/tick (4 en surchauffe) |
 | 6 | Resonance Storage Cell | T2 | craft: 2 Component + 1 Stable Crystal | stocke 8000 Osc, portable | — | passif |
-| 7 | Resonance Locator | T2 | craft (outil, non consommable) | ping directionnel | — | 5 Osc/utilisation |
+| 7 | Resonance Locator | T2 | craft (outil, non consommable) | ping directionnel, **outil à modes** (Ressources / Structures ; maj+clic droit change de mode) | — | 5 Osc/utilisation — *révisé `16` §1* |
 | 8 | Crystal Roost | T2 | passif, nourri au Quartz (4 tous les jours MC) | 1 Raw Crystal / 600s si Fileur de Cristal à proximité | continu | aucune |
 | 9 | Resonance Relay | T3 | craft: 4 Refined Crystal + 2 Veskorian Conductive Alloy Ingot + 1 Diamond | portée 20, chaînable | — | 1 Osc/tick (champ) |
 | 10 | Veskorian Alloy Forge | T3 | 2 Refined Crystal + 2 **Iron** Ingot **(ou 2 Gold Ingot, voir branche)** | 1 Alloy Ingot **(ou Conductive Alloy Ingot)** + 1 Flux Slag | 20s | 4 Osc/tick |
-| 11 | Structural Synthesizer | T3 | 4 Alloy Ingot + 8 Stone | 4 Veskorian Alloy Block + 1 Synthesis Residue | 60s | via Relay uniquement |
+| 11 | Structural Synthesizer | T3 | 4 Alloy Ingot + 8 Stone | 4 Veskorian Alloy Block + 1 Synthesis Residue | 60s | via champ (Osc/tick à fixer) — *révisé `16` §0 : plus « via Relay uniquement »* |
 | 12 | Deep Crystal Driller | T3 | craft: 6 Component + 2 Alloy Ingot | mine automatiquement une veine détectée (Y < -40) | continu | 6 Osc/tick |
 | 13 | Slag Vent | T3 | craft (passif) | vente 1 Flux Slag / 10s par Forge dans un rayon de 8 blocs | continu | 1 Osc/tick |
 | 14 | Harmonic Amplifier | T4 | craft: Harmonic Lattice + 2 Refined Crystal | double la portée reçue (dérive, voir Calibration) | — | 2 Osc/tick prélevé |

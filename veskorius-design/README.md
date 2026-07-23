@@ -23,9 +23,16 @@ affirmation de gameplay est accompagnée d'un chiffre ou d'une règle vérifiabl
 13. `13-Registry-Index.md` — index consolidé de tous les noms de registre (matériaux, blocs,
     entités, structures), avec statut "codé / à coder" — référence rapide pendant le
     développement, évite les collisions de nom.
+14. `14-Configuration.md` — politique de configuration (datapack + config TOML SERVER), constantes
+    d'équilibrage exposées aux modpack makers.
+15. `15-Codex-Guidebook.md` — le Codex de Résonance (manuel en jeu qui s'écrit tout seul) :
+    architecture, déblocage sur le joueur, synchronisation.
+16. `16-Revision-and-Expansion.md` — passe de révision (2026-07-23) : Locator à modes/index, vraies
+    Structures + configs, biome profond + gaz, système déchets/calibration, expansion de contenu.
+    **Prime sur 01-15 là où il les contredit**, répercuté au fil de l'implémentation.
 
 Le fichier 11 est la synthèse de tout ce qui précède : il ne réexplique rien, il transforme les
-onze autres fichiers en tâches ordonnées.
+autres fichiers en tâches ordonnées.
 
 ## Ce qui a été corrigé lors de la relecture
 

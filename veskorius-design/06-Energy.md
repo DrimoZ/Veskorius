@@ -109,6 +109,6 @@ jamais par une prise. Aucune conversion cachée.
 ## Ouvert
 
 - Le rayon de 8 blocs du Field Emitter T2 reste une première estimation à valider en jeu.
-- Faut-il un indicateur visuel de bord de champ (particules) ou seulement une lecture via le
-  Resonance Locator ? Question mixte gameplay/assets, à trancher avant de coder le Field
-  Emitter.
+- ~~Indicateur visuel de bord de champ ?~~ **Résolu (2026-07-23)** : le Field Emitter actif émet une
+  coupole de particules sur sa sphère de portée (`FieldEmitterBlockEntity.pulseFieldDome`). Le glow des
+  machines actives complète la lecture (une machine qui s'allume est couverte).

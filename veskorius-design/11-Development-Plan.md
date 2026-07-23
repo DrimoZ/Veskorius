@@ -293,11 +293,24 @@ Règle pour les 22 machines suivantes : **une machine n'est finie que quand ses 
 La valeur de référence (durée de cycle, quantités) est réécrite dans le test plutôt qu'importée
 depuis la machine, pour qu'un changement de valeur non répercuté ici fasse échouer la suite.
 
+**Passe de polissage gameplay (2026-07-22).** Trois retours visuels ajoutés une fois les 15 tâches
+codées et vertes, pour rendre lisible le cœur invisible du mod (pilier 3) sans attendre la Phase 6 :
+- **Glow « en marche » des machines actives** : blockstate `LIT` sur `AbstractMachineBlock`, piloté
+  par `AbstractMachineBlockEntity` quand la machine avance *réellement* un cycle (`setLit`). Émet de
+  la lumière (niveau 7) via `lightLevel`. Comme `LIT` est faux dès qu'un tick d'Osc échoue, une
+  machine consommatrice hors champ reste éteinte : **c'est le seul retour « pas d'énergie »** lisible
+  sans ouvrir le GUI, et un test de couverture de champ gratuit (poser une machine, voir si elle
+  s'allume). 2 GameTest (allumée quand tourne, éteinte hors champ ingrédients présents).
+- **Coupole de champ** : le Field Emitter actif émet quelques particules éparses sur sa sphère de
+  portée (`pulseFieldDome`), traçant le dôme réel. Purement visuel, non couvert par GameTest.
+- **Indices d'onboarding** : ligne de tooltip grisée sur les objets T1 (`ItemHintHandler`), la boucle
+  s'apprend depuis l'objet. Clés `item.veskorius.<id>.hint`, en_us + fr_fr.
+
 **Travaux différés, à ne pas oublier :**
 
-- **GUI du Field Emitter** (jauge de réserve `X/4000 Osc`, slot de carburant visible,
-  `12-UX-and-Advancements.md`). Le bloc est jouable sans (clic droit + hopper), mais on ne voit
-  pas sa réserve. À faire avant la fin de la Phase 1, avec les autres passes visuelles.
+- **GUI du Field Emitter** : ✅ **fait** (jauge de réserve `X/4000 Osc` + slot de carburant,
+  `FieldEmitterScreen`). Cette entrée était périmée — le GUI est codé, enregistré et validé en
+  `runClient`. Conservée ici seulement comme trace de la correction.
 - **Perf du `ResonanceFieldManager`** : le routage scanne linéairement tous les émetteurs de la
   dimension. Correct pour un mod (rarement des centaines d'émetteurs), à indexer par chunk
   seulement si un playtest révèle un coût réel. Ne pas optimiser à l'aveugle.
@@ -305,6 +318,14 @@ depuis la machine, pour qu'un changement de valeur non répercuté ici fasse éc
   maintenant, à isoler dans un sourceSet dédié avant la Phase 7 (publication).
 
 ## Phase 2 — Réseau régional T3
+
+> **Révision 2026-07-23 — voir `16-Revision-and-Expansion.md`.** La Phase 2 est retravaillée en
+> profondeur : Locator à modes + index O(n), migration vers de **vraies Structures** (localisables,
+> configs de spawn) au lieu des `RuinFeature`, **biome profond custom** portant le gaz de Résonance
+> (résout la boucle punitive), **système déchets/calibration** transversal, et une large expansion de
+> contenu (Advanced Assembler, Reclaimer, variantes de Relais, augments variés, Field Surveyor…).
+> L'ordre ci-dessous est conservé pour référence mais **l'ordre effectif est celui de la section
+> « Ordre d'implémentation Phase 2 révisé » du fichier 16** (fondations transversales d'abord).
 
 **Objectif de test** : un joueur équipé du T2 atteint un Sigma Laboratory, résout le puzzle des
 deux Relais, gère le Flux Slag de sa première Alloy Forge sans qu'elle ne se bloque.
@@ -320,8 +341,11 @@ Tâches, dans l'ordre :
 5. `DeepCrystalDrillerBlockEntity` + génération des veines profondes (Y < -40) — #12.
 6. `FluxCompressorBlockEntity` (#23, produit Concentrated Flux, nécessaire pour la Phase 4).
 7. Structure Sigma Laboratory complète (puzzle des deux Relais).
-8. Structure Poste de Garde + mob Custode Lourd.
-9. Outils/armure en Alliage Veskorien.
+8. Structure Sigma Laboratory + mob **Custode Lourd** (corrigé : le Custode Lourd garde le Sigma
+   Laboratory / l'Archive, pas le Poste de Garde — voir `08`/`09` et `16` §6).
+9. Structure Poste de Garde + Custode **standard** (garde de site plus commun, proche des
+   Avant-postes).
+10. Outils/armure en Alliage Veskorien (dont réduction du gaz de Résonance, `16` §3).
 
 **Critère de sortie** : une Alloy Forge tourne jusqu'à saturation de son tampon de Slag sans
 Slag Vent (doit s'arrêter proprement), puis reprend une fois un Slag Vent posé à portée.

@@ -43,6 +43,7 @@ est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments 
 | `resonance_blueprint` | 03, 08 | ✅ codé — clé de craft T2, Data Component `blueprint_tier`, rendu au craft |
 | `codex_fragment` | 02, 08 | ✅ codé — lore pur, Data Component `codex_entry`, lisible (clic droit) |
 | `fossilized_ration` | 08 | ✅ codé — nourriture flavor (Habitation Modeste) |
+| `resonance_codex` | 15 | ✅ codé — manuel en jeu qui s'écrit tout seul ; donné à la 1re connexion + recette de secours. État de déblocage sur le JOUEUR (attachment `codex_unlocks`, survit à la mort), synchronisé au client (`CodexSyncPayload`) ; l'objet n'est qu'une clé d'ouverture du `CodexScreen` |
 
 ## Items — procédé (sous-produits, alliages, augments)
 

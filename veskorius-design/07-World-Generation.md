@@ -59,6 +59,13 @@ bulle) — dernier maillon du pilier 2 (connaissance spatiale) avant l'endgame.
 
 ## Exploration : ce que le joueur utilise, dans l'ordre
 
+> **Révisé — voir `16-Revision-and-Expansion.md` §1.** Les portées 200/400 blocs ci-dessous décrivent
+> l'intention d'origine ; le modèle final est un **Locator à modes** (Ressources / Structures) adossé
+> à un **index de structures/poches O(n)** (plus de scan de blocs) plutôt qu'une portée fixe. Le mode
+> Structures se débloque au tier 2 de l'outil. Les structures profondes vivent dans un biome custom
+> (`16` §3), ce qui les rend repérables.
+
+
 1. Rien (T1) — creuse au hasard, trouve des poches par chance.
 2. Resonance Locator (T2, voir `05-Machines.md`) — direction approximative vers structure non
    explorée, portée 200 blocs.
