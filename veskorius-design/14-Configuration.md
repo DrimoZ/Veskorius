@@ -101,17 +101,26 @@ Le fichier unique `veskorius-server.toml` devient **plusieurs specs nommées, un
 accepte plusieurs configs SERVER enregistrées sous des noms distincts). Objectif : un modpack maker
 trouve immédiatement ce qu'il cherche, et surcharge un thème sans toucher aux autres.
 
-| Fichier | Contenu |
-|---|---|
-| `veskorius-basics.toml` | constantes transversales (chaîne de cristaux, Osc de base, outils portables) |
-| `veskorius-machines.toml` | cycles, surchauffe, **slots d'augment et règles de cumul**, recettes increvables |
-| `veskorius-harmonics.toml` | **bandes, accord/désaccord, dissonance, damping** — avec **interrupteur maître** |
-| `veskorius-generation.toml` | poches, veines, spore, biome `resonant_deeps`, intensité du gaz par strate |
-| `veskorius-structures.toml` | fréquence/espacement/biomes des structures, densité de mobs à l'intérieur |
-| `veskorius-mobs.toml` | PV/dégâts/portées des Custodes, Fileur, gardiens |
+| Fichier | Contenu | Statut |
+|---|---|---|
+| `veskorius-basics.toml` | le champ lui-même (portée, réserve) + objets portables (Storage Cell, Locator) | ✅ **fait** (`BasicsConfig`) |
+| `veskorius-machines.toml` | augments, surchauffe ; accueillera **slots d'augment / règles de cumul / recettes increvables** | ✅ **fait** (`MachinesConfig`) |
+| `veskorius-generation.toml` | croissance et aléas lus à l'exécution ; accueillera **gaz par strate** et rareté du biome | ✅ **fait** (`GenerationConfig`) |
+| `veskorius-mobs.toml` | Custodes (PV/dégâts/portées), Fileur, Roost | ✅ **fait** (`MobsConfig`) |
+| `veskorius-harmonics.toml` | **bandes, accord/désaccord, dissonance, damping** — avec **interrupteur maître** | à livrer **avec** le système (`06`) |
+| `veskorius-structures.toml` | fréquence/espacement/biomes des structures, densité de mobs | à livrer **avec** la migration Structures (`08`) |
 
-Migration : les clés existantes gardent leur sens, elles changent seulement de fichier. Le GameTest
-`configDefaultsMatchDesign` est étendu pour couvrir chaque thème.
+**Règle tenue** : une config est livrée **avec le code qu'elle pilote**, jamais en avance — une clé
+qui ne fait rien est un piège pour le modpack maker.
+
+`VeskoriusConfig` reste la **façade** : elle ne déclare plus aucune valeur, seulement les accesseurs.
+C'est ce qui a permis de découper les fichiers **sans toucher un seul appelant**.
+
+**Migration** : les clés gardent leur sens, elles changent seulement de fichier. Un
+`veskorius-server.toml` issu d'un monde antérieur devient **orphelin** (ses réglages personnalisés ne
+sont pas repris automatiquement) — sans conséquence tant que le mod n'est pas publié, à mentionner au
+changelog le jour venu. Le GameTest `configDefaultsMatchDesign` valide les défauts à travers la
+façade, donc il couvre tous les thèmes d'un coup.
 
 ### Réglages notables introduits par la révision
 

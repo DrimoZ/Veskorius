@@ -3,7 +3,10 @@ package com.veskorius;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.ModBlockEntities;
 import com.veskorius.codex.ModAttachments;
-import com.veskorius.config.VeskoriusConfig;
+import com.veskorius.config.BasicsConfig;
+import com.veskorius.config.GenerationConfig;
+import com.veskorius.config.MachinesConfig;
+import com.veskorius.config.MobsConfig;
 import com.veskorius.entity.ModEntities;
 import com.veskorius.item.ModDataComponents;
 import com.veskorius.item.ModItems;
@@ -80,8 +83,13 @@ public class Veskorius {
 
     public Veskorius(IEventBus modEventBus, ModContainer modContainer) {
         // Config d'équilibrage exposée aux modpack makers (type SERVER : synchronisée,
-        // par monde, livrable via defaultconfigs/). Voir VeskoriusConfig.
-        modContainer.registerConfig(ModConfig.Type.SERVER, VeskoriusConfig.SPEC);
+        // par monde, livrable via defaultconfigs/). Découpée PAR THÈME (14-Configuration.md)
+        // pour qu'un modpack surcharge un domaine sans toucher aux autres.
+        // À venir avec leur système : veskorius-harmonics.toml, veskorius-structures.toml.
+        modContainer.registerConfig(ModConfig.Type.SERVER, BasicsConfig.SPEC, "veskorius-basics.toml");
+        modContainer.registerConfig(ModConfig.Type.SERVER, MachinesConfig.SPEC, "veskorius-machines.toml");
+        modContainer.registerConfig(ModConfig.Type.SERVER, GenerationConfig.SPEC, "veskorius-generation.toml");
+        modContainer.registerConfig(ModConfig.Type.SERVER, MobsConfig.SPEC, "veskorius-mobs.toml");
 
         ModItems.ITEMS.register(modEventBus);
         ModDataComponents.COMPONENTS.register(modEventBus);
