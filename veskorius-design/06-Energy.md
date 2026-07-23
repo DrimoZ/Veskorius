@@ -89,6 +89,108 @@ jamais par une prise. Aucune conversion cachée.
   délibéré et unique à ce bloc — il simule à petite échelle un réseau de la puissance de l'âge
   d'or, ce qu'aucune combinaison de Relais/Amplificateurs normaux ne peut faire.
 
+## Harmoniques & Dissonance (ajouté 2026-07-23, voir `16` §0)
+
+Couche systémique posée **sur le système de champ existant**, pas à côté. Raison d'être : le pilier 3
+donne un réseau sans câbles, mais les câbles rendent un service qu'on n'avait pas remplacé —
+**choisir ce qu'on alimente**. Les bandes harmoniques sont cette réponse. Et le dérèglement du réseau
+rejoue, à petite échelle et gérable, **la sur-résonance qui a causé l'Effondrement** (`02-Lore.md`) :
+l'entretien devient la mécanique-signature du mod, pas un compteur de propreté générique.
+
+### Le modèle mental, en une phrase
+
+> **Un champ a une couleur. Une machine écoute sur une couleur. Même couleur = propre et rapide.
+> Couleur différente = ça marche quand même, mais ça coûte plus cher et ça grince.**
+
+### Bandes harmoniques
+
+Volontairement **peu nombreuses** (mémorisables), identifiées par une **couleur** :
+
+| Bande | Couleur | Disponibilité |
+|---|---|---|
+| Fondamentale | violet | bande par défaut (T2) |
+| Médiane | cyan | avec l'Émetteur Accordable |
+| Haute | ambre | avec l'Émetteur Accordable |
+
+Nombre de bandes réglable en config (`16` §0, `14`).
+
+### Lecture visuelle — aucun GUI à apprendre
+
+Le système réutilise les deux visuels **déjà codés** :
+- la **coupole de particules** de l'émetteur prend la couleur de la **bande du champ** ;
+- le **glow d'une machine en marche** prend la couleur de la **bande de la machine**.
+
+Couleurs identiques = accordé. Une machine ambre qui **clignote** dans un champ violet = désaccordée.
+On diagnostique sa base **en la regardant**.
+
+### Accord / Désaccord
+
+| État | Effet |
+|---|---|
+| **Accordé** | rendement plein, aucune dissonance produite |
+| **Désaccordé** | la machine **tourne quand même** : surcoût d'Osc + **génère de la dissonance** ; glow clignotant |
+
+**Règle dure : le désaccord ne bloque JAMAIS une machine.** Elle ne refuse pas de fonctionner ; elle
+coûte plus et salit. Le joueur est toujours informé (visuel), jamais bloqué sans comprendre.
+
+### Les bandes comme outil de routage (ce n'est pas une taxe)
+
+Deux émetteurs qui se chevauchent, l'un en violet, l'autre en cyan, alimentent **deux groupes de
+machines distincts au même endroit, sans un seul fil**. Isoler un atelier, prioriser une chaîne,
+couper une zone : la planification harmonique remplace le câblage sélectif. Le désaccord est le
+**revers d'un pouvoir**, pas une corvée ajoutée.
+
+### Dissonance — spatiale, visible, croissante
+
+La dissonance **s'accumule dans l'émetteur / le champ** (pas dans une barre cachée) :
+1. la coupole se **désature et grésille** ;
+2. le champ devient **intermittent** (les machines hoquettent) ;
+3. au maximum : **décharge de résonance** — impulsion AoE brève (l'écho local de l'Effondrement).
+
+Elle se gère par **infrastructure**, pas par un slot : le **Damping Array** (`05`) l'absorbe et se
+**sature** (container à purger), en consommant du **Concentrated Flux**. La dissonance évacuée se
+matérialise en **déchet** (`resonance_sludge` / `flux_slag`, voir `04`) — de la dissonance
+cristallisée, la substance même de l'Effondrement.
+
+### Courbe d'introduction (T1 reste simple)
+
+| Palier | Ce que le joueur vit | Complexité |
+|---|---|---|
+| **T1** | Stabilizer / Crusher / Whetstone sont **autonomes** (aucun champ). Le Component Assembler est **universel** : il accepte n'importe quelle bande. | **Zéro** — le champ « marche », point |
+| **T2** | Le Field Emitter émet en Fondamentale, **sans choix**. Le joueur apprend juste que « le champ a une couleur ». | **Aucune décision** |
+| **T2+ / T3** | L'**Émetteur Accordable** permet de choisir la bande ; les machines T3 portent une bande, réglée au **Resonance Tuner** (mode « Accorder »). | Le choix arrive **quand le joueur est prêt** |
+
+### Recettes increvables
+
+Une recette peut être marquée **`stable: true`** (`05`, data-driven) : elle **réussit toujours**, quel
+que soit le désaccord ou la dissonance. Toutes les recettes **T1** le sont par défaut — la boucle de
+départ ne peut jamais frustrer. La **surchauffe** garde son risque (c'est un pari volontaire du
+joueur), sauf config contraire.
+
+### Lecture du champ par le joueur
+
+Un **overlay HUD** affiche le champ où l'on se tient (bande, réserve, dissonance) dès que le joueur
+porte l'objet dédié — inventaire, ou **slot Curios si le mod est détecté** (voir `12` et `10`).
+
+### Articulation avec la « dérive de calibration » T4 (Amplifier / Hub)
+
+Ce dossier définissait déjà une dérive d'efficacité sur le Harmonic Amplifier et le Network Hub
+(-1 %/jour, plafond -30 %, reset au Resonance Tuner). **Ce n'est pas un second système** : c'est le
+**même geste** (ça dérive, on ré-accorde au Tuner) appliqué au T4. On l'unifie donc explicitement —
+le joueur n'apprend qu'un concept, « la Résonance se désaccorde à l'usage » :
+
+| Niveau | Ce qui dérive | Symptôme | Remède |
+|---|---|---|---|
+| T3 (harmonique) | la **bande** d'une machine | glow clignotant, surcoût d'Osc, dissonance | Tuner, mode **Accorder** |
+| T4 (calibration) | l'**efficacité** d'un Amplifier / Hub | portée / répartition dégradée (plafond -30 %) | Tuner, **recalibration** (coûte 1 Resonance Component) |
+
+Même outil, même vocabulaire, deux échelles. Le *Tuning Core* (augment, `05`) ralentit les deux.
+
+### Configuration
+
+Tout est modulable, jusqu'à l'**interrupteur maître** (`veskorius-harmonics.toml`) : harmoniques
+**OFF** = le mod redevient « champ simple », comme au T1 partout. Voir `14`.
+
 ## Équilibrage face à une alternative connue (FE/RF câblé)
 
 | | Câble RF/FE classique | Résonance |

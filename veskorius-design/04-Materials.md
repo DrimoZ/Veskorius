@@ -43,12 +43,30 @@ de procédé (sous-produits et branches alternatives de fabrication).
 | `veskorian_alloy_block` | T3 | 4 Veskorian Alloy Ingot | Décoratif + structurel |
 | `harmonic_lattice` | T4 | 4 Veskorian Conductive Alloy Ingot + 2 Hyper Refined Crystal | Harmonic Amplifier, Convergence Core |
 | `concentrated_flux` | T3 | Flux Compressor (nouvelle machine) : 4 Refined Crystal → 1 Concentrated Flux | Convergence Core (compression obligatoire pour un craft de cette ampleur, plutôt que de simplement demander plus de cristaux bruts) |
-| `resonance_catalyst_core` | T2 | 2 Resonance Component + 1 Refined Crystal + 1 Redstone | **Non consommé** — s'insère dans le nouveau slot d'augment de n'importe quelle machine active, +15% de vitesse permanent, un seul par machine, retirable au Resonance Tuner |
+| `resonance_catalyst_core` | T2 | 2 Resonance Component + 1 Refined Crystal + 1 Redstone | **Non consommé** — s'insère dans un slot d'augment de n'importe quelle machine active, +15% de vitesse permanent, retirable au Resonance Tuner. *(Révisé 2026-07-23 : N slots configurables + règles de cumul, voir `05`/`14`.)* |
 | `flux_slag` | T3 (sous-produit) | Byproduct du Veskorian Alloy Forge, 1/cycle | Nuisance à évacuer (Slag Vent) — lien de lore avec l'Effondrement (`02-Lore.md`) |
 | `synthesis_residue` | T3 (sous-produit) | Byproduct du Structural Synthesizer, 1/cycle | Contrairement au Flux Slag, directement utile : compressible en bloc de construction gris terne, aucune maintenance requise — tous les sous-produits ne sont pas des nuisances |
 | `luminous_extract` | T4 | 2 Resonance Bloom broyés | Teinture pour `resonance_glass` |
 | `resonance_glass` | T3 | 4 Sand + 1 Stable Resonance Crystal, fondu au four vanilla | Bloc décoratif semi-transparent, luminosité 8, teignable avec `luminous_extract` |
 | `corrupted_veskorian_alloy_ingot` | T5 | Drop garanti (×3) du Gardien de Faille, ou 15% de chance par extraction du Rift Core Extractor | Rift-Ward Plate |
+
+## 5. Matériaux de la révision harmonique (2026-07-23, voir `06` et `16`)
+
+| Nom interne | Tier | Obtention | Usage |
+|---|---|---|---|
+| `resonance_sludge` | T3 | **Dissonance cristallisée** : purge d'un Damping Array, machine désaccordée, et perte d'entrée en surchauffe (au lieu d'une disparition sèche) | Re-stabilisation au **Reclaimer** (fraction de matériaux / bloc), **engrais** (cultures, `resonance_bloom`), sink d'endgame |
+| `resonance_matrix` | T3 | **Advanced Assembler** : Resonance Component + alliage conductif | Pièce intermédiaire **requise par les machines T4** — ajoute une étape de fabrication au T3 |
+| `efficiency_core` / `yield_core` / `tuning_core` / `damping_core` | T2-T3 | Craft | Augments (voir `05`) : −Osc / double sortie / verrouillage de bande / −dissonance |
+
+**Le déchet a du poids.** `flux_slag` et `resonance_sludge` ne sont pas des poubelles : ce sont
+**littéralement la substance de l'Effondrement** (`02-Lore.md`). Conséquence de design : ils sont
+**instables en inventaire s'ils ne sont pas contenus** (ils « veulent » résonner, écho du cristal brut
+instable, ligne « Perte hors stabilisation » de `06`) — il faut les stocker/traiter, pas les ignorer.
+Trois débouchés (Reclaimer, engrais, sink) évitent qu'ils ne deviennent une simple corvée.
+
+**`concentrated_flux` gagne son usage T3** : c'est le **consommable de damping** du Damping Array
+(il résout la dissonance). Il reste l'ingrédient du Convergence Core en Phase 4, et peut servir de
+carburant premium au Field Emitter (registre de carburants data-driven, `14`).
 
 ## Blocs de construction dérivés
 

@@ -19,18 +19,29 @@ directions.
 | # | Sujet | Statut | Ce qui est verrouillé | Ce qui reste ouvert |
 |---|---|---|---|---|
 | 1 | Locator | **CANONIQUE** | Outil **à modes** (Ressources / Structures) ; **efficacité** algorithmique (fin du scan de cube) ; détection de structures via l'**API de structure vanilla** | Gating « mode Structures au tier 2 de l'outil » ; portées exactes |
-| 2 | Expansion de contenu | **OUVERT** | — | Tout (machines/items/procédés à choisir en réflexion) |
+| 2 | Expansion de contenu | **CANONIQUE (cadre)** | Le contenu découle du système **Harmoniques & Dissonance** (`06`) plutôt que d'une liste de machines « filler » : Émetteur Accordable, Damping Array, Reclaimer, Advanced Assembler, augments variés | Contenu additionnel au-delà de ce noyau |
 | 3 | Gaz → biome | **CANONIQUE (direction)** | Le gaz vit dans un **biome profond custom rare** où spawnent les structures profondes (fin de la boucle punitive) ; intérieurs scellés ; armure réduit le gaz | Nom du biome, rareté, effet exact (MobEffect vs dégâts) |
 | 4 | Placement Custode Lourd | **CANONIQUE** | Custode Lourd ↔ Sigma/Archive ; Custode standard ↔ Avant-poste/Poste de Garde | Variété/densité de mobs, `resonance_wisp`, variante affaiblie |
-| 5 | Déchets / calibration | **OUVERT** | — | Tout le système (à réfléchir) |
+| 5 | Déchets / calibration | **CANONIQUE** | Remplacé par **Harmoniques & Dissonance** (`06`) : la « calibration » devient dérive/désaccord harmonique, le déchet devient **dissonance cristallisée** (substance de l'Effondrement, instable si non contenue), la gestion passe par une **infrastructure de damping** (container à saturer) et non un slot. Le désaccord **ne bloque jamais** ; flag de recette `stable`. Tout modulable en config, jusqu'à OFF | Valeurs d'équilibrage |
 | 6 | Synthesizer « via Relay » | **CANONIQUE** | **Relâché** : alimenté par n'importe quel champ (comme les autres machines) | — |
-| 7 | Usages Concentrated Flux | **OUVERT** | — | Lié au point 5 (calibration) et à d'autres crafts |
-| 8 | Vraies structures + configs | **CANONIQUE** | Migration vers le **système `Structure` vanilla** (localisables, `/locate`), **configs de spawn data-driven** (fréquence/espacement/biomes/strate), vrais layouts | Mécanisme : **jigsaw vs templates NBT** (choix d'ingénierie) |
+| 7 | Usages Concentrated Flux | **CANONIQUE** | **Consommable de damping** du Damping Array (son usage T3), + carburant premium de l'émetteur, + Convergence Core en Phase 4 | — |
+| 8 | Vraies structures + configs | **CANONIQUE** | Migration vers le système `Structure` vanilla, **en jigsaw** (seul choix qui scale au massif — cf. `08`), **configs de spawn data-driven** (spacing/separation/biomes/strate), vrais layouts | — |
+| 9 | Gating par blueprint | **CONTESTÉ — à revisiter** | — | Le porteur n'aime pas le modèle blueprint. Reste en vigueur (codé/testé) mais **ne rien bâtir dessus** ; session dédiée à prévoir (voir `03`) |
+| 10 | Configs par thème | **CANONIQUE** | Découpage en specs thématiques (`basics`/`machines`/`harmonics`/`generation`/`structures`/`mobs`), **interrupteur maître par système**, doctrine « tout doit pouvoir se désactiver » (`14`) | — |
+| 11 | Augments multi-slots | **CANONIQUE** | N slots configurables + **règles de cumul** (dans un slot / entre slots) en config ; nouveaux augments (Efficiency/Yield/Tuning/Damping Core) | Valeurs |
 
-**À coder maintenant (Phase 1, canonique et sans décision ouverte) :** le **Locator à modes + scan
-efficace** (l'index/API de structure devient pleinement utile quand les vraies structures arrivent).
-Le reste du canonique (structures réelles, biome) est du chantier Phase 2. Les points OUVERTS
-attendent la phase de réflexion.
+**Ordre de chantier (tout est désormais canonique) :**
+1. **Découpage des configs par thème** (`14`) — fondation : chaque système arrive avec son
+   interrupteur maître.
+2. **Harmoniques & Dissonance** (spec complète dans `06`) — bandes, accord/désaccord, dissonance
+   spatiale, Damping Array, flag `stable`, HUD de champ.
+3. **Migration Structures en jigsaw** (`08`) + configs de spawn → allume le mode Structures du Locator.
+4. **Biome `resonant_deeps` + gaz par strate** (`07`) — scaling et ordre imposé.
+5. Contenu T3 (Alloy Forge/Slag Vent, Relay, Synthesizer, Driller, Compressor, Advanced Assembler,
+   Reclaimer) puis structures/mobs.
+
+⚠️ Seul point **non tranché** : le **gating par blueprint** (§9 ci-dessus) — contesté, à revisiter en
+session dédiée ; ne rien bâtir de nouveau dessus.
 
 > **✅ Fait (2026-07-23) — Locator à modes.** L'outil est désormais à modes (`LocatorMode`
 > RESOURCES / STRUCTURES, Data Component `locator_mode`, maj+clic droit change de mode). Le mode
@@ -142,6 +153,13 @@ l'HUD) ou des dégâts directs ? (recommandé : un effet custom `resonance_sickn
 ---
 
 ## 4. Système de déchets + calibration (upkeep des machines évoluées)
+
+> **⚠️ Section dépassée — remplacée par « Harmoniques & Dissonance » (`06-Energy.md`).** La v1
+> ci-dessous (calibration générique par catalyseur + déchet) a été jugée trop générique (« ça ne se
+> démarque pas d'un junk gameplay »). Elle est conservée comme trace du raisonnement ; **la spec qui
+> fait foi est celle de `06`** : la calibration devient une **dérive harmonique**, le déchet devient
+> de la **dissonance cristallisée**, et la gestion passe par une **infrastructure de damping**
+> spatiale et visible plutôt qu'un compteur caché.
 
 **Problème / demande.** Introduire un vrai système de déchets généré par certaines machines (pas
 toutes), avec compteur interne, et une mécanique de **calibration par catalyseur consommé** ; sans

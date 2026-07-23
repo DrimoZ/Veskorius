@@ -3,6 +3,29 @@
 Chaque structure est rattachée à une strate sociale (`02-Lore.md`) et une strate Y
 (`07-World-Generation.md`) avant tout contenu — règle non négociable.
 
+## Implémentation : vraies Structures vanilla, en **jigsaw** (décidé 2026-07-23, voir `16` §2)
+
+Les ruines actuelles sont des `RuinFeature` (boîtes creuses posées comme une *feature*) : pas de
+`/locate`, pas de vraies pièces. **C'est remplacé** par le système `Structure` vanilla, en **jigsaw**.
+
+Pourquoi jigsaw plutôt qu'un template NBT unique :
+
+| Approche | Ce que c'est | Limite |
+|---|---|---|
+| Template NBT unique | un blob figé, posé tel quel | aucune variété, **ne scale pas** au massif |
+| **Jigsaw (pools de pièces)** ✅ | assemble des **pièces modulaires** connectées récursivement — ce que Mojang utilise pour villages, **cités antiques**, trial chambers | plus de setup initial, mais **variété procédurale et structures massives** à partir de petites pièces réutilisables |
+| Code full `StructureType` | génération algorithmique sur-mesure (Manoirs, Strongholds) | beaucoup de code, réservé au vraiment bespoke |
+
+Les structures étant appelées à devenir **massives**, jigsaw est le seul choix qui tient : une Sigma
+Lab de 3 salles aujourd'hui devient tentaculaire demain **en ajoutant des pièces au pool**, sans
+réécrire.
+
+**Configuration de spawn data-driven** : `StructureSet` + `RandomSpreadStructurePlacement` (spacing,
+separation, salt) + biomes autorisés + strate Y, le tout en JSON de datapack — fréquence et
+placement réglables sans recompiler (voir `14`, `veskorius-structures.toml` pour les curseurs
+associés). Bénéfice immédiat : **`/locate` fonctionne**, et le **mode Structures du Locator**
+s'allume automatiquement (tag `#veskorius:locatable`, déjà en place).
+
 ## Gatekeeping — clé physique, acquisition variée (2026-07-22)
 
 Le déblocage d'un tier passe par un **objet-clé physique**, le `resonance_blueprint` du tier

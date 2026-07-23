@@ -319,13 +319,23 @@ codées et vertes, pour rendre lisible le cœur invisible du mod (pilier 3) sans
 
 ## Phase 2 — Réseau régional T3
 
-> **Révision 2026-07-23 — voir `16-Revision-and-Expansion.md`.** La Phase 2 est retravaillée en
-> profondeur : Locator à modes + index O(n), migration vers de **vraies Structures** (localisables,
-> configs de spawn) au lieu des `RuinFeature`, **biome profond custom** portant le gaz de Résonance
-> (résout la boucle punitive), **système déchets/calibration** transversal, et une large expansion de
-> contenu (Advanced Assembler, Reclaimer, variantes de Relais, augments variés, Field Surveyor…).
-> L'ordre ci-dessous est conservé pour référence mais **l'ordre effectif est celui de la section
-> « Ordre d'implémentation Phase 2 révisé » du fichier 16** (fondations transversales d'abord).
+> **Révision 2026-07-23 — voir `16-Revision-and-Expansion.md` et `06` (Harmoniques).** La Phase 2 est
+> retravaillée en profondeur. L'ordre ci-dessous est conservé pour référence, mais **l'ordre effectif
+> commence par des fondations transversales** :
+>
+> 0. **Découpage des configs par thème** (`14`) — fondation dont tout le reste dépend : chaque système
+>    arrive avec son interrupteur maître.
+> 1. **Harmoniques & Dissonance** (`06`) — bandes sur le socle champ, accord/désaccord, dissonance
+>    spatiale, Damping Array, flag de recette `stable`, HUD de champ. T1 reste sans complexité.
+> 2. **Migration vers de vraies Structures en jigsaw** (`08`) + configs de spawn — allume le mode
+>    Structures du Locator (déjà codé).
+> 3. **Biome `resonant_deeps` + gaz par strate** (`07`) — scaling de difficulté et ordre imposé.
+> 4. Puis le contenu T3 proprement dit (Alloy Forge/Slag Vent, Relay, Synthesizer, Driller,
+>    Compressor, Advanced Assembler, Reclaimer) et les structures/mobs (Sigma Lab + Custode Lourd,
+>    Poste de Garde + Custode standard).
+>
+> ⚠️ Le **gating par blueprint** est un point **contesté** (voir `03`) : ne rien bâtir de nouveau
+> dessus sans le signaler.
 
 **Objectif de test** : un joueur équipé du T2 atteint un Sigma Laboratory, résout le puzzle des
 deux Relais, gère le Flux Slag de sa première Alloy Forge sans qu'elle ne se bloque.

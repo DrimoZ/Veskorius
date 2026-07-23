@@ -70,14 +70,61 @@ désormais utilisé pour changer de mode). Un seul outil pour toutes les interac
 configuration.
 
 **Augment transversal — Resonance Catalyst Core** (T2, item, non compté dans les 23) : craft 2
-Resonance Component + 1 Refined Crystal + 1 Redstone. Ne se pose pas seul — s'insère dans le
-slot d'augment que possède désormais chaque machine active de la liste ci-dessus (ajout d'un
-slot générique côté code, valable pour toutes sans exception ; c'est le même slot que celui
-utilisé par l'intégration Thaumcraft du Cristal de Vis, voir `10-Mod-Integrations.md` — un seul
-slot annexe par machine, pas deux). Effet : +15% de vitesse de cycle en permanence, un seul
-Catalyst Core par machine (pas de cumul), jamais consommé ni sujet à la dérive de calibration —
+Resonance Component + 1 Refined Crystal + 1 Redstone. Ne se pose pas seul — s'insère dans les
+slots d'augment que possède désormais chaque machine active de la liste ci-dessus (slots
+génériques côté code, valables pour toutes sans exception ; ce sont les mêmes slots que ceux
+utilisés par l'intégration Thaumcraft du Cristal de Vis, voir `10-Mod-Integrations.md` — un seul
+jeu de slots annexes par machine, pas deux systèmes séparés). Effet : +15% de vitesse de cycle en
+permanence, jamais consommé ni sujet à la dérive de calibration —
+*(**révisé 2026-07-23** : le slot unique devient **N slots configurables**, avec des règles de cumul
+réglables en config — voir la section « Slot d'augment → slots d'augment » plus bas et `14`.)*
 contrairement à celle-ci, qui touche uniquement l'Amplifier/le Hub, le Catalyst Core est un
 choix d'investissement ponctuel, pas un entretien.
+
+## Ajouts de la révision harmonique (2026-07-23, voir `06` et `16`)
+
+Ces machines ne renumérotent pas les 23 ci-dessus : elles s'ajoutent avec le système Harmoniques &
+Dissonance.
+
+| Machine | Tier | Rôle |
+|---|---|---|
+| **Émetteur Accordable** (`tunable_field_emitter`) | T2+ | Field Emitter dont on **choisit la bande** harmonique. C'est lui qui introduit le choix de fréquence (le Field Emitter T2 de base reste mono-bande, sans décision). |
+| **Damping Array** (`damping_array`) | T3 | **Absorbe la dissonance** d'un champ. Se **sature** (container à purger) et consomme du **Concentrated Flux**. La gestion de dissonance est de l'infrastructure, pas un slot. |
+| **Reclaimer** (`reclaimer`) | T3 | **Re-stabilise les déchets** (`resonance_sludge`, `flux_slag`) en une fraction de matériaux ou en bloc de construction. Ferme la boucle économique. |
+| **Advanced Assembler** (`advanced_assembler`) | T3 | Compose le **`resonance_matrix`** (Component + alliage conductif), pièce intermédiaire requise par les machines T4. |
+
+### Bandes harmoniques sur les machines
+
+À partir du T3, une machine porte une **bande** (voir `06`). Réglée au **Resonance Tuner**, nouveau
+mode **« Accorder »** (l'outil à modes existe déjà — `12`). Les machines **T1 restent universelles**
+(aucune bande, acceptent n'importe quel champ) : la boucle de départ ne gagne aucune complexité.
+
+Le **glow** d'une machine en marche prend la couleur de sa bande — le diagnostic est visuel.
+
+### Recettes increvables — `stable`
+
+Les recettes de fonctionnement (`MachineRecipe`, data-driven) gagnent un champ **`stable`** :
+
+- `stable: true` → la recette **réussit toujours**, quels que soient le désaccord et la dissonance
+  de la machine. **Toutes les recettes T1 le sont par défaut.**
+- La **surchauffe** conserve son risque même sur une recette stable (c'est un pari que le joueur
+  choisit d'activer), sauf réglage contraire en config.
+
+Levier direct pour un modpack maker : rendre increvable ce qu'il veut, sans toucher au code.
+
+### Slot d'augment → slots d'augment
+
+Le slot unique devient **N slots configurables** (par machine ou par tier), avec des **règles de
+cumul** réglables : un même effet est-il cumulable dans un slot / entre slots, avec quel plafond ?
+Tout est en config (`14`). Nouveaux augments prévus, au-delà du Catalyst Core (+15 % vitesse) :
+
+| Augment | Effet |
+|---|---|
+| `resonance_catalyst_core` | +15 % vitesse (existant) |
+| **Efficiency Core** | −20 % d'Osc consommé |
+| **Yield Core** | ~10 % de chance de doubler la sortie |
+| **Tuning Core** | verrouille la bande de la machine (résiste à la dérive harmonique) |
+| **Damping Core** | réduit la dissonance émise par la machine |
 
 ## Bootstrap du T4 — pourquoi 3 Hyper Refined Crystal et pas 2 ni 4
 

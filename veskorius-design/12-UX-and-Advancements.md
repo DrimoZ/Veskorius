@@ -56,6 +56,39 @@ le socle donc gratuits pour les machines à venir :
 Règle pour la suite : toute nouvelle machine active hérite du glow sans code ; une source de champ future
 (Relay, Amplifier, Convergence Core) devrait réutiliser le motif de coupole avec sa propre portée.
 
+## Harmoniques : la couleur comme interface (2026-07-23, voir `06`)
+
+Convention centrale du système Harmoniques & Dissonance : **la bande harmonique est une couleur**, et
+elle réutilise les deux visuels déjà codés — **aucun GUI supplémentaire à apprendre**.
+
+| Élément | Convention |
+|---|---|
+| Coupole de l'émetteur | prend la couleur de la **bande du champ** |
+| Glow d'une machine en marche | prend la couleur de la **bande de la machine** |
+| Machine désaccordée | glow qui **clignote entre les deux couleurs** (le « ça grince » visuel) |
+| Champ dissonant | coupole **désaturée / grésillante**, puis intermittente |
+
+Règle de lisibilité : un joueur doit pouvoir **diagnostiquer sa base en la regardant**, sans ouvrir
+un écran. Pas de chiffre de fréquence exposé — des couleurs.
+
+## HUD de champ (lecture globale)
+
+Overlay discret en coin d'écran, affichant le champ **où se tient le joueur** :
+- la **bande** (pastille de couleur + nom),
+- la **réserve** de l'émetteur qui le couvre (`X/Y Osc`),
+- le **niveau de dissonance** (petite jauge).
+
+**Conditions d'affichage** : le joueur porte l'objet dédié **dans son inventaire** (candidat : le
+Resonance Locator, ou un « Attunement Lens » dédié) — **ou dans un slot Curios si le mod est
+détecté** (dépendance douce, voir `10`). Alimenté par un petit paquet serveur→client périodique,
+envoyé uniquement aux joueurs porteurs.
+
+## Resonance Tuner — mode « Accorder »
+
+Le Tuner (outil à modes déjà en place) gagne le mode **Accorder** : clic droit sur une machine T3+
+règle sa **bande harmonique**. Il rejoint la liste des modes existants (Pivoter, On/Off, Surchauffe,
+Redstone) sans nouvelle interaction à apprendre.
+
 ## Automatisation d'objets — capability sidée + config par face (2026-07-23)
 
 **Distinction cardinale : l'ÉNERGIE n'a jamais de tuyaux** (champs de résonance, pilier 3) — mais les

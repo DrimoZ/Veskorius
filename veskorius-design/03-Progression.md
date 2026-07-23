@@ -106,7 +106,28 @@ Convergence Core) sont librement craftables sans fragment supplémentaire — co
 pilier 1 (la restauration porte sur les catégories de machines par tier, pas sur chaque
 variante).
 
+## Courbe harmonique (ajouté 2026-07-23, voir `06`)
+
+La complexité du réseau **n'arrive pas d'un coup** — c'est une progression à part entière, parallèle
+aux tiers :
+
+| Palier | Réseau | Complexité imposée |
+|---|---|---|
+| **T1** | machines autonomes ou **universelles** (l'Assembler accepte n'importe quelle bande) | **aucune** |
+| **T2** | Field Emitter mono-bande : le joueur apprend juste que « le champ a une couleur » | aucune décision |
+| **T2+ / T3** | Émetteur Accordable + machines à bande (Tuner, mode Accorder) : on **route** l'énergie par bande | le choix arrive quand le joueur est prêt |
+| **T3+** | dissonance à gérer, infrastructure de damping | entretien actif |
+
+Principe : **le début de partie ne doit jamais frustrer** (recettes T1 `stable`, aucune bande), et la
+profondeur s'ouvre au rythme des paliers.
+
 ## Mécanique de déblocage — clé physique, pas recette masquée (révisé 2026-07-22)
+
+> ⚠️ **Point contesté (2026-07-23), à revisiter.** Le porteur du projet a indiqué ne pas aimer le
+> système de **blueprint** comme moyen de garder les tiers. Le modèle décrit ci-dessous reste en
+> vigueur **pour l'instant** (il est codé et testé), mais il est **explicitement ouvert à
+> remplacement** — aucune nouvelle mécanique ne doit s'appuyer dessus sans le signaler. À traiter
+> dans une session dédiée.
 
 La « découverte physique » qui garde chaque tier est **un objet-clé, le `resonance_blueprint` du
 tier**, pas un drapeau invisible : **aucune recette n'est jamais masquée**. Les recettes des

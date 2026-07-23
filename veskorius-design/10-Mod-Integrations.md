@@ -11,7 +11,7 @@ d'énergie ou de ressource 1:1 cachée — chaque pont a son propre coût, cohé
 
 | Pont | Effet | Condition |
 |---|---|---|
-| Cristal de Vis dans le Resonance Stabilizer | Temps 30s → 18s | **Même slot d'augment que le Resonance Catalyst Core** (voir `05-Machines.md`) — un Cristal de Vis se consomme en fin de cycle (bonus temporaire), un Catalyst Core reste en place (bonus permanent) ; un seul occupant à la fois, le joueur choisit lequel selon qu'il préfère investir une fois ou consommer au cas par cas |
+| Cristal de Vis dans le Resonance Stabilizer | Temps 30s → 18s | **Mêmes slots d'augment que le Resonance Catalyst Core** (voir `05-Machines.md`) — un Cristal de Vis se consomme en fin de cycle (bonus temporaire), un Catalyst Core reste en place (bonus permanent) ; ils se disputent les mêmes slots, le joueur arbitre entre investir une fois ou consommer au cas par cas. *(Révisé 2026-07-23 : N slots + règles de cumul en config — le Vis entre dans ce cadre commun.)* |
 | Nœud de Vis à < 4 blocs d'un Field Emitter | -1 Osc/tick prélevé sur réserve | Détection passive, pas de craft requis |
 
 Justification lore : les Architectes n'ont jamais utilisé la magie Thaumcraft — c'est une
@@ -48,6 +48,15 @@ FE dans `06-Energy.md`.
 
 Le taux défavorable est voulu : cette machine est un pont de dépannage pour connecter un système
 Mekanism existant, pas une façon rentable de remplacer le réseau de champ par du câblage FE.
+
+## Curios (ajouté 2026-07-23)
+
+| Pont | Effet | Condition |
+|---|---|---|
+| Objet de lecture de champ (Locator / « Attunement Lens ») placé dans un **slot Curios** | Active le **HUD de champ** (bande, réserve, dissonance — voir `12`) exactement comme s'il était dans l'inventaire | **Dépendance douce** : détection via `ModList.isLoaded("curios")`. Sans Curios, le HUD s'active simplement en ayant l'objet **dans l'inventaire** — aucune fonctionnalité n'est réservée au mod tiers |
+
+Règle respectée : Curios est un **confort d'ergonomie** (libérer une case d'inventaire), jamais un
+prérequis. Le comportement par défaut (sans le mod) reste complet et testé en premier.
 
 ## JEI / EMI
 

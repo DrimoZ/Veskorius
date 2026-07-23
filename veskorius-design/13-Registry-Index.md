@@ -140,6 +140,26 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 | Archive Régionale | `regional_archive` | 08 |
 | Cœur de Faille (poche générée, pas une structure `structure_set` classique) | `rift_pocket` | 07, 08 |
 
+## Ajouts de la révision harmonique (2026-07-23, voir `06`/`16`)
+
+| Registry name | Type | Défini dans | Statut |
+|---|---|---|---|
+| `tunable_field_emitter` | bloc (machine) | 05, 06 | À coder (Phase 2) — choix de bande |
+| `damping_array` | bloc (machine) | 05, 06 | À coder (Phase 2) — absorbe la dissonance, se sature |
+| `reclaimer` | bloc (machine) | 05 | À coder (Phase 2) — re-stabilise les déchets |
+| `advanced_assembler` | bloc (machine) | 05 | À coder (Phase 2) — produit le `resonance_matrix` |
+| `resonance_sludge` | item | 04 | À coder (Phase 2) — dissonance cristallisée |
+| `resonance_matrix` | item | 04, 05 | À coder (Phase 2) — intermédiaire requis au T4 |
+| `efficiency_core` / `yield_core` / `tuning_core` / `damping_core` | items (augments) | 04, 05 | À coder (Phase 2) |
+| `attunement_lens` | item (optionnel) | 12 | À coder — porte le HUD de champ (sinon le Locator fait office) |
+| `resonant_deeps` | biome | 07, 16 | À coder (Phase 2) — porte le gaz, abrite les structures profondes |
+| `veskorius:locatable` | tag de structure | 16 | ✅ codé (vide tant que les Structures ne sont pas migrées) |
+| `locator_mode` | data component | 16 | ✅ codé (outil à modes) |
+| `codex_unlocks` | attachment joueur | 15 | ✅ codé |
+
+Bandes harmoniques : identifiées par **couleur** côté joueur (violet / cyan / ambre), nombre réglable
+en config — pas de registre dédié tant qu'elles restent un petit ensemble borné.
+
 ## Ce que cette liste a permis de vérifier
 
 Aucune collision de nom trouvée entre les 4 groupes de matériaux, les 23 machines, les 5

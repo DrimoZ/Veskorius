@@ -84,6 +84,48 @@ Chaque défaut est re-testé par le GameTest `configDefaultsMatchDesign` : le ch
 jour ce dossier fait échouer la suite (même discipline que la réécriture des valeurs de référence
 dans les autres tests).
 
+## Doctrine (révisée 2026-07-23) : tout doit pouvoir se moduler, jusqu'à se désactiver
+
+Décision du porteur du projet : **la majorité des mécaniques doit être réglable, allégeable ou
+désactivable en config.** Si un modpack maker ou un joueur veut « faciliter » sa partie, on le lui
+permet — ça ne coûte presque rien à implémenter, et c'est toujours mieux qu'un fork. En contrepartie,
+**chaque interrupteur est documenté avec ce qu'on perd** (« désactiver les harmoniques = tu perds la
+couche de planification de réseau »).
+
+Conséquence d'implémentation : chaque nouveau système arrive avec (a) ses constantes, (b) **un
+interrupteur maître**, (c) une ligne de doc expliquant l'effet de le couper.
+
+## Découpage des fichiers par thème (révisé 2026-07-23)
+
+Le fichier unique `veskorius-server.toml` devient **plusieurs specs nommées, une par thème** (NeoForge
+accepte plusieurs configs SERVER enregistrées sous des noms distincts). Objectif : un modpack maker
+trouve immédiatement ce qu'il cherche, et surcharge un thème sans toucher aux autres.
+
+| Fichier | Contenu |
+|---|---|
+| `veskorius-basics.toml` | constantes transversales (chaîne de cristaux, Osc de base, outils portables) |
+| `veskorius-machines.toml` | cycles, surchauffe, **slots d'augment et règles de cumul**, recettes increvables |
+| `veskorius-harmonics.toml` | **bandes, accord/désaccord, dissonance, damping** — avec **interrupteur maître** |
+| `veskorius-generation.toml` | poches, veines, spore, biome `resonant_deeps`, intensité du gaz par strate |
+| `veskorius-structures.toml` | fréquence/espacement/biomes des structures, densité de mobs à l'intérieur |
+| `veskorius-mobs.toml` | PV/dégâts/portées des Custodes, Fileur, gardiens |
+
+Migration : les clés existantes gardent leur sens, elles changent seulement de fichier. Le GameTest
+`configDefaultsMatchDesign` est étendu pour couvrir chaque thème.
+
+### Réglages notables introduits par la révision
+
+| Thème | Clé | Effet |
+|---|---|---|
+| `harmonics` | `enabled` | **Interrupteur maître.** À `false`, le mod redevient « champ simple » (aucune bande, aucune dissonance) — comportement T1 partout |
+| `harmonics` | `bandCount` | Nombre de bandes harmoniques (défaut 3) |
+| `harmonics` | `detuneOscMultiplier` | Surcoût d'Osc d'une machine désaccordée |
+| `harmonics` | `dissonancePerCycle` / `dischargeThreshold` | Vitesse d'accumulation et seuil de décharge |
+| `machines` | `augmentSlots` | Nombre de slots d'augment (par machine ou par tier) |
+| `machines` | `augmentStackingMode` | Cumul d'un même effet : interdit / plafonné / libre, dans un slot et entre slots |
+| `machines` | `overheatIgnoresStable` | La surchauffe garde-t-elle son risque sur une recette `stable` ? |
+| `generation` | `gasIntensityByStrata` | Intensité du gaz de Résonance par strate (**garantit le scaling de difficulté**, voir `07`) |
+
 ## Reste à faire / différé (roadmap config)
 
 À intégrer au fil des phases, pas en une fois :

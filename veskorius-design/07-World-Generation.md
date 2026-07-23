@@ -74,6 +74,22 @@ bulle) — dernier maillon du pilier 2 (connaissance spatiale) avant l'endgame.
 4. Lecture des fissures de surface de Faille (T4-T5) — compétence acquise par fragment, pas par
    objet.
 
+## Scaling de difficulté et ordre imposé (ajouté 2026-07-23)
+
+**Règle non négociable : une zone doit scaler avec son tier, et on ne doit pas pouvoir faire les
+zones dans le désordre.** L'ordre n'est pas gardé par un mur artificiel, mais par la nature des
+lieux :
+
+| Levier | Effet sur l'ordre |
+|---|---|
+| **Intensité du gaz par strate** | Le gaz de Résonance monte en intensité avec la profondeur. Une strate T4 est **létale** sans l'équipement/le Driller du palier précédent — on ne saute pas un tier |
+| **Biome `resonant_deeps`** | Les structures profondes y vivent ; il a des variantes plus hostiles en profondeur |
+| **Équipement** | Armure en Alliage Veskorien (réduit le gaz), Deep Crystal Driller (le supprime dans un rayon) : chaque palier ouvre littéralement la strate suivante |
+| **Clé de tier** | La porte de craft du tier (voir `03` — mécanisme en cours de révision) |
+
+Tous ces curseurs (intensité par strate, rareté du biome, hostilité) sont **en config**
+(`veskorius-generation.toml`, voir `14`) — un modpack peut adoucir ou durcir, voire désactiver le gaz.
+
 ## Règle de cohérence pour toute nouvelle structure
 
 Avant de coder une nouvelle structure : d'abord choisir sa strate Y (détermine le tier de
