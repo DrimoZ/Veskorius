@@ -17,7 +17,7 @@ import net.minecraft.world.level.Level;
 /**
  * Resonance Storage Cell (05-Machines.md #6, 06-Energy.md « Osc portable »).
  *
- * Batterie <em>portable</em> : elle stocke jusqu'à {@link #CAPACITY} Osc, état de
+ * Batterie <em>portable</em> : elle stocke jusqu'à {@link #capacity()} Osc, état de
  * charge porté par l'item ({@link ModDataComponents#STORAGE_CELL_CHARGE}). Tant
  * qu'elle est dans l'inventaire d'un joueur situé dans un champ actif, elle absorbe
  * des Osc <em>prélevés sur ce champ</em> — donc sur la réserve d'un émetteur, la
@@ -76,7 +76,7 @@ public class ResonanceStorageCellItem extends Item {
 
     /**
      * Un tick de recharge depuis le champ à {@code pos}. Prélève au plus
-     * {@link #CHARGE_RATE}, et jamais plus que la place restante, sur un émetteur
+     * {@link #chargeRate()}, et jamais plus que la place restante, sur un émetteur
      * couvrant la position (via {@link ResonanceFieldManager#supply}). Retourne
      * l'Osc réellement transféré. Isolé de {@link #inventoryTick} pour être testable
      * sans simuler un joueur entier.

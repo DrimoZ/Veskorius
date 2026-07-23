@@ -37,8 +37,9 @@ import org.jetbrains.annotations.Nullable;
  * ({@code RuinFeature}) plutôt que par un spawn naturel — cohérent avec « les
  * Custodes gardent des sites, pas des territoires » (09-Entities.md).
  *
- * Non encore fait (différé) : réagir aussi quand une machine du site est endommagée
- * (demande un suivi d'événements), et patrouiller/retourner à un point fixe.
+ * Il réagit aussi quand une machine du site est cassée ({@code CustodeAlertHandler}),
+ * et patrouille autour de son point de garde ({@code restrictTo} +
+ * {@link MoveTowardsRestrictionGoal}, persisté au rechargement).
  */
 public class CustodeEntity extends Monster {
 

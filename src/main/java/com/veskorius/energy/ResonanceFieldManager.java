@@ -1,5 +1,6 @@
 package com.veskorius.energy;
 
+import com.veskorius.Veskorius;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -8,7 +9,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.level.LevelEvent;
 
 /**
  * Aiguillage entre les machines consommatrices et les émetteurs de champ.
@@ -26,12 +31,27 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  * Un seul thread par niveau touche cet index (le thread serveur), mais la map de
  * premier niveau est en {@link ConcurrentHashMap} par prudence face aux niveaux
  * multiples.
+ *
+ * L'index est purgé au déchargement d'un niveau ({@link #onLevelUnload}) : sans ça,
+ * la map statique garderait des positions d'un monde solo précédent après un retour
+ * au menu puis chargement d'un autre monde (même JVM). La correction est de toute
+ * façon garantie par la vérification du type de block entity à la lecture, mais on
+ * évite ainsi une accumulation inutile.
  */
+@EventBusSubscriber(modid = Veskorius.MOD_ID)
 public final class ResonanceFieldManager {
 
     private static final Map<ResourceKey<Level>, Set<BlockPos>> EMITTERS = new ConcurrentHashMap<>();
 
     private ResonanceFieldManager() {
+    }
+
+    @SubscribeEvent
+    public static void onLevelUnload(LevelEvent.Unload event) {
+        LevelAccessor level = event.getLevel();
+        if (level instanceof ServerLevel serverLevel) {
+            EMITTERS.remove(serverLevel.dimension());
+        }
     }
 
     /**
@@ -126,24 +146,5 @@ public final class ResonanceFieldManager {
             }
         }
         return best;
-    }
-
-    /**
-     * Vrai si au moins un émetteur actif couvre {@code consumerPos}. Pour une
-     * machine qui veut savoir si elle est dans un champ sans encore rien prélever.
-     */
-    public static boolean hasFieldAt(ServerLevel level, BlockPos consumerPos) {
-        Set<BlockPos> set = EMITTERS.get(level.dimension());
-        if (set == null) {
-            return false;
-        }
-        for (BlockPos emitterPos : set) {
-            if (level.getBlockEntity(emitterPos) instanceof IResonanceField field
-                && field.isActive()
-                && emitterPos.distSqr(consumerPos) <= (long) field.getRange() * field.getRange()) {
-                return true;
-            }
-        }
-        return false;
     }
 }
