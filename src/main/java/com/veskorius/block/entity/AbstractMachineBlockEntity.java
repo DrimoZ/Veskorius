@@ -1,9 +1,11 @@
 package com.veskorius.block.entity;
 
+import com.veskorius.block.AbstractMachineBlock;
 import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.energy.ResonanceFieldManager;
 import com.veskorius.tag.ModTags;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -13,10 +15,15 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Socle commun a toutes les machines actives de Veskorius (05-Machines.md,
@@ -46,7 +53,11 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     public static final int DATA_MANUAL = 2;
     public static final int DATA_REDSTONE_MODE = 3;
     public static final int DATA_OVERHEAT = 4;
-    public static final int DATA_COUNT = 5;
+    /** 6 valeurs (une par face, indexées par {@code Direction.get3DDataValue}). */
+    public static final int DATA_SIDE_BASE = 5;
+    public static final int DATA_AUTO_INPUT = 11;
+    public static final int DATA_AUTO_OUTPUT = 12;
+    public static final int DATA_COUNT = 13;
 
     protected final ItemStackHandler inventory;
 
@@ -62,6 +73,28 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
      * que sur les machines qui la supportent ({@link #supportsOverheat}).
      */
     private boolean overheatEnabled = false;
+
+    // --- Automatisation d'objets (item I/O, PAS l'énergie) -------------------
+    // L'énergie reste sans tuyaux (par champ) ; en revanche les objets peuvent
+    // circuler via hopper/automatisation, configurables par face (12-UX-and-
+    // Advancements.md). Défaut « façon four » pour marcher tout de suite : sortie
+    // par le dessous, entrée par les autres faces. Un futur écran de config
+    // permettra de personnaliser par face + activer l'auto-I/O.
+
+    private static final int[] NO_SLOTS = new int[0];
+    private static final int AUTO_INTERVAL = 8;
+
+    private final SideMode[] sideModes = defaultSideModes();
+    private boolean autoInput = false;
+    private boolean autoOutput = false;
+
+    private static SideMode[] defaultSideModes() {
+        SideMode[] modes = new SideMode[6];
+        for (Direction dir : Direction.values()) {
+            modes[dir.get3DDataValue()] = dir == Direction.DOWN ? SideMode.OUTPUT : SideMode.INPUT;
+        }
+        return modes;
+    }
 
     /**
      * Durée effective du cycle courant, mise à jour côté serveur à chaque tick et
@@ -81,12 +114,17 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     private final ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
+            if (index >= DATA_SIDE_BASE && index < DATA_SIDE_BASE + sideModes.length) {
+                return sideModes[index - DATA_SIDE_BASE].ordinal();
+            }
             return switch (index) {
                 case DATA_PROGRESS -> progress;
                 case DATA_MAX_PROGRESS -> maxProgress;
                 case DATA_MANUAL -> manualEnabled ? 1 : 0;
                 case DATA_REDSTONE_MODE -> redstoneMode.ordinal();
                 case DATA_OVERHEAT -> overheatEnabled ? 1 : 0;
+                case DATA_AUTO_INPUT -> autoInput ? 1 : 0;
+                case DATA_AUTO_OUTPUT -> autoOutput ? 1 : 0;
                 default -> 0;
             };
         }
@@ -95,12 +133,18 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         public void set(int index, int value) {
             // Cote client : stocke la valeur synchronisee pour que la barre et les
             // boutons du GUI reflètent l'état réel du serveur.
+            if (index >= DATA_SIDE_BASE && index < DATA_SIDE_BASE + sideModes.length) {
+                sideModes[index - DATA_SIDE_BASE] = SideMode.byIndex(value);
+                return;
+            }
             switch (index) {
                 case DATA_PROGRESS -> progress = value;
                 case DATA_MAX_PROGRESS -> maxProgress = value;
                 case DATA_MANUAL -> manualEnabled = value != 0;
                 case DATA_REDSTONE_MODE -> redstoneMode = RedstoneMode.byIndex(value);
                 case DATA_OVERHEAT -> overheatEnabled = value != 0;
+                case DATA_AUTO_INPUT -> autoInput = value != 0;
+                case DATA_AUTO_OUTPUT -> autoOutput = value != 0;
                 default -> { }
             }
         }
@@ -167,6 +211,7 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, AbstractMachineBlockEntity machine) {
         machine.tickCycle();
+        machine.tickAutomation();
     }
 
     private void tickCycle() {
@@ -177,6 +222,7 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         if (!canRunCycle()) {
             // Ingredient absent ou sortie pleine : le cycle ne peut pas exister,
             // on remet a zero (contrairement aux pauses ci-dessous).
+            setLit(false);
             if (progress != 0) {
                 progress = 0;
                 setChanged();
@@ -187,21 +233,42 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         if (!isControlEnabled()) {
             // Coupee a la main ou par la redstone : PAUSE (progression conservee),
             // et aucun Osc n'est preleve tant qu'elle est coupee.
+            setLit(false);
             return;
         }
 
         if (!drawEnergy()) {
             // Pas assez d'Osc ce tick : PAUSE aussi. Une coupure de courant breve
-            // ne doit pas gacher le travail deja fait.
+            // ne doit pas gacher le travail deja fait. Machine eteinte : c'est le
+            // seul retour visuel « hors champ » que voit le joueur (pilier 3).
+            setLit(false);
             return;
         }
 
+        // La machine avance vraiment ce tick : allumee (retour visuel « en marche »).
+        setLit(true);
         progress++;
         if (progress >= getEffectiveCycleTicks()) {
             runCycle();
             progress = 0;
         }
         setChanged();
+    }
+
+    /**
+     * Reflete l'etat « en marche » dans le blockstate ({@link AbstractMachineBlock#LIT}),
+     * qui pilote le glow du bloc. N'ecrit qu'au changement (pas de setBlock inutile a
+     * chaque tick). Meme mecanisme que le four vanilla.
+     */
+    private void setLit(boolean lit) {
+        if (level == null || level.isClientSide) {
+            return;
+        }
+        BlockState state = getBlockState();
+        if (state.hasProperty(AbstractMachineBlock.LIT)
+            && state.getValue(AbstractMachineBlock.LIT) != lit) {
+            level.setBlock(worldPosition, state.setValue(AbstractMachineBlock.LIT, lit), Block.UPDATE_ALL);
+        }
     }
 
     /**
@@ -326,6 +393,178 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         return Math.max(1, base);
     }
 
+    // --- Automatisation d'objets ---------------------------------------------
+
+    /**
+     * Slots réels où l'automatisation externe peut insérer. Vide par défaut : une
+     * machine qui ne redéfinit pas ces deux méthodes n'expose aucune capability
+     * (opt-in). Les sous-classes « traitement » et le Whetstone les redéfinissent.
+     */
+    protected int[] getAutomationInputSlots() {
+        return NO_SLOTS;
+    }
+
+    /** Slots réels d'où l'automatisation externe peut extraire (la sortie). */
+    protected int[] getAutomationOutputSlots() {
+        return NO_SLOTS;
+    }
+
+    public SideMode getSideMode(Direction side) {
+        return sideModes[side.get3DDataValue()];
+    }
+
+    public void setSideMode(Direction side, SideMode mode) {
+        sideModes[side.get3DDataValue()] = mode;
+        setChanged();
+        // La capability mise en cache par NeoForge doit être réévaluée.
+        if (level != null) {
+            level.invalidateCapabilities(worldPosition);
+        }
+    }
+
+    public void cycleSideMode(Direction side) {
+        setSideMode(side, getSideMode(side).next());
+    }
+
+    public boolean isAutoInput() {
+        return autoInput;
+    }
+
+    public boolean isAutoOutput() {
+        return autoOutput;
+    }
+
+    public void setAutoInput(boolean enabled) {
+        this.autoInput = enabled;
+        setChanged();
+    }
+
+    public void setAutoOutput(boolean enabled) {
+        this.autoOutput = enabled;
+        setChanged();
+    }
+
+    public void toggleAutoInput() {
+        setAutoInput(!autoInput);
+    }
+
+    public void toggleAutoOutput() {
+        setAutoOutput(!autoOutput);
+    }
+
+    /**
+     * Vue sidée exposée comme capability {@code ItemHandler} (voir {@code ModCapabilities}).
+     * {@code null} = pas de capability sur cette face (machine sans I/O, ou face
+     * désactivée). {@code side == null} (requête sans face) donne l'accès complet
+     * entrée+sortie.
+     */
+    @Nullable
+    public IItemHandler getItemHandler(@Nullable Direction side) {
+        int[] in = getAutomationInputSlots();
+        int[] out = getAutomationOutputSlots();
+        if (in.length == 0 && out.length == 0) {
+            return null;
+        }
+        if (side == null) {
+            return new MachineItemHandler(inventory, in, out);
+        }
+        return switch (getSideMode(side)) {
+            case DISABLED -> null;
+            case INPUT -> new MachineItemHandler(inventory, in, NO_SLOTS);
+            case OUTPUT -> new MachineItemHandler(inventory, NO_SLOTS, out);
+        };
+    }
+
+    /** Auto-I/O throttlé : pousse la sortie / tire l'entrée selon les faces configurées. */
+    public void tickAutomation() {
+        if (!(level instanceof ServerLevel serverLevel)
+            || serverLevel.getGameTime() % AUTO_INTERVAL != 0) {
+            return;
+        }
+        if (autoOutput) {
+            autoPush(serverLevel);
+        }
+        if (autoInput) {
+            autoPull(serverLevel);
+        }
+    }
+
+    private void autoPush(ServerLevel level) {
+        int[] outSlots = getAutomationOutputSlots();
+        if (outSlots.length == 0) {
+            return;
+        }
+        for (Direction dir : Direction.values()) {
+            if (getSideMode(dir) != SideMode.OUTPUT) {
+                continue;
+            }
+            IItemHandler neighbour = level.getCapability(
+                Capabilities.ItemHandler.BLOCK, worldPosition.relative(dir), dir.getOpposite());
+            if (neighbour == null) {
+                continue;
+            }
+            for (int slot : outSlots) {
+                ItemStack inSlot = inventory.getStackInSlot(slot);
+                if (inSlot.isEmpty()) {
+                    continue;
+                }
+                ItemStack remainder = ItemHandlerHelper.insertItemStacked(neighbour, inSlot.copy(), false);
+                int moved = inSlot.getCount() - remainder.getCount();
+                if (moved > 0) {
+                    inventory.extractItem(slot, moved, false);
+                }
+            }
+        }
+    }
+
+    private void autoPull(ServerLevel level) {
+        int[] inSlots = getAutomationInputSlots();
+        if (inSlots.length == 0) {
+            return;
+        }
+        for (Direction dir : Direction.values()) {
+            if (getSideMode(dir) != SideMode.INPUT) {
+                continue;
+            }
+            IItemHandler neighbour = level.getCapability(
+                Capabilities.ItemHandler.BLOCK, worldPosition.relative(dir), dir.getOpposite());
+            if (neighbour == null) {
+                continue;
+            }
+            if (pullFrom(neighbour, inSlots)) {
+                return; // un transfert par tick suffit
+            }
+        }
+    }
+
+    /** Tente un transfert depuis {@code source} vers nos slots d'entrée. Vrai si un objet a bougé. */
+    private boolean pullFrom(IItemHandler source, int[] inSlots) {
+        for (int sourceSlot = 0; sourceSlot < source.getSlots(); sourceSlot++) {
+            ItemStack available = source.extractItem(sourceSlot, 64, true);
+            if (available.isEmpty()) {
+                continue;
+            }
+            int inserted = 0;
+            ItemStack working = available.copy();
+            for (int slot : inSlots) {
+                if (working.isEmpty()) {
+                    break;
+                }
+                if (!inventory.isItemValid(slot, working)) {
+                    continue;
+                }
+                int before = working.getCount();
+                working = inventory.insertItem(slot, working, false);
+                inserted += before - working.getCount();
+            }
+            if (inserted > 0) {
+                source.extractItem(sourceSlot, inserted, false);
+                return true;
+            }
+        }
+        return false;
+    }
+
     // --- Inventaire ----------------------------------------------------------
 
     public ItemStackHandler getInventory() {
@@ -393,6 +632,14 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         tag.putBoolean("manualEnabled", manualEnabled);
         tag.putByte("redstoneMode", (byte) redstoneMode.ordinal());
         tag.putBoolean("overheatEnabled", overheatEnabled);
+
+        byte[] modes = new byte[sideModes.length];
+        for (int i = 0; i < sideModes.length; i++) {
+            modes[i] = (byte) sideModes[i].ordinal();
+        }
+        tag.putByteArray("sideModes", modes);
+        tag.putBoolean("autoInput", autoInput);
+        tag.putBoolean("autoOutput", autoOutput);
     }
 
     @Override
@@ -404,5 +651,14 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         manualEnabled = !tag.contains("manualEnabled") || tag.getBoolean("manualEnabled");
         redstoneMode = RedstoneMode.byIndex(tag.getByte("redstoneMode"));
         overheatEnabled = tag.getBoolean("overheatEnabled");
+
+        byte[] modes = tag.getByteArray("sideModes");
+        if (modes.length == sideModes.length) {
+            for (int i = 0; i < sideModes.length; i++) {
+                sideModes[i] = SideMode.byIndex(modes[i]);
+            }
+        }
+        autoInput = tag.getBoolean("autoInput");
+        autoOutput = tag.getBoolean("autoOutput");
     }
 }

@@ -1,10 +1,12 @@
 package com.veskorius.block;
 
 import com.veskorius.Veskorius;
+import java.util.function.ToIntFunction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.BrushableBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -21,6 +23,14 @@ public class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS =
         DeferredRegister.createBlocks(Veskorius.MOD_ID);
 
+    /**
+     * Glow d'une machine active : rayonne un peu quand elle avance un cycle
+     * ({@link AbstractMachineBlock#LIT}), noir à l'arrêt. Retour visuel « en marche »
+     * commun aux machines actives — voir {@code AbstractMachineBlockEntity.setLit}.
+     */
+    private static final ToIntFunction<BlockState> MACHINE_GLOW =
+        state -> state.getValue(AbstractMachineBlock.LIT) ? 7 : 0;
+
     /** Machine #1 (05-Machines.md). Bloc actif : block entity + GUI. */
     public static final DeferredBlock<ResonanceStabilizerBlock> RESONANCE_STABILIZER =
         BLOCKS.registerBlock("resonance_stabilizer",
@@ -29,7 +39,8 @@ public class ModBlocks {
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(3.5f, 6.0f)
                 .sound(SoundType.AMETHYST)
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()
+                .lightLevel(MACHINE_GLOW));
 
     /** Machine #2 (05-Machines.md). Bloc actif : block entity + GUI, consomme des Osc. */
     public static final DeferredBlock<ComponentAssemblerBlock> COMPONENT_ASSEMBLER =
@@ -39,7 +50,8 @@ public class ModBlocks {
                 .mapColor(MapColor.METAL)
                 .strength(3.5f, 6.0f)
                 .sound(SoundType.METAL)
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()
+                .lightLevel(MACHINE_GLOW));
 
     /** Machine #3 (05-Machines.md). Bloc actif : block entity + GUI. */
     public static final DeferredBlock<ResonanceWhetstoneBlock> RESONANCE_WHETSTONE =
@@ -49,7 +61,8 @@ public class ModBlocks {
                 .mapColor(MapColor.STONE)
                 .strength(2.5f, 6.0f)
                 .sound(SoundType.STONE)
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()
+                .lightLevel(MACHINE_GLOW));
 
     /**
      * Pierre veinée qui enrobe les poches de cristal (07-World-Generation.md).
@@ -110,7 +123,8 @@ public class ModBlocks {
                 .mapColor(MapColor.COLOR_CYAN)
                 .strength(3.5f, 6.0f)
                 .sound(SoundType.METAL)
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()
+                .lightLevel(MACHINE_GLOW));
 
     /**
      * Machine #22 (05-Machines.md). Bloc actif : block entity + GUI. Voie T1
@@ -123,7 +137,8 @@ public class ModBlocks {
                 .mapColor(MapColor.STONE)
                 .strength(3.5f, 6.0f)
                 .sound(SoundType.STONE)
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()
+                .lightLevel(MACHINE_GLOW));
 
     /**
      * Console d'attunement de l'Avant-poste (08-Structures.md). Générée uniquement en
@@ -149,7 +164,8 @@ public class ModBlocks {
                 .mapColor(MapColor.WOOD)
                 .strength(2.5f, 3.0f)
                 .sound(SoundType.WOOD)
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()
+                .lightLevel(MACHINE_GLOW));
 
     /** Machine #4 (05-Machines.md). Bloc passif : fournit un champ de Résonance. */
     public static final DeferredBlock<FieldEmitterBlock> FIELD_EMITTER =

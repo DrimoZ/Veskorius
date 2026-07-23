@@ -42,8 +42,17 @@ public class FluxPurifierBlockEntity extends AbstractProcessingMachineBlockEntit
     protected boolean shouldProduceResult() {
         // En surchauffe, une chance configurable (défaut 20 %) que l'entrée parte en
         // fumée sans sortie. level est forcément non nul et serveur ici (serverTick).
-        return !(isOverheatActive()
-            && level.getRandom().nextFloat() < VeskoriusConfig.overheatInputLossChance());
+        return !losesInput(isOverheatActive(),
+            VeskoriusConfig.overheatInputLossChance(), level.getRandom().nextFloat());
+    }
+
+    /**
+     * Décision pure « l'entrée est-elle perdue ce cycle ? », extraite pour être
+     * testable sans RNG : hors surchauffe jamais de perte ; en surchauffe, perte si
+     * le tirage {@code roll} (∈ [0,1)) tombe sous {@code lossChance}.
+     */
+    public static boolean losesInput(boolean overheatActive, double lossChance, double roll) {
+        return overheatActive && roll < lossChance;
     }
 
     @Override

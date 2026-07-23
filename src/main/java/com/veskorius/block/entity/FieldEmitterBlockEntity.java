@@ -8,8 +8,10 @@ import com.veskorius.recipe.EmitterFuelRecipe;
 import com.veskorius.recipe.ModRecipeTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -60,6 +62,17 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
      * Field Emitter. Le Harmonic Amplifier (T4) émettra une intensité supérieure.
      */
     private static final int FIELD_STRENGTH = 100;
+
+    /**
+     * Visualisation de la coupole de champ (pilier 3 : rendre visible l'invisible).
+     * Toutes les {@code FIELD_PULSE_INTERVAL} ticks, quelques particules apparaissent
+     * sur la sphère de portée quand l'émetteur est actif — au fil du temps elles
+     * tracent le dôme, montrant jusqu'où le champ porte sans ouvrir aucun GUI. Épars
+     * pour rester lisible et discret. Purement visuel (aucun effet serveur), non
+     * couvert par GameTest comme le reste du rendu.
+     */
+    private static final int FIELD_PULSE_INTERVAL = 40;
+    private static final int FIELD_PULSE_POINTS = 6;
 
     public static final int SLOT_FUEL = 0;
 
@@ -113,6 +126,38 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
         // exact des callbacks de cycle de vie.
         ResonanceFieldManager.register(level, pos);
         emitter.refuelIfEmpty();
+
+        // Coupole visuelle : montre la portée du champ actif (pilier 3).
+        if (level instanceof ServerLevel serverLevel && emitter.isActive()) {
+            emitter.pulseFieldDome(serverLevel, pos);
+        }
+    }
+
+    /**
+     * Émet quelques particules sur la sphère de portée. Le champ est sphérique
+     * (rayon = {@link #getRange()}, voir {@code ResonanceFieldManager}) : les points
+     * sont tirés uniformément sur cette sphère pour tracer le dôme réel, pas une
+     * approximation. Envoyées via {@link ServerLevel#sendParticles} (les joueurs
+     * proches les reçoivent), donc rien à câbler côté client.
+     */
+    private void pulseFieldDome(ServerLevel level, BlockPos pos) {
+        if (level.getGameTime() % FIELD_PULSE_INTERVAL != 0) {
+            return;
+        }
+        double r = getRange();
+        double cx = pos.getX() + 0.5;
+        double cy = pos.getY() + 0.5;
+        double cz = pos.getZ() + 0.5;
+        for (int i = 0; i < FIELD_PULSE_POINTS; i++) {
+            // Point uniforme sur la sphère : u = cos(theta) tiré uniformément.
+            double u = level.random.nextDouble() * 2.0 - 1.0;
+            double phi = level.random.nextDouble() * Math.PI * 2.0;
+            double s = Math.sqrt(1.0 - u * u);
+            double x = cx + r * s * Math.cos(phi);
+            double y = cy + r * u;
+            double z = cz + r * s * Math.sin(phi);
+            level.sendParticles(ParticleTypes.WITCH, x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
+        }
     }
 
     /**

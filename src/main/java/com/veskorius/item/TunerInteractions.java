@@ -101,18 +101,22 @@ public final class TunerInteractions {
     }
 
     /**
-     * Récupère et vide le contenu d'un bloc-entité. Trois stratégies, dans l'ordre :
-     * la capability ItemHandler (autres mods + Field Emitter), l'inventaire direct
-     * des machines du mod (qui n'exposent pas la capability), enfin l'interface
-     * {@link Container} vanilla. Statique et sans joueur pour être testable.
+     * Récupère et vide le contenu d'un bloc-entité. Stratégies, dans l'ordre :
+     * <ol>
+     *   <li>nos machines : leur <b>inventaire interne complet</b> (tous les slots,
+     *       augment compris) — surtout PAS leur capability sidée, qui est volontairement
+     *       insert-only sur les entrées pour l'automatisation et ne rendrait donc rien ;</li>
+     *   <li>autres blocs (autres mods, Field Emitter) : la capability ItemHandler ;</li>
+     *   <li>à défaut, l'interface {@link Container} vanilla.</li>
+     * </ol>
+     * Statique et sans joueur pour être testable.
      */
     public static List<ItemStack> collectContents(Level level, BlockPos pos, BlockState state, BlockEntity be) {
         List<ItemStack> contents = new ArrayList<>();
 
-        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, state, be, null);
-        if (handler == null && be instanceof AbstractMachineBlockEntity machine) {
-            handler = machine.getInventory();
-        }
+        IItemHandler handler = be instanceof AbstractMachineBlockEntity machine
+            ? machine.getInventory()
+            : level.getCapability(Capabilities.ItemHandler.BLOCK, pos, state, be, null);
 
         if (handler != null) {
             for (int slot = 0; slot < handler.getSlots(); slot++) {

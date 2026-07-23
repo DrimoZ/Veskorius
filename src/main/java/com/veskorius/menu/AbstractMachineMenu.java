@@ -2,6 +2,7 @@ package com.veskorius.menu;
 
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
 import com.veskorius.block.entity.RedstoneMode;
+import com.veskorius.block.entity.SideMode;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -85,6 +86,10 @@ public abstract class AbstractMachineMenu extends AbstractContainerMenu {
     public static final int BUTTON_MANUAL = 0;
     public static final int BUTTON_REDSTONE = 1;
     public static final int BUTTON_OVERHEAT = 2;
+    /** Boutons de config item I/O : cycle du mode d'une face (base + Direction.get3DDataValue). */
+    public static final int BUTTON_CYCLE_SIDE_BASE = 10;
+    public static final int BUTTON_AUTO_INPUT = 16;
+    public static final int BUTTON_AUTO_OUTPUT = 17;
 
     /**
      * Recoit un clic de bouton du GUI, cote SERVEUR (declenche par
@@ -93,10 +98,16 @@ public abstract class AbstractMachineMenu extends AbstractContainerMenu {
      */
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        if (id >= BUTTON_CYCLE_SIDE_BASE && id < BUTTON_CYCLE_SIDE_BASE + 6) {
+            blockEntity.cycleSideMode(net.minecraft.core.Direction.from3DDataValue(id - BUTTON_CYCLE_SIDE_BASE));
+            return true;
+        }
         switch (id) {
             case BUTTON_MANUAL -> blockEntity.toggleManual();
             case BUTTON_REDSTONE -> blockEntity.cycleRedstoneMode();
             case BUTTON_OVERHEAT -> blockEntity.toggleOverheat();
+            case BUTTON_AUTO_INPUT -> blockEntity.toggleAutoInput();
+            case BUTTON_AUTO_OUTPUT -> blockEntity.toggleAutoOutput();
             default -> {
                 return false;
             }
@@ -116,6 +127,19 @@ public abstract class AbstractMachineMenu extends AbstractContainerMenu {
 
     public boolean isOverheatEnabled() {
         return data.get(AbstractMachineBlockEntity.DATA_OVERHEAT) != 0;
+    }
+
+    /** Mode d'une face (item I/O), lu depuis la ContainerData synchronisée. */
+    public SideMode getSideMode(int faceIndex) {
+        return SideMode.byIndex(data.get(AbstractMachineBlockEntity.DATA_SIDE_BASE + faceIndex));
+    }
+
+    public boolean isAutoInput() {
+        return data.get(AbstractMachineBlockEntity.DATA_AUTO_INPUT) != 0;
+    }
+
+    public boolean isAutoOutput() {
+        return data.get(AbstractMachineBlockEntity.DATA_AUTO_OUTPUT) != 0;
     }
 
     /**

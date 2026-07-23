@@ -35,5 +35,22 @@ public final class ModCapabilities {
         // depuis un système d'automatisation, sans passer par le GUI.
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.FIELD_EMITTER.get(),
             (emitter, side) -> emitter.getFuelHandler());
+
+        // Machines actives : vue sidée de l'inventaire (item I/O configurable par face,
+        // 12-UX-and-Advancements.md). L'ÉNERGIE ne passe jamais par une capability —
+        // elle reste sans tuyaux, par champ. Défaut « façon four » : sortie sous le bloc,
+        // entrée par les autres faces (getItemHandler renvoie null pour une face désactivée).
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.RESONANCE_STABILIZER.get(),
+            (machine, side) -> machine.getItemHandler(side));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.COMPONENT_ASSEMBLER.get(),
+            (machine, side) -> machine.getItemHandler(side));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.RESONANCE_WHETSTONE.get(),
+            (machine, side) -> machine.getItemHandler(side));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.FLUX_PURIFIER.get(),
+            (machine, side) -> machine.getItemHandler(side));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CRYSTAL_CRUSHER.get(),
+            (machine, side) -> machine.getItemHandler(side));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CRYSTAL_ROOST.get(),
+            (machine, side) -> machine.getItemHandler(side));
     }
 }

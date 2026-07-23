@@ -1,6 +1,7 @@
 package com.veskorius.client.screen;
 
 import com.veskorius.Veskorius;
+import com.veskorius.block.entity.SideMode;
 import com.veskorius.menu.AbstractMachineMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -58,6 +59,19 @@ public abstract class AbstractMachineScreen<T extends AbstractMachineMenu> exten
     private static final int COLOR_RS_NO_SIGNAL = 0xFF803030; // rouge sombre : requiert l'absence
     private static final int COLOR_OVERHEAT_ON = 0xFFD87A20;  // orange : surchauffe active
     private static final int COLOR_OVERHEAT_OFF = 0xFF555555;
+    private static final int COLOR_CONFIG_ON = 0xFF3B6C8C;    // bleu : panneau config ouvert
+    private static final int COLOR_CONFIG_OFF = 0xFF555555;
+
+    // Modes de face (item I/O).
+    private static final int COLOR_SIDE_DISABLED = 0xFF555555;
+    private static final int COLOR_SIDE_INPUT = 0xFF3B8C3B;   // vert : entrée
+    private static final int COLOR_SIDE_OUTPUT = 0xFF2A6CA0;  // bleu : sortie
+
+    private static final String[] FACE_LETTERS = {"D", "U", "N", "S", "W", "E"};
+    private static final String[] FACE_KEYS = {"down", "up", "north", "south", "west", "east"};
+
+    /** Panneau de config item I/O ouvert (client uniquement, ne touche pas le serveur). */
+    private boolean showConfig = false;
 
     @Override
     protected void init() {
@@ -67,6 +81,7 @@ public abstract class AbstractMachineScreen<T extends AbstractMachineMenu> exten
         this.inventoryLabelY = this.imageHeight - 94;
 
         addControlButtons();
+        addConfigButtons();
     }
 
     private void addControlButtons() {
@@ -104,6 +119,68 @@ public abstract class AbstractMachineScreen<T extends AbstractMachineMenu> exten
                 ? "gui.veskorius.overheat_on" : "gui.veskorius.overheat_off"),
             menu::supportsOverheat,
             () -> sendButton(AbstractMachineMenu.BUTTON_OVERHEAT)));
+
+        // Config item I/O : "C", ouvre/ferme le panneau de configuration des faces.
+        addRenderableWidget(new MachineControlButton(x, y + 3 * step,
+            () -> "C",
+            () -> showConfig ? COLOR_CONFIG_ON : COLOR_CONFIG_OFF,
+            () -> Component.translatable("gui.veskorius.config"),
+            () -> true,
+            () -> showConfig = !showConfig));
+    }
+
+    /**
+     * Panneau de config item I/O (12-UX-and-Advancements.md) : 6 boutons de face (mode
+     * Désactivé/Entrée/Sortie, couleur + tooltip) + 2 bascules auto. Visibles seulement
+     * quand le panneau est ouvert. Layout placeholder : la passe GUI (Phase 6) posera
+     * un vrai patron de faces. L'énergie ne passe jamais par ici — objets uniquement.
+     */
+    private void addConfigButtons() {
+        int step = MachineControlButton.SIZE + BUTTONS_GAP;
+        int gx = leftPos + 116;
+        int gy = topPos + 16;
+
+        for (int i = 0; i < 6; i++) {
+            int face = i;
+            int bx = gx + (i % 3) * step;
+            int by = gy + (i / 3) * step;
+            addRenderableWidget(new MachineControlButton(bx, by,
+                () -> FACE_LETTERS[face],
+                () -> sideColor(menu.getSideMode(face)),
+                () -> Component.translatable("gui.veskorius.side." + FACE_KEYS[face])
+                    .append(" — ").append(Component.translatable(
+                        "gui.veskorius.sidemode." + menu.getSideMode(face).name().toLowerCase())),
+                () -> showConfig,
+                () -> sendButton(AbstractMachineMenu.BUTTON_CYCLE_SIDE_BASE + face)));
+        }
+
+        int autoY = gy + 2 * step;
+        addRenderableWidget(new MachineControlButton(gx, autoY,
+            () -> "↓",
+            () -> menu.isAutoInput() ? COLOR_ON : COLOR_OFF,
+            () -> Component.translatable("gui.veskorius.auto_input",
+                onOff(menu.isAutoInput())),
+            () -> showConfig,
+            () -> sendButton(AbstractMachineMenu.BUTTON_AUTO_INPUT)));
+        addRenderableWidget(new MachineControlButton(gx + step, autoY,
+            () -> "↑",
+            () -> menu.isAutoOutput() ? COLOR_ON : COLOR_OFF,
+            () -> Component.translatable("gui.veskorius.auto_output",
+                onOff(menu.isAutoOutput())),
+            () -> showConfig,
+            () -> sendButton(AbstractMachineMenu.BUTTON_AUTO_OUTPUT)));
+    }
+
+    private static int sideColor(SideMode mode) {
+        return switch (mode) {
+            case DISABLED -> COLOR_SIDE_DISABLED;
+            case INPUT -> COLOR_SIDE_INPUT;
+            case OUTPUT -> COLOR_SIDE_OUTPUT;
+        };
+    }
+
+    private static Component onOff(boolean on) {
+        return Component.translatable(on ? "gui.veskorius.on" : "gui.veskorius.off");
     }
 
     private void sendButton(int buttonId) {

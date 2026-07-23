@@ -49,6 +49,18 @@ public abstract class AbstractProcessingMachineBlockEntity extends AbstractMachi
         this.outputSlot = outputSlot;
     }
 
+    // --- Automatisation (item I/O) : entrées = slots d'entrée, sortie = slot de sortie ---
+
+    @Override
+    protected int[] getAutomationInputSlots() {
+        return inputSlots;
+    }
+
+    @Override
+    protected int[] getAutomationOutputSlots() {
+        return new int[] {outputSlot};
+    }
+
     // --- Recherche de recette ------------------------------------------------
 
     @Override

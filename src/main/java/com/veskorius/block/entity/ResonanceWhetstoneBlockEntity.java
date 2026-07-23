@@ -38,8 +38,21 @@ public class ResonanceWhetstoneBlockEntity extends AbstractMachineBlockEntity {
     private RecipeHolder<WhetstoneRecipe> cachedRecipe;
     private boolean recipeDirty = true;
 
+    private static final int[] AUTOMATION_INPUTS = {SLOT_TOOL, SLOT_CRYSTAL};
+    private static final int[] AUTOMATION_OUTPUTS = {SLOT_OUTPUT};
+
     public ResonanceWhetstoneBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.RESONANCE_WHETSTONE.get(), pos, state, SLOT_COUNT);
+    }
+
+    @Override
+    protected int[] getAutomationInputSlots() {
+        return AUTOMATION_INPUTS;
+    }
+
+    @Override
+    protected int[] getAutomationOutputSlots() {
+        return AUTOMATION_OUTPUTS;
     }
 
     // --- Recherche de recette ------------------------------------------------

@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
@@ -42,9 +43,21 @@ public abstract class AbstractMachineBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
+    /**
+     * Vrai quand la machine avance réellement un cycle ce tick — piloté par
+     * {@link AbstractMachineBlockEntity}. Sert de retour visuel dans le monde
+     * (glow via {@code lightLevel}) : une machine allumée travaille, une machine
+     * éteinte est à l'arrêt (coupée, sans ingrédient, sortie pleine, ou — pour les
+     * machines à Osc — hors champ). C'est le seul retour « pas d'énergie » lisible
+     * sans ouvrir le GUI, cœur invisible du mod rendu visible (pilier 3).
+     */
+    public static final BooleanProperty LIT = BlockStateProperties.LIT;
+
     protected AbstractMachineBlock(Properties properties) {
         super(properties);
-        registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
+        registerDefaultState(getStateDefinition().any()
+            .setValue(FACING, Direction.NORTH)
+            .setValue(LIT, Boolean.FALSE));
     }
 
     /** Type de block entity de cette machine, utilise pour brancher le ticker. */
@@ -54,7 +67,7 @@ public abstract class AbstractMachineBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, LIT);
     }
 
     @Override
