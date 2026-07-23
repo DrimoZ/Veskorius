@@ -24,6 +24,7 @@ public class ModRecipeTypes {
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> ROOSTING = register("roosting");
     public static final DeferredHolder<RecipeType<?>, RecipeType<WhetstoneRecipe>> SHARPENING = register("sharpening");
     public static final DeferredHolder<RecipeType<?>, RecipeType<EmitterFuelRecipe>> FUELING = register("fueling");
+    public static final DeferredHolder<RecipeType<?>, RecipeType<DampingAgentRecipe>> DAMPING = register("damping");
 
     private static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> register(String name) {
         return RECIPE_TYPES.register(name,

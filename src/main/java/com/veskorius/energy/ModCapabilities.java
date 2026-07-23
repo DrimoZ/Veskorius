@@ -59,5 +59,7 @@ public final class ModCapabilities {
             (machine, side) -> machine.getItemHandler(side));
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CRYSTAL_ROOST.get(),
             (machine, side) -> machine.getItemHandler(side));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.DAMPING_ARRAY.get(),
+            (machine, side) -> machine.getItemHandler(side));
     }
 }

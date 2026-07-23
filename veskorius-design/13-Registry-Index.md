@@ -145,10 +145,10 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 | Registry name | Type | Défini dans | Statut |
 |---|---|---|---|
 | `tunable_field_emitter` | bloc (machine) | 05, 06 | ✅ codé — choix de bande au Tuner (mode Accorder) ; hérite du Field Emitter (carburant, réserve, GUI, coupole) |
-| `damping_array` | bloc (machine) | 05, 06 | À coder (Phase 2) — absorbe la dissonance, se sature |
+| `damping_array` | bloc (machine) | 05, 06 | ✅ codé — absorbe la dissonance du champ le plus pollué, consomme un agent (`veskorius:damping`), cristallise le déchet. Autonome (0 Osc) à dessein |
 | `reclaimer` | bloc (machine) | 05 | À coder (Phase 2) — re-stabilise les déchets |
 | `advanced_assembler` | bloc (machine) | 05 | À coder (Phase 2) — produit le `resonance_matrix` |
-| `resonance_sludge` | item | 04 | À coder (Phase 2) — dissonance cristallisée |
+| `resonance_sludge` | item | 04 | ✅ codé — dissonance cristallisée, produite par le Damping Array. Débouchés (Reclaimer, engrais) en Phase 2 |
 | `resonance_matrix` | item | 04, 05 | À coder (Phase 2) — intermédiaire requis au T4 |
 | `efficiency_core` / `yield_core` / `tuning_core` / `damping_core` | items (augments) | 04, 05 | À coder (Phase 2) |
 | `attunement_lens` | item (optionnel) | 12 | À coder — porte le HUD de champ (sinon le Locator fait office) |

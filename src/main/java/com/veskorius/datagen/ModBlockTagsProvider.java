@@ -30,6 +30,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             .add(ModBlocks.TUNABLE_FIELD_EMITTER.get())
             .add(ModBlocks.CRYSTAL_CRUSHER.get())
             .add(ModBlocks.CRYSTAL_ROOST.get())
+            .add(ModBlocks.DAMPING_ARRAY.get())
             .add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get())
             .add(ModBlocks.RESONANCE_VEINED_STONE.get())
             .add(ModBlocks.RAW_FLUX_DEPOSIT.get())
@@ -43,6 +44,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             .add(ModBlocks.TUNABLE_FIELD_EMITTER.get())
             .add(ModBlocks.CRYSTAL_CRUSHER.get())
             .add(ModBlocks.CRYSTAL_ROOST.get())
+            .add(ModBlocks.DAMPING_ARRAY.get())
             .add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get())
             .add(ModBlocks.RESONANCE_VEINED_STONE.get());
     }

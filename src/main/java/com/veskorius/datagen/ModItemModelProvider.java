@@ -25,6 +25,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.RESONANCE_STORAGE_CELL.get());
         basicItem(ModItems.RESONANCE_LOCATOR.get());
         basicItem(ModItems.RESONANCE_SPORE.get());
+        basicItem(ModItems.RESONANCE_SLUDGE.get());
         basicItem(ModItems.RESONANCE_BLUEPRINT.get());
         basicItem(ModItems.CODEX_FRAGMENT.get());
         basicItem(ModItems.FOSSILIZED_RATION.get());
@@ -49,5 +50,6 @@ public class ModItemModelProvider extends ItemModelProvider {
         withExistingParent("tunable_field_emitter", modLoc("block/tunable_field_emitter"));
         withExistingParent("crystal_crusher", modLoc("block/crystal_crusher"));
         withExistingParent("crystal_roost", modLoc("block/crystal_roost"));
+        withExistingParent("damping_array", modLoc("block/damping_array"));
     }
 }

@@ -49,6 +49,12 @@ public class ModBlockEntities {
                 .of(TunableFieldEmitterBlockEntity::new, ModBlocks.TUNABLE_FIELD_EMITTER.get())
                 .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DampingArrayBlockEntity>>
+        DAMPING_ARRAY = BLOCK_ENTITIES.register("damping_array",
+            () -> BlockEntityType.Builder
+                .of(DampingArrayBlockEntity::new, ModBlocks.DAMPING_ARRAY.get())
+                .build(null));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CrystalCrusherBlockEntity>>
         CRYSTAL_CRUSHER = BLOCK_ENTITIES.register("crystal_crusher",
             () -> BlockEntityType.Builder

@@ -79,6 +79,8 @@ public class Veskorius {
                 output.accept(ModItems.TUNABLE_FIELD_EMITTER_ITEM.get());
                 output.accept(ModItems.CRYSTAL_CRUSHER_ITEM.get());
                 output.accept(ModItems.CRYSTAL_ROOST_ITEM.get());
+                output.accept(ModItems.DAMPING_ARRAY_ITEM.get());
+                output.accept(ModItems.RESONANCE_SLUDGE.get());
             })
             .build());
 

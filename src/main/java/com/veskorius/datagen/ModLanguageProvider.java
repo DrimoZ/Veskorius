@@ -58,6 +58,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.TUNABLE_FIELD_EMITTER, "Tunable Field Emitter");
         addBlock(ModBlocks.CRYSTAL_CRUSHER, "Crystal Crusher");
         addBlock(ModBlocks.CRYSTAL_ROOST, "Crystal Roost");
+        addBlock(ModBlocks.DAMPING_ARRAY, "Damping Array");
         addBlock(ModBlocks.RESONANCE_CRYSTAL_CLUSTER, "Resonance Crystal Cluster");
         addBlock(ModBlocks.RESONANCE_VEINED_STONE, "Resonance Veined Stone");
         addBlock(ModBlocks.RAW_FLUX_DEPOSIT, "Raw Flux Deposit");
@@ -103,6 +104,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.veskorius.dir.w", "west");
         add("gui.veskorius.dir.nw", "north-west");
         addItem(ModItems.RESONANCE_SPORE, "Resonance Spore");
+        addItem(ModItems.RESONANCE_SLUDGE, "Resonance Sludge");
         addItem(ModItems.CRYSTAL_STRIDER_SPAWN_EGG, "Crystal Strider Spawn Egg");
 
         addItem(ModItems.CUSTODE_ALLOY_FRAGMENT, "Custode Alloy Fragment");

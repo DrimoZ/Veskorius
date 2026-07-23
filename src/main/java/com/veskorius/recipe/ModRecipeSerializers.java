@@ -40,4 +40,7 @@ public class ModRecipeSerializers {
 
     public static final DeferredHolder<RecipeSerializer<?>, EmitterFuelRecipeSerializer> FUELING =
         RECIPE_SERIALIZERS.register("fueling", EmitterFuelRecipeSerializer::new);
+
+    public static final DeferredHolder<RecipeSerializer<?>, DampingAgentRecipeSerializer> DAMPING =
+        RECIPE_SERIALIZERS.register("damping", DampingAgentRecipeSerializer::new);
 }

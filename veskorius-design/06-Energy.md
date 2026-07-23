@@ -99,7 +99,7 @@ jamais par une prise. Aucune conversion cachée.
 > saute des ticks), **flag de recette `stable`** (les 5 recettes T1 le portent), **mode « Accorder »
 > du Tuner**, **Émetteur Accordable** (`tunable_field_emitter` — choix de bande, accordable au
 > Tuner), et **coloration de la coupole par bande** (elle grisaille avec la dissonance).
-> **Reste à coder** : Damping Array, coloration du glow des machines par bande, HUD de champ +
+> **Reste à coder** : coloration du glow des machines par bande, HUD de champ +
 > Curios, décharge de résonance (AoE). Le désaccord ne devient courant qu'avec les machines T3
 > (Phase 2) — aujourd'hui il s'obtient en accordant volontairement une machine sur une autre bande.
 

@@ -25,6 +25,8 @@ public final class HarmonicsConfig {
     public static final ModConfigSpec.IntValue DISSONANCE_CAPACITY;
     public static final ModConfigSpec.DoubleValue DISSONANCE_UNSTABLE_THRESHOLD;
     public static final ModConfigSpec.IntValue DISSONANCE_DECAY_PER_SECOND;
+    public static final ModConfigSpec.IntValue DAMPING_RANGE;
+    public static final ModConfigSpec.IntValue DAMPING_CYCLE_TICKS;
 
     static {
         ModConfigSpec.Builder b = new ModConfigSpec.Builder();
@@ -75,6 +77,20 @@ public final class HarmonicsConfig {
 
         b.pop();
 
+        b.comment("Damping Array: the infrastructure that absorbs dissonance from a field.")
+            .push("damping");
+
+        DAMPING_RANGE = b
+            .comment("Radius (blocks) within which a Damping Array cleans emitters. Default: 16.")
+            .defineInRange("dampingRange", 16, 1, 128);
+
+        DAMPING_CYCLE_TICKS = b
+            .comment("Ticks per damping cycle (one agent consumed, one sludge produced).",
+                "Default: 100 (5 s).")
+            .defineInRange("dampingCycleTicks", 100, 1, 100_000);
+
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -106,5 +122,13 @@ public final class HarmonicsConfig {
 
     public static int dissonanceDecayPerSecond() {
         return DISSONANCE_DECAY_PER_SECOND.getAsInt();
+    }
+
+    public static int dampingRange() {
+        return DAMPING_RANGE.getAsInt();
+    }
+
+    public static int dampingCycleTicks() {
+        return DAMPING_CYCLE_TICKS.getAsInt();
     }
 }

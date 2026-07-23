@@ -33,6 +33,7 @@ public class ClientModEvents {
         event.register(ModMenuTypes.FIELD_EMITTER.get(), FieldEmitterScreen::new);
         event.register(ModMenuTypes.CRYSTAL_CRUSHER.get(), CrystalCrusherScreen::new);
         event.register(ModMenuTypes.CRYSTAL_ROOST.get(), CrystalRoostScreen::new);
+        event.register(ModMenuTypes.DAMPING_ARRAY.get(), com.veskorius.client.screen.DampingArrayScreen::new);
     }
 
     @SubscribeEvent

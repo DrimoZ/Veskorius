@@ -3,6 +3,7 @@ package com.veskorius.gametest;
 import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.ComponentAssemblerBlockEntity;
+import com.veskorius.block.entity.DampingArrayBlockEntity;
 import com.veskorius.block.entity.FieldEmitterBlockEntity;
 import com.veskorius.block.entity.FluxPurifierBlockEntity;
 import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
@@ -36,6 +37,7 @@ public class HarmonicsGameTests {
     private static final BlockPos EMITTER = new BlockPos(10, 1, 10);
     private static final BlockPos PURIFIER = new BlockPos(10, 1, 8);
     private static final BlockPos ASSEMBLER = new BlockPos(10, 1, 12);
+    private static final BlockPos DAMPER = new BlockPos(10, 1, 14);
 
     /** Pose un Field Emitter chargé (bande Fondamentale par défaut). */
     private static void chargedEmitter(GameTestHelper helper) {
@@ -199,6 +201,66 @@ public class HarmonicsGameTests {
                 helper.assertTrue(purifier.getData().get(
                         com.veskorius.block.entity.AbstractMachineBlockEntity.DATA_PROGRESS) > 0,
                     "La machine accordée doit tourner normalement");
+            })
+            .thenSucceed();
+    }
+
+    /**
+     * Le Damping Array nettoie le champ : il consomme un agent, retire sa valeur en
+     * dissonance et <b>cristallise le déchet</b>. C'est la boucle d'entretien complète.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 250)
+    public static void dampingArrayCleansFieldAndProducesSludge(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                emitter.addDissonance(1000);
+
+                helper.setBlock(DAMPER, ModBlocks.DAMPING_ARRAY.get());
+                DampingArrayBlockEntity damper = helper.getBlockEntity(DAMPER);
+                damper.getInventory().insertItem(DampingArrayBlockEntity.SLOT_AGENT,
+                    new ItemStack(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 4), false);
+            })
+            .thenExecuteAfter(HarmonicsConfig.dampingCycleTicks() + 10, () -> {
+                FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                DampingArrayBlockEntity damper = helper.getBlockEntity(DAMPER);
+
+                helper.assertTrue(emitter.getDissonance() < 1000,
+                    "Le Damping Array doit avoir retiré de la dissonance, vaut : "
+                        + emitter.getDissonance());
+                helper.assertTrue(
+                    damper.getInventory().getStackInSlot(DampingArrayBlockEntity.SLOT_OUTPUT)
+                        .is(ModItems.RESONANCE_SLUDGE.get()),
+                    "La dissonance retirée doit se cristalliser en resonance_sludge");
+                helper.assertTrue(
+                    damper.getInventory().getStackInSlot(DampingArrayBlockEntity.SLOT_AGENT)
+                        .getCount() < 4,
+                    "Un agent de damping doit avoir été consommé");
+            })
+            .thenSucceed();
+    }
+
+    /** Champ propre : l'Array reste inerte et ne gaspille pas son agent. */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 250)
+    public static void dampingArrayIdlesOnCleanField(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper); // aucune dissonance
+                helper.setBlock(DAMPER, ModBlocks.DAMPING_ARRAY.get());
+                DampingArrayBlockEntity damper = helper.getBlockEntity(DAMPER);
+                damper.getInventory().insertItem(DampingArrayBlockEntity.SLOT_AGENT,
+                    new ItemStack(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 4), false);
+            })
+            .thenExecuteAfter(HarmonicsConfig.dampingCycleTicks() + 10, () -> {
+                DampingArrayBlockEntity damper = helper.getBlockEntity(DAMPER);
+                helper.assertTrue(
+                    damper.getInventory().getStackInSlot(DampingArrayBlockEntity.SLOT_AGENT)
+                        .getCount() == 4,
+                    "Sur un champ propre, aucun agent ne doit être consommé");
+                helper.assertTrue(
+                    damper.getInventory().getStackInSlot(DampingArrayBlockEntity.SLOT_OUTPUT).isEmpty(),
+                    "Sur un champ propre, aucun déchet ne doit être produit");
             })
             .thenSucceed();
     }

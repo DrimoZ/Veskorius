@@ -44,4 +44,8 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<CrystalRoostMenu>>
         CRYSTAL_ROOST = MENUS.register("crystal_roost",
             () -> IMenuTypeExtension.create(CrystalRoostMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<DampingArrayMenu>>
+        DAMPING_ARRAY = MENUS.register("damping_array",
+            () -> IMenuTypeExtension.create(DampingArrayMenu::new));
 }

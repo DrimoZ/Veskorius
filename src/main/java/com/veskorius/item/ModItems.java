@@ -65,6 +65,14 @@ public class ModItems {
         ITEMS.registerSimpleItem("resonance_catalyst_core", new Item.Properties().stacksTo(64));
 
     /**
+     * Dissonance <b>cristallisée</b> (04-Materials.md, 06-Energy.md) : ce que le Damping
+     * Array extrait d'un champ pollué. Ce n'est pas un rebut anodin — c'est la substance
+     * même de l'Effondrement. Ses débouchés (Reclaimer, engrais) arrivent en Phase 2.
+     */
+    public static final DeferredItem<Item> RESONANCE_SLUDGE =
+        ITEMS.registerSimpleItem("resonance_sludge", new Item.Properties().stacksTo(64));
+
+    /**
      * Spore de résonance (04-Materials.md, 09-Entities.md) : nourriture de
      * reproduction du Fileur de Cristal. Sa récolte est implémentée comme un état
      * {@code spored} sur le Resonance Veined Stone (pousse en faible luminosité sur
@@ -171,6 +179,9 @@ public class ModItems {
 
     public static final DeferredItem<BlockItem> CRYSTAL_CRUSHER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_CRUSHER);
+
+    public static final DeferredItem<BlockItem> DAMPING_ARRAY_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.DAMPING_ARRAY);
 
     public static final DeferredItem<BlockItem> CRYSTAL_ROOST_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_ROOST);

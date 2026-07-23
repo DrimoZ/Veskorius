@@ -317,6 +317,71 @@ codées et vertes, pour rendre lisible le cœur invisible du mod (pilier 3) sans
 - **GameTest dans `src/main/java`** : ils partiront dans le jar de release. Sans conséquence
   maintenant, à isoler dans un sourceSet dédié avant la Phase 7 (publication).
 
+## Backlog consolidé (2026-07-23) — ce qui reste, et quand
+
+Synthèse de tout ce qui a été décidé lors de la passe de révision (`16`) et de la conception des
+Harmoniques (`06`). **C'est la liste de référence** ; chaque item pointe le doc qui le spécifie.
+
+### Bloc A — À FINIR AVANT d'ouvrir la Phase 2 (fondations transversales)
+
+Ces briques sont transverses : la Phase 2 s'appuie dessus, la coder avant serait la refaire.
+
+| # | Chantier | Spec | État |
+|---|---|---|---|
+| A0 | Découpage des configs par thème | `14` | ✅ **fait** |
+| A1 | Harmoniques : bandes, accord/désaccord, dissonance, `stable`, mode Accorder | `06` | ✅ **fait** |
+| A2 | Harmoniques : Émetteur Accordable + coupole colorée par bande | `06` | ✅ **fait** |
+| A3 | Harmoniques : **Damping Array** + agent de damping data-driven + `resonance_sludge` | `06`, `04` | ✅ **fait** |
+| A4 | Harmoniques : **glow des machines coloré par bande** (clignotant si désaccordé) | `06`, `12` | à faire |
+| A5 | Harmoniques : **HUD de champ** (bande / réserve / dissonance), objet en inventaire ou slot **Curios** | `12`, `10` | à faire |
+| A6 | Harmoniques : **décharge de résonance** (AoE au maximum de dissonance) | `06` | à faire |
+| A7 | **Migration des structures en jigsaw** + `veskorius-structures.toml` + layouts réels de l'Habitation et de l'Avant-poste | `08`, `16` §2 | à faire |
+| A8 | **Biome `resonant_deeps`** + gaz (MobEffect, intensité par strate, intérieurs scellés) | `07`, `16` §3 | à faire |
+| A9 | **Augments multi-slots** + règles de cumul en config | `05`, `14` | à faire |
+
+> A7 et A8 sont les deux plus gros. A7 débloque au passage le **mode Structures du Locator** (déjà
+> codé, en sommeil tant qu'aucune structure n'est taguée `#veskorius:locatable`).
+
+### Bloc B — Phase 2 (T3) proprement dite
+
+Contenu T3, une fois le bloc A posé. Ordre détaillé dans la section Phase 2 ci-dessous, enrichi de :
+
+- **Matériaux** : alliages structurel/conductif + bloc, `resonance_matrix`, `concentrated_flux`,
+  `dampening_alloy`, `resonance_glass`, `ancient_conduit_stone` (`04`).
+- **Machines** : Alloy Forge (+ tampon de Slag) → Slag Vent ; Relay (+ chaînage et ligne de mire) ;
+  Structural Synthesizer ; **Advanced Assembler** ; **Reclaimer** (usages des déchets) ; Deep Crystal
+  Driller (+ veines profondes) ; Flux Compressor (+ Concentrated Flux comme agent de damping premium).
+- **Augments variés** : Efficiency / Yield / Tuning / Damping Core (`05`).
+- **Machines à bande** : les machines T3 portent une bande — c'est là que le désaccord devient une
+  situation courante à gérer.
+- **Structures & mobs** : Sigma Laboratory + **Custode Lourd** ; Poste de Garde + Custode standard.
+- **Outils/armure** en Alliage Veskorien, dont **réduction du gaz** (`04`, `16` §3).
+- **Field Surveyor** (visualisation de couverture de champ).
+- **Locator** : portée ×2 sur un type de structure déjà visité (`16` §1).
+
+### Bloc C — Phases ultérieures (inchangées, rappel)
+
+- **Phase 3 (T4)** : Harmonic Amplifier (dérive **unifiée** avec la dérive harmonique, `06`), Deep
+  Synthesis Chamber, Extraction Array, Network Hub, Archive Régionale + Custode Archiviste, Orage de
+  Résonance, agriculture (`ancient_seed`, `resonance_bloom`, `luminous_extract`).
+- **Phase 4 (T5)** : Convergence Core, Failles, Rift Anchor/Extractor/Ward, Gardien de Faille,
+  Rift-Ward Plate.
+- **Phase 5** : intégrations (JEI/EMI complet, Thaumcraft, Create, AE2, Mekanism ; **Curios** est
+  amorcé par A5).
+- **Phase 6** : passe visuelle — textures, refonte des GUI, **patron de faces en croix** du panneau
+  item I/O (aujourd'hui une grille placeholder), icône de surchauffe, indicateurs.
+- **Phase 7** : publication — dont **isoler les GameTest dans un sourceSet dédié** (ils partiraient
+  sinon dans le jar de release).
+
+### Bloc D — Points ouverts (décisions, pas du code)
+
+| Sujet | Statut |
+|---|---|
+| **Gating par blueprint** | **CONTESTÉ** — le porteur ne l'aime pas. Ne rien bâtir dessus. Session dédiée à prévoir (`03`, `16` §9) |
+| Locator : gating de l'upgrade « tier 2 » | ouvert (`16` §1) |
+| Biome : nom définitif, rareté, forme exacte de l'effet de gaz | ouvert (`16` §3) |
+| Quelles machines portent une bande / sont « lourdes » | ouvert — à trancher en même temps que les machines T3 |
+
 ## Phase 2 — Réseau régional T3
 
 > **Révision 2026-07-23 — voir `16-Revision-and-Expansion.md` et `06` (Harmoniques).** La Phase 2 est

@@ -152,6 +152,38 @@ public final class ResonanceFieldManager {
     }
 
     /**
+     * Champ le <b>plus pollué</b> dans un rayon, ou {@code null} si tout est propre.
+     * Sert au Damping Array : il s'attaque en priorité au pire foyer de dissonance,
+     * plutôt qu'au plus proche. Contrairement à {@link #findSource}, un émetteur à sec
+     * ou instable compte quand même — c'est justement celui qu'il faut nettoyer.
+     */
+    @org.jetbrains.annotations.Nullable
+    public static IResonanceField mostDissonantSource(ServerLevel level, BlockPos from, int maxRange) {
+        Set<BlockPos> set = EMITTERS.get(level.dimension());
+        if (set == null || set.isEmpty()) {
+            return null;
+        }
+        long rangeSqr = (long) maxRange * maxRange;
+        IResonanceField worst = null;
+        int worstDissonance = 0;
+        for (BlockPos pos : set.toArray(BlockPos[]::new)) {
+            if (!(level.getBlockEntity(pos) instanceof IResonanceField field)) {
+                set.remove(pos);
+                continue;
+            }
+            if (pos.distSqr(from) > rangeSqr) {
+                continue;
+            }
+            int dissonance = field.getDissonance();
+            if (dissonance > worstDissonance) {
+                worstDissonance = dissonance;
+                worst = field;
+            }
+        }
+        return worst;
+    }
+
+    /**
      * Émetteur actif le plus proche de {@code from} dans un rayon de {@code maxRange}
      * blocs, ou {@code null}. Sert au Resonance Locator (détection de signature de
      * champ, 07-World-Generation.md). Parcourt l'index — pas de scan de blocs.

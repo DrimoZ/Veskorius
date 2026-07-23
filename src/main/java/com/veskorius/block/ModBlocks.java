@@ -167,6 +167,20 @@ public class ModBlocks {
                 .requiresCorrectToolForDrops()
                 .lightLevel(MACHINE_GLOW));
 
+    /**
+     * Damping Array (06-Energy.md) : absorbe la dissonance d'un champ, en consommant un
+     * agent de damping et en cristallisant le déchet. Autonome (0 Osc) — voir la BE.
+     */
+    public static final DeferredBlock<DampingArrayBlock> DAMPING_ARRAY =
+        BLOCKS.registerBlock("damping_array",
+            DampingArrayBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_GRAY)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .lightLevel(MACHINE_GLOW));
+
     /** Machine #4 (05-Machines.md). Bloc passif : fournit un champ de Résonance. */
     public static final DeferredBlock<FieldEmitterBlock> FIELD_EMITTER =
         BLOCKS.registerBlock("field_emitter",

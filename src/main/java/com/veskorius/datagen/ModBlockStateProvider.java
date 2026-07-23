@@ -29,6 +29,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
             cubeAll(ModBlocks.TUNABLE_FIELD_EMITTER.get()));
         horizontalBlock(ModBlocks.CRYSTAL_CRUSHER.get(), cubeAll(ModBlocks.CRYSTAL_CRUSHER.get()));
         horizontalBlock(ModBlocks.CRYSTAL_ROOST.get(), cubeAll(ModBlocks.CRYSTAL_ROOST.get()));
+        horizontalBlock(ModBlocks.DAMPING_ARRAY.get(), cubeAll(ModBlocks.DAMPING_ARRAY.get()));
 
         // Blocs naturels : cubes uniformes simples.
         simpleBlockWithItem(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get(),

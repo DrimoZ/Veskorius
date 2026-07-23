@@ -271,12 +271,13 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
         return dissonance;
     }
 
+    /** Ajoute (ou retire, avec un montant négatif — c'est ainsi que le Damping Array purge). */
     @Override
     public void addDissonance(int amount) {
-        if (amount <= 0) {
+        if (amount == 0) {
             return;
         }
-        int capped = Math.min(dissonance + amount, HarmonicsConfig.dissonanceCapacity());
+        int capped = Math.clamp(dissonance + amount, 0, HarmonicsConfig.dissonanceCapacity());
         if (capped != dissonance) {
             dissonance = capped;
             setChanged();

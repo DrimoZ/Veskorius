@@ -159,6 +159,20 @@ public class ModRecipeProvider extends RecipeProvider {
                 has(ModItems.RESONANCE_COMPONENT.get()))
             .save(recipeOutput);
 
+        // Damping Array : 4 Iron + 2 Refined Crystal + 1 Redstone Block (+ blueprint
+        // rendu). L'infrastructure d'entretien du réseau (06-Energy.md).
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.DAMPING_ARRAY.get())
+            .pattern("IRI")
+            .pattern("IBI")
+            .pattern("P  ")
+            .define('I', ModTags.Items.IRON_SUBSTITUTES)
+            .define('R', ModItems.REFINED_RESONANCE_CRYSTAL.get())
+            .define('B', Items.REDSTONE_BLOCK)
+            .define('P', ModItems.RESONANCE_BLUEPRINT.get())
+            .unlockedBy(getHasName(ModItems.REFINED_RESONANCE_CRYSTAL.get()),
+                has(ModItems.REFINED_RESONANCE_CRYSTAL.get()))
+            .save(recipeOutput);
+
         // Émetteur Accordable : un Field Emitter + 2 Refined Crystal (l'accord demande
         // du cristal raffiné) + blueprint T2 rendu. Upgrade, pas une machine de plus.
         net.minecraft.data.recipes.ShapelessRecipeBuilder
@@ -292,6 +306,12 @@ public class ModRecipeProvider extends RecipeProvider {
         // en conséquence), en retire ou change les valeurs — sans une ligne de code.
         EmitterFuelRecipeBuilder.fuel(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 4000)
             .save(recipeOutput, machineRecipe("fueling/stable_crystal"));
+
+        // Agents de damping, data-driven (06-Energy.md). Le Refined Crystal ouvre la
+        // voie dès le T2 ; le Concentrated Flux (T3) prendra le relais avec une valeur
+        // bien supérieure — un simple JSON de plus, aucune ligne de code.
+        DampingAgentRecipeBuilder.agent(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 500)
+            .save(recipeOutput, machineRecipe("damping/refined_crystal"));
     }
 
     private static ResourceLocation machineRecipe(String path) {

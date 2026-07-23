@@ -61,6 +61,7 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.ATTUNEMENT_CONSOLE, "Console d'Attunement");
         addBlock(ModBlocks.CRYSTAL_CRUSHER, "Broyeur de Cristaux");
         addBlock(ModBlocks.CRYSTAL_ROOST, "Perchoir à Cristaux");
+        addBlock(ModBlocks.DAMPING_ARRAY, "Matrice d'Amortissement");
 
         // Objets.
         addItem(ModItems.RAW_RESONANCE_CRYSTAL, "Cristal de Résonance Brut");
@@ -80,6 +81,7 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addItem(ModItems.RESONANCE_STORAGE_CELL, "Cellule de Stockage de Résonance");
         addItem(ModItems.RESONANCE_LOCATOR, "Localisateur de Résonance");
         addItem(ModItems.RESONANCE_SPORE, "Spore de Résonance");
+        addItem(ModItems.RESONANCE_SLUDGE, "Boue de Résonance");
         addItem(ModItems.CRYSTAL_STRIDER_SPAWN_EGG, "Œuf d'apparition de Fileur de Cristal");
         addItem(ModItems.RESONANCE_BLUEPRINT, "Plan de Résonance");
         addItem(ModItems.CODEX_FRAGMENT, "Fragment de Codex");
