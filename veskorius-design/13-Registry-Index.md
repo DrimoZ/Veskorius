@@ -72,7 +72,7 @@ est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments 
 | `veskorian_alloy_helmet` / `_chestplate` / `_leggings` / `_boots` | 04 | À coder (Phase 2) |
 | `rift_ward_plate` (remplace le `veskorian_alloy_chestplate`, pas cumulatif) | 04 | À coder (Phase 4) |
 | `resonance_tuner` | 05, 12 | ✅ codé (outil à modes : Pivoter/On-Off/Surchauffe/Redstone) |
-| `resonance_locator` | 05, 07 | ✅ codé (détecteur courte portée : poche de cristal ou signature de champ ; batterie interne) |
+| `resonance_locator` | 05, 07, 12 | ✅ codé (détecteur courte portée : poche de cristal ou signature de champ ; batterie interne ; modes Ressources/Structures). **Porté, il active le HUD de champ** — inventaire ou slot Curios |
 | `resonance_storage_cell` | 05 | ✅ codé (batterie portable 8000 Osc ; alimente le Locator) |
 
 ## Blocs — génération naturelle
@@ -98,7 +98,7 @@ se génère en petites poches (Y -20 à 0) et lâche l'item quand on la mine. La
 | 2 | `component_assembler` | T1 | ✅ codé (cycle 5s, 3 Osc/tick, premier consommateur du champ) |
 | 3 | `resonance_whetstone` | T1 | ✅ codé (block entity + cycle 8s + GUI + slot d'augment) |
 | 4 | `field_emitter` | T2 | ✅ codé (réserve + recharge + champ + GUI jauge, capability IResonanceField) |
-| 5 | `flux_purifier` | T2 | ✅ codé (cycle 45s, 2 Osc/tick, mode surchauffe) |
+| 5 | `flux_purifier` | T2 | ✅ codé (cycle 45s, 2 Osc/tick, mode surchauffe). **Seule machine accordable avant la T3** (universelle par défaut, cycle réversible) — sans elle le mode « Accorder » n'aurait aucune cible, voir `06` |
 | 8 | `crystal_roost` | T2 | ✅ codé (production passive : 2 Quartz → 1 Raw Crystal 600s, si un Fileur < 6 blocs) |
 | 9 | `resonance_relay` | T3 | À coder (Phase 2) |
 | 10 | `veskorian_alloy_forge` | T3 | À coder (Phase 2) |
@@ -151,7 +151,7 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 | `resonance_sludge` | item | 04 | ✅ codé — dissonance cristallisée, produite par le Damping Array. Débouchés (Reclaimer, engrais) en Phase 2 |
 | `resonance_matrix` | item | 04, 05 | À coder (Phase 2) — intermédiaire requis au T4 |
 | `efficiency_core` / `yield_core` / `tuning_core` / `damping_core` | items (augments) | 04, 05 | À coder (Phase 2) |
-| `attunement_lens` | item (optionnel) | 12 | À coder — porte le HUD de champ (sinon le Locator fait office) |
+| ~~`attunement_lens`~~ | — | 12 | **Abandonné (2026-07-23)** : le HUD de champ est porté par le `resonance_locator`, qui existe déjà et se recharge déjà dans le champ. Un item de plus pour la même fonction n'aurait servi qu'à alourdir la progression |
 | `resonant_deeps` | biome | 07, 16 | À coder (Phase 2) — porte le gaz, abrite les structures profondes |
 | `veskorius:locatable` | tag de structure | 16 | ✅ codé (vide tant que les Structures ne sont pas migrées) |
 | `locator_mode` | data component | 16 | ✅ codé (outil à modes) |

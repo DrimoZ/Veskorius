@@ -100,6 +100,17 @@ mode **« Accorder »** (l'outil à modes existe déjà — `12`). Les machines 
 (aucune bande, acceptent n'importe quel champ) : la boucle de départ ne gagne aucune complexité.
 
 Le **glow** d'une machine en marche prend la couleur de sa bande — le diagnostic est visuel.
+✅ **Codé le 2026-07-23** : particules de la couleur de la bande au-dessus de la machine tant qu'elle
+avance un cycle, **clignotant avec la couleur du champ** si elle est désaccordée. Une machine
+universelle n'émet rien.
+
+**Exception unique, décidée au codage (2026-07-23) : le Flux Purifier (T2) est accordable.** Le reste
+de la règle tient (les machines T1 sont universelles, les T3 porteront une bande), mais sans une
+cible avant la Phase 2, le mode « Accorder » et toute la lecture par couleur n'auraient été
+observables nulle part. Le Purifier est la seule machine qui puise dans le champ sur une recette non
+`stable` ; il reste **universel par défaut** (la T2 ne gagne donc aucune décision imposée) et le
+cycle du Tuner **revient à l'universel**, donc rien n'est irréversible. Côté code, c'est un seul
+`supportsHarmonicBand()`.
 
 ### Recettes increvables — `stable`
 

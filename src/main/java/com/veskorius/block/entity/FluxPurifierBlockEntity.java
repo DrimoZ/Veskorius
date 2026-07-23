@@ -38,6 +38,19 @@ public class FluxPurifierBlockEntity extends AbstractProcessingMachineBlockEntit
         return true;
     }
 
+    /**
+     * Seule machine <b>accordable</b> avant la T3 (06-Energy.md, courbe d'introduction).
+     * Elle reste <b>universelle par défaut</b> : rien ne change pour qui ne touche pas au
+     * Tuner — la T2 garde donc sa promesse « aucune décision ». Mais c'est la première
+     * machine qui puise vraiment dans le champ sur une recette non {@code stable}, donc
+     * la seule sur laquelle le mode « Accorder » ait un sens aujourd'hui : sans elle,
+     * ce mode et la lecture par couleur resteraient inobservables jusqu'à la Phase 2.
+     */
+    @Override
+    public boolean supportsHarmonicBand() {
+        return true;
+    }
+
     @Override
     protected boolean shouldProduceResult() {
         // En surchauffe, une chance configurable (défaut 20 %) que l'entrée parte en

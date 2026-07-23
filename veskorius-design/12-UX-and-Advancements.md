@@ -71,23 +71,47 @@ elle réutilise les deux visuels déjà codés — **aucun GUI supplémentaire �
 Règle de lisibilité : un joueur doit pouvoir **diagnostiquer sa base en la regardant**, sans ouvrir
 un écran. Pas de chiffre de fréquence exposé — des couleurs.
 
+> **État du code (2026-07-23) : les quatre lignes du tableau sont codées.** Le glow d'une machine
+> est rendu par de fines particules de la couleur de sa bande au-dessus du bloc, émises tant que le
+> blockstate `LIT` est vrai (donc tant qu'elle avance *réellement* un cycle). Une machine
+> **universelle n'émet rien du tout** : la couche harmonique reste littéralement invisible tant que
+> le joueur n'a rien accordé — c'est ce qui tient la promesse « la T1 ne gagne aucune complexité ».
+
 ## HUD de champ (lecture globale)
 
 Overlay discret en coin d'écran, affichant le champ **où se tient le joueur** :
 - la **bande** (pastille de couleur + nom),
 - la **réserve** de l'émetteur qui le couvre (`X/Y Osc`),
-- le **niveau de dissonance** (petite jauge).
+- le **niveau de dissonance** (petite jauge, qui vire au rouge « champ instable » au seuil).
 
-**Conditions d'affichage** : le joueur porte l'objet dédié **dans son inventaire** (candidat : le
-Resonance Locator, ou un « Attunement Lens » dédié) — **ou dans un slot Curios si le mod est
-détecté** (dépendance douce, voir `10`). Alimenté par un petit paquet serveur→client périodique,
-envoyé uniquement aux joueurs porteurs.
+**Conditions d'affichage** : le joueur porte l'objet dédié **dans son inventaire** — **ou dans un
+slot Curios si le mod est détecté** (dépendance douce, voir `10`). Alimenté par un petit paquet
+serveur→client périodique, envoyé uniquement aux joueurs porteurs.
+
+> **Codé le 2026-07-23** (`FieldHudPayload`, `FieldHudHandler`, `ClientFieldData`,
+> `FieldHudOverlay`). Décisions prises au codage :
+> - **L'objet de lecture est le Resonance Locator**, pas un nouvel item : il est déjà l'outil de
+>   détection, se recharge déjà dans le champ, et n'ajoute rien à la progression. Son tooltip
+>   annonce le HUD, sinon rien ne l'expliquerait.
+> - **Le serveur n'envoie rien hors champ** ; c'est la *péremption* de la dernière lecture (2 s)
+>   qui efface le HUD côté client. Un paquet « rien à signaler » deux fois par seconde et par
+>   joueur aurait coûté plus que le HUD ne vaut.
+> - **Masqué** quand le GUI est caché (F1) ou l'écran de debug ouvert (F3) : c'est un instrument,
+>   jamais un obstacle.
+> - Rendu **minimal** (texte + rectangles pleins) : ses textures viennent avec la passe visuelle
+>   de la Phase 6, comme le reste des GUI.
 
 ## Resonance Tuner — mode « Accorder »
 
 Le Tuner (outil à modes déjà en place) gagne le mode **Accorder** : clic droit sur une machine T3+
 règle sa **bande harmonique**. Il rejoint la liste des modes existants (Pivoter, On/Off, Surchauffe,
 Redstone) sans nouvelle interaction à apprendre.
+
+**Le cycle repasse par l'universel** (universelle → violet → cyan → ambre → universelle, borné par
+`bandCount`). Sans ce retour, accorder serait un geste à **sens unique** : une machine réglée sur la
+mauvaise bande resterait définitivement moins bonne qu'avant qu'on y touche — un piège pour le joueur
+qui essaie l'outil par curiosité. Une machine T3 qui *doit* porter une bande pourra le refuser
+(`allowsUniversal`).
 
 ## Automatisation d'objets — capability sidée + config par face (2026-07-23)
 

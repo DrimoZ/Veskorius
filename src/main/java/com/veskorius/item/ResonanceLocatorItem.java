@@ -286,6 +286,10 @@ public class ResonanceLocatorItem extends Item {
             Component.translatable(getMode(stack).labelKey())).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("item.veskorius.resonance_locator.mode_hint")
             .withStyle(ChatFormatting.DARK_GRAY));
+        // Le HUD de champ ne s'explique nulle part ailleurs : il apparaît du seul fait de
+        // porter cet objet, donc l'objet doit le dire (12-UX, onboarding).
+        tooltip.add(Component.translatable("item.veskorius.resonance_locator.hud_hint")
+            .withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override

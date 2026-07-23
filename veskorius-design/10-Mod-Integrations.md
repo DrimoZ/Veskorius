@@ -58,6 +58,16 @@ Mekanism existant, pas une façon rentable de remplacer le réseau de champ par 
 Règle respectée : Curios est un **confort d'ergonomie** (libérer une case d'inventaire), jamais un
 prérequis. Le comportement par défaut (sans le mod) reste complet et testé en premier.
 
+> **Codé le 2026-07-23** (`compat/curios/CuriosCompat`). L'objet de lecture est le **Resonance
+> Locator**. Le pont passe par **réflexion**, pas par une dépendance de compilation : Veskorius
+> n'ajoute aucune dépendance de build (les validations tournent hors ligne), et un changement d'API
+> chez Curios ne peut pas casser la compilation du mod. À la première erreur, l'intégration se
+> **désactive définitivement** avec un avertissement unique et le HUD retombe sur l'inventaire —
+> le chemin par défaut, seul chemin testé en GameTest (`fieldHudOnlyForCarriers`).
+>
+> Contrepartie assumée : le slot Curios ne peut pas être vérifié en test automatisé (Curios n'est
+> pas chargé dans `runGameTestServer`). Il se valide à la main, en `runClient` avec le mod installé.
+
 ## JEI / EMI
 
 | Élément | Implémentation |

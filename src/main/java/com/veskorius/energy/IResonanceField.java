@@ -35,6 +35,19 @@ public interface IResonanceField {
      */
     int extractOsc(int maxOsc);
 
+    /**
+     * Réserve d'Osc restante. Lecture seule, pour l'affichage (HUD de champ, 12-UX) :
+     * la consommation passe toujours par {@link #extractOsc}.
+     */
+    default int getReserve() {
+        return 0;
+    }
+
+    /** Capacité de réserve, pour dimensionner une jauge. 0 = source sans réserve bornée. */
+    default int getCapacity() {
+        return 0;
+    }
+
     // --- Harmoniques & Dissonance (06-Energy.md) -----------------------------
 
     /**

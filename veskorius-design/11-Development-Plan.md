@@ -332,8 +332,8 @@ Ces briques sont transverses : la Phase 2 s'appuie dessus, la coder avant serait
 | A1 | Harmoniques : bandes, accord/désaccord, dissonance, `stable`, mode Accorder | `06` | ✅ **fait** |
 | A2 | Harmoniques : Émetteur Accordable + coupole colorée par bande | `06` | ✅ **fait** |
 | A3 | Harmoniques : **Damping Array** + agent de damping data-driven + `resonance_sludge` | `06`, `04` | ✅ **fait** |
-| A4 | Harmoniques : **glow des machines coloré par bande** (clignotant si désaccordé) | `06`, `12` | à faire |
-| A5 | Harmoniques : **HUD de champ** (bande / réserve / dissonance), objet en inventaire ou slot **Curios** | `12`, `10` | à faire |
+| A4 | Harmoniques : **glow des machines coloré par bande** (clignotant si désaccordé) | `06`, `12` | ✅ **fait** |
+| A5 | Harmoniques : **HUD de champ** (bande / réserve / dissonance), objet en inventaire ou slot **Curios** | `12`, `10` | ✅ **fait** |
 | A6 | Harmoniques : **décharge de résonance** (AoE au maximum de dissonance) | `06` | à faire |
 | A7 | **Migration des structures en jigsaw** + `veskorius-structures.toml` + layouts réels de l'Habitation et de l'Avant-poste | `08`, `16` §2 | à faire |
 | A8 | **Biome `resonant_deeps`** + gaz (MobEffect, intensité par strate, intérieurs scellés) | `07`, `16` §3 | à faire |
@@ -341,6 +341,26 @@ Ces briques sont transverses : la Phase 2 s'appuie dessus, la coder avant serait
 
 > A7 et A8 sont les deux plus gros. A7 débloque au passage le **mode Structures du Locator** (déjà
 > codé, en sommeil tant qu'aucune structure n'est taguée `#veskorius:locatable`).
+
+**A4 + A5 livrés le 2026-07-23** (suite : **90 GameTest verts**). Ce que ça change concrètement :
+
+- **A4 — le glow porte la bande.** Particules de la couleur de la bande au-dessus d'une machine qui
+  avance réellement un cycle (blockstate `LIT`), **clignotant entre sa couleur et celle du champ**
+  quand elle est désaccordée. Une machine **universelle n'émet rien** : la couche harmonique est
+  invisible tant que le joueur n'a rien accordé.
+- **Une machine accordable dès la T2.** Sans elle, le mode « Accorder » du Tuner et toute la lecture
+  par couleur restaient inobservables jusqu'à la Phase 2. Le **Flux Purifier** est retenu (seule
+  machine qui puise dans le champ sur une recette non `stable`) ; il reste **universel par défaut**
+  et le cycle du Tuner **revient à l'universel**, donc rien n'est imposé ni irréversible.
+  ➜ *point à confirmer par le porteur* : c'est le seul écart au « les machines T3 portent une
+  bande » ; le retirer, c'est supprimer un `supportsHarmonicBand()`.
+- **A5 — HUD de champ.** Paquet `veskorius:field_hud` poussé toutes les 10 ticks aux **seuls
+  porteurs du Locator** (inventaire ou slot Curios), rien hors champ, effacement par péremption
+  côté client. Lit le champ **couvrant** (et non « actif ») pour ne pas clignoter sur un émetteur
+  saturé. Réglages sous `harmonics.hud` (`14`).
+- **Non couvert par GameTest** (visuel/réseau, comme la coupole) : le rendu de l'overlay et des
+  particules, et le chemin Curios (le mod n'est pas chargé en `runGameTestServer`) → **passe
+  `runClient`** à faire.
 
 ### Bloc B — Phase 2 (T3) proprement dite
 

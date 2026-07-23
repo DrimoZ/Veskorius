@@ -172,6 +172,13 @@ public class ModLanguageProvider extends LanguageProvider {
         add("item.veskorius.resonance_tuner.attuned", "Attuned to: %s");
         add("item.veskorius.resonance_tuner.no_band", "This machine has no harmonic band");
 
+        // HUD de champ (12-UX) : visible en portant le Locator (inventaire ou Curios).
+        add("gui.veskorius.hud.osc", "%s / %s Osc");
+        add("gui.veskorius.hud.dissonance", "Dissonance");
+        add("gui.veskorius.hud.unstable", "Unstable field");
+        add("item.veskorius.resonance_locator.hud_hint",
+            "Carry it to read the field you stand in");
+
         add("item.veskorius.resonance_tuner.current_mode", "Current Mode");
         add("item.veskorius.resonance_tuner.available_modes", "Available Modes");
         add("item.veskorius.resonance_tuner.controls", "Controls");

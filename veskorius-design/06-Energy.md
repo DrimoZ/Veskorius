@@ -34,12 +34,13 @@ complexe, demanderait une machine de recharge non prévue) ; un item carburant d
 un item et une recette hors registre). Le choix « brûler des Stable Crystals » est le plus simple
 et reste local au Field Emitter — réversible sans toucher au reste du système de champ.
 
-## Osc portable (précisé le 2026-07-21, pas encore codé)
+## Osc portable (précisé le 2026-07-21, ✅ codé)
 
 Second trou du même ordre : le stationnaire (champ → machine) était défini, mais pas comment un
 *objet* porté stocke et dépense des Osc. Nécessaire pour la Resonance Storage Cell (`05` #6) et le
-Resonance Locator (`05` #7). Résolu, à coder quand ces items seront implémentés (le Locator
-attend en plus la génération des structures — `07`) :
+Resonance Locator (`05` #7). Les deux sont codés depuis (mention « à coder » corrigée le
+2026-07-23) ; les valeurs ci-dessous sont celles en vigueur, exposées en configuration
+(`veskorius-basics.toml`) :
 
 - **Resonance Storage Cell** (batterie portable, capacité 8000 Osc, état de charge sur l'item) :
   se **charge dans un champ**. Tant qu'elle est dans l'inventaire d'un joueur situé dans un champ
@@ -99,9 +100,17 @@ jamais par une prise. Aucune conversion cachée.
 > saute des ticks), **flag de recette `stable`** (les 5 recettes T1 le portent), **mode « Accorder »
 > du Tuner**, **Émetteur Accordable** (`tunable_field_emitter` — choix de bande, accordable au
 > Tuner), et **coloration de la coupole par bande** (elle grisaille avec la dissonance).
-> **Reste à coder** : coloration du glow des machines par bande, HUD de champ +
-> Curios, décharge de résonance (AoE). Le désaccord ne devient courant qu'avec les machines T3
-> (Phase 2) — aujourd'hui il s'obtient en accordant volontairement une machine sur une autre bande.
+>
+> **Complété le 2026-07-23 (suite à 90 GameTest)** : **glow des machines coloré par bande**
+> (clignotant entre les deux couleurs quand la machine est désaccordée) et **HUD de champ**
+> (bande / réserve / dissonance, porteur = Locator, inventaire **ou** slot Curios).
+> **Reste à coder** : décharge de résonance (AoE au maximum de dissonance).
+>
+> Le désaccord ne devient courant qu'avec les machines T3 (Phase 2). Pour que le mode
+> « Accorder » et la lecture par couleur soient **observables dès maintenant**, le **Flux
+> Purifier** est la seule machine accordable avant la T3 : elle reste **universelle par
+> défaut** (la T2 garde sa promesse « aucune décision »), et le cycle du Tuner **repasse par
+> l'universel**, donc accorder n'est jamais un geste à sens unique.
 
 Couche systémique posée **sur le système de champ existant**, pas à côté. Raison d'être : le pilier 3
 donne un réseau sans câbles, mais les câbles rendent un service qu'on n'avait pas remplacé —
@@ -183,6 +192,12 @@ joueur), sauf config contraire.
 
 Un **overlay HUD** affiche le champ où l'on se tient (bande, réserve, dissonance) dès que le joueur
 porte l'objet dédié — inventaire, ou **slot Curios si le mod est détecté** (voir `12` et `10`).
+
+> **Codé le 2026-07-23.** L'objet de lecture retenu est le **Resonance Locator** (le dossier
+> laissait ouvert « Locator ou Attunement Lens ») : il existe déjà, se recharge déjà dans le
+> champ, et n'ajoute aucun item à la progression. Le HUD lit le champ qui **couvre** le joueur,
+> pas le champ « actif » : un émetteur à sec ou saturé — donc intermittent — reste affiché,
+> sinon le HUD clignoterait précisément quand il a le plus à dire.
 
 ### Articulation avec la « dérive de calibration » T4 (Amplifier / Hub)
 

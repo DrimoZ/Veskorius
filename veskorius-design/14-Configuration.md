@@ -107,7 +107,7 @@ trouve immédiatement ce qu'il cherche, et surcharge un thème sans toucher aux 
 | `veskorius-machines.toml` | augments, surchauffe ; accueillera **slots d'augment / règles de cumul / recettes increvables** | ✅ **fait** (`MachinesConfig`) |
 | `veskorius-generation.toml` | croissance et aléas lus à l'exécution ; accueillera **gaz par strate** et rareté du biome | ✅ **fait** (`GenerationConfig`) |
 | `veskorius-mobs.toml` | Custodes (PV/dégâts/portées), Fileur, Roost | ✅ **fait** (`MobsConfig`) |
-| `veskorius-harmonics.toml` | **bandes, accord/désaccord, dissonance** — avec **interrupteur maître** (`enabled`) | ✅ **fait** (`HarmonicsConfig`) ; clés de damping à l'arrivée du Damping Array |
+| `veskorius-harmonics.toml` | **bandes, accord/désaccord, dissonance**, damping, **HUD de champ** — avec **interrupteur maître** (`enabled`) | ✅ **fait** (`HarmonicsConfig`) |
 | `veskorius-structures.toml` | fréquence/espacement/biomes des structures, densité de mobs | à livrer **avec** la migration Structures (`08`) |
 
 **Règle tenue** : une config est livrée **avec le code qu'elle pilote**, jamais en avance — une clé
@@ -130,6 +130,7 @@ façade, donc il couvre tous les thèmes d'un coup.
 | `harmonics` | `bandCount` | Nombre de bandes harmoniques (défaut 3) |
 | `harmonics` | `detuneOscMultiplier` | Surcoût d'Osc d'une machine désaccordée |
 | `harmonics` | `dissonancePerCycle` / `dischargeThreshold` | Vitesse d'accumulation et seuil de décharge |
+| `harmonics.hud` | `enabled` / `updateIntervalTicks` | HUD de champ : envoi serveur→client aux seuls porteurs du Locator. À `false`, **aucun paquet n'est émis** (défaut : activé, 10 ticks). Indépendant de l'interrupteur maître — harmoniques coupées, le HUD se réduit à la réserve, ce qui reste vrai |
 | `machines` | `augmentSlots` | Nombre de slots d'augment (par machine ou par tier) |
 | `machines` | `augmentStackingMode` | Cumul d'un même effet : interdit / plafonné / libre, dans un slot et entre slots |
 | `machines` | `overheatIgnoresStable` | La surchauffe garde-t-elle son risque sur une recette `stable` ? |

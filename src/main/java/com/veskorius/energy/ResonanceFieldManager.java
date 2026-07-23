@@ -131,6 +131,23 @@ public final class ResonanceFieldManager {
      */
     @org.jetbrains.annotations.Nullable
     public static IResonanceField findSource(ServerLevel level, BlockPos consumerPos) {
+        return findSource(level, consumerPos, true);
+    }
+
+    /**
+     * Le champ qui <b>couvre</b> cette position, actif ou non. Sert au HUD de champ
+     * (12-UX) : celui-ci doit rester stable et afficher « réserve à zéro » ou « champ
+     * instable » — or un émetteur à sec ou instable n'est justement pas « actif », et
+     * {@link #findSource} le sauterait, faisant clignoter le HUD au moment précis où il
+     * a le plus à dire.
+     */
+    @org.jetbrains.annotations.Nullable
+    public static IResonanceField coveringSource(ServerLevel level, BlockPos pos) {
+        return findSource(level, pos, false);
+    }
+
+    @org.jetbrains.annotations.Nullable
+    private static IResonanceField findSource(ServerLevel level, BlockPos consumerPos, boolean requireActive) {
         Set<BlockPos> set = EMITTERS.get(level.dimension());
         if (set == null || set.isEmpty()) {
             return null;
@@ -140,7 +157,7 @@ public final class ResonanceFieldManager {
                 set.remove(emitterPos);
                 continue;
             }
-            if (!field.isActive()) {
+            if (requireActive && !field.isActive()) {
                 continue;
             }
             long rangeSqr = (long) field.getRange() * field.getRange();

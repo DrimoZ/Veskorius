@@ -95,6 +95,25 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     @Nullable
     private HarmonicBand harmonicBand;
 
+    // --- Lecture visuelle de l'accord (06-Energy.md, 12-UX) ------------------
+    // La bande est une COULEUR : le glow d'une machine en marche prend la couleur de
+    // SA bande, et clignote entre les deux couleurs quand elle est désaccordée. On
+    // diagnostique donc sa base en la regardant, sans ouvrir un GUI. Ces deux champs
+    // sont le dernier état constaté au tick d'alimentation ; ils ne sont pas persistés
+    // (ils se recalculent au premier tick) et ne servent qu'à l'affichage.
+
+    /** Intervalle entre deux bouffées de particules de bande, en ticks. */
+    private static final int BAND_GLOW_INTERVAL = 10;
+    private static final int BAND_GLOW_POINTS = 2;
+    /** Demi-période du clignotement d'une machine désaccordée, en ticks. */
+    private static final int DETUNE_BLINK_HALF_PERIOD = 20;
+
+    /** Vrai si le dernier tick d'alimentation s'est fait en désaccord. */
+    private boolean detuned;
+    /** Bande du champ qui a servi la machine au dernier tick, {@code null} si hors champ. */
+    @Nullable
+    private HarmonicBand fieldBand;
+
     private static SideMode[] defaultSideModes() {
         SideMode[] modes = new SideMode[6];
         for (Direction dir : Direction.values()) {
@@ -219,6 +238,7 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     public static void serverTick(Level level, BlockPos pos, BlockState state, AbstractMachineBlockEntity machine) {
         machine.tickCycle();
         machine.tickAutomation();
+        machine.pulseBandGlow();
     }
 
     private void tickCycle() {
@@ -279,6 +299,69 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     }
 
     /**
+     * Glow harmonique : quelques particules de la <b>couleur de la bande</b> au-dessus
+     * d'une machine en marche (06-Energy.md, « Lecture visuelle — aucun GUI à
+     * apprendre »). Désaccordée, elle <b>clignote entre sa couleur et celle du champ</b>
+     * — le « ça grince » visuel qui remplace un compteur.
+     *
+     * <p>Une machine <b>universelle</b> (toute la T1) n'émet rien du tout : la couche
+     * harmonique reste littéralement invisible tant que le joueur n'a rien accordé.
+     * Purement client-visuel (aucun effet serveur), comme la coupole de l'émetteur.
+     */
+    private void pulseBandGlow() {
+        // Test le moins cher d'abord : une machine universelle (tout le T1) sort ici sur
+        // une simple lecture de champ, sans toucher à la config ni au temps du monde.
+        if (harmonicBand == null || !HarmonicsConfig.enabled()
+            || !(level instanceof ServerLevel serverLevel)
+            || serverLevel.getGameTime() % BAND_GLOW_INTERVAL != 0) {
+            return;
+        }
+        BlockState state = getBlockState();
+        if (!state.hasProperty(AbstractMachineBlock.LIT) || !state.getValue(AbstractMachineBlock.LIT)) {
+            return; // le glow ne colore que ce qui tourne réellement
+        }
+
+        HarmonicBand shown = glowBand(serverLevel.getGameTime());
+        int argb = shown.color();
+        net.minecraft.core.particles.ParticleOptions dust =
+            new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(
+                ((argb >> 16) & 0xFF) / 255.0f,
+                ((argb >> 8) & 0xFF) / 255.0f,
+                (argb & 0xFF) / 255.0f), 1.0f);
+
+        for (int i = 0; i < BAND_GLOW_POINTS; i++) {
+            double x = worldPosition.getX() + 0.2 + serverLevel.random.nextDouble() * 0.6;
+            double y = worldPosition.getY() + 1.05;
+            double z = worldPosition.getZ() + 0.2 + serverLevel.random.nextDouble() * 0.6;
+            serverLevel.sendParticles(dust, x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
+        }
+    }
+
+    /**
+     * Couleur à montrer ce tick : la bande de la machine, ou — si elle est désaccordée —
+     * une alternance avec celle du champ. Deux couleurs qui se succèdent au même endroit
+     * disent « ces deux-là ne s'accordent pas » sans aucun texte.
+     */
+    private HarmonicBand glowBand(long gameTime) {
+        if (!detuned || fieldBand == null) {
+            return harmonicBand;
+        }
+        boolean showField = (gameTime % (2L * DETUNE_BLINK_HALF_PERIOD)) >= DETUNE_BLINK_HALF_PERIOD;
+        return showField ? fieldBand : harmonicBand;
+    }
+
+    /** Vrai si le dernier tick d'alimentation s'est fait en désaccord (pilote le clignotement). */
+    public boolean isDetuned() {
+        return detuned;
+    }
+
+    /** Bande du champ qui sert cette machine, {@code null} si elle n'en a pas (ou hors champ). */
+    @Nullable
+    public HarmonicBand getFieldBand() {
+        return fieldBand;
+    }
+
+    /**
      * Preleve le cout d'un tick sur le champ de Resonance. Vrai si le plein cout a
      * ete obtenu (la machine peut avancer), faux sinon (pause).
      *
@@ -290,6 +373,9 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     private boolean drawEnergy() {
         int cost = getEffectiveOscPerTick();
         if (cost <= 0) {
+            // Machine autonome : aucun champ en jeu, donc jamais de désaccord à montrer.
+            detuned = false;
+            fieldBand = null;
             return true;
         }
         if (!(level instanceof ServerLevel serverLevel)) {
@@ -300,7 +386,8 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         // coûte plus cher et injecte de la dissonance dans le champ. Ça ne bloque
         // JAMAIS la machine — elle tourne, elle grince.
         IResonanceField source = ResonanceFieldManager.findSource(serverLevel, worldPosition);
-        boolean detuned = isDetunedFrom(source);
+        detuned = isDetunedFrom(source);
+        fieldBand = source == null ? null : source.getBand();
         if (detuned) {
             cost = (int) Math.ceil(cost * HarmonicsConfig.detuneOscMultiplier());
         }
@@ -358,14 +445,28 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         setChanged();
     }
 
+    /**
+     * Vrai si le cycle du Tuner peut ramener la machine à l'état <b>universel</b>. Sans
+     * ça, accorder serait un geste à sens unique : une machine accordée sur la mauvaise
+     * bande resterait définitivement moins bonne qu'avant qu'on y touche. Une machine T3
+     * qui <i>doit</i> porter une bande le redéfinira à {@code false}.
+     */
+    protected boolean allowsUniversal() {
+        return true;
+    }
+
     /** Fait défiler la bande (mode « Accorder » du Resonance Tuner). */
     public void cycleHarmonicBand() {
         if (!supportsHarmonicBand()) {
             return;
         }
-        setHarmonicBand(harmonicBand == null
-            ? HarmonicBand.FUNDAMENTAL
-            : harmonicBand.next(HarmonicsConfig.bandCount()));
+        if (harmonicBand == null) {
+            setHarmonicBand(HarmonicBand.FUNDAMENTAL);
+            return;
+        }
+        HarmonicBand next = harmonicBand.next(HarmonicsConfig.bandCount());
+        // Le cycle repasse par l'universel en bouclant : le geste est réversible.
+        setHarmonicBand(next == HarmonicBand.FUNDAMENTAL && allowsUniversal() ? null : next);
     }
 
     /** Cout d'un tick, surchauffe comprise (consommation multipliee, 06-Energy.md ; facteur configurable). */

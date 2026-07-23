@@ -28,6 +28,9 @@ public final class HarmonicsConfig {
     public static final ModConfigSpec.IntValue DAMPING_RANGE;
     public static final ModConfigSpec.IntValue DAMPING_CYCLE_TICKS;
 
+    public static final ModConfigSpec.BooleanValue HUD_ENABLED;
+    public static final ModConfigSpec.IntValue HUD_UPDATE_INTERVAL;
+
     static {
         ModConfigSpec.Builder b = new ModConfigSpec.Builder();
 
@@ -91,6 +94,23 @@ public final class HarmonicsConfig {
 
         b.pop();
 
+        b.comment("Field HUD: a small overlay showing the field the player stands in.",
+            "Only sent to players carrying the reader item (Resonance Locator), in their",
+            "inventory or in a Curios slot if that mod is present.")
+            .push("hud");
+
+        HUD_ENABLED = b
+            .comment("Whether the server pushes field readings to carriers. false = no HUD",
+                "and no packets at all.")
+            .define("enabled", true);
+
+        HUD_UPDATE_INTERVAL = b
+            .comment("Ticks between two readings. Higher = fewer packets, laggier gauge.",
+                "Default: 10 (twice a second).")
+            .defineInRange("updateIntervalTicks", 10, 1, 200);
+
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -130,5 +150,13 @@ public final class HarmonicsConfig {
 
     public static int dampingCycleTicks() {
         return DAMPING_CYCLE_TICKS.getAsInt();
+    }
+
+    public static boolean hudEnabled() {
+        return HUD_ENABLED.get();
+    }
+
+    public static int hudUpdateInterval() {
+        return HUD_UPDATE_INTERVAL.getAsInt();
     }
 }

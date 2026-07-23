@@ -36,6 +36,17 @@ public class ClientModEvents {
         event.register(ModMenuTypes.DAMPING_ARRAY.get(), com.veskorius.client.screen.DampingArrayScreen::new);
     }
 
+    /**
+     * HUD de champ (12-UX) : au-dessus de la couche du viseur, donc sous le chat et les
+     * bulles de dialogue — un instrument, jamais un obstacle.
+     */
+    @SubscribeEvent
+    public static void registerGuiLayers(net.neoforged.neoforge.client.event.RegisterGuiLayersEvent event) {
+        event.registerAbove(net.neoforged.neoforge.client.gui.VanillaGuiLayers.CROSSHAIR,
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "field_hud"),
+            new FieldHudOverlay());
+    }
+
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(ModModelLayers.CRYSTAL_STRIDER, CrystalStriderModel::createBodyLayer);

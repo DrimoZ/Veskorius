@@ -50,6 +50,20 @@ ce fichier.
   Emitter** (#4) — réserve de 4000 Osc rechargée en brûlant des Stable Crystals, portée 8, avec
   un **GUI dédié** (jauge de réserve `X/4000 Osc`) — et la consommation d'Osc branchée dans le
   socle des machines (`getOscPerTick`). Le Component Assembler en est le premier client.
+- **Harmoniques & Dissonance** (`06`, le système-signature) : un champ a une **bande** (une
+  **couleur** : violet / cyan / ambre), une machine « écoute » sur une bande. Même couleur = propre ;
+  couleur différente = **ça marche quand même**, mais ça coûte plus d'Osc et ça injecte de la
+  **dissonance** dans l'émetteur (coupole qui grisaille → champ intermittent). C'est le remplaçant
+  du câble : deux émetteurs de bandes différentes alimentent deux groupes de machines au même
+  endroit, sans un fil. Codé : bandes + désaccord + dissonance (plafonnée, persistée, décroissante),
+  **Émetteur Accordable**, mode « Accorder » du Tuner (réversible : le cycle revient à
+  « universelle »), **Damping Array** (agents data-driven → `resonance_sludge`), flag de recette
+  `stable` (toutes les recettes T1 le portent), **glow des machines coloré par bande** (clignotant
+  si désaccordée) et **HUD de champ** (bande / réserve / dissonance) visible en portant le
+  **Resonance Locator** — inventaire ou slot **Curios** (dépendance douce, par réflexion : aucune
+  dépendance de build). **La T1 ne gagne aucune complexité** : une machine sans bande est
+  universelle et n'affiche rien. Interrupteur maître dans `veskorius-harmonics.toml`.
+  Reste : la **décharge de résonance** (AoE au maximum de dissonance).
 - Datagen complet : plus aucun blockstate / modèle / recette / loot table / tag / traduction
   n'est écrit à la main.
 - **Resonance Storage Cell** (#6) : batterie portable (item, 8000 Osc, charge sur l'item via Data
@@ -97,8 +111,11 @@ ce fichier.
 - **Récolte de spore** : la Resonance Veined Stone pousse un `resonance_spore` (état `spored`) sur
   une face exposée en faible luminosité, récolté au clic droit (sans casser la pierre), puis
   repousse — la reproduction du Fileur devient jouable en survie. Taux de pousse configurable.
-- Harnais `GameTest` : 58 tests (… + Custode, défense de site, récolte de spore, défauts de config),
-  `./gradlew runGameTestServer`. Le serveur de test charge tout le datapack sans erreur.
+- Harnais `GameTest` : **90 tests** (machines, automatisation d'objets, Codex, harmoniques… +
+  Custode, défense de site, récolte de spore, défauts de config), `./gradlew runGameTestServer`.
+  Le serveur de test charge tout le datapack sans erreur. Ce qui est **visuel ou réseau** (rendu des
+  GUI et du HUD, particules, coupole, pont Curios) n'est pas couvert ici : ça se valide en
+  `runClient`.
 - **Intégration JEI** (dev) : les recettes des 4 machines s'affichent dans JEI, une catégorie par
   machine, avec temps et Osc/tick. JEI est en `compileOnly` (API) + `localRuntime` (mod complet
   dans `runClient`), pas exporté dans le jar. Sert à vérifier les recettes en jeu.

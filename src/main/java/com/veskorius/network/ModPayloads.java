@@ -24,5 +24,8 @@ public final class ModPayloads {
         registrar.playToClient(CodexSyncPayload.TYPE, CodexSyncPayload.STREAM_CODEC,
             (payload, context) -> context.enqueueWork(() ->
                 com.veskorius.client.ClientCodexData.apply(payload.unlocked())));
+        registrar.playToClient(FieldHudPayload.TYPE, FieldHudPayload.STREAM_CODEC,
+            (payload, context) -> context.enqueueWork(() ->
+                com.veskorius.client.ClientFieldData.apply(payload)));
     }
 }
