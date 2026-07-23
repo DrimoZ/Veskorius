@@ -29,6 +29,9 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.CODEX_FRAGMENT.get());
         basicItem(ModItems.FOSSILIZED_RATION.get());
 
+        // Codex : reprend le modèle du livre vanilla (aucune texture custom requise).
+        withExistingParent("resonance_codex", mcLoc("item/book"));
+
         basicItem(ModItems.CUSTODE_ALLOY_FRAGMENT.get());
 
         // Œufs d'apparition : modèle vanilla template_spawn_egg (couleurs = item).

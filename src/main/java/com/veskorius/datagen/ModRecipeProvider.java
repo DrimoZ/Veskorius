@@ -174,6 +174,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
 
+        // Resonance Codex : recette de secours (Livre + Cristal Brut). Le Codex est
+        // donné à la première connexion (15-Codex-Guidebook.md) ; ce craft ne sert qu'à
+        // en refaire un s'il est perdu — un exemplaire neuf se re-remplit tout seul des
+        // objets possédés et des paliers atteints (CodexUnlocks, scan périodique).
+        net.minecraft.data.recipes.ShapelessRecipeBuilder
+            .shapeless(RecipeCategory.TOOLS, ModItems.RESONANCE_CODEX.get())
+            .requires(Items.BOOK)
+            .requires(ModItems.RAW_RESONANCE_CRYSTAL.get())
+            .unlockedBy(getHasName(ModItems.RAW_RESONANCE_CRYSTAL.get()),
+                has(ModItems.RAW_RESONANCE_CRYSTAL.get()))
+            .save(recipeOutput);
+
         // Crystal Crusher : 3 Cobblestone + 1 Iron Ingot (05-Machines.md #22,
         // tableau "Recettes de construction"). Le design fixe les quantités mais
         // pas la disposition — le fer au cœur (le broyeur), la pierre autour.

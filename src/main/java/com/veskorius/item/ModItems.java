@@ -66,8 +66,9 @@ public class ModItems {
 
     /**
      * Spore de résonance (04-Materials.md, 09-Entities.md) : nourriture de
-     * reproduction du Fileur de Cristal. Sa récolte (pousse sur le Resonance Veined
-     * Stone en faible luminosité, façon glow lichen) est un bloc à part, à coder.
+     * reproduction du Fileur de Cristal. Sa récolte est implémentée comme un état
+     * {@code spored} sur le Resonance Veined Stone (pousse en faible luminosité sur
+     * une face exposée, récolte au clic droit) — voir {@code ResonanceVeinedStoneBlock}.
      */
     public static final DeferredItem<Item> RESONANCE_SPORE =
         ITEMS.registerSimpleItem("resonance_spore", new Item.Properties().stacksTo(64));
@@ -111,6 +112,15 @@ public class ModItems {
     public static final DeferredItem<Item> FOSSILIZED_RATION =
         ITEMS.registerSimpleItem("fossilized_ration", new Item.Properties()
             .food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.2f).build()));
+
+    /**
+     * Le Codex de Résonance (15-Codex-Guidebook.md) : manuel en jeu qui s'écrit tout
+     * seul. Non empilable (chaque exemplaire porte son propre état de déblocage sur le
+     * Data Component {@code codex_unlocked}). Donné à la première connexion.
+     */
+    public static final DeferredItem<ResonanceCodexItem> RESONANCE_CODEX =
+        ITEMS.registerItem("resonance_codex",
+            ResonanceCodexItem::new, new Item.Properties().stacksTo(1));
 
     /** Outil transversal de configuration des machines (05-Machines.md). */
     public static final DeferredItem<ResonanceTunerItem> RESONANCE_TUNER =

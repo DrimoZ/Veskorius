@@ -14,6 +14,7 @@ import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
@@ -41,11 +42,17 @@ public class ModChestLootProvider implements LootTableSubProvider {
                     .apply(SetItemCountFunction.setCount(UniformGenerator.between(4.0f, 8.0f))))
                 .add(LootItem.lootTableItem(Items.COPPER_INGOT)
                     .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 3.0f)))))
+            // Un fragment de lore, tiré parmi les trois (sinon deux des trois pages de
+            // Codex resteraient injouables en survie). Le « hint/workshop » pointe vers
+            // la console de l'Avant-poste : sa place est bien dans une habitation.
             .withPool(LootPool.lootPool()
                 .setRolls(ConstantValue.exactly(1.0f))
-                .add(LootItem.lootTableItem(ModItems.CODEX_FRAGMENT.get())
-                    .apply(SetComponentsFunction.setComponent(
-                        ModDataComponents.CODEX_ENTRY.get(), CodexEntries.DAILY_LIFE_LAMPS)))));
+                .add(fragment(CodexEntries.DAILY_LIFE_LAMPS))
+                .add(fragment(CodexEntries.DAILY_LIFE_RATION))
+                .add(fragment(CodexEntries.DAILY_LIFE_MARKET))
+                .add(fragment(CodexEntries.DAILY_LIFE_CHILDREN))
+                .add(fragment(CodexEntries.DAILY_LIFE_FESTIVAL))
+                .add(fragment(CodexEntries.HINT_WORKSHOP))));
 
         // Avant-poste : matériaux pour fabriquer le premier Field Emitter après avoir
         // réveillé la console (fer, redstone, or). Pas de blueprint ici (console).
@@ -57,7 +64,17 @@ public class ModChestLootProvider implements LootTableSubProvider {
                 .add(LootItem.lootTableItem(Items.REDSTONE)
                     .apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0f, 4.0f))))
                 .add(LootItem.lootTableItem(Items.GOLD_INGOT)
-                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 2.0f))))));
+                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 2.0f)))))
+            // Inscription laissée par le Custode qui garde le site.
+            .withPool(LootPool.lootPool()
+                .setRolls(ConstantValue.exactly(1.0f))
+                .add(fragment(CodexEntries.CUSTODE_WATCH))));
+    }
+
+    /** Un {@code codex_fragment} portant l'entrée de lore donnée. */
+    private static LootPoolSingletonContainer.Builder<?> fragment(ResourceLocation entry) {
+        return LootItem.lootTableItem(ModItems.CODEX_FRAGMENT.get())
+            .apply(SetComponentsFunction.setComponent(ModDataComponents.CODEX_ENTRY.get(), entry));
     }
 
     private static ResourceKey<LootTable> key(ResourceLocation loc) {

@@ -2,6 +2,7 @@ package com.veskorius;
 
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.entity.ModBlockEntities;
+import com.veskorius.codex.ModAttachments;
 import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.entity.ModEntities;
 import com.veskorius.item.ModDataComponents;
@@ -63,6 +64,7 @@ public class Veskorius {
                 output.accept(ModItems.CRYSTAL_STRIDER_SPAWN_EGG.get());
                 output.accept(ModItems.CUSTODE_SPAWN_EGG.get());
                 output.accept(ModItems.FOSSILIZED_RATION.get());
+                output.accept(ModItems.RESONANCE_CODEX.get());
                 output.accept(com.veskorius.item.ResonanceBlueprintItem.of(2));
                 output.accept(com.veskorius.item.CodexFragmentItem.of(
                     com.veskorius.item.CodexEntries.DAILY_LIFE_LAMPS));
@@ -90,6 +92,7 @@ public class Veskorius {
         ModRecipeTypes.RECIPE_TYPES.register(modEventBus);
         ModRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
         ModFeatures.FEATURES.register(modEventBus);
+        ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);

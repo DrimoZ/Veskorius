@@ -58,6 +58,8 @@ public class CodexFragmentItem extends Item {
             // Lecture : titre + texte en chat. Non consommé (relisible).
             player.displayClientMessage(Component.translatable(titleKey(entry)).withStyle(ChatFormatting.GOLD), false);
             player.displayClientMessage(Component.translatable(textKey(entry)).withStyle(ChatFormatting.GRAY), false);
+            // Lire un fragment consigne sa page de lore dans le Codex (15-Codex-Guidebook.md).
+            com.veskorius.codex.CodexUnlocks.grantForFragment(player, entry);
         }
         return InteractionResultHolder.success(stack);
     }
