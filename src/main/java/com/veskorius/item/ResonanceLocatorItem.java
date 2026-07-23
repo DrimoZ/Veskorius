@@ -1,14 +1,21 @@
 package com.veskorius.item;
 
+import com.mojang.datafixers.util.Pair;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.energy.ResonanceFieldManager;
+import com.veskorius.tag.ModTags;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -34,8 +41,18 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ResonanceLocatorItem extends Item {
 
-    /** Rayon du scan de blocs pour les poches (borné pour rester peu coûteux). */
-    private static final int SCAN_RADIUS = 32;
+    /**
+     * Rayon du scan de blocs pour les poches. Volontairement court : un ping scanne
+     * un cube {@code (2r+1)³}, soit ~35 700 blocs à r=16 — déjà lourd pour un clic
+     * droit, et un r=32 le multipliait par ~8 (≈275 000, hitch serveur perceptible).
+     * Les cristaux ne « rayonnent » que de près ; la détection longue portée (jusqu'à
+     * {@link #range()}) reste réservée aux signatures de champ, via l'index O(n) du
+     * {@link ResonanceFieldManager}, sans aucun scan de blocs.
+     */
+    private static final int SCAN_RADIUS = 16;
+
+    /** Rayon de recherche de structure (en chunks) pour le mode Structures — API vanilla. */
+    private static final int STRUCTURE_SEARCH_CHUNKS = 32;
 
     // Valeurs configurables (VeskoriusConfig, section tools) — lues à l'exécution.
     public static int capacity() {
@@ -78,6 +95,14 @@ public class ResonanceLocatorItem extends Item {
         if (level.isClientSide) {
             return InteractionResultHolder.success(stack);
         }
+        // Shift + clic droit : change de mode (sans ping ni consommation de charge).
+        if (player.isShiftKeyDown()) {
+            LocatorMode next = getMode(stack).next();
+            setMode(stack, next);
+            player.displayClientMessage(Component.translatable("item.veskorius.resonance_locator.mode",
+                Component.translatable(next.labelKey())).withStyle(ChatFormatting.AQUA), true);
+            return InteractionResultHolder.success(stack);
+        }
         if (getCharge(stack) < costPerUse()) {
             player.displayClientMessage(Component.translatable("gui.veskorius.locator.empty")
                 .withStyle(ChatFormatting.RED), true);
@@ -86,20 +111,23 @@ public class ResonanceLocatorItem extends Item {
 
         ServerLevel serverLevel = (ServerLevel) level;
         BlockPos from = player.blockPosition();
-        Hit hit = locateNearest(serverLevel, from);
+        LocatorMode mode = getMode(stack);
+        Hit hit = mode == LocatorMode.STRUCTURES
+            ? locateStructure(serverLevel, from)
+            : locateResource(serverLevel, from);
 
         setCharge(stack, getCharge(stack) - costPerUse());
 
         if (hit == null) {
-            player.displayClientMessage(Component.translatable("gui.veskorius.locator.none")
-                .withStyle(ChatFormatting.GRAY), true);
+            String key = mode == LocatorMode.STRUCTURES
+                ? "gui.veskorius.locator.no_structure" : "gui.veskorius.locator.none";
+            player.displayClientMessage(Component.translatable(key).withStyle(ChatFormatting.GRAY), true);
             level.playSound(null, from, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.PLAYERS, 0.5f, 0.6f);
             return InteractionResultHolder.success(stack);
         }
 
         int dist = (int) Math.round(Math.sqrt(hit.pos.distSqr(from)));
-        Component type = Component.translatable(hit.field
-            ? "gui.veskorius.locator.type_field" : "gui.veskorius.locator.type_crystal");
+        Component type = Component.translatable(hit.typeKey);
         Component dir = Component.translatable("gui.veskorius.dir."
             + windOf(hit.pos.getX() - from.getX(), hit.pos.getZ() - from.getZ()));
         player.displayClientMessage(Component.translatable("gui.veskorius.locator.found", type, dir, dist)
@@ -109,22 +137,33 @@ public class ResonanceLocatorItem extends Item {
         return InteractionResultHolder.success(stack);
     }
 
-    /** Résultat de localisation : position + s'il s'agit d'une signature de champ. */
-    private record Hit(BlockPos pos, boolean field) {
+    // --- Mode (outil à modes, 16 §1) -----------------------------------------
+
+    public static LocatorMode getMode(ItemStack stack) {
+        return LocatorMode.byIndex(stack.getOrDefault(ModDataComponents.LOCATOR_MODE.get(), 0));
     }
 
-    /** Position de la source la plus proche, ou {@code null} (exposé aux GameTest). */
+    public static void setMode(ItemStack stack, LocatorMode mode) {
+        stack.set(ModDataComponents.LOCATOR_MODE.get(), mode.ordinal());
+    }
+
+    // --- Localisation --------------------------------------------------------
+
+    /** Résultat de localisation : position + clé de langue du type de source. */
+    private record Hit(BlockPos pos, String typeKey) {
+    }
+
+    /** Position de la ressource la plus proche, ou {@code null} (exposé aux GameTest). */
     @Nullable
     public static BlockPos locateForTest(ServerLevel level, BlockPos from) {
-        Hit hit = locateNearest(level, from);
+        Hit hit = locateResource(level, from);
         return hit == null ? null : hit.pos;
     }
 
     @Nullable
-    private static Hit locateNearest(ServerLevel level, BlockPos from) {
-        // Poche de cristal la plus proche (scan borné : les cristaux ne sont pas indexés).
+    private static Hit locateResource(ServerLevel level, BlockPos from) {
+        // Poche de cristal la plus proche (scan borné) + signature de champ (index, sans scan).
         BlockPos crystal = nearestCrystal(level, from);
-        // Signature de champ la plus proche (via l'index, sans scan).
         BlockPos field = ResonanceFieldManager.nearestSource(level, from, range());
 
         double crystalSq = crystal == null ? Double.MAX_VALUE : crystal.distSqr(from);
@@ -132,7 +171,33 @@ public class ResonanceLocatorItem extends Item {
         if (crystal == null && field == null) {
             return null;
         }
-        return fieldSq < crystalSq ? new Hit(field, true) : new Hit(crystal, false);
+        return fieldSq < crystalSq
+            ? new Hit(field, "gui.veskorius.locator.type_field")
+            : new Hit(crystal, "gui.veskorius.locator.type_crystal");
+    }
+
+    @Nullable
+    private static Hit locateStructure(ServerLevel level, BlockPos from) {
+        BlockPos pos = nearestLocatableStructure(level, from);
+        return pos == null ? null : new Hit(pos, "gui.veskorius.locator.type_structure");
+    }
+
+    /**
+     * Structure du tag {@code #veskorius:locatable} la plus proche, via l'API vanilla
+     * {@code findNearestMapStructure} — <b>aucun scan de blocs</b> (16 §1). Retourne
+     * {@code null} tant qu'aucune vraie structure n'est taguée (les structures actuelles
+     * sont des <i>features</i> ; se remplira à la migration). Exposé aux GameTest.
+     */
+    @Nullable
+    public static BlockPos nearestLocatableStructure(ServerLevel level, BlockPos from) {
+        Optional<HolderSet.Named<Structure>> tag = level.registryAccess()
+            .registryOrThrow(Registries.STRUCTURE).getTag(ModTags.Structures.LOCATABLE);
+        if (tag.isEmpty() || tag.get().size() == 0) {
+            return null;
+        }
+        Pair<BlockPos, Holder<Structure>> found = level.getChunkSource().getGenerator()
+            .findNearestMapStructure(level, tag.get(), from, STRUCTURE_SEARCH_CHUNKS, false);
+        return found == null ? null : found.getFirst();
     }
 
     @Nullable
@@ -217,6 +282,10 @@ public class ResonanceLocatorItem extends Item {
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("item.veskorius.resonance_locator.charge", getCharge(stack), capacity())
             .withStyle(ChatFormatting.AQUA));
+        tooltip.add(Component.translatable("item.veskorius.resonance_locator.mode",
+            Component.translatable(getMode(stack).labelKey())).withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("item.veskorius.resonance_locator.mode_hint")
+            .withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override

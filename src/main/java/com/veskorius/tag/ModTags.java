@@ -1,10 +1,12 @@
 package com.veskorius.tag;
 
 import com.veskorius.Veskorius;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.levelgen.structure.Structure;
 
 /**
  * Tags du mod.
@@ -53,6 +55,23 @@ public final class ModTags {
 
         private static TagKey<Item> tag(String name) {
             return ItemTags.create(ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, name));
+        }
+    }
+
+    public static final class Structures {
+
+        /**
+         * Structures détectables par le mode Structures du Resonance Locator
+         * (16-Revision-and-Expansion.md §1). Vide tant que les structures sont des
+         * <i>features</i> ; se remplira à la migration vers de vraies {@code Structure}
+         * (Avant-poste, Sigma Laboratory…). Le Locator lit ce tag via l'API vanilla
+         * {@code findNearestMapStructure} — aucun scan de blocs.
+         */
+        public static final TagKey<Structure> LOCATABLE =
+            TagKey.create(Registries.STRUCTURE,
+                ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "locatable"));
+
+        private Structures() {
         }
     }
 }

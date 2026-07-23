@@ -51,4 +51,13 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> LOCATOR_CHARGE =
         COMPONENTS.registerComponentType("locator_charge",
             builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT));
+
+    /** Mode courant d'un Resonance Locator (ordinal de {@link LocatorMode}, 16 §1). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> LOCATOR_MODE =
+        COMPONENTS.registerComponentType("locator_mode",
+            builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT));
+
+    // Note : l'état de déblocage du Codex n'est PAS un composant d'objet — il vit sur le
+    // joueur (ModAttachments.CODEX_UNLOCKS), pour s'accumuler sans porter le Codex et
+    // survivre à la mort (15-Codex-Guidebook.md).
 }
