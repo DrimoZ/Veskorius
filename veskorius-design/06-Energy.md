@@ -91,15 +91,17 @@ jamais par une prise. Aucune conversion cachée.
 
 ## Harmoniques & Dissonance (ajouté 2026-07-23, voir `16` §0)
 
-> **État du code (2026-07-23) — première tranche livrée.** ✅ Codé et testé (5 GameTest,
-> suite à 83) : `HarmonicBand` (3 bandes-couleurs), `veskorius-harmonics.toml` avec
-> **interrupteur maître**, bande sur le champ (`IResonanceField.getBand`) et sur les machines
-> (universelle par défaut → **le T1 est inchangé**), **surcoût d'Osc en désaccord + injection de
-> dissonance**, dissonance **plafonnée, persistée, à décroissance naturelle**, **instabilité**
-> au-delà du seuil (le champ saute des ticks), **flag de recette `stable`** (les 5 recettes T1 le
-> portent), et le **mode « Accorder » du Tuner**.
-> **Reste à coder** : Damping Array, Émetteur Accordable (choix de bande), coloration de la coupole
-> et du glow par bande, HUD de champ + Curios, décharge de résonance (AoE).
+> **État du code (2026-07-23) — système jouable.** ✅ Codé et testé (7 GameTest, suite à 85) :
+> `HarmonicBand` (3 bandes-couleurs), `veskorius-harmonics.toml` avec **interrupteur maître**,
+> bande sur le champ (`IResonanceField.getBand`) et sur les machines (universelle par défaut →
+> **le T1 est inchangé**), **surcoût d'Osc en désaccord + injection de dissonance**, dissonance
+> **plafonnée, persistée, à décroissance naturelle**, **instabilité** au-delà du seuil (le champ
+> saute des ticks), **flag de recette `stable`** (les 5 recettes T1 le portent), **mode « Accorder »
+> du Tuner**, **Émetteur Accordable** (`tunable_field_emitter` — choix de bande, accordable au
+> Tuner), et **coloration de la coupole par bande** (elle grisaille avec la dissonance).
+> **Reste à coder** : Damping Array, coloration du glow des machines par bande, HUD de champ +
+> Curios, décharge de résonance (AoE). Le désaccord ne devient courant qu'avec les machines T3
+> (Phase 2) — aujourd'hui il s'obtient en accordant volontairement une machine sur une autre bande.
 
 Couche systémique posée **sur le système de champ existant**, pas à côté. Raison d'être : le pilier 3
 donne un réseau sans câbles, mais les câbles rendent un service qu'on n'avait pas remplacé —

@@ -159,6 +159,17 @@ public class ModRecipeProvider extends RecipeProvider {
                 has(ModItems.RESONANCE_COMPONENT.get()))
             .save(recipeOutput);
 
+        // Émetteur Accordable : un Field Emitter + 2 Refined Crystal (l'accord demande
+        // du cristal raffiné) + blueprint T2 rendu. Upgrade, pas une machine de plus.
+        net.minecraft.data.recipes.ShapelessRecipeBuilder
+            .shapeless(RecipeCategory.MISC, ModBlocks.TUNABLE_FIELD_EMITTER.get())
+            .requires(ModBlocks.FIELD_EMITTER.get())
+            .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
+            .requires(ModItems.RESONANCE_BLUEPRINT.get())
+            .unlockedBy(getHasName(ModItems.REFINED_RESONANCE_CRYSTAL.get()),
+                has(ModItems.REFINED_RESONANCE_CRYSTAL.get()))
+            .save(recipeOutput);
+
         // Crystal Roost : 4 Planches + 2 Stable Crystal + 1 Botte de Foin
         // (05-Machines.md #8) + blueprint T2 (gate physique, rendu). Sans forme.
         net.minecraft.data.recipes.ShapelessRecipeBuilder

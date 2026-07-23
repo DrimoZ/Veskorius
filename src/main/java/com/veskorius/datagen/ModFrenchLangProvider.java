@@ -54,6 +54,7 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.FLUX_PURIFIER, "Purificateur de Flux");
         addBlock(ModBlocks.RESONANCE_WHETSTONE, "Meule de Résonance");
         addBlock(ModBlocks.FIELD_EMITTER, "Émetteur de Champ");
+        addBlock(ModBlocks.TUNABLE_FIELD_EMITTER, "Émetteur de Champ Accordable");
         addBlock(ModBlocks.RESONANCE_CRYSTAL_CLUSTER, "Amas de Cristal de Résonance");
         addBlock(ModBlocks.RESONANCE_VEINED_STONE, "Pierre Veinée de Résonance");
         addBlock(ModBlocks.RAW_FLUX_DEPOSIT, "Dépôt de Flux Brut");

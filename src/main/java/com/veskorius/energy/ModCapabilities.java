@@ -36,6 +36,13 @@ public final class ModCapabilities {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.FIELD_EMITTER.get(),
             (emitter, side) -> emitter.getFuelHandler());
 
+        // Émetteur Accordable : même contrat, bande harmonique choisie.
+        event.registerBlockEntity(RESONANCE_FIELD, ModBlockEntities.TUNABLE_FIELD_EMITTER.get(),
+            (emitter, ctx) -> emitter);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
+            ModBlockEntities.TUNABLE_FIELD_EMITTER.get(),
+            (emitter, side) -> emitter.getFuelHandler());
+
         // Machines actives : vue sidée de l'inventaire (item I/O configurable par face,
         // 12-UX-and-Advancements.md). L'ÉNERGIE ne passe jamais par une capability —
         // elle reste sans tuyaux, par champ. Défaut « façon four » : sortie sous le bloc,

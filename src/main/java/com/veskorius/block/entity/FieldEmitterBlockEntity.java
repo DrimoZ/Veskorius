@@ -124,7 +124,13 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
     };
 
     public FieldEmitterBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.FIELD_EMITTER.get(), pos, state);
+        this(ModBlockEntities.FIELD_EMITTER.get(), pos, state);
+    }
+
+    /** Pour les variantes d'émetteur (ex. l'Émetteur Accordable). */
+    protected FieldEmitterBlockEntity(net.minecraft.world.level.block.entity.BlockEntityType<?> type,
+                                      BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     // --- Tick ----------------------------------------------------------------
@@ -158,6 +164,10 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
         double cx = pos.getX() + 0.5;
         double cy = pos.getY() + 0.5;
         double cz = pos.getZ() + 0.5;
+        // La coupole porte la COULEUR de la bande harmonique : c'est l'interface
+        // (12-UX) — on lit l'accord d'un coup d'œil, sans ouvrir un GUI. Un champ
+        // dissonant devient plus terne.
+        net.minecraft.core.particles.ParticleOptions dust = bandParticle();
         for (int i = 0; i < FIELD_PULSE_POINTS; i++) {
             // Point uniforme sur la sphère : u = cos(theta) tiré uniformément.
             double u = level.random.nextDouble() * 2.0 - 1.0;
@@ -166,8 +176,30 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
             double x = cx + r * s * Math.cos(phi);
             double y = cy + r * u;
             double z = cz + r * s * Math.sin(phi);
-            level.sendParticles(ParticleTypes.WITCH, x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
+            level.sendParticles(dust, x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
         }
+    }
+
+    /**
+     * Particule de la coupole, teintée par la bande. La saturation baisse avec la
+     * dissonance : un champ qui se dérègle « grisaille » avant même de devenir
+     * instable — le symptôme se voit venir.
+     */
+    private net.minecraft.core.particles.ParticleOptions bandParticle() {
+        int argb = getBand().color();
+        float red = ((argb >> 16) & 0xFF) / 255.0f;
+        float green = ((argb >> 8) & 0xFF) / 255.0f;
+        float blue = (argb & 0xFF) / 255.0f;
+
+        if (HarmonicsConfig.enabled() && dissonance > 0) {
+            float grey = (red + green + blue) / 3.0f;
+            float fouling = Math.min(1.0f, (float) dissonance / HarmonicsConfig.dissonanceCapacity());
+            red = red + (grey - red) * fouling;
+            green = green + (grey - green) * fouling;
+            blue = blue + (grey - blue) * fouling;
+        }
+        return new net.minecraft.core.particles.DustParticleOptions(
+            new org.joml.Vector3f(red, green, blue), 1.0f);
     }
 
     /**

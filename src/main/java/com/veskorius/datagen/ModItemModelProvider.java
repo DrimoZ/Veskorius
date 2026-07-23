@@ -46,6 +46,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         withExistingParent("flux_purifier", modLoc("block/flux_purifier"));
         withExistingParent("resonance_whetstone", modLoc("block/resonance_whetstone"));
         withExistingParent("field_emitter", modLoc("block/field_emitter"));
+        withExistingParent("tunable_field_emitter", modLoc("block/tunable_field_emitter"));
         withExistingParent("crystal_crusher", modLoc("block/crystal_crusher"));
         withExistingParent("crystal_roost", modLoc("block/crystal_roost"));
     }

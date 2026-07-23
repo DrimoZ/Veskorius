@@ -102,6 +102,13 @@ public class ResonanceTunerItem extends Item {
                 return true;
             }
             case ATTUNE -> {
+                // L'Émetteur Accordable : c'est lui qui porte le choix de bande du champ.
+                if (be instanceof com.veskorius.block.entity.TunableFieldEmitterBlockEntity emitter) {
+                    emitter.cycleBand();
+                    actionBar(player, Component.translatable("item.veskorius.resonance_tuner.attuned",
+                        Component.translatable(emitter.getBand().labelKey())));
+                    return true;
+                }
                 if (!(be instanceof AbstractMachineBlockEntity machine)
                     || !machine.supportsHarmonicBand()) {
                     actionBar(player, Component.translatable("item.veskorius.resonance_tuner.no_band"));

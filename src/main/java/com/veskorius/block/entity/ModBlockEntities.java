@@ -42,6 +42,13 @@ public class ModBlockEntities {
                 .of(FieldEmitterBlockEntity::new, ModBlocks.FIELD_EMITTER.get())
                 .build(null));
 
+    /** Émetteur Accordable : même émetteur, bande harmonique choisie (06-Energy.md). */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TunableFieldEmitterBlockEntity>>
+        TUNABLE_FIELD_EMITTER = BLOCK_ENTITIES.register("tunable_field_emitter",
+            () -> BlockEntityType.Builder
+                .of(TunableFieldEmitterBlockEntity::new, ModBlocks.TUNABLE_FIELD_EMITTER.get())
+                .build(null));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CrystalCrusherBlockEntity>>
         CRYSTAL_CRUSHER = BLOCK_ENTITIES.register("crystal_crusher",
             () -> BlockEntityType.Builder

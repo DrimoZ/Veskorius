@@ -51,7 +51,7 @@ public class FieldEmitterBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected MapCodec<FieldEmitterBlock> codec() {
+    protected MapCodec<? extends FieldEmitterBlock> codec() {
         return CODEC;
     }
 
@@ -84,6 +84,11 @@ public class FieldEmitterBlock extends BaseEntityBlock {
         return RenderShape.MODEL;
     }
 
+    /** Type de block entity de cette variante d'émetteur (redéfini par l'Accordable). */
+    protected BlockEntityType<? extends FieldEmitterBlockEntity> emitterType() {
+        return ModBlockEntities.FIELD_EMITTER.get();
+    }
+
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -96,8 +101,7 @@ public class FieldEmitterBlock extends BaseEntityBlock {
         if (level.isClientSide) {
             return null;
         }
-        return createTickerHelper(type, ModBlockEntities.FIELD_EMITTER.get(),
-            FieldEmitterBlockEntity::serverTick);
+        return createTickerHelper(type, emitterType(), FieldEmitterBlockEntity::serverTick);
     }
 
     // --- Interaction : GUI (main vide) et insertion du carburant (cristal) ---

@@ -6,6 +6,7 @@ import com.veskorius.block.entity.ComponentAssemblerBlockEntity;
 import com.veskorius.block.entity.FieldEmitterBlockEntity;
 import com.veskorius.block.entity.FluxPurifierBlockEntity;
 import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
+import com.veskorius.block.entity.TunableFieldEmitterBlockEntity;
 import com.veskorius.config.HarmonicsConfig;
 import com.veskorius.energy.HarmonicBand;
 import com.veskorius.item.ModItems;
@@ -142,6 +143,62 @@ public class HarmonicsGameTests {
                 helper.assertTrue(emitter.getDissonance() == 0,
                     "Une recette stable ne doit produire AUCUNE dissonance, vaut : "
                         + emitter.getDissonance());
+            })
+            .thenSucceed();
+    }
+
+    /** L'Émetteur Accordable fait défiler sa bande (c'est lui qui porte le choix). */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
+    public static void tunableEmitterCyclesBand(GameTestHelper helper) {
+        helper.setBlock(EMITTER, ModBlocks.TUNABLE_FIELD_EMITTER.get());
+        TunableFieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+
+        helper.assertTrue(emitter.getBand() == HarmonicBand.FUNDAMENTAL,
+            "Un Émetteur Accordable démarre sur la Fondamentale");
+        emitter.cycleBand();
+        helper.assertTrue(emitter.getBand() == HarmonicBand.MEDIAN,
+            "Le cycle doit passer à la Médiane, vaut : " + emitter.getBand());
+        emitter.cycleBand();
+        helper.assertTrue(emitter.getBand() == HarmonicBand.HIGH,
+            "Puis à la Haute, vaut : " + emitter.getBand());
+        helper.succeed();
+    }
+
+    /**
+     * Le cœur du système : une machine <b>accordée sur la bande de l'émetteur</b>
+     * travaille proprement — pas de surcoût, pas de dissonance. C'est ce qui rend les
+     * bandes utiles (router l'énergie) plutôt que punitives.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 200)
+    public static void machineMatchingTunableEmitterIsAccorded(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                helper.setBlock(EMITTER, ModBlocks.TUNABLE_FIELD_EMITTER.get());
+                TunableFieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                emitter.setBand(HarmonicBand.MEDIAN);
+                emitter.getFuelHandler().insertItem(FieldEmitterBlockEntity.SLOT_FUEL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+
+                helper.setBlock(PURIFIER, ModBlocks.FLUX_PURIFIER.get());
+                FluxPurifierBlockEntity purifier = helper.getBlockEntity(PURIFIER);
+                purifier.setHarmonicBand(HarmonicBand.MEDIAN); // accordée sur le champ
+                purifier.getInventory().insertItem(FluxPurifierBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 64), false);
+                purifier.getInventory().insertItem(FluxPurifierBlockEntity.SLOT_REDSTONE,
+                    new ItemStack(Items.REDSTONE, 64), false);
+            })
+            .thenExecuteAfter(100, () -> {
+                TunableFieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                FluxPurifierBlockEntity purifier = helper.getBlockEntity(PURIFIER);
+
+                helper.assertFalse(purifier.isDetunedFrom(emitter),
+                    "Même bande que le champ = accordée");
+                helper.assertTrue(emitter.getDissonance() == 0,
+                    "Une machine accordée ne produit aucune dissonance, vaut : "
+                        + emitter.getDissonance());
+                helper.assertTrue(purifier.getData().get(
+                        com.veskorius.block.entity.AbstractMachineBlockEntity.DATA_PROGRESS) > 0,
+                    "La machine accordée doit tourner normalement");
             })
             .thenSucceed();
     }

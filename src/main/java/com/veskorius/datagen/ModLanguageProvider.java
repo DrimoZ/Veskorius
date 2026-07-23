@@ -55,6 +55,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.FLUX_PURIFIER, "Flux Purifier");
         addBlock(ModBlocks.RESONANCE_WHETSTONE, "Resonance Whetstone");
         addBlock(ModBlocks.FIELD_EMITTER, "Field Emitter");
+        addBlock(ModBlocks.TUNABLE_FIELD_EMITTER, "Tunable Field Emitter");
         addBlock(ModBlocks.CRYSTAL_CRUSHER, "Crystal Crusher");
         addBlock(ModBlocks.CRYSTAL_ROOST, "Crystal Roost");
         addBlock(ModBlocks.RESONANCE_CRYSTAL_CLUSTER, "Resonance Crystal Cluster");

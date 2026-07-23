@@ -25,6 +25,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
         horizontalBlock(ModBlocks.FLUX_PURIFIER.get(), cubeAll(ModBlocks.FLUX_PURIFIER.get()));
         horizontalBlock(ModBlocks.RESONANCE_WHETSTONE.get(), cubeAll(ModBlocks.RESONANCE_WHETSTONE.get()));
         horizontalBlock(ModBlocks.FIELD_EMITTER.get(), cubeAll(ModBlocks.FIELD_EMITTER.get()));
+        horizontalBlock(ModBlocks.TUNABLE_FIELD_EMITTER.get(),
+            cubeAll(ModBlocks.TUNABLE_FIELD_EMITTER.get()));
         horizontalBlock(ModBlocks.CRYSTAL_CRUSHER.get(), cubeAll(ModBlocks.CRYSTAL_CRUSHER.get()));
         horizontalBlock(ModBlocks.CRYSTAL_ROOST.get(), cubeAll(ModBlocks.CRYSTAL_ROOST.get()));
 

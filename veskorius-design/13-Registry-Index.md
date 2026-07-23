@@ -144,7 +144,7 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 
 | Registry name | Type | Défini dans | Statut |
 |---|---|---|---|
-| `tunable_field_emitter` | bloc (machine) | 05, 06 | À coder (Phase 2) — choix de bande |
+| `tunable_field_emitter` | bloc (machine) | 05, 06 | ✅ codé — choix de bande au Tuner (mode Accorder) ; hérite du Field Emitter (carburant, réserve, GUI, coupole) |
 | `damping_array` | bloc (machine) | 05, 06 | À coder (Phase 2) — absorbe la dissonance, se sature |
 | `reclaimer` | bloc (machine) | 05 | À coder (Phase 2) — re-stabilise les déchets |
 | `advanced_assembler` | bloc (machine) | 05 | À coder (Phase 2) — produit le `resonance_matrix` |

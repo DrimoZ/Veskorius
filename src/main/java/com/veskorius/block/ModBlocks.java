@@ -177,4 +177,19 @@ public class ModBlocks {
                 .sound(SoundType.METAL)
                 .requiresCorrectToolForDrops()
                 .lightLevel(state -> 4));
+
+    /**
+     * Émetteur Accordable (06-Energy.md) : Field Emitter dont la **bande harmonique se
+     * choisit** au Resonance Tuner. C'est lui qui introduit le choix de fréquence — donc
+     * la possibilité de router l'énergie par bande, sans câbles.
+     */
+    public static final DeferredBlock<TunableFieldEmitterBlock> TUNABLE_FIELD_EMITTER =
+        BLOCKS.registerBlock("tunable_field_emitter",
+            TunableFieldEmitterBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(3.0f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .lightLevel(state -> 5));
 }
