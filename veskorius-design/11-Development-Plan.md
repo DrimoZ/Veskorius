@@ -356,7 +356,7 @@ Ces briques sont transverses : la Phase 2 s'appuie dessus, la coder avant serait
   par couleur restaient inobservables jusqu'à la Phase 2. Le **Flux Purifier** est retenu (seule
   machine qui puise dans le champ sur une recette non `stable`) ; il reste **universel par défaut**
   et le cycle du Tuner **revient à l'universel**, donc rien n'est imposé ni irréversible.
-  ➜ *point à confirmer par le porteur* : c'est le seul écart au « les machines T3 portent une
+  ➜ *✅ confirmé par le porteur (2026-07-24)* : c'est le seul écart au « les machines T3 portent une
   bande » ; le retirer, c'est supprimer un `supportsHarmonicBand()`.
 - **A5 — HUD de champ.** Paquet `veskorius:field_hud` poussé toutes les 10 ticks aux **seuls
   porteurs du Locator** (inventaire ou slot Curios), rien hors champ, effacement par péremption
@@ -384,9 +384,9 @@ conservé) ; le câblage jigsaw est validé par les codecs au datagen et par le 
 - **Décision A — pas de `veskorius-structures.toml`** : la fréquence/espacement/biomes d'une
   structure vanilla vivent dans le JSON `structure_set`/`structure`, **déjà surchargeable par
   datapack** (la doctrine « data-driven d'abord » de `14`). Un TOML redondant serait une « clé qui ne
-  fait rien », ce que `14` interdit explicitement. *(À confirmer, `16` §9.)*
+  fait rien », ce que `14` interdit explicitement. *(✅ Confirmé par le porteur, 2026-07-24.)*
 - **Décision B — tell de surface abandonné** : `/locate` + Locator le remplacent avantageusement (sa
-  raison d'être était le repérage post-T2). *(À confirmer, `16` §9.)*
+  raison d'être était le repérage post-T2). *(✅ Confirmé par le porteur, 2026-07-24.)*
 - **Non couvert par GameTest** : la génération effective en monde réel (placement jigsaw) — se valide
   en `runClient` avec `/locate veskorius:outpost`.
 - **Reste Phase 6** : vrais layouts multi-pièces (aujourd'hui une salle meublée).

@@ -79,7 +79,7 @@ plus commune, ~1 / 800 blocs.
   migration (A7, 2026-07-23).** Sa raison d'être — « repérer une fois le T2 acquis » — est désormais
   couverte, mieux, par `/locate` et le mode Structures du Locator (maintenant fonctionnels). Le
   **premier** Avant-poste se trouve toujours en explorant/creusant (inchangé), aiguillé par le
-  fragment `HINT_WORKSHOP` de l'Habitation Modeste. *(Point à confirmer par le porteur, `16` §9.)*
+  fragment `HINT_WORKSHOP` de l'Habitation Modeste. *(✅ Confirmé par le porteur, 2026-07-24.)*
 
 ---
 

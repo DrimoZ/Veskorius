@@ -10,7 +10,7 @@ de Codex ou observation directe), jamais par un simple compteur de ressources.
 | Tier | Nom | Âge correspondant | Débloqué par | Change dans la lecture du monde |
 |---|---|---|---|---|
 | T1 | Stabilisation | Éveil | Rien (point de départ) | Reconnaît les poches de cristal brut |
-| T2 | Réseau court | Essor | Blueprint restauré à l'Avant-poste (console sur place) | Repère les Avant-postes en surface |
+| T2 | Réseau court | Essor | Blueprint restauré à l'Avant-poste (console sur place) | Le **Resonance Locator** révèle les sources de résonance **et les structures** (`/locate`) — le repérage post-T2, avant assuré par un tell de surface, passe désormais par l'outil (A7) |
 | T3 | Réseau régional | Résonance (début) | Fragment du Sigma Laboratory | Reconnaît les grandes structures à distance |
 | T4 | Synthèse profonde | Résonance (fin) | Fragment de l'Archive Régionale | Accède aux strates profondes en sécurité, relie plusieurs bases |
 | T5 | Rupture de Faille | Effondrement | Découverte d'une Faille active | Voit et peut entrer dans les Failles ; contenu endgame |

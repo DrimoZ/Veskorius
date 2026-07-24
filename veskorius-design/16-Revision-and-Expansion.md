@@ -98,7 +98,7 @@ est une micro-progression satisfaisante ; l'index sert aussi la Phase 2 (trouver
 > `RuinFeature`/`RuinConfiguration` sont **supprimées** (code mort retiré). Choix retenu : **jigsaw à
 > pièce unique** — on honore « structures en jigsaw » (agrandir = ajouter des pièces au pool) sans
 > encore authorer de connecteurs sur des pièces placeholder. **Décisions prises au codage** (à
-> confirmer, voir §9) : (a) le **tell de surface** (pilier) est abandonné — sa raison d'être était
+> ✅ confirmées par le porteur le 2026-07-24) : (a) le **tell de surface** (pilier) est abandonné — sa raison d'être était
 > « repérer une fois le T2 acquis », ce que `/locate` + Locator couvrent mieux ; (b) **pas de
 > `veskorius-structures.toml`** : fréquence/espacement/biomes vivent dans le JSON `structure_set`/
 > `structure`, déjà surchargeable par datapack — un TOML redondant violerait la règle « pas de clé

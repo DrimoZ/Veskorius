@@ -104,7 +104,8 @@ Le **glow** d'une machine en marche prend la couleur de sa bande — le diagnost
 avance un cycle, **clignotant avec la couleur du champ** si elle est désaccordée. Une machine
 universelle n'émet rien.
 
-**Exception unique, décidée au codage (2026-07-23) : le Flux Purifier (T2) est accordable.** Le reste
+**Exception unique, décidée au codage (2026-07-23, ✅ confirmée par le porteur le 2026-07-24) : le
+Flux Purifier (T2) est accordable.** Le reste
 de la règle tient (les machines T1 sont universelles, les T3 porteront une bande), mais sans une
 cible avant la Phase 2, le mode « Accorder » et toute la lecture par couleur n'auraient été
 observables nulle part. Le Purifier est la seule machine qui puise dans le champ sur une recette non
