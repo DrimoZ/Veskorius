@@ -114,6 +114,12 @@ public class ModFrenchLangProvider extends LanguageProvider {
         add("gui.veskorius.hud.unstable", "Champ instable");
         add("item.veskorius.resonance_locator.hud_hint",
             "Portez-le pour lire le champ où vous vous tenez");
+
+        // Décharge de résonance (06 A6) : message de mort de lore.
+        add("death.attack.veskorius.resonance_discharge",
+            "%1$s a été déchiqueté par une décharge de résonance");
+        add("death.attack.veskorius.resonance_discharge.player",
+            "%1$s a été déchiqueté par une décharge de résonance en affrontant %2$s");
         add("item.veskorius.resonance_tuner.current_mode", "Mode courant");
         add("item.veskorius.resonance_tuner.available_modes", "Modes disponibles");
         add("item.veskorius.resonance_tuner.controls", "Commandes");

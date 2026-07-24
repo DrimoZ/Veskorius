@@ -156,6 +156,7 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 | `veskorius:locatable` | tag de structure | 16 | ✅ codé (vide tant que les Structures ne sont pas migrées) |
 | `locator_mode` | data component | 16 | ✅ codé (outil à modes) |
 | `codex_unlocks` | attachment joueur | 15 | ✅ codé |
+| `veskorius:resonance_discharge` | type de dégâts (registre datapack) | 06 | ✅ codé (A6) — dégâts de la décharge AoE d'un champ saturé ; message de mort de lore |
 
 Bandes harmoniques : identifiées par **couleur** côté joueur (violet / cyan / ambre), nombre réglable
 en config — pas de registre dédié tant qu'elles restent un petit ensemble borné.

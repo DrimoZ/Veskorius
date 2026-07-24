@@ -130,6 +130,7 @@ façade, donc il couvre tous les thèmes d'un coup.
 | `harmonics` | `bandCount` | Nombre de bandes harmoniques (défaut 3) |
 | `harmonics` | `detuneOscMultiplier` | Surcoût d'Osc d'une machine désaccordée |
 | `harmonics` | `dissonancePerCycle` / `dischargeThreshold` | Vitesse d'accumulation et seuil de décharge |
+| `harmonics.discharge` | `enabled` / `radius` / `damage` / `releaseFraction` / `cooldownTicks` | **Décharge de résonance** au plafond : impulsion AoE (défauts : activée, rayon 6, 6 dégâts, purge 50 % du plafond, cooldown 100 ticks). `damage=0` garde l'effet visuel/sonore sans blesser ; `enabled=false` retire l'impulsion (la dissonance reste plafonnée) |
 | `harmonics.hud` | `enabled` / `updateIntervalTicks` | HUD de champ : envoi serveur→client aux seuls porteurs du Locator. À `false`, **aucun paquet n'est émis** (défaut : activé, 10 ticks). Indépendant de l'interrupteur maître — harmoniques coupées, le HUD se réduit à la réserve, ce qui reste vrai |
 | `machines` | `augmentSlots` | Nombre de slots d'augment (par machine ou par tier) |
 | `machines` | `augmentStackingMode` | Cumul d'un même effet : interdit / plafonné / libre, dans un slot et entre slots |

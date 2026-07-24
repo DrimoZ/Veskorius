@@ -38,6 +38,7 @@ public class ModDataGenerators {
      * {@link RegistrySetBuilder}.
      */
     private static final RegistrySetBuilder DATAPACK_ENTRIES = new RegistrySetBuilder()
+        .add(Registries.DAMAGE_TYPE, com.veskorius.energy.ModDamageTypes::bootstrap)
         .add(Registries.CONFIGURED_FEATURE, ModWorldGen::bootstrapConfiguredFeatures)
         .add(Registries.PLACED_FEATURE, ModWorldGen::bootstrapPlacedFeatures)
         .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldGen::bootstrapBiomeModifiers);

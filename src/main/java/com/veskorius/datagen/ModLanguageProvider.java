@@ -179,6 +179,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add("item.veskorius.resonance_locator.hud_hint",
             "Carry it to read the field you stand in");
 
+        // Décharge de résonance (06 A6) : message de mort de lore.
+        add("death.attack.veskorius.resonance_discharge",
+            "%1$s was torn apart by a resonance discharge");
+        add("death.attack.veskorius.resonance_discharge.player",
+            "%1$s was torn apart by a resonance discharge while fighting %2$s");
+
         add("item.veskorius.resonance_tuner.current_mode", "Current Mode");
         add("item.veskorius.resonance_tuner.available_modes", "Available Modes");
         add("item.veskorius.resonance_tuner.controls", "Controls");

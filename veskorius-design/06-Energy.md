@@ -101,10 +101,11 @@ jamais par une prise. Aucune conversion cachée.
 > du Tuner**, **Émetteur Accordable** (`tunable_field_emitter` — choix de bande, accordable au
 > Tuner), et **coloration de la coupole par bande** (elle grisaille avec la dissonance).
 >
-> **Complété le 2026-07-23 (suite à 90 GameTest)** : **glow des machines coloré par bande**
-> (clignotant entre les deux couleurs quand la machine est désaccordée) et **HUD de champ**
-> (bande / réserve / dissonance, porteur = Locator, inventaire **ou** slot Curios).
-> **Reste à coder** : décharge de résonance (AoE au maximum de dissonance).
+> **Complété le 2026-07-23 (suite à 90 puis 93 GameTest)** : **glow des machines coloré par bande**
+> (clignotant entre les deux couleurs quand la machine est désaccordée), **HUD de champ**
+> (bande / réserve / dissonance, porteur = Locator, inventaire **ou** slot Curios), et **décharge de
+> résonance** (AoE au plafond de dissonance — voir plus bas). **Le système Harmoniques & Dissonance
+> est désormais complet** ; il ne reste que la passe visuelle de la Phase 6 (textures/HUD).
 >
 > Le désaccord ne devient courant qu'avec les machines T3 (Phase 2). Pour que le mode
 > « Accorder » et la lecture par couleur soient **observables dès maintenant**, le **Flux
@@ -167,6 +168,15 @@ La dissonance **s'accumule dans l'émetteur / le champ** (pas dans une barre cac
 1. la coupole se **désature et grésille** ;
 2. le champ devient **intermittent** (les machines hoquettent) ;
 3. au maximum : **décharge de résonance** — impulsion AoE brève (l'écho local de l'Effondrement).
+
+> **✅ Les trois étapes sont codées (A6 fait le 2026-07-23, suite : 93 GameTest).** La décharge
+> (étape 3) part quand la dissonance atteint son **plafond** : impulsion AoE de rayon 6 qui **blesse**
+> ce qui est à portée (type de dégâts dédié `veskorius:resonance_discharge` → message de mort de
+> lore), avec éclat + son. Elle **purge une fraction du plafond** (soupape, défaut 50 %) : si des
+> machines désaccordées continuent d'injecter, le champ remonte et re-décharge au rythme d'un cooldown
+> lisible ; sinon il se rétablit. **Aucune décharge forcée sur le joueur qui répare** : le Damping
+> Array agit à 16 blocs, la décharge à 6 — on peut donc toujours nettoyer à distance sûre. Tout est
+> réglable (rayon, dégâts, fraction purgée, cooldown), interrupteur dédié compris (`14`).
 
 Elle se gère par **infrastructure**, pas par un slot : le **Damping Array** (`05`) l'absorbe et se
 **sature** (container à purger), en consommant du **Concentrated Flux**. La dissonance évacuée se

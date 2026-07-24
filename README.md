@@ -62,8 +62,11 @@ ce fichier.
   si désaccordée) et **HUD de champ** (bande / réserve / dissonance) visible en portant le
   **Resonance Locator** — inventaire ou slot **Curios** (dépendance douce, par réflexion : aucune
   dépendance de build). **La T1 ne gagne aucune complexité** : une machine sans bande est
-  universelle et n'affiche rien. Interrupteur maître dans `veskorius-harmonics.toml`.
-  Reste : la **décharge de résonance** (AoE au maximum de dissonance).
+  universelle et n'affiche rien. Interrupteur maître dans `veskorius-harmonics.toml`. Au **plafond**
+  de dissonance, l'émetteur libère une **décharge de résonance** : impulsion AoE qui blesse à portée
+  (type de dégâts dédié, message de mort de lore) et purge une partie de la saturation — le champ
+  se rétablit si la cause disparaît, re-décharge sinon. **Le système est complet** (reste la passe
+  visuelle Phase 6).
 - Datagen complet : plus aucun blockstate / modèle / recette / loot table / tag / traduction
   n'est écrit à la main.
 - **Resonance Storage Cell** (#6) : batterie portable (item, 8000 Osc, charge sur l'item via Data
@@ -111,7 +114,7 @@ ce fichier.
 - **Récolte de spore** : la Resonance Veined Stone pousse un `resonance_spore` (état `spored`) sur
   une face exposée en faible luminosité, récolté au clic droit (sans casser la pierre), puis
   repousse — la reproduction du Fileur devient jouable en survie. Taux de pousse configurable.
-- Harnais `GameTest` : **90 tests** (machines, automatisation d'objets, Codex, harmoniques… +
+- Harnais `GameTest` : **93 tests** (machines, automatisation d'objets, Codex, harmoniques… +
   Custode, défense de site, récolte de spore, défauts de config), `./gradlew runGameTestServer`.
   Le serveur de test charge tout le datapack sans erreur. Ce qui est **visuel ou réseau** (rendu des
   GUI et du HUD, particules, coupole, pont Curios) n'est pas couvert ici : ça se valide en

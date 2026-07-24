@@ -25,6 +25,12 @@ public final class HarmonicsConfig {
     public static final ModConfigSpec.IntValue DISSONANCE_CAPACITY;
     public static final ModConfigSpec.DoubleValue DISSONANCE_UNSTABLE_THRESHOLD;
     public static final ModConfigSpec.IntValue DISSONANCE_DECAY_PER_SECOND;
+    public static final ModConfigSpec.BooleanValue DISCHARGE_ENABLED;
+    public static final ModConfigSpec.IntValue DISCHARGE_RADIUS;
+    public static final ModConfigSpec.DoubleValue DISCHARGE_DAMAGE;
+    public static final ModConfigSpec.DoubleValue DISCHARGE_RELEASE_FRACTION;
+    public static final ModConfigSpec.IntValue DISCHARGE_COOLDOWN_TICKS;
+
     public static final ModConfigSpec.IntValue DAMPING_RANGE;
     public static final ModConfigSpec.IntValue DAMPING_CYCLE_TICKS;
 
@@ -77,6 +83,39 @@ public final class HarmonicsConfig {
                 "misbehaving recovers without infrastructure. Set to 0 to require a Damping",
                 "Array. Design default: 1.")
             .defineInRange("dissonanceDecayPerSecond", 1, 0, 1_000_000);
+
+        b.pop();
+
+        b.comment("Resonance discharge: when a field's dissonance reaches its cap, the emitter",
+            "releases a brief AoE pulse — the local echo of the Collapse. This is the third",
+            "and last stage of neglected dissonance (after: dome desaturates, then field",
+            "stutters). It is a consequence you SEE coming, never a silent one.")
+            .push("discharge");
+
+        DISCHARGE_ENABLED = b
+            .comment("Whether a saturated field discharges at all. false = dissonance simply",
+                "stays capped and the field stays unstable, with no pulse.")
+            .define("enabled", true);
+
+        DISCHARGE_RADIUS = b
+            .comment("Radius (blocks) of the discharge pulse. Default: 6.")
+            .defineInRange("radius", 6, 1, 64);
+
+        DISCHARGE_DAMAGE = b
+            .comment("Damage dealt to each living entity caught in the pulse (2.0 = 1 heart).",
+                "0 disables the damage while keeping the sound/particles. Default: 6.0.")
+            .defineInRange("damage", 6.0, 0.0, 1000.0);
+
+        DISCHARGE_RELEASE_FRACTION = b
+            .comment("Fraction of the dissonance cap bled off by one discharge — the relief",
+                "valve. Low = the field keeps discharging until the cause is fixed; high = one",
+                "pulse clears most of it. Default: 0.5.")
+            .defineInRange("releaseFraction", 0.5, 0.0, 1.0);
+
+        DISCHARGE_COOLDOWN_TICKS = b
+            .comment("Minimum ticks between two discharges from the same emitter, so a field",
+                "held at the cap pulses at a readable pace instead of every tick. Default: 100.")
+            .defineInRange("cooldownTicks", 100, 1, 100_000);
 
         b.pop();
 
@@ -142,6 +181,26 @@ public final class HarmonicsConfig {
 
     public static int dissonanceDecayPerSecond() {
         return DISSONANCE_DECAY_PER_SECOND.getAsInt();
+    }
+
+    public static boolean dischargeEnabled() {
+        return DISCHARGE_ENABLED.get();
+    }
+
+    public static int dischargeRadius() {
+        return DISCHARGE_RADIUS.getAsInt();
+    }
+
+    public static double dischargeDamage() {
+        return DISCHARGE_DAMAGE.getAsDouble();
+    }
+
+    public static double dischargeReleaseFraction() {
+        return DISCHARGE_RELEASE_FRACTION.getAsDouble();
+    }
+
+    public static int dischargeCooldownTicks() {
+        return DISCHARGE_COOLDOWN_TICKS.getAsInt();
     }
 
     public static int dampingRange() {

@@ -99,6 +99,13 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
      */
     private int dissonance;
 
+    /**
+     * Compte à rebours entre deux décharges (06-Energy.md, dernière étape de la
+     * dissonance). Transitoire : au pire un émetteur saturé décharge à son premier tick
+     * après un rechargement de chunk — cohérent, pas un bug. Voir {@link #tickDischarge}.
+     */
+    private int dischargeCooldown;
+
     /** Synchronise reserve + capacite vers le GUI (jauge « X/4000 Osc », 12-UX). */
     private final ContainerData data = new ContainerData() {
         @Override
@@ -143,9 +150,104 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
         emitter.refuelIfEmpty();
         emitter.decayDissonance();
 
-        // Coupole visuelle : montre la portée du champ actif (pilier 3).
-        if (level instanceof ServerLevel serverLevel && emitter.isActive()) {
-            emitter.pulseFieldDome(serverLevel, pos);
+        if (level instanceof ServerLevel serverLevel) {
+            emitter.tickDischarge(serverLevel, pos);
+            // Coupole visuelle : montre la portée du champ actif (pilier 3).
+            if (emitter.isActive()) {
+                emitter.pulseFieldDome(serverLevel, pos);
+            }
+        }
+    }
+
+    // --- Décharge de résonance (06-Energy.md, dernière étape) -----------------
+
+    /**
+     * Quand la dissonance atteint son plafond, le champ libère une <b>impulsion AoE
+     * brève</b> — l'écho local de l'Effondrement. C'est la 3<sup>e</sup> et dernière étape
+     * d'une dissonance négligée (après : coupole qui grisaille, puis champ intermittent) ;
+     * une conséquence qu'on voit venir, jamais silencieuse.
+     *
+     * <p>La décharge <b>purge une partie</b> de la saturation (soupape) : si la cause
+     * persiste — des machines désaccordées qui continuent d'injecter — le champ remonte au
+     * plafond et re-décharge, au rythme lisible du cooldown. Sinon, il se rétablit.
+     */
+    private void tickDischarge(ServerLevel level, BlockPos pos) {
+        if (dischargeCooldown > 0) {
+            dischargeCooldown--;
+            return;
+        }
+        if (!shouldDischarge()) {
+            return;
+        }
+        discharge(level, pos);
+        dischargeCooldown = HarmonicsConfig.dischargeCooldownTicks();
+    }
+
+    /** Décision pure « le champ doit-il décharger ? », séparée pour être testable. */
+    public boolean shouldDischarge() {
+        return HarmonicsConfig.enabled()
+            && HarmonicsConfig.dischargeEnabled()
+            && dissonance >= HarmonicsConfig.dissonanceCapacity();
+    }
+
+    private void discharge(ServerLevel level, BlockPos pos) {
+        // Soupape : on évacue une fraction du plafond (au moins 1, sinon un plafond bas
+        // avec une fraction nulle bouclerait sans jamais redescendre).
+        int release = Math.max(1, (int) Math.round(
+            HarmonicsConfig.dissonanceCapacity() * HarmonicsConfig.dischargeReleaseFraction()));
+        addDissonance(-release);
+
+        double radius = HarmonicsConfig.dischargeRadius();
+        net.minecraft.world.phys.Vec3 center = net.minecraft.world.phys.Vec3.atCenterOf(pos);
+
+        double damage = HarmonicsConfig.dischargeDamage();
+        if (damage > 0) {
+            net.minecraft.world.damagesource.DamageSource source = dischargeSource(level);
+            net.minecraft.world.phys.AABB box =
+                new net.minecraft.world.phys.AABB(pos).inflate(radius);
+            double radiusSqr = radius * radius;
+            for (net.minecraft.world.entity.LivingEntity target
+                : level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, box)) {
+                if (target.distanceToSqr(center) > radiusSqr) {
+                    continue; // AABB gonflée = cube ; on garde une portée sphérique
+                }
+                target.hurt(source, (float) damage);
+                // Repoussée vers l'extérieur : l'onde « pousse » visiblement.
+                net.minecraft.world.phys.Vec3 push = target.position().subtract(center);
+                push = (push.lengthSqr() < 1.0e-4 ? new net.minecraft.world.phys.Vec3(0, 1, 0)
+                    : push.normalize()).scale(0.6).add(0, 0.3, 0);
+                target.push(push.x, push.y, push.z);
+            }
+        }
+
+        spawnDischargeParticles(level, center, radius);
+        level.playSound(null, pos, net.minecraft.sounds.SoundEvents.CONDUIT_DEACTIVATE,
+            net.minecraft.sounds.SoundSource.BLOCKS, 1.2f, 0.6f);
+    }
+
+    /** Source de dégâts dédiée (message de mort de lore, voir {@link com.veskorius.energy.ModDamageTypes}). */
+    private static net.minecraft.world.damagesource.DamageSource dischargeSource(ServerLevel level) {
+        return new net.minecraft.world.damagesource.DamageSource(
+            level.registryAccess()
+                .registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                .getHolderOrThrow(com.veskorius.energy.ModDamageTypes.RESONANCE_DISCHARGE));
+    }
+
+    /** Éclat central + onde de particules de la bande sur la sphère de portée. */
+    private void spawnDischargeParticles(ServerLevel level, net.minecraft.world.phys.Vec3 center, double radius) {
+        level.sendParticles(net.minecraft.core.particles.ParticleTypes.EXPLOSION,
+            center.x, center.y, center.z, 1, 0.0, 0.0, 0.0, 0.0);
+        net.minecraft.core.particles.ParticleOptions dust = bandParticle();
+        int points = (int) Math.max(24, radius * 8);
+        for (int i = 0; i < points; i++) {
+            double u = level.random.nextDouble() * 2.0 - 1.0;
+            double phi = level.random.nextDouble() * Math.PI * 2.0;
+            double s = Math.sqrt(1.0 - u * u);
+            level.sendParticles(dust,
+                center.x + radius * s * Math.cos(phi),
+                center.y + radius * u,
+                center.z + radius * s * Math.sin(phi),
+                1, 0.0, 0.0, 0.0, 0.0);
         }
     }
 

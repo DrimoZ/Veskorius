@@ -334,7 +334,7 @@ Ces briques sont transverses : la Phase 2 s'appuie dessus, la coder avant serait
 | A3 | Harmoniques : **Damping Array** + agent de damping data-driven + `resonance_sludge` | `06`, `04` | ✅ **fait** |
 | A4 | Harmoniques : **glow des machines coloré par bande** (clignotant si désaccordé) | `06`, `12` | ✅ **fait** |
 | A5 | Harmoniques : **HUD de champ** (bande / réserve / dissonance), objet en inventaire ou slot **Curios** | `12`, `10` | ✅ **fait** |
-| A6 | Harmoniques : **décharge de résonance** (AoE au maximum de dissonance) | `06` | à faire |
+| A6 | Harmoniques : **décharge de résonance** (AoE au maximum de dissonance) | `06` | ✅ **fait** |
 | A7 | **Migration des structures en jigsaw** + `veskorius-structures.toml` + layouts réels de l'Habitation et de l'Avant-poste | `08`, `16` §2 | à faire |
 | A8 | **Biome `resonant_deeps`** + gaz (MobEffect, intensité par strate, intérieurs scellés) | `07`, `16` §3 | à faire |
 | A9 | **Augments multi-slots** + règles de cumul en config | `05`, `14` | à faire |
@@ -361,6 +361,14 @@ Ces briques sont transverses : la Phase 2 s'appuie dessus, la coder avant serait
 - **Non couvert par GameTest** (visuel/réseau, comme la coupole) : le rendu de l'overlay et des
   particules, et le chemin Curios (le mod n'est pas chargé en `runGameTestServer`) → **passe
   `runClient`** à faire.
+
+**A6 livré le 2026-07-23** (suite : **93 GameTest verts**). La **décharge de résonance** clôt le
+système Harmoniques : au plafond de dissonance, l'émetteur émet une impulsion AoE (rayon 6, dégâts
+via le type dédié `veskorius:resonance_discharge` → message de mort de lore), **purge une fraction du
+plafond** (soupape) puis recommence si la cause persiste. Décision de design : la décharge (6 blocs)
+est plus courte que la portée du Damping Array (16 blocs), donc **il existe toujours un moyen de
+nettoyer sans se faire toucher** — la punition sanctionne la négligence, pas la réparation. Config
+`harmonics.discharge.*` (`14`). **Il ne reste rien du bloc A côté Harmoniques.**
 
 ### Bloc B — Phase 2 (T3) proprement dite
 

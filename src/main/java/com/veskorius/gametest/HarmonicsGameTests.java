@@ -18,6 +18,8 @@ import com.veskorius.network.FieldHudPayload;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -353,6 +355,71 @@ public class HarmonicsGameTests {
                         + "/" + reading.capacity());
             })
             .thenSucceed();
+    }
+
+    /**
+     * Dernière étape de la dissonance : au plafond, le champ <b>décharge</b> — il purge
+     * une partie de sa saturation (soupape) et blesse ce qui est à portée. C'est la
+     * conséquence visible d'une dissonance laissée filer, jamais silencieuse.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 100)
+    public static void saturatedFieldDischargesAndReleases(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                emitter.addDissonance(HarmonicsConfig.dissonanceCapacity());
+                helper.assertTrue(emitter.shouldDischarge(),
+                    "Au plafond, le champ doit être prêt à décharger");
+            })
+            .thenExecuteAfter(5, () -> {
+                FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                // La soupape a évacué une fraction du plafond : plus au max, plus prêt
+                // à re-décharger tant qu'il n'est pas remonté.
+                helper.assertTrue(emitter.getDissonance() < HarmonicsConfig.dissonanceCapacity(),
+                    "La décharge doit purger une partie de la dissonance, vaut : "
+                        + emitter.getDissonance());
+                helper.assertFalse(emitter.shouldDischarge(),
+                    "Après décharge, le champ n'est plus au plafond");
+            })
+            .thenSucceed();
+    }
+
+    /** La décharge blesse ce qui se tient dans son rayon (l'onde AoE). */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 100)
+    public static void dischargeDamagesNearbyEntities(GameTestHelper helper) {
+        Cow cow = helper.spawn(EntityType.COW, EMITTER.offset(1, 0, 0));
+        float fullHealth = cow.getHealth();
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+                emitter.addDissonance(HarmonicsConfig.dissonanceCapacity());
+            })
+            .thenExecuteAfter(5, () -> helper.assertTrue(cow.getHealth() < fullHealth,
+                "La décharge doit blesser une entité à portée, PV : " + cow.getHealth()))
+            .thenSucceed();
+    }
+
+    /**
+     * Interrupteur : décharge désactivée, la dissonance reste plafonnée (le champ reste
+     * instable) mais aucune impulsion ne part. Le modpack maker garde la main.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void dischargeRespectsConfigSwitch(GameTestHelper helper) {
+        chargedEmitter(helper);
+        FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
+        emitter.addDissonance(HarmonicsConfig.dissonanceCapacity());
+
+        if (HarmonicsConfig.dischargeEnabled()) {
+            // Défaut : activée — on vérifie juste que la décision est cohérente.
+            helper.assertTrue(emitter.shouldDischarge(),
+                "Décharge activée + plafond = doit décharger");
+        } else {
+            helper.assertFalse(emitter.shouldDischarge(),
+                "Décharge désactivée = jamais d'impulsion");
+        }
+        helper.succeed();
     }
 
     /**
