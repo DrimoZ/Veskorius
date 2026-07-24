@@ -34,6 +34,13 @@ affirmation de gameplay est accompagnée d'un chiffre ou d'une règle vérifiabl
 Le fichier 11 est la synthèse de tout ce qui précède : il ne réexplique rien, il transforme les
 autres fichiers en tâches ordonnées.
 
+## Guide du joueur (nouveau, 2026-07-24)
+
+Les 16 fichiers ci-dessus sont la référence **de conception** (dev-facing). Pour la traduction
+**jouable** de ce qui est réellement en jeu aujourd'hui (Phase 1 + bloc A), voir le sous-dossier
+**[`guide-joueur/`](guide-joueur/README.md)** : premiers pas T1, le champ T2, Harmoniques &
+Dissonance, la référence des machines/objets, le monde et les créatures — du point de vue du joueur.
+
 ## Ce qui a été corrigé lors de la relecture
 
 - Les machines n'avaient que leur recette de fonctionnement, jamais leur recette de
