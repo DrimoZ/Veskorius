@@ -166,13 +166,12 @@ Tâches, dans l'ordre :
     - ✅ **10c** — Bloc `attunement_console` (généré en Avant-poste, clic droit sur place → blueprint
       T2 si le joueur n'en a pas ; sans objet, non récupérable), advancements de **feedback**
       (`tier1_awakening`, `tier2_field`) déclenchés par la possession de l'objet-repère.
-    - ✅ **10d** — Structures **en tant que feature** (`RuinFeature`), pas le système Structure/jigsaw
-      vanilla : réutilise le pipeline éprouvé des poches (ConfiguredFeature + PlacedFeature +
-      BiomeModifier), donc peu de risque et validable au datagen. Compromis : pas de `/locate`
-      vanilla → repérage par blocs (tell de surface, Locator). Deux ruines (avec/sans console),
-      butin de coffre, souterraines, **tell de surface** (amorce de pierre veinée au-dessus de
-      l'Avant-poste). **Densité/placement à valider en playtest**. Non couvert par GameTest
-      (worldgen), mais le datapack se charge sans erreur au boot du serveur de test.
+    - ✅ **10d** — Structures. *Historique :* d'abord posées **en tant que feature** (`RuinFeature`)
+      pour réutiliser le pipeline des poches sans risque. **Migré depuis en vraies `Structure`
+      jigsaw (A7, 2026-07-23)** : `/locate` fonctionne, le tell de surface est abandonné (voir la note
+      A7 du backlog et `08`). Deux ruines (avec/sans console), butin de coffre, souterraines.
+      **Densité/placement à valider en playtest**. Non couvert par GameTest (worldgen réel), mais le
+      contenu des pièces l'est et le datapack se charge sans erreur au boot du serveur de test.
     - **10e** — Débloque la tâche 8 (le Locator a enfin une cible). ✅ fait (tâche 8).
 
     **Suites immédiates** : migration vers un `DataComponentIngredient`
@@ -191,8 +190,9 @@ Tâches, dans l'ordre :
       GameTest (traite + cooldown, nourriture = spore uniquement, bébé = Fileur). Suite : **42**.
     - ✅ **Custode** codé (2026-07-22) : garde réactif (`Monster`), 30 PV / 6 dégâts, **réactif à
       6 blocs** (via `FOLLOW_RANGE`) + riposte si frappé — jamais agressif à distance (pilier 4).
-      **Posé par la génération de l'Avant-poste** (`RuinFeature`, persistant), pas de spawn naturel
-      errant (« garde un site, pas un territoire »). Drop 2-4 `custode_alloy_fragment`, **substitut
+      **Intégré à la pièce de structure de l'Avant-poste** (entité persistante bakée dans le NBT,
+      depuis la migration A7 ; auparavant posé par `RuinFeature`), pas de spawn naturel errant
+      (« garde un site, pas un territoire »). Drop 2-4 `custode_alloy_fragment`, **substitut
       1:1 du fer** dans toutes les recettes Veskorius via le nouveau tag `veskorius:iron_substitutes`
       (les recettes qui codaient le fer en dur ont été migrées vers ce tag). Œuf d'apparition,
       modèle/renderer placeholder. 3 GameTest (stats du garde, fragment ↔ fer, alerte sur casse de
@@ -335,7 +335,7 @@ Ces briques sont transverses : la Phase 2 s'appuie dessus, la coder avant serait
 | A4 | Harmoniques : **glow des machines coloré par bande** (clignotant si désaccordé) | `06`, `12` | ✅ **fait** |
 | A5 | Harmoniques : **HUD de champ** (bande / réserve / dissonance), objet en inventaire ou slot **Curios** | `12`, `10` | ✅ **fait** |
 | A6 | Harmoniques : **décharge de résonance** (AoE au maximum de dissonance) | `06` | ✅ **fait** |
-| A7 | **Migration des structures en jigsaw** + `veskorius-structures.toml` + layouts réels de l'Habitation et de l'Avant-poste | `08`, `16` §2 | à faire |
+| A7 | **Migration des structures en jigsaw** + layouts réels de l'Habitation et de l'Avant-poste | `08`, `16` §2 | ✅ **fait** (config = JSON datapack, pas de TOML — voir note) |
 | A8 | **Biome `resonant_deeps`** + gaz (MobEffect, intensité par strate, intérieurs scellés) | `07`, `16` §3 | à faire |
 | A9 | **Augments multi-slots** + règles de cumul en config | `05`, `14` | à faire |
 
@@ -369,6 +369,23 @@ plafond** (soupape) puis recommence si la cause persiste. Décision de design : 
 est plus courte que la portée du Damping Array (16 blocs), donc **il existe toujours un moyen de
 nettoyer sans se faire toucher** — la punition sanctionne la négligence, pas la réparation. Config
 `harmonics.discharge.*` (`14`). **Il ne reste rien du bloc A côté Harmoniques.**
+
+**A7 livré le 2026-07-23** (suite : **96 GameTest verts**). L'Habitation Modeste et l'Avant-poste
+sont migrés de `RuinFeature` (feature, supprimée) vers de **vraies `Structure` jigsaw**
+(`ModStructures`) dont les pièces sont des **NBT générés par datagen** (`ModStructurePieceProvider` —
+mur de pierre veinée, coffre à table de loot conservée, console, et **Custode gardien intégré à la
+pièce**). Tag `#veskorius:locatable` rempli → **`/locate` et le mode Structures du Locator
+fonctionnent**. GameTest de contenu (console/coffre/gardien présents, intérieur creux, loot
+conservé) ; le câblage jigsaw est validé par les codecs au datagen et par le boot du serveur de test.
+- **Décision A — pas de `veskorius-structures.toml`** : la fréquence/espacement/biomes d'une
+  structure vanilla vivent dans le JSON `structure_set`/`structure`, **déjà surchargeable par
+  datapack** (la doctrine « data-driven d'abord » de `14`). Un TOML redondant serait une « clé qui ne
+  fait rien », ce que `14` interdit explicitement. *(À confirmer, `16` §9.)*
+- **Décision B — tell de surface abandonné** : `/locate` + Locator le remplacent avantageusement (sa
+  raison d'être était le repérage post-T2). *(À confirmer, `16` §9.)*
+- **Non couvert par GameTest** : la génération effective en monde réel (placement jigsaw) — se valide
+  en `runClient` avec `/locate veskorius:outpost`.
+- **Reste Phase 6** : vrais layouts multi-pièces (aujourd'hui une salle meublée).
 
 ### Bloc B — Phase 2 (T3) proprement dite
 

@@ -90,12 +90,16 @@ ce fichier.
   spawn souterrain (densité à valider en playtest), modèle/renderer placeholder. Met en place le
   socle entités (`ModEntities`, événements d'attributs/placement, rendu client) réutilisable pour
   les mobs suivants. Le Custode et le bloc de récolte du spore restent à coder.
-- **Structures T1-T2 + gatekeeping physique** (`03`/`08`, tâche 10) : deux ruines (Habitation
-  Modeste, Avant-poste) générées comme **feature** (réutilise le pipeline des poches). Le déblocage
-  d'un tier passe par un objet-clé, le `resonance_blueprint` — **ingrédient rendu** dans les recettes
-  du tier (aucune recette masquée, tout est visible dans JEI ; ce qui bloque, c'est de ne pas avoir
-  le plan). Le T2 s'obtient en **réveillant la console** (`attunement_console`) de l'Avant-poste sur
-  place. Les `codex_fragment` sont du lore lisible, pas un gate. Advancements de feedback.
+- **Structures T1-T2 + gatekeeping physique** (`03`/`08`) : deux ruines (Habitation Modeste,
+  Avant-poste) sont de **vraies `Structure` vanilla en jigsaw** (migrées de features, A7). Leurs
+  pièces sont des **NBT générés par datagen** (salle de pierre veinée, coffre à loot, console, et un
+  **Custode gardien intégré** à la pièce de l'Avant-poste). Elles sont taguées `#veskorius:locatable`
+  → **`/locate` et le mode Structures du Locator fonctionnent**. Le déblocage d'un tier passe par un
+  objet-clé, le `resonance_blueprint` — **ingrédient rendu** dans les recettes du tier (aucune
+  recette masquée, tout est visible dans JEI ; ce qui bloque, c'est de ne pas avoir le plan). Le T2
+  s'obtient en **réveillant la console** (`attunement_console`) de l'Avant-poste sur place. Les
+  `codex_fragment` sont du lore lisible, pas un gate. Advancements de feedback. *(Vrais layouts
+  multi-pièces = Phase 6 ; fréquence de génération = JSON `structure_set`, à valider en playtest.)*
 - **Resonance Locator** (#7) : détecteur de résonance à courte portée (~40 blocs). Clic droit →
   ping directionnel vers la source la plus proche — poche de cristal (utile maintenant qu'elles
   sont rares) ou signature de champ (Field Emitter). Batterie interne 100 Osc (5/ping), rechargée
@@ -114,7 +118,7 @@ ce fichier.
 - **Récolte de spore** : la Resonance Veined Stone pousse un `resonance_spore` (état `spored`) sur
   une face exposée en faible luminosité, récolté au clic droit (sans casser la pierre), puis
   repousse — la reproduction du Fileur devient jouable en survie. Taux de pousse configurable.
-- Harnais `GameTest` : **93 tests** (machines, automatisation d'objets, Codex, harmoniques… +
+- Harnais `GameTest` : **96 tests** (machines, automatisation d'objets, Codex, harmoniques, structures… +
   Custode, défense de site, récolte de spore, défauts de config), `./gradlew runGameTestServer`.
   Le serveur de test charge tout le datapack sans erreur. Ce qui est **visuel ou réseau** (rendu des
   GUI et du HUD, particules, coupole, pont Curios) n'est pas couvert ici : ça se valide en

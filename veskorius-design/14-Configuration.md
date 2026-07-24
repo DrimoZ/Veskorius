@@ -108,7 +108,7 @@ trouve immédiatement ce qu'il cherche, et surcharge un thème sans toucher aux 
 | `veskorius-generation.toml` | croissance et aléas lus à l'exécution ; accueillera **gaz par strate** et rareté du biome | ✅ **fait** (`GenerationConfig`) |
 | `veskorius-mobs.toml` | Custodes (PV/dégâts/portées), Fileur, Roost | ✅ **fait** (`MobsConfig`) |
 | `veskorius-harmonics.toml` | **bandes, accord/désaccord, dissonance**, damping, **HUD de champ** — avec **interrupteur maître** (`enabled`) | ✅ **fait** (`HarmonicsConfig`) |
-| `veskorius-structures.toml` | fréquence/espacement/biomes des structures, densité de mobs | à livrer **avec** la migration Structures (`08`) |
+| ~~`veskorius-structures.toml`~~ | fréquence/espacement/biomes des structures | **Non créé (A7, 2026-07-23) — volontairement.** Ces valeurs vivent dans le JSON datapack `structure_set`/`structure` (`ModStructures`), **déjà surchargeable par datapack** : c'est exactement la doctrine « data-driven d'abord » ci-dessous. Un TOML qui les dupliquerait serait une « clé qui ne fait rien » — l'anti-pattern que ce dossier proscrit. *(Décision à confirmer, `16` §9.)* |
 
 **Règle tenue** : une config est livrée **avec le code qu'elle pilote**, jamais en avance — une clé
 qui ne fait rien est un piège pour le modpack maker.

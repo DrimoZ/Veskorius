@@ -14,7 +14,6 @@ public class ModFeatures {
     public static final DeferredHolder<Feature<?>, ResonanceCrystalPocketFeature> CRYSTAL_POCKET =
         FEATURES.register("crystal_pocket", ResonanceCrystalPocketFeature::new);
 
-    /** Small ruins (Modest Dwelling, Outpost) — see {@link RuinFeature}. */
-    public static final DeferredHolder<Feature<?>, RuinFeature> RUIN =
-        FEATURES.register("ruin", RuinFeature::new);
+    // Ruins used to be a Feature ({@code RuinFeature}); they are now real jigsaw
+    // Structures (see ModStructures, A7). No ruin feature remains.
 }

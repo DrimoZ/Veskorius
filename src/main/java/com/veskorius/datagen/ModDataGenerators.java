@@ -41,7 +41,11 @@ public class ModDataGenerators {
         .add(Registries.DAMAGE_TYPE, com.veskorius.energy.ModDamageTypes::bootstrap)
         .add(Registries.CONFIGURED_FEATURE, ModWorldGen::bootstrapConfiguredFeatures)
         .add(Registries.PLACED_FEATURE, ModWorldGen::bootstrapPlacedFeatures)
-        .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldGen::bootstrapBiomeModifiers);
+        .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldGen::bootstrapBiomeModifiers)
+        // Structures jigsaw (A7) : pools de pièces, structures, sets de placement.
+        .add(Registries.TEMPLATE_POOL, com.veskorius.worldgen.ModStructures::bootstrapTemplatePools)
+        .add(Registries.STRUCTURE, com.veskorius.worldgen.ModStructures::bootstrapStructures)
+        .add(Registries.STRUCTURE_SET, com.veskorius.worldgen.ModStructures::bootstrapStructureSets);
 
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
@@ -63,6 +67,10 @@ public class ModDataGenerators {
             new ModRecipeProvider(output, lookupProvider));
         generator.addProvider(event.includeServer(),
             new ModStructureTemplateProvider(output));
+        generator.addProvider(event.includeServer(),
+            new ModStructurePieceProvider(output));
+        generator.addProvider(event.includeServer(),
+            new ModStructureTagsProvider(output, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(),
             new ModAdvancementProvider(output, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(),

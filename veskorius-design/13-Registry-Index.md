@@ -133,9 +133,9 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 
 | Nom en jeu (prose) | Registry name proposé | Défini dans |
 |---|---|---|
-| Habitation Modeste | `modest_dwelling` | 08 (✅ codé — **feature** `veskorius:ruin`, pas une Structure vanilla) |
-| Avant-poste | `outpost` | 08 (✅ codé — feature `veskorius:ruin` avec console) |
-| Poste de Garde | `guard_post` | 08 |
+| Habitation Modeste | `modest_dwelling` | 08 (✅ codé — **vraie `Structure` jigsaw** (A7) : structure + template_pool + structure_set, pièce NBT, `#locatable`) |
+| Avant-poste | `outpost` | 08 (✅ codé — `Structure` jigsaw avec console + Custode gardien intégrés à la pièce NBT) |
+| Poste de Garde | `guard_post` | 08 (À coder Phase 2 — même socle `ModStructures`) |
 | Sigma Laboratory | `sigma_laboratory` | 08 |
 | Archive Régionale | `regional_archive` | 08 |
 | Cœur de Faille (poche générée, pas une structure `structure_set` classique) | `rift_pocket` | 07, 08 |
@@ -153,7 +153,8 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 | `efficiency_core` / `yield_core` / `tuning_core` / `damping_core` | items (augments) | 04, 05 | À coder (Phase 2) |
 | ~~`attunement_lens`~~ | — | 12 | **Abandonné (2026-07-23)** : le HUD de champ est porté par le `resonance_locator`, qui existe déjà et se recharge déjà dans le champ. Un item de plus pour la même fonction n'aurait servi qu'à alourdir la progression |
 | `resonant_deeps` | biome | 07, 16 | À coder (Phase 2) — porte le gaz, abrite les structures profondes |
-| `veskorius:locatable` | tag de structure | 16 | ✅ codé (vide tant que les Structures ne sont pas migrées) |
+| `veskorius:locatable` | tag de structure | 16 | ✅ codé — **rempli** (`modest_dwelling`, `outpost`) depuis la migration A7 → `/locate` + mode Structures du Locator fonctionnels |
+| `modest_dwelling` / `outpost` (structure + template_pool + structure_set) | registres datapack | 08, 16 | ✅ codé (A7) — vraies Structures jigsaw, pièces NBT générées par datagen |
 | `locator_mode` | data component | 16 | ✅ codé (outil à modes) |
 | `codex_unlocks` | attachment joueur | 15 | ✅ codé |
 | `veskorius:resonance_discharge` | type de dégâts (registre datapack) | 06 | ✅ codé (A6) — dégâts de la décharge AoE d'un champ saturé ; message de mort de lore |

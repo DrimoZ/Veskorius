@@ -33,9 +33,10 @@ import org.jetbrains.annotations.Nullable;
  * (porté par la faible portée de suivi {@code FOLLOW_RANGE}) ou s'il se fait
  * frapper. Un joueur qui reste à distance n'est jamais attaqué. 30 PV, 6 de dégâts.
  *
- * Il garde un site : il est posé par la génération de l'Avant-poste
- * ({@code RuinFeature}) plutôt que par un spawn naturel — cohérent avec « les
- * Custodes gardent des sites, pas des territoires » (09-Entities.md).
+ * Il garde un site : il est intégré à la pièce de structure de l'Avant-poste
+ * (voir {@code ModStructurePieceProvider}, entité persistante) plutôt que par un
+ * spawn naturel — cohérent avec « les Custodes gardent des sites, pas des
+ * territoires » (09-Entities.md).
  *
  * Il réagit aussi quand une machine du site est cassée ({@code CustodeAlertHandler}),
  * et patrouille autour de son point de garde ({@code restrictTo} +

@@ -5,7 +5,14 @@ Chaque structure est rattachée à une strate sociale (`02-Lore.md`) et une stra
 
 ## Implémentation : vraies Structures vanilla, en **jigsaw** (décidé 2026-07-23, voir `16` §2)
 
-Les ruines actuelles sont des `RuinFeature` (boîtes creuses posées comme une *feature*) : pas de
+> **✅ CODÉ le 2026-07-23 (A7).** L'Habitation Modeste et l'Avant-poste sont de vraies `Structure`
+> jigsaw (`ModStructures`), leurs pièces des NBT générés par datagen (`ModStructurePieceProvider`),
+> taguées `#veskorius:locatable` → **`/locate` marche, le mode Structures du Locator s'allume**. La
+> `RuinFeature` est supprimée. Pièces placeholder (une salle meublée) ; les vrais layouts
+> multi-pièces sont Phase 6. Les 4 autres structures (Poste de Garde, Sigma, Archive, Faille) restent
+> à créer en Phase 2+ sur ce même socle.
+
+Les ruines étaient des `RuinFeature` (boîtes creuses posées comme une *feature*) : pas de
 `/locate`, pas de vraies pièces. **C'est remplacé** par le système `Structure` vanilla, en **jigsaw**.
 
 Pourquoi jigsaw plutôt qu'un template NBT unique :
@@ -68,8 +75,11 @@ plus commune, ~1 / 800 blocs.
   Field Emitter juste après. Le blueprint **ne vient pas du coffre** mais de la console.
 - **Débloque** : toute la catégorie T2 (le blueprint T2 est l'ingrédient rendu de chaque recette
   T2 — Field Emitter, Flux Purifier, Storage Cell, Crystal Roost, Catalyst Core, Locator).
-- **Tell de surface** : une amorce de pilier en `resonance_veined_stone` (3-4 blocs) au-dessus de
-  l'Avant-poste souterrain, pour le repérer une fois le T2 acquis (pilier 5) et via le Locator.
+- ~~**Tell de surface** : une amorce de pilier en `resonance_veined_stone`.~~ **Abandonné à la
+  migration (A7, 2026-07-23).** Sa raison d'être — « repérer une fois le T2 acquis » — est désormais
+  couverte, mieux, par `/locate` et le mode Structures du Locator (maintenant fonctionnels). Le
+  **premier** Avant-poste se trouve toujours en explorant/creusant (inchangé), aiguillé par le
+  fragment `HINT_WORKSHOP` de l'Habitation Modeste. *(Point à confirmer par le porteur, `16` §9.)*
 
 ---
 
