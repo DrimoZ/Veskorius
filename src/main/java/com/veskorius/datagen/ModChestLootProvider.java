@@ -57,6 +57,20 @@ public class ModChestLootProvider implements LootTableSubProvider {
         // Avant-poste : matériaux pour fabriquer le premier Field Emitter après avoir
         // réveillé la console (fer, redstone, or). Pas de blueprint ici (console).
         output.accept(key(ModWorldGen.OUTPOST_LOOT), LootTable.lootTable()
+            // POOL D'AMORÇAGE GARANTI — brise un verrou de progression : la recette du
+            // Field Emitter exige 4 Resonance Component + 2 Gold, or les Component ne
+            // s'obtiennent qu'au Component Assembler… qui a besoin d'un champ pour tourner,
+            // champ que seul le Field Emitter fournit (dépendance circulaire). L'Avant-poste
+            // fournit donc DE QUOI FABRIQUER EXACTEMENT UN Field Emitter (4 Component + 2 Gold,
+            // garantis), après quoi ce premier champ alimente l'Assembler et la boucle
+            // s'auto-entretient. C'est l'« amorçage T2 » que 08-Structures.md promet.
+            .withPool(LootPool.lootPool()
+                .setRolls(ConstantValue.exactly(1.0f))
+                .add(LootItem.lootTableItem(ModItems.RESONANCE_COMPONENT.get())
+                    .apply(SetItemCountFunction.setCount(ConstantValue.exactly(4.0f))))
+                .add(LootItem.lootTableItem(Items.GOLD_INGOT)
+                    .apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0f)))))
+            // Matériaux d'appoint variés (quantités aléatoires, en plus de l'amorçage).
             .withPool(LootPool.lootPool()
                 .setRolls(UniformGenerator.between(2.0f, 4.0f))
                 .add(LootItem.lootTableItem(Items.IRON_INGOT)

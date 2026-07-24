@@ -142,7 +142,7 @@ varie par tier**, pour que le gatekeeping ne soit pas répétitif :
 
 | Tier | Structure | Comment on obtient le blueprint |
 |---|---|---|
-| T2 | Avant-poste | **Restaurer** une console ancienne sur place (clic droit) |
+| T2 | Avant-poste | **Restaurer** une console ancienne sur place (clic droit). Le coffre fournit en plus l'**amorçage garanti** (4 Resonance Component + 2 Gold) pour fabriquer le premier Field Emitter — sans quoi la progression serait verrouillée par une dépendance circulaire (Component ⇄ champ). Voir `08`. |
 | T3 | Sigma Laboratory | **Réparer** 2 Relais → ouvre la salle centrale → le blueprint y est |
 | T4 | Archive Régionale | **Collecter/ordonner** 4 fragments → ouvre la salle → blueprint + 3 Hyper Refined |
 | T5 | Faille | Pas de blueprint : la **découverte + pose** du Rift Anchor *est* la porte |

@@ -71,8 +71,16 @@ plus commune, ~1 / 800 blocs.
   elle se remet en marche le temps d'un cycle et remet au joueur le **`resonance_blueprint` T2**
   (s'il n'en a pas déjà un). La console ne se récupère pas (minée = gravats). C'est la porte du T2 :
   *faire fonctionner l'ancienne machine là où elle se tient*.
-- **Loot** (coffre-atelier) : matériaux d'amorçage T2 (fer, redstone, or) pour fabriquer le premier
-  Field Emitter juste après. Le blueprint **ne vient pas du coffre** mais de la console.
+- **Loot** (coffre-atelier) : **amorçage T2 garanti** = **4 Resonance Component + 2 Gold Ingot** (de
+  quoi fabriquer **exactement un** Field Emitter), plus des matériaux d'appoint aléatoires (fer,
+  redstone, or). Le blueprint **ne vient pas du coffre** mais de la console.
+  > **⚠️ Pourquoi les Component sont garantis (corrigé le 2026-07-24).** La recette du Field Emitter
+  > exige 4 Component ; or les Component ne s'obtiennent qu'au **Component Assembler**, qui **a besoin
+  > d'un champ** pour tourner — champ que **seul le Field Emitter** fournit. Sans amorçage, **dépendance
+  > circulaire** : un joueur neuf ne pourrait jamais atteindre le T2. L'Avant-poste fournit donc le
+  > premier lot de Component ; ce premier champ alimente ensuite l'Assembler et la boucle
+  > s'auto-entretient. (Le loot listait « fer/redstone/or », qui ne correspondent pas à la recette :
+  > l'omission est réparée, un GameTest garantit désormais ce lot.)
 - **Débloque** : toute la catégorie T2 (le blueprint T2 est l'ingrédient rendu de chaque recette
   T2 — Field Emitter, Flux Purifier, Storage Cell, Crystal Roost, Catalyst Core, Locator).
 - ~~**Tell de surface** : une amorce de pilier en `resonance_veined_stone`.~~ **Abandonné à la

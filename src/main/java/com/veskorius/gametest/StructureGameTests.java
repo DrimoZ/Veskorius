@@ -65,6 +65,39 @@ public class StructureGameTests {
         helper.succeed();
     }
 
+    /**
+     * <b>Anti-régression de progression.</b> La recette du Field Emitter exige 4 Resonance
+     * Component, or ceux-ci ne s'obtiennent qu'au Component Assembler — qui a besoin d'un
+     * champ, que seul le Field Emitter fournit. L'Avant-poste doit donc <b>garantir</b> de
+     * quoi fabriquer le premier Field Emitter, sinon un joueur neuf ne peut jamais atteindre
+     * le T2. Ce test roule la table de loot et vérifie l'amorçage garanti.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
+    public static void outpostLootGuaranteesBootstrapComponents(GameTestHelper helper) {
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        net.minecraft.world.level.storage.loot.LootTable table = level.getServer()
+            .reloadableRegistries()
+            .getLootTable(net.minecraft.resources.ResourceKey.create(
+                net.minecraft.core.registries.Registries.LOOT_TABLE,
+                com.veskorius.worldgen.ModWorldGen.OUTPOST_LOOT));
+        net.minecraft.world.level.storage.loot.LootParams params =
+            new net.minecraft.world.level.storage.loot.LootParams.Builder(level)
+                .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN,
+                    net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(ANCHOR)))
+                .create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.CHEST);
+
+        int components = 0;
+        for (net.minecraft.world.item.ItemStack stack : table.getRandomItems(params)) {
+            if (stack.is(com.veskorius.item.ModItems.RESONANCE_COMPONENT.get())) {
+                components += stack.getCount();
+            }
+        }
+        helper.assertTrue(components >= 4,
+            "L'Avant-poste doit garantir >= 4 Resonance Component (amorçage du 1er Field "
+                + "Emitter), vaut : " + components);
+        helper.succeed();
+    }
+
     /** L'intérieur est bien creusé (air), pas un bloc plein : on peut y entrer. */
     @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
     public static void pieceInteriorIsHollow(GameTestHelper helper) {
