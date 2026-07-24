@@ -337,10 +337,14 @@ Ces briques sont transverses : la Phase 2 s'appuie dessus, la coder avant serait
 | A6 | Harmoniques : **décharge de résonance** (AoE au maximum de dissonance) | `06` | ✅ **fait** |
 | A7 | **Migration des structures en jigsaw** + layouts réels de l'Habitation et de l'Avant-poste | `08`, `16` §2 | ✅ **fait** (config = JSON datapack, pas de TOML — voir note) |
 | A8 | **Biome `resonant_deeps`** + gaz (MobEffect, intensité par strate, intérieurs scellés) | `07`, `16` §3 | à faire |
-| A9 | **Augments multi-slots** + règles de cumul en config | `05`, `14` | à faire |
+| A9 | **Augments multi-slots** + règles de cumul en config | `05`, `14` | ✅ **fait** |
 
 > A7 et A8 sont les deux plus gros. A7 débloque au passage le **mode Structures du Locator** (déjà
 > codé, en sommeil tant qu'aucune structure n'est taguée `#veskorius:locatable`).
+>
+> **État au 2026-07-23 : A0-A7 et A9 sont FAITS. Seul A8 reste** — et il est délibérément repoussé au
+> début de la Phase 2 (dépendance de contenu T3 + décision d'injection de biome). Voir les notes
+> détaillées de chaque item plus bas.
 
 **A4 + A5 livrés le 2026-07-23** (suite : **90 GameTest verts**). Ce que ça change concrètement :
 
@@ -386,6 +390,25 @@ conservé) ; le câblage jigsaw est validé par les codecs au datagen et par le 
 - **Non couvert par GameTest** : la génération effective en monde réel (placement jigsaw) — se valide
   en `runClient` avec `/locate veskorius:outpost`.
 - **Reste Phase 6** : vrais layouts multi-pièces (aujourd'hui une salle meublée).
+
+**A9 livré le 2026-07-23** (suite : **100 GameTest verts**). Le slot d'augment unique devient
+**N slots** : chaque machine en réserve `MAX_AUGMENT_SLOTS` (4), le nombre **actif** est en config
+(`machines.augment.augmentSlots`, **défaut 1 = comportement historique exact**), les slots réservés
+au-delà refusent les objets, et une **règle de cumul** (`augmentStacking` FORBID/CAPPED/FREE) borne le
+cumul d'un même effet (bonus composé, ÷ mult^k). Fonction de cumul pure et testée ; la taille
+d'inventaire reste fixe (indépendante de la config) ; augments jamais exposés à l'automatisation.
+Layout GUI placeholder (colonne verticale) — vraie disposition en Phase 6.
+
+**⚠️ A8 (biome `resonant_deeps` + gaz) — NON fait, bloqué sur décision + dépendance Phase 2 :**
+1. **Injection de biome** : ajouter un biome custom à la source de l'Overworld vanilla n'a **pas d'API
+   NeoForge propre** (les `BiomeModifier` ne modifient que les biomes existants) → il faut soit une
+   **dépendance TerraBlender**, soit surcharger la source de biomes vanilla (fragile, conflits). C'est
+   une décision de dépendance/compat qui revient au porteur (et `16` §3 marque « nom/rareté/effet »
+   comme OUVERT).
+2. **Boucle punitive** : le gaz est conçu pour être atténué par le **Driller** et l'**armure
+   Veskorienne**, tous deux du **contenu T3 (Phase 2)**. Livrer un gaz qui blesse sans ces mitigations,
+   c'est recréer exactement la boucle punitive que la révision (`16` §3) cherchait à supprimer.
+   → **A8 est donc à traiter au début de la Phase 2**, pas avant. Voir la question posée au porteur.
 
 ### Bloc B — Phase 2 (T3) proprement dite
 

@@ -55,9 +55,19 @@ public abstract class AbstractMachineMenu extends AbstractContainerMenu {
      */
     protected abstract void addMachineSlots(IItemHandler inventory);
 
-    /** Slot d'augment : dernier slot, present sur toutes les machines actives. */
+    /**
+     * Slots d'augment (05-Machines.md, « slot d'augment → slots d'augment »). Ajoute le
+     * nombre <b>actif</b> de slots (config, défaut 1 → un seul slot en {@code (x, y)},
+     * exactement comme avant), empilés verticalement. Les slots réservés mais inactifs ne
+     * reçoivent aucun widget. Serveur et client lisent la même config SERVER (synchronisée),
+     * donc le nombre de slots est cohérent des deux côtés. Layout placeholder (Phase 6).
+     */
     protected void addAugmentSlot(IItemHandler inventory, int x, int y) {
-        addSlot(new SlotItemHandler(inventory, blockEntity.getAugmentSlot(), x, y));
+        int first = blockEntity.getAugmentSlot();
+        int active = blockEntity.getActiveAugmentSlots();
+        for (int i = 0; i < active; i++) {
+            addSlot(new SlotItemHandler(inventory, first + i, x, y + i * 18));
+        }
     }
 
     /** Slot de sortie : jamais remplissable a la main (isItemValid renvoie false). */

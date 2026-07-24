@@ -132,8 +132,8 @@ façade, donc il couvre tous les thèmes d'un coup.
 | `harmonics` | `dissonancePerCycle` / `dischargeThreshold` | Vitesse d'accumulation et seuil de décharge |
 | `harmonics.discharge` | `enabled` / `radius` / `damage` / `releaseFraction` / `cooldownTicks` | **Décharge de résonance** au plafond : impulsion AoE (défauts : activée, rayon 6, 6 dégâts, purge 50 % du plafond, cooldown 100 ticks). `damage=0` garde l'effet visuel/sonore sans blesser ; `enabled=false` retire l'impulsion (la dissonance reste plafonnée) |
 | `harmonics.hud` | `enabled` / `updateIntervalTicks` | HUD de champ : envoi serveur→client aux seuls porteurs du Locator. À `false`, **aucun paquet n'est émis** (défaut : activé, 10 ticks). Indépendant de l'interrupteur maître — harmoniques coupées, le HUD se réduit à la réserve, ce qui reste vrai |
-| `machines` | `augmentSlots` | Nombre de slots d'augment (par machine ou par tier) |
-| `machines` | `augmentStackingMode` | Cumul d'un même effet : interdit / plafonné / libre, dans un slot et entre slots |
+| `machines.augment` | `augmentSlots` | ✅ **codé (A9)** — nombre de slots d'augment actifs, 1-4 (défaut **1** = comportement historique). Max réservé fixe (4) |
+| `machines.augment` | `augmentStacking` / `augmentStackingCap` | ✅ **codé (A9)** — cumul d'un même effet entre slots : `FORBID` / `CAPPED` (+ cap) / `FREE` (défaut). Ne mord qu'avec >1 slot |
 | `machines` | `overheatIgnoresStable` | La surchauffe garde-t-elle son risque sur une recette `stable` ? |
 | `generation` | `gasIntensityByStrata` | Intensité du gaz de Résonance par strate (**garantit le scaling de difficulté**, voir `07`) |
 

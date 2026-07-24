@@ -2,6 +2,7 @@ package com.veskorius.block.entity;
 
 import com.veskorius.block.AbstractMachineBlock;
 import com.veskorius.config.HarmonicsConfig;
+import com.veskorius.config.MachinesConfig;
 import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.energy.HarmonicBand;
 import com.veskorius.energy.IResonanceField;
@@ -181,10 +182,20 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         }
     };
 
+    /**
+     * @param slotCount nombre de slots <b>déclarés</b> par la machine, dont le dernier est
+     *                  son (premier) slot d'augment. Le socle réserve en plus
+     *                  {@code MAX_AUGMENT_SLOTS - 1} slots d'augment supplémentaires à la
+     *                  suite (05-Machines.md, « slot d'augment → slots d'augment ») : la
+     *                  taille réelle de l'inventaire est donc plus grande, mais l'indice du
+     *                  premier slot d'augment ({@code slotCount - 1}) reste celui que la
+     *                  machine connaît — ses constantes {@code SLOT_AUGMENT} restent justes.
+     */
     protected AbstractMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int slotCount) {
         super(type, pos, state);
         this.augmentSlot = slotCount - 1;
-        this.inventory = new ItemStackHandler(slotCount) {
+        int totalSlots = augmentSlot + MachinesConfig.MAX_AUGMENT_SLOTS;
+        this.inventory = new ItemStackHandler(totalSlots) {
             @Override
             protected void onContentsChanged(int slot) {
                 setChanged();
@@ -543,14 +554,58 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         setChanged();
     }
 
-    // --- Augment -------------------------------------------------------------
+    // --- Augment (N slots, 05-Machines.md) -----------------------------------
 
+    /** Premier slot d'augment (les suivants sont contigus jusqu'à {@link #getMaxAugmentSlots()}). */
     public int getAugmentSlot() {
         return augmentSlot;
     }
 
+    /** Nombre de slots d'augment matériellement réservés (fixe, indépendant de la config). */
+    public int getMaxAugmentSlots() {
+        return MachinesConfig.MAX_AUGMENT_SLOTS;
+    }
+
+    /** Nombre de slots d'augment <b>actifs</b> (utilisables), piloté par la config. */
+    public int getActiveAugmentSlots() {
+        return Math.clamp(MachinesConfig.augmentSlots(), 1, MachinesConfig.MAX_AUGMENT_SLOTS);
+    }
+
+    /** Vrai si {@code slot} est un slot d'augment (actif ou réservé). */
+    public boolean isAugmentSlot(int slot) {
+        return slot >= augmentSlot && slot < augmentSlot + MachinesConfig.MAX_AUGMENT_SLOTS;
+    }
+
+    /** Vrai si {@code slot} est un slot d'augment <b>actif</b> (dans le nombre configuré). */
+    public boolean isActiveAugmentSlot(int slot) {
+        return slot >= augmentSlot && slot < augmentSlot + getActiveAugmentSlots();
+    }
+
+    /** Nombre d'augments présents dans les slots actifs (avant règle de cumul). */
+    public int countAugments() {
+        int count = 0;
+        int active = getActiveAugmentSlots();
+        for (int i = 0; i < active; i++) {
+            if (inventory.getStackInSlot(augmentSlot + i).is(ModTags.Items.MACHINE_AUGMENTS)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public boolean hasAugment() {
-        return inventory.getStackInSlot(augmentSlot).is(ModTags.Items.MACHINE_AUGMENTS);
+        return countAugments() > 0;
+    }
+
+    /**
+     * Nombre d'augments <b>effectif</b> après application de la règle de cumul (config).
+     * Aujourd'hui, tous les augments partagent le même effet (vitesse, Catalyst Core),
+     * donc la règle s'applique à ce groupe unique ; quand des effets distincts arriveront
+     * (Efficiency/Yield/Tuning Core, Phase 2), elle s'appliquera par type d'effet.
+     */
+    public int effectiveAugmentCount() {
+        return MachinesConfig.effectiveStack(countAugments(),
+            MachinesConfig.augmentStacking(), MachinesConfig.augmentStackingCap());
     }
 
     /**
@@ -565,8 +620,12 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         if (isOverheatActive()) {
             base = Math.max(1, (int) Math.round(base / VeskoriusConfig.overheatSpeedMultiplier()));
         }
-        if (hasAugment()) {
-            base = Math.max(1, (int) Math.round(base / VeskoriusConfig.augmentSpeedMultiplier()));
+        // Chaque Catalyst Core divise le temps par le multiplicateur, en composant : k
+        // cœurs → /mult^k. La règle de cumul (config) borne k (défaut FREE).
+        int cores = effectiveAugmentCount();
+        if (cores > 0) {
+            double factor = Math.pow(VeskoriusConfig.augmentSpeedMultiplier(), cores);
+            base = Math.max(1, (int) Math.round(base / factor));
         }
         return Math.max(1, base);
     }
@@ -759,8 +818,10 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
      * l'insertion manuelle dans leur slot de sortie.
      */
     protected boolean isItemValid(int slot, ItemStack stack) {
-        if (slot == augmentSlot) {
-            return stack.is(ModTags.Items.MACHINE_AUGMENTS);
+        if (isAugmentSlot(slot)) {
+            // Un slot d'augment n'accepte qu'un augment, et seulement s'il est ACTIF
+            // (le nombre de slots actifs est réglé en config ; les réservés refusent).
+            return isActiveAugmentSlot(slot) && stack.is(ModTags.Items.MACHINE_AUGMENTS);
         }
         return true;
     }
@@ -825,7 +886,15 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
+        int expectedSlots = augmentSlot + MachinesConfig.MAX_AUGMENT_SLOTS;
         inventory.deserializeNBT(registries, tag.getCompound("inventory"));
+        // deserializeNBT redimensionne le handler à la taille sauvegardée : une machine
+        // enregistrée avant l'ajout des slots d'augment multiples (ou avec un MAX
+        // différent) reviendrait trop petite, faussant l'indexation des augments. On
+        // rétablit la taille attendue (setSize conserve les stacks chargés, complète en vide).
+        if (inventory.getSlots() != expectedSlots) {
+            inventory.setSize(expectedSlots);
+        }
         progress = tag.getInt("progress");
         // Machine allumee par defaut pour un bloc pose avant l'ajout de ce champ.
         manualEnabled = !tag.contains("manualEnabled") || tag.getBoolean("manualEnabled");

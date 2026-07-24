@@ -118,7 +118,7 @@ ce fichier.
 - **Récolte de spore** : la Resonance Veined Stone pousse un `resonance_spore` (état `spored`) sur
   une face exposée en faible luminosité, récolté au clic droit (sans casser la pierre), puis
   repousse — la reproduction du Fileur devient jouable en survie. Taux de pousse configurable.
-- Harnais `GameTest` : **96 tests** (machines, automatisation d'objets, Codex, harmoniques, structures… +
+- Harnais `GameTest` : **100 tests** (machines, augments, automatisation d'objets, Codex, harmoniques, structures… +
   Custode, défense de site, récolte de spore, défauts de config), `./gradlew runGameTestServer`.
   Le serveur de test charge tout le datapack sans erreur. Ce qui est **visuel ou réseau** (rendu des
   GUI et du HUD, particules, coupole, pont Curios) n'est pas couvert ici : ça se valide en
@@ -159,8 +159,11 @@ deviner où on en est.
 
 Elles ne sont pas décoratives — s'en écarter casse le socle générique :
 
-- **Le dernier slot de l'inventaire d'une machine est toujours le slot d'augment.** C'est ce qui
-  permet à `AbstractMachineBlockEntity` de gérer l'augment sans code par machine.
+- **Le dernier slot déclaré d'une machine est son (premier) slot d'augment.** Le socle en réserve
+  `MAX_AUGMENT_SLOTS` (4) à la suite ; le nombre **actif** est réglable en config (`augmentSlots`,
+  défaut 1 = comportement historique), avec une **règle de cumul** (FORBID/CAPPED/FREE) qui borne le
+  cumul d'un même effet. C'est ce qui permet à `AbstractMachineBlockEntity` de gérer les augments
+  sans code par machine.
 - **Les slots de la machine sont ajoutés au menu avant l'inventaire du joueur**, donc l'indice
   d'un slot dans le menu est exactement son indice dans l'inventaire de la block entity.
 - **Une entrée qui aura d'autres membres plus tard passe par un tag, pas par un item en dur**

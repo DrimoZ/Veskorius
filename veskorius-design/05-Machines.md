@@ -125,9 +125,22 @@ Levier direct pour un modpack maker : rendre increvable ce qu'il veut, sans touc
 
 ### Slot d'augment → slots d'augment
 
-Le slot unique devient **N slots configurables** (par machine ou par tier), avec des **règles de
-cumul** réglables : un même effet est-il cumulable dans un slot / entre slots, avec quel plafond ?
-Tout est en config (`14`). Nouveaux augments prévus, au-delà du Catalyst Core (+15 % vitesse) :
+Le slot unique devient **N slots configurables**, avec des **règles de cumul** réglables : un même
+effet est-il cumulable entre slots, avec quel plafond ? Tout est en config (`14`).
+
+> **✅ Codé le 2026-07-23 (A9, suite : 100 GameTest).** Chaque machine **réserve
+> `MAX_AUGMENT_SLOTS` (4)** slots d'augment ; le nombre **actif** est piloté par
+> `machines.augment.augmentSlots` (**défaut 1 → comportement historique exact**). Les slots réservés
+> au-delà **refusent les objets**. La **règle de cumul** (`augmentStacking` : FORBID / CAPPED / FREE,
+> + `augmentStackingCap`) borne le nombre d'exemplaires d'un même effet ; le bonus se **compose**
+> (k Catalyst Cores → temps ÷ mult^k). Fonction de cumul **pure et testée**. Détail : la taille
+> d'inventaire est fixe (indépendante de la config, sinon les sauvegardes se désaligneraient) ; la
+> règle s'applique aujourd'hui au seul effet existant (vitesse), et **par type d'effet** quand les
+> augments distincts (Efficiency/Yield/Tuning/Damping Core) arriveront en Phase 2. Les augments ne
+> sont **jamais** exposés à l'automatisation d'objets (comme avant). Layout GUI = colonne verticale
+> placeholder (vraie disposition en Phase 6).
+
+Nouveaux augments prévus, au-delà du Catalyst Core (+15 % vitesse) :
 
 | Augment | Effet |
 |---|---|
