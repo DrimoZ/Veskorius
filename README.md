@@ -118,11 +118,12 @@ ce fichier.
 - **Récolte de spore** : la Resonance Veined Stone pousse un `resonance_spore` (état `spored`) sur
   une face exposée en faible luminosité, récolté au clic droit (sans casser la pierre), puis
   repousse — la reproduction du Fileur devient jouable en survie. Taux de pousse configurable.
-- Harnais `GameTest` : **100 tests** (machines, augments, automatisation d'objets, Codex, harmoniques, structures… +
-  Custode, défense de site, récolte de spore, défauts de config), `./gradlew runGameTestServer`.
-  Le serveur de test charge tout le datapack sans erreur. Ce qui est **visuel ou réseau** (rendu des
-  GUI et du HUD, particules, coupole, pont Curios) n'est pas couvert ici : ça se valide en
-  `runClient`.
+- Harnais `GameTest` : **101 tests** (machines, augments, automatisation d'objets, Codex, harmoniques, structures… +
+  Custode, défense de site, récolte de spore, amorçage T2 garanti, défauts de config),
+  `./gradlew runGameTestServer`. Le serveur de test charge tout le datapack sans erreur. Ce qui est
+  **visuel ou réseau** (rendu des GUI et du HUD, particules, coupole, génération réelle des
+  structures) n'est pas couvert ici : ça se valide en `runClient` — **passe faite le 2026-07-25, tout
+  est bon** (seul le pont **Curios** reste non vérifié, le mod n'étant pas une dépendance de dev).
 - **Intégration JEI** (dev) : les recettes des 4 machines s'affichent dans JEI, une catégorie par
   machine, avec temps et Osc/tick. JEI est en `compileOnly` (API) + `localRuntime` (mod complet
   dans `runClient`), pas exporté dans le jar. Sert à vérifier les recettes en jeu.

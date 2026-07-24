@@ -289,6 +289,23 @@ Reste non couvert côté visuel : le GUI du Field Emitter (jauge de réserve, pa
 l'affichage du compteur d'Osc dans les GUI, et l'icône flamme d'état de surchauffe sur la barre
 (distincte du bouton de contrôle) — tous prévus à la passe visuelle de la Phase 6 (12-UX).
 
+**Validation visuelle du 2026-07-25 — passe du bloc A (`runClient`)** : ✅ **tout est bon**, rien à
+corriger. Couvre précisément ce qu'aucun GameTest ne peut atteindre :
+- **A4/A5** — glow des machines coloré par bande, clignotement en désaccord, coupole colorée, et le
+  **HUD de champ** (bande / réserve / dissonance) porté par le Locator dans l'**inventaire**.
+- **A6** — la **décharge de résonance** (impulsion AoE, particules, son) au plafond de dissonance.
+- **A7** — la **génération réelle des structures jigsaw** : `/locate` les trouve, l'Habitation et
+  l'Avant-poste génèrent correctement (console, coffre, Custode gardien). C'était le seul point du
+  bloc A qui ne reposait que sur les codecs et le boot du serveur de test.
+- **A9** — les slots d'augment dans le GUI.
+- **Chargement propre** : session complète sans une seule exception ni erreur d'asset ; les 5 fichiers
+  de config sont bien pris en compte (`basics`/`machines`/`generation`/`mobs`/`harmonics`).
+
+**Seul angle mort restant** : le **chemin Curios** du HUD (Curios n'est pas une dépendance de dev, le
+mod n'est donc pas chargé en `runClient`). Le chemin par défaut — inventaire — est validé ici et
+couvert par GameTest ; le pont Curios se vérifiera le jour où on installe le mod (il est conçu pour
+se désactiver proprement s'il échoue, voir `10`).
+
 Règle pour les 22 machines suivantes : **une machine n'est finie que quand ses GameTest passent.**
 La valeur de référence (durée de cycle, quantités) est réécrite dans le test plutôt qu'importée
 depuis la machine, pour qu'un changement de valeur non répercuté ici fasse échouer la suite.
@@ -363,8 +380,10 @@ Ces briques sont transverses : la Phase 2 s'appuie dessus, la coder avant serait
   côté client. Lit le champ **couvrant** (et non « actif ») pour ne pas clignoter sur un émetteur
   saturé. Réglages sous `harmonics.hud` (`14`).
 - **Non couvert par GameTest** (visuel/réseau, comme la coupole) : le rendu de l'overlay et des
-  particules, et le chemin Curios (le mod n'est pas chargé en `runGameTestServer`) → **passe
-  `runClient`** à faire.
+  particules, et le chemin Curios (le mod n'est pas chargé en `runGameTestServer`) → **✅ validé en
+  `runClient` le 2026-07-25** (voir la note de validation visuelle en fin de section). **Sauf le
+  chemin Curios** : Curios n'est pas dans les dépendances de dev, il reste donc à vérifier le jour où
+  on l'installe (le chemin par défaut — inventaire — est, lui, validé et testé).
 
 **A6 livré le 2026-07-23** (suite : **93 GameTest verts**). La **décharge de résonance** clôt le
 système Harmoniques : au plafond de dissonance, l'émetteur émet une impulsion AoE (rayon 6, dégâts
@@ -387,8 +406,8 @@ conservé) ; le câblage jigsaw est validé par les codecs au datagen et par le 
   fait rien », ce que `14` interdit explicitement. *(✅ Confirmé par le porteur, 2026-07-24.)*
 - **Décision B — tell de surface abandonné** : `/locate` + Locator le remplacent avantageusement (sa
   raison d'être était le repérage post-T2). *(✅ Confirmé par le porteur, 2026-07-24.)*
-- **Non couvert par GameTest** : la génération effective en monde réel (placement jigsaw) — se valide
-  en `runClient` avec `/locate veskorius:outpost`.
+- **Non couvert par GameTest** : la génération effective en monde réel (placement jigsaw) — **✅
+  validé en `runClient` le 2026-07-25** (`/locate` trouve les structures, elles génèrent bien).
 - **Reste Phase 6** : vrais layouts multi-pièces (aujourd'hui une salle meublée).
 
 **A9 livré le 2026-07-23** (suite : **100 GameTest verts**). Le slot d'augment unique devient

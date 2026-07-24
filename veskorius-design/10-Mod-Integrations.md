@@ -67,6 +67,13 @@ prérequis. Le comportement par défaut (sans le mod) reste complet et testé en
 >
 > Contrepartie assumée : le slot Curios ne peut pas être vérifié en test automatisé (Curios n'est
 > pas chargé dans `runGameTestServer`). Il se valide à la main, en `runClient` avec le mod installé.
+>
+> **État au 2026-07-25** : le **chemin par défaut (inventaire) est validé** — GameTest
+> (`fieldHudOnlyForCarriers`) + passe visuelle `runClient`. Le **chemin Curios reste non vérifié** :
+> Curios n'est pas dans les dépendances de dev, il n'est donc chargé ni en test ni en `runClient`.
+> **À faire le jour où on l'ajoute** (ajouter `localRuntime` sur Curios dans `build.gradle`, puis
+> vérifier que le HUD s'active depuis un slot Curios). Sans risque d'ici là : en cas d'échec, le pont
+> se désactive et le HUD retombe sur l'inventaire.
 
 ## JEI / EMI
 
