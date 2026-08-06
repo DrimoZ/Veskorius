@@ -7,9 +7,23 @@
 // partout — pas de vingt dessins qui se ressemblent à peu près.
 
 class Canvas {
-  constructor(size) {
+  /** Carré par défaut ; `height` permet un panneau de GUI (176x166). */
+  constructor(size, height) {
     this.size = size;
-    this.px = new Uint8Array(size * size * 4);
+    this.height = height === undefined ? size : height;
+    this.px = new Uint8Array(size * this.height * 4);
+  }
+
+  /** Recopie `src` en (dx, dy). Sert à poser un panneau dans un atlas. */
+  draw(src, dx, dy) {
+    for (let y = 0; y < src.height; y++) {
+      for (let x = 0; x < src.size; x++) {
+        const i = (y * src.size + x) * 4;
+        if (src.px[i + 3] === 0) continue;
+        this.set(dx + x, dy + y, [src.px[i], src.px[i + 1], src.px[i + 2]]);
+      }
+    }
+    return this;
   }
 
   static hex(c) {
@@ -20,7 +34,7 @@ class Canvas {
 
   set(x, y, col, alpha = 255) {
     const s = this.size;
-    if (x < 0 || y < 0 || x >= s || y >= s) return;
+    if (x < 0 || y < 0 || x >= s || y >= this.height) return;
     const [r, g, b] = Canvas.hex(col);
     const i = (y * s + x) * 4;
     if (alpha >= 255) {
@@ -42,7 +56,7 @@ class Canvas {
   }
 
   fill(col) {
-    for (let y = 0; y < this.size; y++) for (let x = 0; x < this.size; x++) this.set(x, y, col);
+    for (let y = 0; y < this.height; y++) for (let x = 0; x < this.size; x++) this.set(x, y, col);
     return this;
   }
 
@@ -105,7 +119,7 @@ class Canvas {
 
   /** Applique un calque : fn(x,y) rend une couleur ou null. */
   each(fn) {
-    for (let y = 0; y < this.size; y++) {
+    for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.size; x++) {
         const c = fn(x, y, this.get(x, y));
         if (c) this.set(x, y, c);
@@ -135,7 +149,7 @@ function rng(seed) {
  */
 function grain(c, seed, light, dark, density = 0.14, region = null) {
   const rand = rng(seed);
-  for (let y = 0; y < c.size; y++) {
+  for (let y = 0; y < c.height; y++) {
     for (let x = 0; x < c.size; x++) {
       if (region && !region(x, y)) continue;
       const r = rand();
@@ -189,7 +203,7 @@ function patina(c, seed, col, density, region = null) {
   const rand = rng(seed);
   const s = c.size;
   for (let n = 0; n < density; n++) {
-    const cx = Math.floor(rand() * s), cy = Math.floor(rand() * s);
+    const cx = Math.floor(rand() * s), cy = Math.floor(rand() * c.height);
     const r = 1 + Math.floor(rand() * 2);
     for (let y = cy - r; y <= cy + r; y++) {
       for (let x = cx - r; x <= cx + r; x++) {
@@ -214,10 +228,9 @@ function patina(c, seed, col, density, region = null) {
  */
 function gradient(c, light, dark, strength = 26) {
   const s = c.size;
-  c.each((x, y) => null);
-  for (let y = 0; y < s; y++) {
+  for (let y = 0; y < c.height; y++) {
     for (let x = 0; x < s; x++) {
-      const t = (x / s + y / s) / 2; // 0 en haut-gauche, 1 en bas-droite
+      const t = (x / s + y / c.height) / 2; // 0 en haut-gauche, 1 en bas-droite
       const a = Math.round(Math.abs(t - 0.5) * 2 * strength);
       if (a > 0) c.set(x, y, t < 0.5 ? light : dark, a);
     }
@@ -268,7 +281,7 @@ function scratches(c, seed, light, dark, count = 5) {
   const rand = rng(seed);
   for (let n = 0; n < count; n++) {
     const x = 3 + Math.floor(rand() * (c.size - 8));
-    const y = 3 + Math.floor(rand() * (c.size - 6));
+    const y = 3 + Math.floor(rand() * (c.height - 6));
     const len = 2 + Math.floor(rand() * 5);
     const horiz = rand() > 0.35;
     const col = rand() > 0.5 ? light : dark;
@@ -295,9 +308,9 @@ function bloom(c, cx, cy, r, col, strength = 70) {
 /** Assombrissement du pourtour : deux blocs côte à côte gardent une frontière lisible. */
 function vignette(c, col, strength = 34) {
   const s = c.size;
-  for (let y = 0; y < s; y++) {
+  for (let y = 0; y < c.height; y++) {
     for (let x = 0; x < s; x++) {
-      const d = Math.min(x, y, s - 1 - x, s - 1 - y);
+      const d = Math.min(x, y, s - 1 - x, c.height - 1 - y);
       if (d < 3) c.set(x, y, col, Math.round(strength * (1 - d / 3)));
     }
   }
@@ -314,3 +327,169 @@ module.exports = {
   Canvas, rng, grain, bevel, rivet, engrave, patina,
   gradient, ao, dither, scratches, bloom, vignette, speculars,
 };
+
+// --- Matière taillée (idiome « tech magique ») ----------------------------
+// Ces primitives existent parce que la pile précédente — grain 1px, rayures,
+// dégradé — produisait des SURFACES, pas de la MATIÈRE. À 32x32, du bruit d'un
+// pixel se lit comme de la poussière ; ce qui se lit comme de la pierre, ce sont
+// des accidents de 2 à 5 pixels, contrastés, à plusieurs échelles.
+
+/**
+ * Mouchetis multi-échelles : la vraie base d'une pierre. Trois passes de taches de
+ * tailles décroissantes, contraste franc. C'est ce qui manquait — un aplat plus du
+ * bruit fin donne du carton sale, jamais du minéral.
+ */
+function mottle(c, seed, shades, strength = 150) {
+  const rand = rng(seed);
+  const scales = [[10, 4.5], [40, 2.4], [110, 1.2]];
+  for (const [count, r] of scales) {
+    for (let n = 0; n < count; n++) {
+      c.disc(rand() * c.size, rand() * c.height, r * (0.6 + rand() * 0.8),
+        shades[Math.floor(rand() * shades.length)], true, strength * (0.5 + rand() * 0.5));
+    }
+  }
+  return c;
+}
+
+/**
+ * Coups de ciseau : de courts biseaux clairs/sombres appariés. Une facette taillée,
+ * c'est une arête éclairée ET son ombre juste à côté — l'un sans l'autre ne donne
+ * qu'une rayure.
+ */
+function chisel(c, seed, light, dark, count = 14) {
+  const rand = rng(seed);
+  for (let n = 0; n < count; n++) {
+    const x = Math.floor(rand() * c.size);
+    const y = Math.floor(rand() * c.height);
+    const len = 2 + Math.floor(rand() * 4);
+    const diag = rand() > 0.5;
+    for (let i = 0; i < len; i++) {
+      const px = x + i, py = diag ? y + i : y;
+      c.set(px, py, light, 110);
+      c.set(px, py + 1, dark, 130);
+    }
+  }
+  return c;
+}
+
+/** Réseau de craquelures : des cassures ramifiées, pas des traits isolés. */
+function craquelure(c, seed, dark, light, count = 6) {
+  const rand = rng(seed);
+  for (let n = 0; n < count; n++) {
+    let x = rand() * c.size, y = rand() * c.height;
+    let ang = rand() * Math.PI * 2;
+    const steps = 4 + Math.floor(rand() * 7);
+    for (let i = 0; i < steps; i++) {
+      ang += (rand() - 0.5) * 1.1;
+      const nx = x + Math.cos(ang) * 1.8, ny = y + Math.sin(ang) * 1.8;
+      c.line(Math.round(x), Math.round(y), Math.round(nx), Math.round(ny), dark, 170);
+      c.set(Math.round(nx), Math.round(ny) - 1, light, 70);
+      x = nx; y = ny;
+    }
+  }
+  return c;
+}
+
+/** Métal martelé : cupules de 2-3px, la surface d'un ouvrage battu à la main. */
+function hammered(c, seed, x, y, w, h, light, dark, count = 18) {
+  const rand = rng(seed);
+  for (let n = 0; n < count; n++) {
+    const cx = x + rand() * w, cy = y + rand() * h;
+    c.disc(cx, cy, 1.3, light, true, 90);
+    c.set(Math.round(cx), Math.round(cy) + 1, dark, 110);
+  }
+  return c;
+}
+
+/**
+ * Anneau de sceau : une couronne avec ses graduations, façon astrolabe. C'est
+ * l'élément qui fait basculer un bloc de « machine » à « appareil arcanique » — un
+ * cercle gradué ne sert à rien mécaniquement, il dit qu'on mesure quelque chose
+ * d'invisible.
+ */
+function sealRing(c, cx, cy, r, col, ticks = 8, gaps = 0, seed = 1) {
+  const rand = rng(seed);
+  const skip = new Set();
+  for (let i = 0; i < gaps; i++) skip.add(Math.floor(rand() * ticks));
+  for (let a = 0; a < 360; a += 4) {
+    if (gaps && skip.has(Math.floor((a / 360) * ticks))) continue;
+    const rad = (a * Math.PI) / 180;
+    c.set(Math.round(cx + Math.cos(rad) * r), Math.round(cy + Math.sin(rad) * r), col);
+  }
+  for (let t = 0; t < ticks; t++) {
+    if (skip.has(t)) continue;
+    const rad = ((t / ticks) * 360 * Math.PI) / 180;
+    for (let d = -1; d <= 1; d++) {
+      c.set(Math.round(cx + Math.cos(rad) * (r + d)), Math.round(cy + Math.sin(rad) * (r + d)), col);
+    }
+  }
+  return c;
+}
+
+/** Petit glyphe runique : trois à cinq segments orthogonaux, jamais une forme lisse. */
+function glyph(c, x, y, col, seed, alpha = 255) {
+  const rand = rng(seed);
+  const segs = 3 + Math.floor(rand() * 2);
+  let px = x + 1, py = y;
+  for (let i = 0; i < segs; i++) {
+    const horiz = rand() > 0.5;
+    const len = 1 + Math.floor(rand() * 2);
+    for (let k = 0; k <= len; k++) {
+      c.set(horiz ? px + k : px, horiz ? py : py + k, col, alpha);
+    }
+    if (horiz) px += len; else py += len;
+    if (px > x + 3) px = x;
+    if (py > y + 3) py = y;
+  }
+  return c;
+}
+
+/** Filigrane : un arc d'orfèvrerie, avec son ombre pour qu'il ait du relief. */
+function filigree(c, pts, col, shade) {
+  for (let i = 0; i + 1 < pts.length; i++) {
+    c.line(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], col);
+    c.line(pts[i][0], pts[i][1] + 1, pts[i + 1][0], pts[i + 1][1] + 1, shade, 120);
+  }
+  return c;
+}
+
+module.exports.mottle = mottle;
+module.exports.chisel = chisel;
+module.exports.craquelure = craquelure;
+module.exports.hammered = hammered;
+module.exports.sealRing = sealRing;
+module.exports.glyph = glyph;
+module.exports.filigree = filigree;
+
+/**
+ * Alphabet runique dessiné à la main, sur une grille 3x5.
+ *
+ * Le générateur procédural qui le précède produisait des traits au hasard : à
+ * 3 pixels de large, le hasard ne fait pas une écriture, il fait des salissures.
+ * Une écriture a besoin de FORMES RÉCURRENTES — un lecteur doit sentir que le même
+ * signe revient, même s'il ne sait pas le lire. Huit signes suffisent à donner
+ * cette impression sur une couronne.
+ */
+const RUNES = [
+  ['#.#', '#.#', '###', '#.#', '#.#'],
+  ['###', '.#.', '.#.', '.#.', '###'],
+  ['#..', '#..', '###', '..#', '..#'],
+  ['###', '#..', '##.', '#..', '###'],
+  ['.#.', '###', '.#.', '###', '.#.'],
+  ['#.#', '.#.', '.#.', '.#.', '#.#'],
+  ['###', '..#', '.#.', '#..', '###'],
+  ['#.#', '###', '.#.', '###', '#.#'],
+];
+
+function rune(c, x, y, col, index, alpha = 255) {
+  const r = RUNES[Math.abs(index) % RUNES.length];
+  for (let j = 0; j < 5; j++) {
+    for (let i = 0; i < 3; i++) {
+      if (r[j][i] === '#') c.set(x + i, y + j, col, alpha);
+    }
+  }
+  return c;
+}
+
+module.exports.rune = rune;
+module.exports.RUNES = RUNES;

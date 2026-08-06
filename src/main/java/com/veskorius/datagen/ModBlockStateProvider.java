@@ -42,13 +42,13 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // que le niveau de lumière. Une machine à l'arrêt et une machine en marche
         // étaient strictement identiques de face, ce que 12-UX promet pourtant comme
         // « le seul retour "pas d'énergie" lisible sans ouvrir le GUI ».
-        machine(ModBlocks.RESONANCE_STABILIZER.get(), "resonance_stabilizer", FRACTURED);
-        machine(ModBlocks.COMPONENT_ASSEMBLER.get(), "component_assembler", FRACTURED);
-        machine(ModBlocks.RESONANCE_WHETSTONE.get(), "resonance_whetstone", FRACTURED);
-        machine(ModBlocks.CRYSTAL_CRUSHER.get(), "crystal_crusher", FRACTURED);
-        machine(ModBlocks.FLUX_PURIFIER.get(), "flux_purifier", ATTUNED);
-        machine(ModBlocks.CRYSTAL_ROOST.get(), "crystal_roost", ATTUNED);
-        machine(ModBlocks.DAMPING_ARRAY.get(), "damping_array", VESKORIAN);
+        machine(ModBlocks.RESONANCE_STABILIZER.get(), "resonance_stabilizer", FRACTURED, PLINTH);
+        machine(ModBlocks.COMPONENT_ASSEMBLER.get(), "component_assembler", FRACTURED, PRESS);
+        machine(ModBlocks.RESONANCE_WHETSTONE.get(), "resonance_whetstone", FRACTURED, WHEEL);
+        machine(ModBlocks.CRYSTAL_CRUSHER.get(), "crystal_crusher", FRACTURED, JAWS);
+        machine(ModBlocks.FLUX_PURIFIER.get(), "flux_purifier", ATTUNED, TANK);
+        machine(ModBlocks.CRYSTAL_ROOST.get(), "crystal_roost", ATTUNED, NEST);
+        machine(ModBlocks.DAMPING_ARRAY.get(), "damping_array", VESKORIAN, SLATS);
 
         // --- Émetteurs de champ ----------------------------------------------
         // Même traitement, sur la propriété LIT ajoutée à FieldEmitterBlock : un
@@ -104,9 +104,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     // --- Fabriques de modèles ------------------------------------------------
 
-    private void machine(Block block, String name, String chassisName) {
-        litOriented(block, name, chassisName,
-            AbstractMachineBlock.FACING, AbstractMachineBlock.LIT);
+    private void machine(Block block, String name, String chassisName, Shape shape) {
+        ModelFile off = shaped(name, chassisName, name + "_front", shape);
+        ModelFile on = shaped(name + "_on", chassisName, name + "_front_on", shape);
+        oriented(block, off, on, AbstractMachineBlock.FACING, AbstractMachineBlock.LIT);
     }
 
     /**
@@ -117,41 +118,21 @@ public class ModBlockStateProvider extends BlockStateProvider {
      * (rien ne dépasse), donc on peut empiler ou construire autour sans surprise.
      */
     private void emitter(Block block, String name, String chassisName) {
-        ModelFile off = emitterModel(name, chassisName, name + "_front");
-        ModelFile on = emitterModel(name + "_on", chassisName, name + "_front_on");
-        getVariantBuilder(block).forAllStates((BlockState state) -> ConfiguredModel.builder()
-            .modelFile(state.getValue(FieldEmitterBlock.LIT) ? on : off)
-            .rotationY(((int) state.getValue(FieldEmitterBlock.FACING).toYRot() + FACING_OFFSET) % 360)
-            .build());
+        ModelFile off = shaped(name, chassisName, name + "_front", TOWER);
+        ModelFile on = shaped(name + "_on", chassisName, name + "_front_on", TOWER);
+        oriented(block, off, on, FieldEmitterBlock.FACING, FieldEmitterBlock.LIT);
     }
 
-    private ModelFile emitterModel(String name, String chassisName, String frontTexture) {
-        ResourceLocation side = modLoc("block/" + chassisName + "_side");
-        ResourceLocation top = modLoc("block/" + chassisName + "_top");
-        var b = models().getBuilder(name)
-            .parent(BLOCK_ROOT)
-            .texture("particle", side)
-            .texture("side", side)
-            .texture("top", top)
-            .texture("front", modLoc("block/" + frontTexture));
 
-        // Socle large, coffret (c'est lui qui porte la façade), tête étroite.
-        cube(b, 0, 0, 0, 16, 3, 16, "#side", "#top", "#side", false);
-        cube(b, 1, 3, 1, 15, 12, 15, "#side", "#top", "#front", false);
-        cube(b, 3, 12, 3, 13, 15, 13, "#side", "#top", "#side", false);
-        cube(b, 6, 15, 6, 10, 16, 10, "#top", "#top", "#top", false);
-        return b;
-    }
 
     /**
      * Deux modèles orientables — façade éteinte et façade allumée — et une variante par
      * couple (orientation, état). Le modèle « éteint » garde le nom nu du bloc : c'est
      * lui que réutilisent les modèles d'objet, qui n'ont donc pas à changer.
      */
-    private void litOriented(Block block, String name, String chassisName,
-                             DirectionProperty facing, BooleanProperty lit) {
-        ModelFile off = machineModel(name, chassisName, name + "_front");
-        ModelFile on = machineModel(name + "_on", chassisName, name + "_front_on");
+    /** Une variante par couple (orientation, état allumé). */
+    private void oriented(Block block, ModelFile off, ModelFile on,
+                          DirectionProperty facing, BooleanProperty lit) {
         getVariantBuilder(block).forAllStates((BlockState state) -> ConfiguredModel.builder()
             .modelFile(state.getValue(lit) ? on : off)
             .rotationY(((int) state.getValue(facing).toYRot() + FACING_OFFSET) % 360)
@@ -173,38 +154,100 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
 
     /**
-     * Corps d'une machine : un cube plein, plus une <b>lunette en relief</b> autour de
-     * la façade.
+     * Silhouettes de machine — <b>une forme par machine</b>, pas neuf cubes.
      *
-     * <p>Pourquoi du volume et pas seulement une texture : une texture de lunette
-     * dessine l'ombre d'un creux, mais l'ombre ne bouge pas quand le joueur bouge. Un
-     * relief réel prend la lumière du monde, se découpe sur le fond, et projette son
-     * ombre — le bloc cesse d'être une image collée sur un cube. Les quatre barres
-     * sortent d'un demi-pixel seulement : assez pour accrocher la lumière, assez peu
-     * pour ne pas s'encastrer dans un bloc voisin.
+     * <p>Une texture ne change jamais la silhouette. Or c'est elle qu'on reconnaît de
+     * loin dans une base, avant même de distinguer une façade : neuf cubes identiques
+     * texturés différemment restent neuf cubes. Chaque machine reçoit donc une
+     * géométrie propre — socle, étage, creux traversant, colonne — et plusieurs ont un
+     * <b>vrai vide</b> plutôt qu'un vide peint.
      *
-     * <p>Le relief est <b>uniquement sur la façade</b>, jamais sur les flancs : deux
-     * machines côte à côte sont un cas courant en base, et des saillies latérales
-     * s'interpénétreraient.
+     * <p>Deux conséquences à ne jamais oublier pour un bloc non plein, toutes deux
+     * invisibles en regardant le monde : il faut {@code noOcclusion()} sur le bloc
+     * (sinon Minecraft culle les faces voisines en les croyant cachées et on voit à
+     * travers le monde par les creux), et une {@code VoxelShape} adaptée (sinon la
+     * boîte de collision par défaut plante un mur invisible dans le vide).
      */
-    private ModelFile machineModel(String name, String chassisName, String frontTexture) {
+    @FunctionalInterface
+    private interface Shape {
+        void build(ModBlockStateProvider p, net.neoforged.neoforge.client.model.generators.BlockModelBuilder b);
+    }
+
+    /** Le socle plein + un étage en retrait : la forme « appareil posé ». */
+    private static final Shape PLINTH = (p, b) -> {
+        p.cube(b, 0, 0, 0, 16, 3, 16, "#side", "#top", "#side", false);
+        p.cube(b, 2, 3, 2, 14, 13, 14, "#side", "#top", "#front", false);
+        p.cube(b, 5, 13, 5, 11, 16, 11, "#front", "#top", "#front", false);
+    };
+
+    /** Presse à étages : massive, tassée vers le bas. */
+    private static final Shape PRESS = (p, b) -> {
+        p.cube(b, 0, 0, 0, 16, 12, 16, "#side", "#top", "#front", false);
+        p.cube(b, 1, 12, 1, 15, 16, 15, "#side", "#top", "#side", false);
+    };
+
+    /** Roue sur son bâti : une lame verticale, lisible de profil comme de face. */
+    private static final Shape WHEEL = (p, b) -> {
+        p.cube(b, 0, 0, 0, 16, 5, 16, "#side", "#top", "#side", false);
+        p.cube(b, 6, 5, 2, 10, 15, 14, "#front", "#side", "#front", false);
+        p.cube(b, 1, 5, 5, 6, 9, 11, "#side", "#side", "#side", false);
+        p.cube(b, 10, 5, 5, 15, 9, 11, "#side", "#side", "#side", false);
+    };
+
+    /** Deux mâchoires séparées par un VIDE traversant : la forme la plus reconnaissable du lot. */
+    private static final Shape JAWS = (p, b) -> {
+        p.cube(b, 0, 0, 0, 16, 7, 16, "#side", "#top", "#front", false);
+        p.cube(b, 0, 10, 0, 16, 16, 16, "#side", "#top", "#front", false);
+        // Quatre montants qui tiennent la mâchoire haute — le reste est ouvert.
+        for (int[] c : new int[][] {{0, 0}, {13, 0}, {0, 13}, {13, 13}}) {
+            p.cube(b, c[0], 7, c[1], c[0] + 3, 10, c[1] + 3, "#side", "#side", "#side", false);
+        }
+    };
+
+    /** Cuve : socle, colonne étroite, chapeau. La seule silhouette élancée. */
+    private static final Shape TANK = (p, b) -> {
+        p.cube(b, 1, 0, 1, 15, 3, 15, "#side", "#top", "#side", false);
+        p.cube(b, 3, 3, 3, 13, 13, 13, "#front", "#top", "#front", false);
+        p.cube(b, 1, 13, 1, 15, 16, 15, "#side", "#top", "#side", false);
+    };
+
+    /** Caisse à nichoir : l'ouverture est RÉELLEMENT évidée, pas peinte. */
+    private static final Shape NEST = (p, b) -> {
+        p.cube(b, 0, 0, 0, 3, 16, 16, "#side", "#top", "#front", false);   // paroi gauche
+        p.cube(b, 13, 0, 0, 16, 16, 16, "#side", "#top", "#front", false); // paroi droite
+        p.cube(b, 3, 0, 0, 13, 3, 16, "#side", "#top", "#front", false);   // plancher
+        p.cube(b, 3, 13, 0, 13, 16, 16, "#side", "#top", "#front", false); // linteau
+        p.cube(b, 3, 3, 9, 13, 13, 16, "#side", "#side", "#side", false);  // fond de la niche
+    };
+
+    /** Grille : des lames espacées, donc des trous traversants. */
+    private static final Shape SLATS = (p, b) -> {
+        p.cube(b, 0, 0, 0, 2, 16, 16, "#side", "#side", "#front", false);
+        p.cube(b, 14, 0, 0, 16, 16, 16, "#side", "#side", "#front", false);
+        for (int y = 0; y < 16; y += 4) {
+            p.cube(b, 2, y, 2, 14, y + 2, 14, "#front", "#top", "#front", false);
+        }
+    };
+
+    /** Tour d'émission : socle large, coffret, tête, nœud. */
+    private static final Shape TOWER = (p, b) -> {
+        p.cube(b, 0, 0, 0, 16, 3, 16, "#side", "#top", "#side", false);
+        p.cube(b, 1, 3, 1, 15, 12, 15, "#side", "#top", "#front", false);
+        p.cube(b, 3, 12, 3, 13, 15, 13, "#side", "#top", "#side", false);
+        p.cube(b, 6, 15, 6, 10, 16, 10, "#top", "#top", "#top", false);
+    };
+
+    /** Assemble un modèle à partir d'une silhouette et d'un jeu de textures. */
+    private ModelFile shaped(String name, String chassisName, String frontTexture, Shape shape) {
         ResourceLocation side = modLoc("block/" + chassisName + "_side");
         ResourceLocation top = modLoc("block/" + chassisName + "_top");
         var b = models().getBuilder(name)
             .parent(BLOCK_ROOT)
-            .texture("particle", side)
+            .texture("particle", modLoc("block/" + frontTexture))
             .texture("side", side)
             .texture("top", top)
             .texture("front", modLoc("block/" + frontTexture));
-
-        cube(b, 0, 0, 0, 16, 16, 16, "#side", "#top", "#front", true);
-
-        // La lunette : quatre barres autour de la fenêtre, en saillie de 0,5.
-        final float o = 2.5f, i = 13.5f, th = 1.0f, d = -0.5f;
-        bar(b, o, i - th, d, i, i, 0);        // haut
-        bar(b, o, o, d, i, o + th, 0);        // bas
-        bar(b, o, o + th, d, o + th, i - th, 0); // gauche
-        bar(b, i - th, o + th, d, i, i - th, 0); // droite
+        shape.build(this, b);
         return b;
     }
 

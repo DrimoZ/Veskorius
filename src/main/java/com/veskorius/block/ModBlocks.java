@@ -93,6 +93,8 @@ public class ModBlocks {
                 .strength(3.5f, 6.0f)
                 .sound(SoundType.AMETHYST)
                 .requiresCorrectToolForDrops()
+                // Silhouette propre (socle, creux, colonne) : plus un cube plein.
+                .noOcclusion()
                 .lightLevel(MACHINE_GLOW));
 
     /** Machine #2 (05-Machines.md). Bloc actif : block entity + GUI, consomme des Osc. */
@@ -104,6 +106,8 @@ public class ModBlocks {
                 .strength(3.5f, 6.0f)
                 .sound(SoundType.METAL)
                 .requiresCorrectToolForDrops()
+                // Silhouette propre (socle, creux, colonne) : plus un cube plein.
+                .noOcclusion()
                 .lightLevel(MACHINE_GLOW));
 
     /** Machine #3 (05-Machines.md). Bloc actif : block entity + GUI. */
@@ -115,6 +119,8 @@ public class ModBlocks {
                 .strength(2.5f, 6.0f)
                 .sound(SoundType.STONE)
                 .requiresCorrectToolForDrops()
+                // Silhouette propre (socle, creux, colonne) : plus un cube plein.
+                .noOcclusion()
                 .lightLevel(MACHINE_GLOW));
 
     /**
@@ -177,6 +183,8 @@ public class ModBlocks {
                 .strength(3.5f, 6.0f)
                 .sound(SoundType.METAL)
                 .requiresCorrectToolForDrops()
+                // Silhouette propre (socle, creux, colonne) : plus un cube plein.
+                .noOcclusion()
                 .lightLevel(MACHINE_GLOW));
 
     /**
@@ -191,6 +199,8 @@ public class ModBlocks {
                 .strength(3.5f, 6.0f)
                 .sound(SoundType.STONE)
                 .requiresCorrectToolForDrops()
+                // Silhouette propre (socle, creux, colonne) : plus un cube plein.
+                .noOcclusion()
                 .lightLevel(MACHINE_GLOW));
 
     /**
@@ -222,6 +232,8 @@ public class ModBlocks {
                 .strength(2.5f, 3.0f)
                 .sound(SoundType.WOOD)
                 .requiresCorrectToolForDrops()
+                // Silhouette propre (socle, creux, colonne) : plus un cube plein.
+                .noOcclusion()
                 .lightLevel(MACHINE_GLOW));
 
     /**
@@ -236,6 +248,8 @@ public class ModBlocks {
                 .strength(3.5f, 6.0f)
                 .sound(SoundType.METAL)
                 .requiresCorrectToolForDrops()
+                // Silhouette propre (socle, creux, colonne) : plus un cube plein.
+                .noOcclusion()
                 .lightLevel(MACHINE_GLOW));
 
     /** Machine #4 (05-Machines.md). Bloc passif : fournit un champ de Résonance. */

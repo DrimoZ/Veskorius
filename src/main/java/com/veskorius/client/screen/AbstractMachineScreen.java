@@ -191,10 +191,37 @@ public abstract class AbstractMachineScreen<T extends AbstractMachineMenu> exten
         }
     }
 
+    /** Alvéoles de slot, rangées dans l'atlas à droite du panneau. */
+    private static final int SLOT_U = 200;
+    private static final int SLOT_AUGMENT_U = 220;
+    private static final int SLOT_V = 0;
+    private static final int SLOT_SIZE = 18;
+
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         graphics.blit(texture, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        renderSlotWells(graphics);
         renderProgressArrow(graphics);
+    }
+
+    /**
+     * Dessine une alvéole <b>par slot réellement présent</b>, au lieu de les figer dans
+     * la texture de fond.
+     *
+     * <p>C'est ce qui permet un seul fichier de fond pour toutes les machines : elles
+     * n'ont pas la même disposition (une ou deux entrées selon la machine, et de 1 à 4
+     * slots d'augment selon la configuration). Un fond figé aurait imposé soit une
+     * texture par machine, soit un compromis faux pour toutes — et il aurait de toute
+     * façon menti dès qu'un modpack change {@code machines.augment.augmentSlots}.
+     */
+    private void renderSlotWells(GuiGraphics graphics) {
+        for (int i = 0; i < menu.slots.size(); i++) {
+            var slot = menu.slots.get(i);
+            int u = menu.isAugmentSlot(i) ? SLOT_AUGMENT_U : SLOT_U;
+            graphics.blit(texture,
+                leftPos + slot.x - 1, topPos + slot.y - 1,
+                u, SLOT_V, SLOT_SIZE, SLOT_SIZE);
+        }
     }
 
     private void renderProgressArrow(GuiGraphics graphics) {

@@ -162,6 +162,26 @@ public abstract class AbstractMachineMenu extends AbstractContainerMenu {
         return blockEntity.supportsOverheat();
     }
 
+    /**
+     * Vrai si le slot de menu {@code index} est un slot de la machine (par opposition à
+     * l'inventaire du joueur). Sert à l'écran, qui dessine une alvéole par slot réel
+     * plutôt que de les figer dans la texture de fond.
+     */
+    public boolean isMachineSlot(int index) {
+        return index < machineSlotCount;
+    }
+
+    /**
+     * Vrai si le slot de menu {@code index} est un slot d'<b>augment</b>. L'écran lui
+     * donne une alvéole cerclée de laiton : c'est le seul slot que l'automatisation ne
+     * touche jamais (12-UX), il ne doit pas se confondre avec une entrée. La convention
+     * d'indices du socle — les slots machine d'abord, dans l'ordre de l'inventaire —
+     * rend la correspondance directe.
+     */
+    public boolean isAugmentSlot(int index) {
+        return isMachineSlot(index) && blockEntity.isAugmentSlot(index);
+    }
+
     // --- Inventaire joueur ---------------------------------------------------
 
     private void addPlayerInventory(Inventory playerInventory) {

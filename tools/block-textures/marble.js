@@ -1,0 +1,242 @@
+// Textures de bloc 16x16 — marbre veskorien.
+//
+// Deux corrections de fond, l'une mesurée, l'autre de conception.
+//
+// 1. LA PALETTE. J'ai mesuré le marbre d'Astral Sorcery plutôt que de m'en
+//    souvenir : luminance 203-238, dominantes #dbdbdb à #e6e6e6, écart-type 8,8, et
+//    R=G=B — un blanc cassé PARFAITEMENT NEUTRE, très peu contrasté. Toutes mes
+//    versions précédentes posaient une pierre sombre et colorée (grise, tan,
+//    violette) : le violet de la Résonance s'y noyait, faute de fond clair pour le
+//    faire ressortir. Ici le marbre est presque blanc, et l'accent explose dessus.
+//    Le contraste vient de l'ACCENT, jamais du matériau.
+//
+// 2. LA COMPOSITION. Je dessinais « un cadre + un petit logo au centre » : tous les
+//    blocs étaient donc le même bloc avec un autocollant différent, et aucun ne se
+//    reconnaissait de loin. Ici, CHAQUE MACHINE A UNE FAÇADE ENTIÈREMENT
+//    DIFFÉRENTE — un cristal qui remplit le bloc, une cuve haute, deux mâchoires,
+//    une roue géante, une cible concentrique, une grille. La silhouette et la
+//    couleur dominante changent d'une machine à l'autre ; c'est ça qui les rend
+//    identifiables d'un coup d'œil, pas un pictogramme de 6 pixels.
+//
+// Méthode inchangée (elle, elle était juste) : palette indexée, aucun fondu alpha,
+// arêtes franches, grain dense à faible amplitude. Calibré sur les mesures vanilla.
+
+const { Canvas, rng } = require('./draw');
+const {
+  DISC12, DISC8, DISC4, DIAMOND, DIAMOND_IN, DIAMOND_CORE, fill, outline, ring,
+} = require('./shapes');
+
+const S = 16;
+
+// --- Marbre : trois états de restauration --------------------------------
+const MARBLE = {
+  t1: { // Ruine : marbre encrassé, gris, fissuré. Cuivre oxydé.
+    tones: ['#9E9E9E', '#ACACAC', '#B8B8B8', '#C4C4C4'],
+    w: [3, 4, 3, 2],
+    line: '#6E6E6E', dark: '#5A5A5A',
+    metal: '#A8632F', metalHi: '#C9834E',
+    crack: '#7C7C7C',
+  },
+  t2: { // Restauré : le marbre d'Astral, presque blanc et neutre. Laiton.
+    tones: ['#D3D3D3', '#DBDBDB', '#E0E0E0', '#E6E6E6'],
+    w: [3, 4, 3, 2],
+    line: '#A8A8A8', dark: '#8E8E8E',
+    metal: '#C9A24A', metalHi: '#E8CE8A',
+    crack: null,
+  },
+  t3: { // Haute époque : marbre sombre poli, ambre.
+    tones: ['#3A3A44', '#44444F', '#4E4E5A', '#585866'],
+    w: [3, 4, 3, 2],
+    line: '#26262E', dark: '#1C1C22',
+    metal: '#D8922A', metalHi: '#F0B863',
+    crack: null,
+  },
+};
+
+// Accents de la Résonance : les trois bandes harmoniques du mod.
+const V = { deep: '#5C2C86', mid: '#8A47B8', lite: '#B57CE0', hot: '#E4CCF7' };
+const C = { deep: '#166B72', mid: '#27A3AC', lite: '#5FD6DC', hot: '#CFF6F8' };
+const WOOD = { deep: '#4A3520', mid: '#6E5436', lite: '#8F7048' };
+const IRON = { deep: '#2E323A', mid: '#454B56', lite: '#5E6672' };
+
+/** Marbre : semis dense à faible amplitude, plus quelques fissures au T1. */
+function marble(m, seed) {
+  const c = new Canvas(S);
+  const rand = rng(seed);
+  const tot = m.w.reduce((a, b) => a + b, 0);
+  for (let y = 0; y < S; y++) {
+    for (let x = 0; x < S; x++) {
+      let r = rand() * tot, i = 0;
+      while (r > m.w[i] && i < m.w.length - 1) { r -= m.w[i]; i++; }
+      c.set(x, y, m.tones[i]);
+    }
+  }
+  if (m.crack) {
+    // Le T1 est de la ruine : quelques cassures franches, pas un réseau.
+    for (let n = 0; n < 3; n++) {
+      let x = Math.floor(rand() * S), y = Math.floor(rand() * S);
+      for (let i = 0; i < 3 + rand() * 4; i++) {
+        c.set(x, y, m.crack);
+        x += rand() > 0.5 ? 1 : 0;
+        y += rand() > 0.4 ? 1 : -1;
+      }
+    }
+  }
+  return c;
+}
+
+/** Liseré du bloc : clair en haut/gauche, sombre en bas/droite. */
+function edges(c, m) {
+  for (let i = 0; i < S; i++) {
+    c.set(i, 0, m.tones[3]);
+    c.set(0, i, m.tones[3]);
+    c.set(i, S - 1, m.line);
+    c.set(S - 1, i, m.line);
+  }
+  return c;
+}
+
+/** Bloc plein cerné d'un pixel sombre : la brique de toutes les structures. */
+function slab(c, x, y, w, h, body, hi, lo) {
+  c.rect(x, y, w, h, body);
+  for (let i = x; i < x + w; i++) { c.set(i, y, hi); c.set(i, y + h - 1, lo); }
+  for (let j = y; j < y + h; j++) { c.set(x, j, hi); c.set(x + w - 1, j, lo); }
+  return c;
+}
+
+// --- Façades : chacune occupe TOUT le bloc -------------------------------
+// La consigne est qu'on doit nommer la machine sans lire de tooltip. Donc :
+// silhouette dominante différente, couleur dominante différente.
+
+const faces = {
+  // UN CRISTAL GÉANT serré dans deux mors. Losange pris dans la table : centré au
+  // pixel près, marge d'1 px. Tracé par formule, il était décalé d'un demi-pixel —
+  // invisible à décrire, flagrant à l'œil.
+  resonance_stabilizer: (c, m, a, on) => {
+    outline(c, DIAMOND, m.line);
+    fill(c, DIAMOND, on ? a.mid : a.deep);
+    fill(c, DIAMOND_IN, on ? a.lite : a.mid);
+    fill(c, DIAMOND_CORE, on ? a.hot : a.lite);
+    slab(c, 1, 6, 2, 4, m.metal, m.metalHi, m.line);
+    slab(c, 13, 6, 2, 4, m.metal, m.metalHi, m.line);
+  },
+
+  // DES PLAQUES BOULONNÉES en fer sombre, séparées par une fente centrale.
+  component_assembler: (c, m, a, on) => {
+    slab(c, 1, 1, 14, 6, IRON.mid, IRON.lite, IRON.deep);
+    slab(c, 1, 9, 14, 6, IRON.mid, IRON.lite, IRON.deep);
+    for (const [x, y] of [[3, 3], [11, 3], [3, 11], [11, 11]]) {
+      c.rect(x, y, 2, 2, m.metal);
+      c.set(x, y, m.metalHi);
+    }
+    c.rect(1, 7, 14, 2, on ? a.mid : IRON.deep);
+    if (on) c.rect(1, 7, 14, 1, a.hot);
+  },
+
+  // UNE ROUE, cercle exact, sur son socle de laiton.
+  resonance_whetstone: (c, m, a, on) => {
+    outline(c, DISC12, m.line);
+    fill(c, DISC12, m.tones[2]);
+    ring(c, DISC12, DISC8, m.dark);
+    fill(c, DISC8, m.tones[1]);
+    fill(c, DISC4, on ? a.mid : m.dark);
+    if (on) c.rect(7, 7, 2, 2, a.hot);
+    slab(c, 1, 13, 14, 2, m.metal, m.metalHi, m.line);
+  },
+
+  // DEUX MÂCHOIRES dentées, et la poussière prise entre elles.
+  crystal_crusher: (c, m, a, on) => {
+    slab(c, 1, 1, 14, 5, IRON.mid, IRON.lite, IRON.deep);
+    slab(c, 1, 10, 14, 5, IRON.mid, IRON.lite, IRON.deep);
+    for (let x = 2; x <= 12; x += 3) {
+      c.rect(x, 6, 2, 1, IRON.lite);
+      c.rect(x + 1, 9, 2, 1, IRON.lite);
+    }
+    c.rect(1, 7, 14, 2, on ? a.mid : m.dark);
+    if (on) { c.set(4, 8, a.hot); c.set(8, 7, a.hot); c.set(11, 8, a.hot); }
+  },
+
+  // UNE CUVE HAUTE avec son niveau : la seule silhouette verticale du lot.
+  flux_purifier: (c, m, a, on) => {
+    slab(c, 2, 1, 12, 14, m.tones[2], m.tones[3], m.line);
+    c.rect(4, 3, 8, 10, m.dark);
+    c.rect(4, 6, 8, 7, on ? a.mid : a.deep);
+    c.rect(4, 6, 8, 1, on ? a.hot : a.mid);
+    if (on) { c.set(6, 9, a.hot); c.set(9, 11, a.hot); }
+    slab(c, 2, 1, 12, 2, m.metal, m.metalHi, m.line);
+    slab(c, 2, 13, 12, 2, m.metal, m.metalHi, m.line);
+  },
+
+  // UNE CAISSE EN BOIS percée d'un trou rond. Seul bloc marron du mod.
+  crystal_roost: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, WOOD.mid);
+    for (let y = 2; y < 16; y += 4) c.rect(0, y, 16, 1, WOOD.deep);
+    outline(c, DISC12, WOOD.lite);
+    fill(c, DISC12, m.dark);
+    fill(c, DISC8, on ? a.deep : m.dark);
+    if (on) { fill(c, DISC4, a.mid); c.rect(7, 7, 2, 2, a.hot); }
+  },
+
+  // UNE GRILLE À LAMES, pleine hauteur. Aucun centre : que du motif.
+  damping_array: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    for (let y = 1; y < 15; y += 3) slab(c, 1, y, 14, 2, m.tones[1], m.tones[3], m.line);
+    c.rect(7, 1, 2, 14, on ? a.mid : m.line);
+    if (on) c.rect(7, 1, 1, 14, a.hot);
+  },
+
+  // UNE LENTILLE EN CIBLE : cercles concentriques exacts, marge respectée.
+  field_emitter: (c, m, a, on) => {
+    outline(c, DISC12, m.line);
+    fill(c, DISC12, m.metal);
+    ring(c, DISC12, DISC8, on ? a.deep : m.dark);
+    fill(c, DISC8, on ? a.mid : m.tones[0]);
+    fill(c, DISC4, on ? a.hot : m.dark);
+  },
+
+  // La même lentille, plus la réglette des trois bandes.
+  tunable_field_emitter: (c, m, a, on) => {
+    faces.field_emitter(c, m, a, on);
+    c.rect(2, 13, 12, 2, m.dark);
+    const bands = on ? [V.mid, C.mid, '#D8922A'] : [V.deep, C.deep, '#6E4A15'];
+    bands.forEach((col, i) => c.rect(3 + i * 4, 14, 3, 1, col));
+  },
+
+  // UN PUPITRE : bandeau de laiton et lignes de texte, alignées sur la grille.
+  attunement_console: (c, m, a, on) => {
+    slab(c, 1, 1, 14, 3, m.metal, m.metalHi, m.line);
+    c.rect(2, 5, 12, 9, m.dark);
+    for (let i = 0; i < 3; i++) c.rect(4, 6 + i * 3, i === 1 ? 5 : 8, 1, a.lite);
+    c.set(4, 6, a.hot);
+  },
+};
+
+/** Une façade complète. */
+function front(tier, seed, face, on, accent) {
+  const m = MARBLE[tier];
+  const c = marble(m, seed);
+  face(c, m, accent || V, on);
+  edges(c, m);
+  return c;
+}
+
+/** Flanc : marbre nu et un bandeau de métal. Sobre exprès : la façade porte tout. */
+function side(tier, seed) {
+  const m = MARBLE[tier];
+  const c = marble(m, seed);
+  slab(c, 0, 6, 16, 3, m.metal, m.metalHi, m.line);
+  edges(c, m);
+  return c;
+}
+
+/** Dessus : marbre et un carré de métal. */
+function top(tier, seed) {
+  const m = MARBLE[tier];
+  const c = marble(m, seed);
+  c.frameRect(3, 3, 10, 10, m.metal);
+  for (let i = 3; i < 13; i++) c.set(i, 3, m.metalHi);
+  edges(c, m);
+  return c;
+}
+
+module.exports = { MARBLE, V, C, WOOD, IRON, S, marble, edges, slab, faces, front, side, top };
