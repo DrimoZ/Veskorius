@@ -24,51 +24,29 @@ public class ModRecipeProvider extends RecipeProvider {
     protected void buildRecipes(RecipeOutput recipeOutput) {
         buildMachineRecipes(recipeOutput);
 
-        // Recette de construction du Resonance Stabilizer : 4 Cobblestone +
-        // 2 Copper Ingot + 1 Raw Resonance Crystal (05-Machines.md, tableau
-        // "Recettes de construction"). Le dossier de conception fixe les
-        // quantites mais pas la disposition — la forme ci-dessous place le
-        // cristal au centre, encadre verticalement par le cuivre, la pierre
-        // formant la structure. Si une disposition canonique est decidee plus
-        // tard, c'est 05-Machines.md qu'il faut modifier d'abord.
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RESONANCE_STABILIZER.get())
-            .pattern(" U ")
-            .pattern("CRC")
-            .pattern("CUC")
-            .define('U', Items.COPPER_INGOT)
-            .define('C', Items.COBBLESTONE)
-            .define('R', ModItems.RAW_RESONANCE_CRYSTAL.get())
-            .unlockedBy(getHasName(ModItems.RAW_RESONANCE_CRYSTAL.get()),
-                has(ModItems.RAW_RESONANCE_CRYSTAL.get()))
-            .save(recipeOutput);
+        buildChassisRecipes(recipeOutput);
 
-        // Component Assembler : 3 Iron Ingot + 2 Stable Resonance Crystal +
-        // 1 Redstone (05-Machines.md, recette de construction). Le fer forme la
-        // structure, les cristaux l'alimentent, la redstone la pilote. Forme
-        // vérifiée : exactement 3 I, 2 S, 1 R.
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.COMPONENT_ASSEMBLER.get())
-            .pattern("SIS")
-            .pattern("IRI")
-            .define('I', ModTags.Items.IRON_SUBSTITUTES)
-            .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
-            .define('R', Items.REDSTONE)
-            .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
-                has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
-            .save(recipeOutput);
+        // --- Machines T1 : châssis Fracturé + ce qui les distingue -------------
+        //
+        // La grammaire de fabrication est désormais « le boîtier de mon palier, plus
+        // la pièce qui fait le métier de cette machine ». Avant, chaque machine avait
+        // sa forme complète : le joueur réapprenait un motif entier à chaque bloc, et
+        // rien ne disait à l'œil que le Stabilizer et le Crusher étaient du même âge.
+        // Les quantités « boîtier » (pierre, fer de structure) sont absorbées par le
+        // châssis ; seuls restent les ingrédients porteurs de sens.
 
-        // Resonance Whetstone : 2 Cobblestone + 1 Iron Ingot + 1 Stable
-        // Resonance Crystal (05-Machines.md). Le cristal est pose sur le socle
-        // de pierre, le fer le maintient — meme remarque que ci-dessus sur la
-        // disposition, seules les quantites sont imposees par la conception.
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RESONANCE_WHETSTONE.get())
-            .pattern(" S ")
-            .pattern("CIC")
-            .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
-            .define('C', Items.COBBLESTONE)
-            .define('I', ModTags.Items.IRON_SUBSTITUTES)
-            .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
-                has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
-            .save(recipeOutput);
+        machine(recipeOutput, ModBlocks.RESONANCE_STABILIZER.get(), ModBlocks.FRACTURED_CHASSIS.get(),
+            ModItems.RAW_RESONANCE_CRYSTAL.get(), b -> b
+                .requires(ModItems.RAW_RESONANCE_CRYSTAL.get()));
+
+        machine(recipeOutput, ModBlocks.COMPONENT_ASSEMBLER.get(), ModBlocks.FRACTURED_CHASSIS.get(),
+            ModItems.STABLE_RESONANCE_CRYSTAL.get(), b -> b
+                .requires(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 2)
+                .requires(Items.REDSTONE));
+
+        machine(recipeOutput, ModBlocks.RESONANCE_WHETSTONE.get(), ModBlocks.FRACTURED_CHASSIS.get(),
+            ModItems.STABLE_RESONANCE_CRYSTAL.get(), b -> b
+                .requires(ModItems.STABLE_RESONANCE_CRYSTAL.get()));
 
         // Resonance Tuner : 2 Iron Ingot + 1 Resonance Component + 1 Redstone
         // (05-Machines.md, section outil transversal). Sans forme imposée.
@@ -122,56 +100,33 @@ public class ModRecipeProvider extends RecipeProvider {
                 has(ModItems.RESONANCE_COMPONENT.get()))
             .save(recipeOutput);
 
-        // Flux Purifier : 4 Iron Ingot + 2 Stable Resonance Crystal + 1 Redstone
-        // Block (05-Machines.md, recette de construction). Forme vérifiée :
-        // exactement 4 I, 2 S, 1 B.
-        // + blueprint T2 (P), rendu au craft — gate physique (03-Progression.md).
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.FLUX_PURIFIER.get())
-            .pattern("ISI")
-            .pattern("IBI")
-            .pattern("PS ")
-            .define('I', ModTags.Items.IRON_SUBSTITUTES)
-            .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
-            .define('B', Items.REDSTONE_BLOCK)
-            .define('P', ModItems.RESONANCE_BLUEPRINT.get())
-            .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
-                has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
-            .save(recipeOutput);
+        // --- Machines T2 : châssis Accordé + blueprint T2 (rendu) --------------
 
-        // Field Emitter : 4 Resonance Component + 1 Stable Resonance Crystal +
-        // 2 Gold Ingot (05-Machines.md #4). Le cristal au centre (le cœur qui
-        // émet), les composants aux coins, l'or au-dessus et en dessous. La forme
-        // ci-dessous consomme exactement 4 C, 2 G, 1 S — vérifié contre les
-        // quantités du design.
-        // Gate T2 : la recette exige le blueprint T2 (P), obtenu à la console de
-        // l'Avant-poste et RENDU au craft (03-Progression.md). Rien n'est masqué :
-        // la recette est visible, il « suffit » d'avoir le plan. Le blueprint occupe
-        // une case libre du motif du design (les quantités C/G/S sont inchangées).
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.FIELD_EMITTER.get())
-            .pattern("CGC")
-            .pattern("CSC")
-            .pattern("PG ")
-            .define('C', ModItems.RESONANCE_COMPONENT.get())
-            .define('G', Items.GOLD_INGOT)
-            .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
-            .define('P', ModItems.RESONANCE_BLUEPRINT.get())
-            .unlockedBy(getHasName(ModItems.RESONANCE_COMPONENT.get()),
-                has(ModItems.RESONANCE_COMPONENT.get()))
-            .save(recipeOutput);
+        machine(recipeOutput, ModBlocks.FLUX_PURIFIER.get(), ModBlocks.ATTUNED_CHASSIS.get(),
+            ModItems.STABLE_RESONANCE_CRYSTAL.get(), b -> b
+                .requires(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 2)
+                .requires(Items.REDSTONE_BLOCK)
+                .requires(ModItems.RESONANCE_BLUEPRINT.get()));
 
-        // Damping Array : 4 Iron + 2 Refined Crystal + 1 Redstone Block (+ blueprint
-        // rendu). L'infrastructure d'entretien du réseau (06-Energy.md).
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.DAMPING_ARRAY.get())
-            .pattern("IRI")
-            .pattern("IBI")
-            .pattern("P  ")
-            .define('I', ModTags.Items.IRON_SUBSTITUTES)
-            .define('R', ModItems.REFINED_RESONANCE_CRYSTAL.get())
-            .define('B', Items.REDSTONE_BLOCK)
-            .define('P', ModItems.RESONANCE_BLUEPRINT.get())
-            .unlockedBy(getHasName(ModItems.REFINED_RESONANCE_CRYSTAL.get()),
-                has(ModItems.REFINED_RESONANCE_CRYSTAL.get()))
-            .save(recipeOutput);
+        // Field Emitter : c'est LUI que l'amorçage garanti de l'Avant-poste doit
+        // permettre de fabriquer (4 Component + 2 Gold dans le coffre, voir
+        // ModChestLootProvider). Il en consomme 2 et 2 : le lot garanti couvre donc la
+        // recette avec de la marge, et le châssis ne demande, lui, que des matériaux
+        // T1 (pierre, cuivre, fer, cristaux stables) — aucun Component. La dépendance
+        // circulaire Component ⇄ champ ne peut donc pas se reformer par ce chemin.
+        machine(recipeOutput, ModBlocks.FIELD_EMITTER.get(), ModBlocks.ATTUNED_CHASSIS.get(),
+            ModItems.RESONANCE_COMPONENT.get(), b -> b
+                .requires(ModItems.RESONANCE_COMPONENT.get(), 2)
+                .requires(Items.GOLD_INGOT, 2)
+                .requires(ModItems.RESONANCE_BLUEPRINT.get()));
+
+        // --- Machine T3 : châssis Veskorien ------------------------------------
+
+        machine(recipeOutput, ModBlocks.DAMPING_ARRAY.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.REFINED_RESONANCE_CRYSTAL.get(), b -> b
+                .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get())
+                .requires(Items.REDSTONE_BLOCK)
+                .requires(ModItems.RESONANCE_BLUEPRINT.get()));
 
         // Émetteur Accordable : un Field Emitter + 2 Refined Crystal (l'accord demande
         // du cristal raffiné) + blueprint T2 rendu. Upgrade, pas une machine de plus.
@@ -184,20 +139,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 has(ModItems.REFINED_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
 
-        // Crystal Roost : 4 Planches + 2 Stable Crystal + 1 Botte de Foin
-        // (05-Machines.md #8) + blueprint T2 (gate physique, rendu). Sans forme.
-        net.minecraft.data.recipes.ShapelessRecipeBuilder
-            .shapeless(RecipeCategory.MISC, ModBlocks.CRYSTAL_ROOST.get())
-            .requires(net.minecraft.tags.ItemTags.PLANKS)
-            .requires(net.minecraft.tags.ItemTags.PLANKS)
-            .requires(net.minecraft.tags.ItemTags.PLANKS)
-            .requires(net.minecraft.tags.ItemTags.PLANKS)
-            .requires(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 2)
-            .requires(Items.HAY_BLOCK)
-            .requires(ModItems.RESONANCE_BLUEPRINT.get())
-            .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
-                has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
-            .save(recipeOutput);
+        // Crystal Roost : le nichoir se monte sur un châssis T2, garni de planches et
+        // de foin (05-Machines.md #8) + blueprint T2 rendu.
+        machine(recipeOutput, ModBlocks.CRYSTAL_ROOST.get(), ModBlocks.ATTUNED_CHASSIS.get(),
+            ModItems.STABLE_RESONANCE_CRYSTAL.get(), b -> b
+                .requires(net.minecraft.tags.ItemTags.PLANKS)
+                .requires(net.minecraft.tags.ItemTags.PLANKS)
+                .requires(net.minecraft.tags.ItemTags.PLANKS)
+                .requires(net.minecraft.tags.ItemTags.PLANKS)
+                .requires(Items.HAY_BLOCK)
+                .requires(ModItems.RESONANCE_BLUEPRINT.get()));
 
         // Resonance Codex : recette de secours (Livre + Cristal Brut). Le Codex est
         // donné à la première connexion (15-Codex-Guidebook.md) ; ce craft ne sert qu'à
@@ -211,18 +162,73 @@ public class ModRecipeProvider extends RecipeProvider {
                 has(ModItems.RAW_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
 
-        // Crystal Crusher : 3 Cobblestone + 1 Iron Ingot (05-Machines.md #22,
-        // tableau "Recettes de construction"). Le design fixe les quantités mais
-        // pas la disposition — le fer au cœur (le broyeur), la pierre autour.
-        // Forme vérifiée : exactement 3 C, 1 I.
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.CRYSTAL_CRUSHER.get())
-            .pattern(" C ")
-            .pattern("CIC")
+        machine(recipeOutput, ModBlocks.CRYSTAL_CRUSHER.get(), ModBlocks.FRACTURED_CHASSIS.get(),
+            ModItems.RAW_RESONANCE_CRYSTAL.get(), b -> b
+                .requires(ModTags.Items.IRON_SUBSTITUTES));
+    }
+
+    /**
+     * Les trois châssis de palier (05-Machines.md, « Châssis par palier »). Chacun
+     * <b>contient</b> le précédent : le T2 est un T1 restauré, le T3 un T2 réarmé. La
+     * progression est donc littérale — on ne jette rien, on améliore, ce qui colle au
+     * pilier « restaurer plutôt que conquérir » (01-Vision-Pillars.md).
+     */
+    private void buildChassisRecipes(RecipeOutput recipeOutput) {
+        // T1 « Fracturé » : de la pierre et du cuivre, rien d'autre. Craftable dès la
+        // première minute — c'est le point d'entrée de toute la chaîne.
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.FRACTURED_CHASSIS.get())
+            .pattern("CUC")
+            .pattern("C C")
+            .pattern("CUC")
             .define('C', Items.COBBLESTONE)
-            .define('I', ModTags.Items.IRON_SUBSTITUTES)
-            .unlockedBy(getHasName(ModItems.RAW_RESONANCE_CRYSTAL.get()),
-                has(ModItems.RAW_RESONANCE_CRYSTAL.get()))
+            .define('U', Items.COPPER_INGOT)
+            .unlockedBy(getHasName(Items.COPPER_INGOT), has(Items.COPPER_INGOT))
             .save(recipeOutput);
+
+        // T2 « Accordé » : le châssis T1 renforcé de fer et serti de cristaux stables.
+        // Volontairement SANS Resonance Component ni blueprint — il doit rester
+        // fabricable avant d'avoir un champ, sinon la boucle d'amorçage T2 se referme.
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.ATTUNED_CHASSIS.get())
+            .pattern(" I ")
+            .pattern("SFS")
+            .pattern(" I ")
+            .define('I', ModTags.Items.IRON_SUBSTITUTES)
+            .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
+            .define('F', ModBlocks.FRACTURED_CHASSIS.get())
+            .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
+                has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
+            .save(recipeOutput);
+
+        // T3 « Veskorien » : cristal raffiné, donc Flux Purifier, donc un champ. Le
+        // palier se paie en infrastructure, pas en minage.
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.VESKORIAN_CHASSIS.get())
+            .pattern(" R ")
+            .pattern("IAI")
+            .pattern(" R ")
+            .define('R', ModItems.REFINED_RESONANCE_CRYSTAL.get())
+            .define('I', ModTags.Items.IRON_SUBSTITUTES)
+            .define('A', ModBlocks.ATTUNED_CHASSIS.get())
+            .unlockedBy(getHasName(ModItems.REFINED_RESONANCE_CRYSTAL.get()),
+                has(ModItems.REFINED_RESONANCE_CRYSTAL.get()))
+            .save(recipeOutput);
+    }
+
+    /**
+     * Une machine = le châssis de son palier + ce qui la distingue. Sans forme imposée :
+     * la disposition n'apprend plus rien au joueur une fois la grammaire comprise, et
+     * une recette informe se retient mieux qu'un motif de plus.
+     */
+    private void machine(RecipeOutput output, net.minecraft.world.level.block.Block result,
+                         net.minecraft.world.level.block.Block chassis,
+                         net.minecraft.world.level.ItemLike trigger,
+                         java.util.function.UnaryOperator<net.minecraft.data.recipes.ShapelessRecipeBuilder> parts) {
+        net.minecraft.data.recipes.ShapelessRecipeBuilder builder =
+            net.minecraft.data.recipes.ShapelessRecipeBuilder
+                .shapeless(RecipeCategory.MISC, result)
+                .requires(chassis);
+        parts.apply(builder)
+            .unlockedBy(getHasName(trigger), has(trigger))
+            .save(output);
     }
 
     /**

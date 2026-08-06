@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
@@ -45,9 +46,26 @@ public class FieldEmitterBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
+    /**
+     * Vrai quand l'émetteur a du carburant en réserve. Pilote la façade allumée
+     * ({@code field_emitter_front_on}) : un émetteur à sec ne se distinguait
+     * autrement d'un émetteur plein qu'en ouvrant son GUI ou en attendant une bouffée
+     * de particules — or « tomber en panne de cristal » est la panne la plus banale du
+     * mod, celle qu'on doit voir en passant devant.
+     *
+     * <p>Volontairement branché sur la réserve et non sur
+     * {@link com.veskorius.block.entity.FieldEmitterBlockEntity#isActive()} : un champ
+     * instable alterne actif/inactif toutes les deux ticks, ce qui déclencherait un
+     * {@code setBlock} — donc un recalcul de lumière — au même rythme. L'intermittence
+     * se lit déjà sur les machines alimentées, qui hoquettent.
+     */
+    public static final BooleanProperty LIT = BlockStateProperties.LIT;
+
     public FieldEmitterBlock(Properties properties) {
         super(properties);
-        registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
+        registerDefaultState(getStateDefinition().any()
+            .setValue(FACING, Direction.NORTH)
+            .setValue(LIT, Boolean.FALSE));
     }
 
     @Override
@@ -59,7 +77,7 @@ public class FieldEmitterBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, LIT);
     }
 
     @Override

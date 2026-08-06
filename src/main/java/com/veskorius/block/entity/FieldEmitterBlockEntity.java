@@ -149,6 +149,7 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
         ResonanceFieldManager.register(level, pos);
         emitter.refuelIfEmpty();
         emitter.decayDissonance();
+        emitter.updateLit(level, pos, state);
 
         if (level instanceof ServerLevel serverLevel) {
             emitter.tickDischarge(serverLevel, pos);
@@ -156,6 +157,23 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
             if (emitter.isActive()) {
                 emitter.pulseFieldDome(serverLevel, pos);
             }
+        }
+    }
+
+    /**
+     * Reflète « il reste du carburant » dans le blockstate, qui pilote la façade
+     * allumée du modèle (voir {@link com.veskorius.block.FieldEmitterBlock#LIT}).
+     * N'écrit qu'au changement : un {@code setBlock} par tick recalculerait la lumière
+     * en boucle pour rien.
+     */
+    private void updateLit(Level level, BlockPos pos, BlockState state) {
+        if (level.isClientSide || !state.hasProperty(com.veskorius.block.FieldEmitterBlock.LIT)) {
+            return;
+        }
+        boolean fuelled = reserve > 0;
+        if (state.getValue(com.veskorius.block.FieldEmitterBlock.LIT) != fuelled) {
+            level.setBlock(pos, state.setValue(com.veskorius.block.FieldEmitterBlock.LIT, fuelled),
+                net.minecraft.world.level.block.Block.UPDATE_ALL);
         }
     }
 

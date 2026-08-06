@@ -63,6 +63,11 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.CRYSTAL_ROOST, "Perchoir à Cristaux");
         addBlock(ModBlocks.DAMPING_ARRAY, "Matrice d'Amortissement");
 
+        // Châssis de palier : la base de craft et de texture des machines.
+        addBlock(ModBlocks.FRACTURED_CHASSIS, "Châssis Fracturé");
+        addBlock(ModBlocks.ATTUNED_CHASSIS, "Châssis Accordé");
+        addBlock(ModBlocks.VESKORIAN_CHASSIS, "Châssis Veskorien");
+
         // Objets.
         addItem(ModItems.RAW_RESONANCE_CRYSTAL, "Cristal de Résonance Brut");
         addItem(ModItems.STABLE_RESONANCE_CRYSTAL, "Cristal de Résonance Stable");

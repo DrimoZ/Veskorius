@@ -21,6 +21,9 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         // Les machines se dropent elles-memes. Leur inventaire est vide au sol
         // separement par AbstractMachineBlock.onRemove — la loot table ne gere
         // que le bloc, pas son contenu.
+        dropSelf(ModBlocks.FRACTURED_CHASSIS.get());
+        dropSelf(ModBlocks.ATTUNED_CHASSIS.get());
+        dropSelf(ModBlocks.VESKORIAN_CHASSIS.get());
         dropSelf(ModBlocks.RESONANCE_STABILIZER.get());
         dropSelf(ModBlocks.COMPONENT_ASSEMBLER.get());
         dropSelf(ModBlocks.RESONANCE_WHETSTONE.get());

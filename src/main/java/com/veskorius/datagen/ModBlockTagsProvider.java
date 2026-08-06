@@ -22,6 +22,9 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         // Les blocs sont declares requiresCorrectToolForDrops : sans ces deux
         // tags, ils ne se dropent avec aucun outil.
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
+            .add(ModBlocks.FRACTURED_CHASSIS.get())
+            .add(ModBlocks.ATTUNED_CHASSIS.get())
+            .add(ModBlocks.VESKORIAN_CHASSIS.get())
             .add(ModBlocks.RESONANCE_STABILIZER.get())
             .add(ModBlocks.COMPONENT_ASSEMBLER.get())
             .add(ModBlocks.RESONANCE_WHETSTONE.get())
@@ -36,6 +39,9 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             .add(ModBlocks.RAW_FLUX_DEPOSIT.get())
             .add(ModBlocks.ATTUNEMENT_CONSOLE.get());
         tag(BlockTags.NEEDS_STONE_TOOL)
+            .add(ModBlocks.FRACTURED_CHASSIS.get())
+            .add(ModBlocks.ATTUNED_CHASSIS.get())
+            .add(ModBlocks.VESKORIAN_CHASSIS.get())
             .add(ModBlocks.RESONANCE_STABILIZER.get())
             .add(ModBlocks.COMPONENT_ASSEMBLER.get())
             .add(ModBlocks.RESONANCE_WHETSTONE.get())

@@ -154,6 +154,19 @@ public class ModItems {
         ITEMS.registerItem("resonance_locator",
             ResonanceLocatorItem::new, new Item.Properties().stacksTo(1));
 
+    /**
+     * Châssis de palier : la base de craft ET de texture de toutes les machines de leur
+     * palier (voir {@link ModBlocks#FRACTURED_CHASSIS}).
+     */
+    public static final DeferredItem<BlockItem> FRACTURED_CHASSIS_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.FRACTURED_CHASSIS);
+
+    public static final DeferredItem<BlockItem> ATTUNED_CHASSIS_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.ATTUNED_CHASSIS);
+
+    public static final DeferredItem<BlockItem> VESKORIAN_CHASSIS_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.VESKORIAN_CHASSIS);
+
     // BlockItems des machines (voir ModBlocks.java)
     public static final DeferredItem<BlockItem> RESONANCE_STABILIZER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_STABILIZER);

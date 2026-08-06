@@ -1272,21 +1272,20 @@ public class MachineGameTests {
     @GameTest(template = EMPTY, timeoutTicks = 20)
     public static void custodeFragmentSubstitutesIron(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ItemStack cobble = new ItemStack(Items.COBBLESTONE);
-        ItemStack empty = ItemStack.EMPTY;
 
-        // Motif du Crusher : " C " / "CIC" (I = fer ou fragment).
-        helper.assertTrue(craftsCrusher(level, cobble, new ItemStack(ModItems.CUSTODE_ALLOY_FRAGMENT.get()), empty),
+        // Le Crusher se fabrique désormais « châssis Fracturé + 1 fer » (sans forme).
+        helper.assertTrue(craftsCrusher(level, new ItemStack(ModItems.CUSTODE_ALLOY_FRAGMENT.get())),
             "Le fragment du Custode devrait remplacer le fer dans la recette du Crusher");
-        helper.assertTrue(craftsCrusher(level, cobble, new ItemStack(Items.IRON_INGOT), empty),
+        helper.assertTrue(craftsCrusher(level, new ItemStack(Items.IRON_INGOT)),
             "Le fer devrait toujours fonctionner");
         helper.succeed();
     }
 
-    private static boolean craftsCrusher(ServerLevel level, ItemStack cobble, ItemStack iron, ItemStack empty) {
+    private static boolean craftsCrusher(ServerLevel level, ItemStack iron) {
+        ItemStack empty = ItemStack.EMPTY;
         CraftingInput input = CraftingInput.of(3, 2, List.of(
-            empty, cobble, empty,
-            cobble, iron, cobble));
+            new ItemStack(ModBlocks.FRACTURED_CHASSIS.get()), iron, empty,
+            empty, empty, empty));
         return level.getRecipeManager()
             .getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, level)
             .map(holder -> holder.value().getResultItem(level.registryAccess())
@@ -1472,21 +1471,22 @@ public class MachineGameTests {
     @GameTest(template = EMPTY, timeoutTicks = 20)
     public static void fieldEmitterRecipeRequiresBlueprint(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
+        ItemStack chassis = new ItemStack(ModBlocks.ATTUNED_CHASSIS.get());
         ItemStack c = new ItemStack(ModItems.RESONANCE_COMPONENT.get());
         ItemStack g = new ItemStack(Items.GOLD_INGOT);
-        ItemStack s = new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get());
         ItemStack p = ResonanceBlueprintItem.of(2);
         ItemStack e = ItemStack.EMPTY;
 
-        // Motif CGC / CSC / PG_ (voir ModRecipeProvider).
+        // Recette sans forme : châssis Accordé + 2 Component + 2 Gold + blueprint
+        // (voir ModRecipeProvider, « une machine = son châssis + ce qui la distingue »).
         CraftingInput withBlueprint = CraftingInput.of(3, 3, List.of(
-            c, g, c,
-            c, s, c,
-            p, g, e));
+            chassis, c, c,
+            g, g, p,
+            e, e, e));
         CraftingInput withoutBlueprint = CraftingInput.of(3, 3, List.of(
-            c, g, c,
-            c, s, c,
-            e, g, e));
+            chassis, c, c,
+            g, g, e,
+            e, e, e));
 
         helper.assertTrue(craftsFieldEmitter(level, withBlueprint),
             "Avec le blueprint, la recette doit produire un Field Emitter");

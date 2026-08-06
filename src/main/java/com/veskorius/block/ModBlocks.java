@@ -31,6 +31,59 @@ public class ModBlocks {
     private static final ToIntFunction<BlockState> MACHINE_GLOW =
         state -> state.getValue(AbstractMachineBlock.LIT) ? 7 : 0;
 
+    /**
+     * Glow d'un émetteur. Contrairement aux machines, il ne s'éteint pas complètement
+     * à vide : un émetteur reste un objet manifestement sous tension, même à sec. La
+     * différence de luminosité double le changement de façade — deux signaux pour la
+     * même information, lisibles de loin comme de près.
+     */
+    private static final ToIntFunction<BlockState> EMITTER_GLOW =
+        state -> state.getValue(FieldEmitterBlock.LIT) ? 9 : 2;
+
+    /**
+     * Châssis de palier — la <b>brique commune</b> des machines (05-Machines.md,
+     * « Châssis par palier »). Trois raisons d'exister, dans cet ordre :
+     *
+     * <ol>
+     *   <li><b>Craft</b> : chaque machine se fabrique désormais « châssis de son palier +
+     *       ce qui la distingue ». La grammaire de fabrication devient lisible : on ne
+     *       réapprend pas une recette entière par machine, on apprend un boîtier et une
+     *       pièce.</li>
+     *   <li><b>Lecture</b> : le châssis porte les textures de flanc et de dessus de
+     *       toutes les machines de son palier. Le palier d'une machine se lit donc
+     *       <b>sur le bloc</b>, à distance, sans GUI ni tooltip.</li>
+     *   <li><b>Lore</b> : le T1 est de la ruine récupérée (pierre, cuivre patiné,
+     *       gravures interrompues), le T2 du restauré qui conduit vraiment. La
+     *       progression se voit dans la matière.</li>
+     * </ol>
+     *
+     * Ils restent des blocs décoratifs à part entière — poser un mur de châssis est un
+     * usage légitime.
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> FRACTURED_CHASSIS =
+        BLOCKS.registerSimpleBlock("fractured_chassis",
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.STONE)
+                .strength(3.0f, 6.0f)
+                .sound(SoundType.STONE)
+                .requiresCorrectToolForDrops());
+
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> ATTUNED_CHASSIS =
+        BLOCKS.registerSimpleBlock("attuned_chassis",
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops());
+
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> VESKORIAN_CHASSIS =
+        BLOCKS.registerSimpleBlock("veskorian_chassis",
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(4.0f, 8.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops());
+
     /** Machine #1 (05-Machines.md). Bloc actif : block entity + GUI. */
     public static final DeferredBlock<ResonanceStabilizerBlock> RESONANCE_STABILIZER =
         BLOCKS.registerBlock("resonance_stabilizer",

@@ -71,6 +71,9 @@ public class Veskorius {
                 output.accept(com.veskorius.item.ResonanceBlueprintItem.of(2));
                 output.accept(com.veskorius.item.CodexFragmentItem.of(
                     com.veskorius.item.CodexEntries.DAILY_LIFE_LAMPS));
+                output.accept(ModItems.FRACTURED_CHASSIS_ITEM.get());
+                output.accept(ModItems.ATTUNED_CHASSIS_ITEM.get());
+                output.accept(ModItems.VESKORIAN_CHASSIS_ITEM.get());
                 output.accept(ModItems.RESONANCE_STABILIZER_ITEM.get());
                 output.accept(ModItems.COMPONENT_ASSEMBLER_ITEM.get());
                 output.accept(ModItems.RESONANCE_WHETSTONE_ITEM.get());
