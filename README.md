@@ -135,8 +135,22 @@ ce fichier.
 - **Textures d'items** : les 17 sprites 16×16 sont du vrai pixel art (silhouette distincte par
   objet, familles de teintes par matière — violet brut → violet stable → cyan raffiné). Sources
   éditables dans `tools/item-textures/` (cartes de pixels lisibles, hors build Gradle). Le Codex
-  a désormais sa propre texture au lieu du modèle de livre vanilla. Les textures de **blocs**
-  restent des aplats de couleur — passe visuelle de la Phase 6.
+  a désormais sa propre texture au lieu du modèle de livre vanilla.
+- **Châssis par palier** (`fractured` T1 / `attuned` T2 / `veskorian` T3) : base **de craft** —
+  une machine = le châssis de son palier + ce qui la distingue — **et de texture**, puisque le
+  châssis porte les flancs et le dessus de toutes les machines de son palier. Le palier se lit
+  donc sur le bloc, à distance. Chaque châssis contient le précédent. Détail : `05-Machines.md`.
+- **Textures de blocs 32×32** empilées par couches (matière, grain, trame, dégradé directionnel,
+  usure, biseau, occlusion, vignette, spéculaires ; roche en trois octaves + fissures). Direction
+  artistique : la technologie donne la géométrie, la magie donne le tracé — des gravures creusées
+  qui convergent vers le cœur et **s'allument quand la Résonance passe**, interrompues au T1
+  (de la ruine récupérée). Sources dans `tools/block-textures/`.
+- **États actif/inactif visibles** : les variantes `lit` pointaient le même modèle et le modèle
+  était un `cube_all` — une machine en marche, à l'arrêt ou hors champ étaient identiques, et
+  l'orientation invisible. Les machines sont maintenant orientées, avec façade éteinte et façade
+  allumée ; les émetteurs ont gagné une propriété `LIT`.
+- **Modèles 3D** là où ça vaut le coup : lunette en relief sur les machines, tour à étages pour
+  les émetteurs, pupitre à écran incliné pour la console d'attunement.
 
 Consulter `veskorius-design/13-Registry-Index.md` pour l'état « codé / à coder » de tout le
 contenu prévu : c'est le point de départ avant de reprendre le développement, plutôt que de

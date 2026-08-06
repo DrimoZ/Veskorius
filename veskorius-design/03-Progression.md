@@ -15,6 +15,25 @@ de Codex ou observation directe), jamais par un simple compteur de ressources.
 | T4 | Synthèse profonde | Résonance (fin) | Fragment de l'Archive Régionale | Accède aux strates profondes en sécurité, relie plusieurs bases |
 | T5 | Rupture de Faille | Effondrement | Découverte d'une Faille active | Voit et peut entrer dans les Failles ; contenu endgame |
 
+## Le châssis, colonne vertébrale de l'arbre (ajouté 2026-08-06)
+
+Avant de lire l'arbre : **chaque machine se fabrique sur le châssis de son palier**
+(`05-Machines.md`). L'arbre ci-dessous montre donc les dépendances *en ressources* ; il faut y
+superposer une chaîne parallèle, plus courte et strictement linéaire :
+
+```
+fractured_chassis (T1, pierre + cuivre)
+        └──▶ attuned_chassis (T2, + fer + stable crystal)
+                    └──▶ veskorian_chassis (T3, + fer + refined crystal)
+```
+
+Conséquence de progression : **franchir un palier, c'est d'abord fabriquer son châssis.** Le geste
+est le même à chaque fois, ce qui rend le passage de palier reconnaissable, et le coût du palier
+est payé une fois dans le châssis plutôt que redécouvert machine par machine.
+
+Contrainte tenue : les châssis T1 et T2 n'exigent **aucun Resonance Component ni blueprint**, pour
+ne pas reformer la dépendance circulaire Component ⇄ champ (voir `08-Structures.md`).
+
 ## Arbre complet de dépendances
 
 ```

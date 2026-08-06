@@ -13,23 +13,76 @@ Les blocs passifs (Field Emitter, Relay, Amplifier, Driller, Hub, Anchor...) n'o
 recette (leur construction) puisqu'ils ne "traitent" rien — elle reste directement dans le
 tableau "Vue d'ensemble", précédée de `craft:`.
 
+## Châssis par palier — la brique commune (ajouté 2026-08-06)
+
+> **✅ Codé.** `fractured_chassis` (T1), `attuned_chassis` (T2), `veskorian_chassis` (T3).
+
+Les recettes de construction listées plus bas partageaient toutes, sans le dire, une part de
+**boîtier** : de la pierre ou du fer qui ne servait qu'à faire une caisse. Chaque machine
+imposait pourtant son motif complet, donc le joueur réapprenait une forme entière par bloc, et
+rien à l'écran ne disait que le Stabilizer et le Crusher étaient du même âge.
+
+Cette part commune est extraite dans un **châssis, un par palier**. Une machine se fabrique
+désormais ainsi :
+
+> **machine = châssis de son palier + ce qui la distingue**
+
+Le châssis sert **trois** choses à la fois, et c'est ce qui justifie le bloc plutôt qu'une
+simple convention de recette :
+
+1. **Craft** — une grammaire au lieu de 23 motifs. On apprend un boîtier et une pièce.
+2. **Lecture** — le châssis porte les textures de flanc et de dessus de **toutes** les machines
+   de son palier. Le palier se lit donc **sur le bloc, à distance**, sans GUI ni tooltip. Ajouter
+   une machine T2 ne demande aucune texture de boîtier.
+3. **Lore** — chaque châssis **contient le précédent** : le T2 est un T1 restauré, le T3 un T2
+   réarmé. On ne jette rien, on améliore — le pilier « restaurer plutôt que conquérir »
+   (`01-Vision-Pillars.md`) devient littéral, et la progression se voit dans la matière.
+
+| Châssis | Palier | Recette | Identité visuelle |
+|---|---|---|---|
+| `fractured_chassis` | T1 | 6 Cobblestone + 2 Copper Ingot | Pierre récupérée, cuivre **patiné**, gravures **interrompues** — de la ruine qui ne conduit qu'à moitié |
+| `attuned_chassis` | T2 | 1 Fractured Chassis + 2 Iron (tag `iron_substitutes`) + 2 Stable Crystal | Acier et laiton, gravures **continues** : c'est restauré, ça circule |
+| `veskorian_chassis` | T3 | 1 Attuned Chassis + 2 Iron + 2 Refined Crystal | Alliage sombre, accents ambre |
+
+**Contrainte dure sur le châssis T2** : il ne doit exiger **ni Resonance Component ni blueprint**.
+Sinon la dépendance circulaire T1→T2 (Component ⇄ champ, voir `08`) se reformerait par ce chemin.
+Il ne demande donc que de la pierre, du cuivre, du fer et des cristaux stables — tous accessibles
+avec les seules machines T1, qui sont autonomes. *(Vérifié par script contre les recettes générées.)*
+
+Les châssis restent des **blocs décoratifs** à part entière : en poser un mur est un usage
+légitime, et c'est même la façon la plus simple d'afficher le palier d'un atelier.
+
 ## Recettes de construction (blocs actifs uniquement)
+
+*(Mises à jour le 2026-08-06 : le boîtier est passé dans le châssis, les quantités restantes sont
+celles qui portent du sens. Les recettes ci-dessous sont **sans forme** — la disposition
+n'apprenait plus rien une fois la grammaire comprise.)*
 
 | Machine | Recette de construction |
 |---|---|
-| Resonance Stabilizer | 4 Cobblestone + 2 Copper Ingot + 1 Raw Resonance Crystal |
-| Component Assembler | 3 Iron Ingot + 2 Stable Resonance Crystal + 1 Redstone |
-| Resonance Whetstone | 2 Cobblestone + 1 Iron Ingot + 1 Stable Resonance Crystal |
-| Flux Purifier | 4 Iron Ingot + 2 Stable Resonance Crystal + 1 Redstone Block |
+| Resonance Stabilizer | Fractured Chassis + 1 Raw Resonance Crystal |
+| Component Assembler | Fractured Chassis + 2 Stable Resonance Crystal + 1 Redstone |
+| Resonance Whetstone | Fractured Chassis + 1 Stable Resonance Crystal |
+| Crystal Crusher | Fractured Chassis + 1 Iron Ingot |
+| Flux Purifier | Attuned Chassis + 2 Stable Resonance Crystal + 1 Redstone Block + blueprint T2 *(rendu)* |
+| Field Emitter | Attuned Chassis + 2 Resonance Component + 2 Gold Ingot + blueprint T2 *(rendu)* |
+| Crystal Roost | Attuned Chassis + 4 Planches + 1 Botte de Foin + blueprint T2 *(rendu)* |
+| Damping Array | Veskorian Chassis + 1 Refined Crystal + 1 Redstone Block + blueprint T2 *(rendu)* |
+| Émetteur Accordable | Field Emitter + 2 Refined Crystal + blueprint T2 *(rendu)* — un *upgrade*, pas un châssis neuf |
+
+### Recettes des machines pas encore codées (T3+, à reprendre sur le même modèle)
+
+Ces machines n'existent pas encore ; leurs recettes ci-dessous sont **l'ancien format** et devront
+passer à « châssis + distinctif » à leur codage.
+
+| Machine | Recette de construction (ancienne forme) |
+|---|---|
 | Veskorian Alloy Forge | 4 Stone Bricks + 2 Refined Resonance Crystal + 2 Iron Ingot |
 | Structural Synthesizer | 6 Veskorian Alloy Ingot + 2 Refined Crystal + 1 Diamond |
 | Deep Synthesis Chamber | 6 Veskorian Alloy Ingot + 2 Refined Crystal + **1 Hyper Refined Crystal (installé comme catalyseur permanent, voir section Bootstrap T4 ci-dessous)** |
 | Rift Core Extractor | 4 Hyper Refined Crystal + 2 Veskorian Alloy Block + 1 Diamond Block — pose valide uniquement à l'intérieur d'une Faille ancrée |
 | Rift Ward Emitter | 2 Rift Essence + 4 Veskorian Alloy Block |
 | Slag Vent | 4 Iron Ingot + 1 Redstone + 1 Resonance Component |
-| Crystal Roost | 4 Planches (peu importe l'essence) + 2 Stable Resonance Crystal + 1 Botte de Foin |
-| Damping Array | 4 Iron Ingot + 1 Refined Resonance Crystal + 1 Redstone Block *(ajouté 2026-08-06 : le bloc était codé et craftable, mais absent de ce tableau)* |
-| Crystal Crusher | 3 Cobblestone + 1 Iron Ingot (voir Vue d'ensemble, #22) |
 | Flux Compressor | 4 Iron Ingot + 2 Veskorian Alloy Ingot + 1 Redstone Block (#23) |
 | Convergence Core | 12 Veskorian Alloy Block + 6 Harmonic Lattice + 4 Hyper Refined Crystal + 4 Concentrated Flux |
 

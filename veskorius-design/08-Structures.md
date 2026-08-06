@@ -77,16 +77,32 @@ le `structure_set`.)*
   elle se remet en marche le temps d'un cycle et remet au joueur le **`resonance_blueprint` T2**
   (s'il n'en a pas déjà un). La console ne se récupère pas (minée = gravats). C'est la porte du T2 :
   *faire fonctionner l'ancienne machine là où elle se tient*.
-- **Loot** (coffre-atelier) : **amorçage T2 garanti** = **4 Resonance Component + 2 Gold Ingot** (de
-  quoi fabriquer **exactement un** Field Emitter), plus des matériaux d'appoint aléatoires (fer,
-  redstone, or). Le blueprint **ne vient pas du coffre** mais de la console.
+- **Loot** (coffre-atelier) : **amorçage T2 garanti** = **4 Resonance Component + 2 Gold Ingot**,
+  plus des matériaux d'appoint aléatoires (fer, redstone, or). Le blueprint **ne vient pas du
+  coffre** mais de la console.
+  > *Marge (2026-08-06)* : depuis le passage aux châssis, le Field Emitter consomme **2** Component
+  > et 2 Gold — le lot garanti couvre donc la recette avec une Component d'avance. C'est
+  > délibérément gardé à 4 : le joueur peut se tromper une fois, ou dépenser une Component
+  > ailleurs, sans avoir à retrouver un second Avant-poste.
   > **⚠️ Pourquoi les Component sont garantis (corrigé le 2026-07-24).** La recette du Field Emitter
-  > exige 4 Component ; or les Component ne s'obtiennent qu'au **Component Assembler**, qui **a besoin
+  > exige des Component ; or les Component ne s'obtiennent qu'au **Component Assembler**, qui **a besoin
   > d'un champ** pour tourner — champ que **seul le Field Emitter** fournit. Sans amorçage, **dépendance
   > circulaire** : un joueur neuf ne pourrait jamais atteindre le T2. L'Avant-poste fournit donc le
   > premier lot de Component ; ce premier champ alimente ensuite l'Assembler et la boucle
   > s'auto-entretient. (Le loot listait « fer/redstone/or », qui ne correspondent pas à la recette :
   > l'omission est réparée, un GameTest garantit désormais ce lot.)
+  >
+  > **Le verrou a failli se reformer par un autre chemin (2026-08-06).** En introduisant les
+  > châssis, il aurait été naturel d'exiger un Resonance Component dans le châssis T2 — ce qui
+  > aurait recréé exactement la même impasse, une case plus loin et bien plus difficile à voir.
+  > Les châssis T1 et T2 sont donc **contraints à ne demander que des matériaux accessibles sans
+  > champ** (pierre, cuivre, fer, cristaux stables — le Stabilizer est autonome). C'est une règle
+  > à tenir pour tout futur châssis de bas palier, pas une coïncidence.
+  >
+  > **Deux GameTest gardent la porte** : `outpostLootGuaranteesBootstrapComponents` roule la table
+  > 30 fois et exige Component **et** Gold à chaque tirage (une vérification à un seul tirage ne
+  > distingue pas un pool certain d'un pool à 50 %, et laissait précisément passer ce bug), et
+  > `fieldEmitterRecipeRequiresBlueprint` verrouille la recette elle-même.
 - **Débloque** : toute la catégorie T2 (le blueprint T2 est l'ingrédient rendu de chaque recette
   T2 — Field Emitter, Flux Purifier, Storage Cell, Crystal Roost, Catalyst Core, Locator).
 - ~~**Tell de surface** : une amorce de pilier en `resonance_veined_stone`.~~ **Abandonné à la

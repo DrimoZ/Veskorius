@@ -90,6 +90,17 @@ formation cristalline distinctive (pas un minerai façon fer, rejeté dans `04-M
 se génère en petites poches (Y -20 à 0) et lâche l'item quand on la mine. La coquille de
 `resonance_veined_stone` qui la rend reconnaissable de loin est séparée (tâche 14).
 
+## Blocs — châssis de palier (ajouté 2026-08-06)
+
+Base de craft **et** de texture des machines (voir `05-Machines.md`, « Châssis par palier »). Ils
+ne sont pas comptés dans les 23 machines : ce sont des blocs de construction, pas des machines.
+
+| Registry name | Palier | Statut code |
+|---|---|---|
+| `fractured_chassis` | T1 | ✅ codé — 6 Cobblestone + 2 Copper ; porte les flancs des machines T1 |
+| `attuned_chassis` | T2 | ✅ codé — 1 Fractured + 2 Iron + 2 Stable Crystal. **Sans Component ni blueprint**, par contrainte d'amorçage (voir `05`) |
+| `veskorian_chassis` | T3 | ✅ codé — 1 Attuned + 2 Iron + 2 Refined Crystal |
+
 ## Blocs — machines (23, voir `05-Machines.md` pour le détail complet)
 
 | # | Registry name proposé | Tier | Statut code |
