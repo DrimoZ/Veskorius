@@ -5,6 +5,7 @@ import com.veskorius.block.AbstractMachineBlock;
 import com.veskorius.block.FieldEmitterBlock;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.ResonanceVeinedStoneBlock;
+import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -82,11 +83,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // Console d'attunement : son écran est sur les QUATRE côtés. Elle n'a pas de
         // propriété FACING (elle est posée par la génération, jamais par un joueur) —
         // la reconnaître ne doit donc pas dépendre de l'angle sous lequel on l'aborde.
-        simpleBlock(ModBlocks.ATTUNEMENT_CONSOLE.get(), models().cube("attunement_console",
-            modLoc("block/" + FRACTURED + "_top"), modLoc("block/" + FRACTURED + "_top"),
-            modLoc("block/attunement_console_front"), modLoc("block/attunement_console_front"),
-            modLoc("block/attunement_console_front"), modLoc("block/attunement_console_front"))
-            .texture("particle", modLoc("block/attunement_console_front")));
+        simpleBlock(ModBlocks.ATTUNEMENT_CONSOLE.get(), consoleModel());
     }
 
     // --- Châssis de palier ---------------------------------------------------
@@ -112,8 +109,38 @@ public class ModBlockStateProvider extends BlockStateProvider {
             AbstractMachineBlock.FACING, AbstractMachineBlock.LIT);
     }
 
+    /**
+     * L'émetteur n'est pas un cube : c'est une <b>tour à trois étages</b> — socle,
+     * coffret, tête d'émission. Il mérite sa propre silhouette parce que c'est le bloc
+     * qu'on cherche des yeux dans une base : c'est lui qui alimente tout le reste, et
+     * on doit le repérer de loin sans lire une seule texture. Tout tient dans le cube
+     * (rien ne dépasse), donc on peut empiler ou construire autour sans surprise.
+     */
     private void emitter(Block block, String name, String chassisName) {
-        litOriented(block, name, chassisName, FieldEmitterBlock.FACING, FieldEmitterBlock.LIT);
+        ModelFile off = emitterModel(name, chassisName, name + "_front");
+        ModelFile on = emitterModel(name + "_on", chassisName, name + "_front_on");
+        getVariantBuilder(block).forAllStates((BlockState state) -> ConfiguredModel.builder()
+            .modelFile(state.getValue(FieldEmitterBlock.LIT) ? on : off)
+            .rotationY(((int) state.getValue(FieldEmitterBlock.FACING).toYRot() + FACING_OFFSET) % 360)
+            .build());
+    }
+
+    private ModelFile emitterModel(String name, String chassisName, String frontTexture) {
+        ResourceLocation side = modLoc("block/" + chassisName + "_side");
+        ResourceLocation top = modLoc("block/" + chassisName + "_top");
+        var b = models().getBuilder(name)
+            .parent(BLOCK_ROOT)
+            .texture("particle", side)
+            .texture("side", side)
+            .texture("top", top)
+            .texture("front", modLoc("block/" + frontTexture));
+
+        // Socle large, coffret (c'est lui qui porte la façade), tête étroite.
+        cube(b, 0, 0, 0, 16, 3, 16, "#side", "#top", "#side", false);
+        cube(b, 1, 3, 1, 15, 12, 15, "#side", "#top", "#front", false);
+        cube(b, 3, 12, 3, 13, 15, 13, "#side", "#top", "#side", false);
+        cube(b, 6, 15, 6, 10, 16, 10, "#top", "#top", "#top", false);
+        return b;
     }
 
     /**
@@ -123,13 +150,124 @@ public class ModBlockStateProvider extends BlockStateProvider {
      */
     private void litOriented(Block block, String name, String chassisName,
                              DirectionProperty facing, BooleanProperty lit) {
-        ResourceLocation side = modLoc("block/" + chassisName + "_side");
-        ResourceLocation top = modLoc("block/" + chassisName + "_top");
-        ModelFile off = models().orientable(name, side, modLoc("block/" + name + "_front"), top);
-        ModelFile on = models().orientable(name + "_on", side, modLoc("block/" + name + "_front_on"), top);
+        ModelFile off = machineModel(name, chassisName, name + "_front");
+        ModelFile on = machineModel(name + "_on", chassisName, name + "_front_on");
         getVariantBuilder(block).forAllStates((BlockState state) -> ConfiguredModel.builder()
             .modelFile(state.getValue(lit) ? on : off)
             .rotationY(((int) state.getValue(facing).toYRot() + FACING_OFFSET) % 360)
             .build());
+    }
+
+    // --- Géométrie 3D ---------------------------------------------------------
+
+    /**
+     * Racine d'un modèle écrit à la main. Hériter de {@code block/block} n'est PAS
+     * cosmétique : c'est lui qui porte les transformations d'affichage (inventaire,
+     * main, sol, cadre). Un modèle à éléments sans parent perd ces transformations et
+     * le bloc apparaît de travers et mal dimensionné dans l'inventaire, alors qu'il est
+     * parfaitement correct une fois posé — d'où un bug qu'on ne voit jamais en regardant
+     * le monde.
+     */
+    private static final ModelFile.UncheckedModelFile BLOCK_ROOT =
+        new ModelFile.UncheckedModelFile("block/block");
+
+
+    /**
+     * Corps d'une machine : un cube plein, plus une <b>lunette en relief</b> autour de
+     * la façade.
+     *
+     * <p>Pourquoi du volume et pas seulement une texture : une texture de lunette
+     * dessine l'ombre d'un creux, mais l'ombre ne bouge pas quand le joueur bouge. Un
+     * relief réel prend la lumière du monde, se découpe sur le fond, et projette son
+     * ombre — le bloc cesse d'être une image collée sur un cube. Les quatre barres
+     * sortent d'un demi-pixel seulement : assez pour accrocher la lumière, assez peu
+     * pour ne pas s'encastrer dans un bloc voisin.
+     *
+     * <p>Le relief est <b>uniquement sur la façade</b>, jamais sur les flancs : deux
+     * machines côte à côte sont un cas courant en base, et des saillies latérales
+     * s'interpénétreraient.
+     */
+    private ModelFile machineModel(String name, String chassisName, String frontTexture) {
+        ResourceLocation side = modLoc("block/" + chassisName + "_side");
+        ResourceLocation top = modLoc("block/" + chassisName + "_top");
+        var b = models().getBuilder(name)
+            .parent(BLOCK_ROOT)
+            .texture("particle", side)
+            .texture("side", side)
+            .texture("top", top)
+            .texture("front", modLoc("block/" + frontTexture));
+
+        cube(b, 0, 0, 0, 16, 16, 16, "#side", "#top", "#front", true);
+
+        // La lunette : quatre barres autour de la fenêtre, en saillie de 0,5.
+        final float o = 2.5f, i = 13.5f, th = 1.0f, d = -0.5f;
+        bar(b, o, i - th, d, i, i, 0);        // haut
+        bar(b, o, o, d, i, o + th, 0);        // bas
+        bar(b, o, o + th, d, o + th, i - th, 0); // gauche
+        bar(b, i - th, o + th, d, i, i - th, 0); // droite
+        return b;
+    }
+
+    /**
+     * La console d'attunement : un pupitre à écran <b>incliné</b>, pas un cube.
+     *
+     * <p>C'est le bloc le plus important du jeu au moment où on le rencontre — c'est
+     * lui qui ouvre le T2 — et il est posé au milieu de gravats. Un cube s'y serait
+     * fondu ; un pupitre incliné se lit comme du mobilier, donc comme quelque chose
+     * qu'on peut manipuler. La pente est ce qui dit « ceci s'utilise », avant même
+     * que l'écran soit lisible.
+     */
+    private ModelFile consoleModel() {
+        ResourceLocation shell = modLoc("block/" + FRACTURED + "_side");
+        ResourceLocation top = modLoc("block/" + FRACTURED + "_top");
+        ResourceLocation screen = modLoc("block/attunement_console_front");
+        var b = models().getBuilder("attunement_console")
+            .parent(BLOCK_ROOT)
+            .texture("particle", screen)
+            .texture("side", shell)
+            .texture("top", top)
+            .texture("screen", screen);
+
+        // Socle massif.
+        cube(b, 0, 0, 0, 16, 5, 16, "#side", "#top", "#side", false);
+        // Écran incliné vers l'arrière : la face du haut porte les glyphes.
+        var el = b.element().from(2, 5, 4).to(14, 14, 8);
+        el.rotation().origin(8, 5, 8).axis(net.minecraft.core.Direction.Axis.X)
+            .angle(-22.5f).rescale(true).end();
+        for (Direction dir : Direction.values()) {
+            el.face(dir).texture(dir == Direction.SOUTH ? "#screen" : "#side").end();
+        }
+        el.end();
+        return b;
+    }
+
+    /** Un pavé texturé sur toutes ses faces, avec culling optionnel (corps plein). */
+    private void cube(net.neoforged.neoforge.client.model.generators.BlockModelBuilder b,
+                      float x1, float y1, float z1, float x2, float y2, float z2,
+                      String sideTex, String topTex, String frontTex, boolean cull) {
+        var el = b.element().from(x1, y1, z1).to(x2, y2, z2);
+        for (Direction dir : Direction.values()) {
+            String tex = switch (dir) {
+                case UP, DOWN -> topTex;
+                case NORTH -> frontTex;
+                default -> sideTex;
+            };
+            var face = el.face(dir).texture(tex);
+            if (cull) {
+                face.cullface(dir);
+            }
+            face.end();
+        }
+        el.end();
+    }
+
+    /** Une barre de lunette : texturée en métal de châssis sur toutes ses faces. */
+    private void bar(net.neoforged.neoforge.client.model.generators.BlockModelBuilder b,
+                     float x1, float y1, float z1, float x2, float y2, float z2) {
+        var el = b.element().from(x1, y1, z1).to(x2, y2, z2);
+        for (Direction dir : Direction.values()) {
+            el.face(dir).texture("#side").end();
+        }
+        el.end();
     }
 }

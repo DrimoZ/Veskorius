@@ -26,8 +26,26 @@ public class AttunementConsoleBlock extends Block {
     /** Tier du blueprint que cette console restaure. */
     private static final int TIER = 2;
 
+    /**
+     * Volume du pupitre : le socle plus l'écran incliné. Le modèle n'occupe plus tout le
+     * cube depuis le passage en 3D — laisser la boîte de collision par défaut aurait
+     * planté un mur invisible au-dessus du socle, exactement le genre de détail qui
+     * fait qu'un bloc « sonne faux » sans qu'on sache dire pourquoi.
+     */
+    private static final net.minecraft.world.phys.shapes.VoxelShape SHAPE =
+        net.minecraft.world.phys.shapes.Shapes.or(
+            box(0.0, 0.0, 0.0, 16.0, 5.0, 16.0),
+            box(2.0, 5.0, 3.0, 14.0, 13.0, 9.0));
+
     public AttunementConsoleBlock(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    protected net.minecraft.world.phys.shapes.VoxelShape getShape(
+            BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos,
+            net.minecraft.world.phys.shapes.CollisionContext context) {
+        return SHAPE;
     }
 
     @Override

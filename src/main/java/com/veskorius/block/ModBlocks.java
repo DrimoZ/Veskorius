@@ -204,6 +204,10 @@ public class ModBlocks {
                 .mapColor(MapColor.COLOR_LIGHT_BLUE)
                 .strength(3.5f, 6.0f)
                 .sound(SoundType.METAL)
+                // Pupitre incliné, donc PAS un cube plein : sans noOcclusion, Minecraft
+                // culle les faces des blocs voisins en supposant qu'elles sont cachées,
+                // et on voit à travers le monde par-dessus le socle.
+                .noOcclusion()
                 .lightLevel(state -> 3));
 
     /**
@@ -243,7 +247,9 @@ public class ModBlocks {
                 .strength(3.0f, 6.0f)
                 .sound(SoundType.METAL)
                 .requiresCorrectToolForDrops()
-                .lightLevel(state -> 4));
+                // Tour à étages, pas un cube : voir la note sur la console.
+                .noOcclusion()
+                .lightLevel(EMITTER_GLOW));
 
     /**
      * Émetteur Accordable (06-Energy.md) : Field Emitter dont la **bande harmonique se
@@ -258,5 +264,6 @@ public class ModBlocks {
                 .strength(3.0f, 6.0f)
                 .sound(SoundType.METAL)
                 .requiresCorrectToolForDrops()
-                .lightLevel(state -> 5));
+                .noOcclusion()
+                .lightLevel(EMITTER_GLOW));
 }
