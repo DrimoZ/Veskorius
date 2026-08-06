@@ -7,6 +7,6 @@ import net.minecraft.world.entity.player.Inventory;
 public class ComponentAssemblerScreen extends AbstractMachineScreen<ComponentAssemblerMenu> {
 
     public ComponentAssemblerScreen(ComponentAssemblerMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title, STANDARD_TEXTURE);
+        super(menu, playerInventory, title, texture("component_assembler"));
     }
 }

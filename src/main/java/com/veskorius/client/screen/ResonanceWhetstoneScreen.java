@@ -7,6 +7,6 @@ import net.minecraft.world.entity.player.Inventory;
 public class ResonanceWhetstoneScreen extends AbstractMachineScreen<ResonanceWhetstoneMenu> {
 
     public ResonanceWhetstoneScreen(ResonanceWhetstoneMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title, STANDARD_TEXTURE);
+        super(menu, playerInventory, title, texture("resonance_whetstone"));
     }
 }

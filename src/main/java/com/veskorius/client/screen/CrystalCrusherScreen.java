@@ -7,6 +7,6 @@ import net.minecraft.world.entity.player.Inventory;
 public class CrystalCrusherScreen extends AbstractMachineScreen<CrystalCrusherMenu> {
 
     public CrystalCrusherScreen(CrystalCrusherMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title, STANDARD_TEXTURE);
+        super(menu, playerInventory, title, texture("crystal_crusher"));
     }
 }

@@ -7,6 +7,6 @@ import net.minecraft.world.entity.player.Inventory;
 public class ResonanceStabilizerScreen extends AbstractMachineScreen<ResonanceStabilizerMenu> {
 
     public ResonanceStabilizerScreen(ResonanceStabilizerMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title, STANDARD_TEXTURE);
+        super(menu, playerInventory, title, texture("resonance_stabilizer"));
     }
 }

@@ -20,13 +20,18 @@ import net.minecraft.world.entity.player.Inventory;
 public abstract class AbstractMachineScreen<T extends AbstractMachineMenu> extends AbstractContainerScreen<T> {
 
     /**
-     * Fond commun aux machines a disposition standard (2 entrees, 1 sortie,
-     * 1 augment). Tant que les textures sont des placeholders, un seul fichier
-     * suffit pour toutes — la Phase 6 pourra en donner un par machine en
-     * surchargeant le constructeur qui prend une ResourceLocation.
+     * Fond d'écran d'une machine — <b>un fichier par machine</b>.
+     *
+     * <p>Un fond partagé obligeait toutes les machines à se ressembler à l'ouverture,
+     * alors qu'elles ne font pas le même métier : rien ne distinguait le Crusher du
+     * Purifier une fois le GUI ouvert. Chaque panneau porte donc sa bande de titre à sa
+     * couleur et un bandeau d'atelier qui reprend le motif de sa façade — on reconnaît
+     * la machine ouverte sans lire son nom.
      */
-    public static final ResourceLocation STANDARD_TEXTURE = ResourceLocation.fromNamespaceAndPath(
-        Veskorius.MOD_ID, "textures/gui/container/machine_standard.png");
+    protected static ResourceLocation texture(String machine) {
+        return ResourceLocation.fromNamespaceAndPath(
+            Veskorius.MOD_ID, "textures/gui/container/" + machine + ".png");
+    }
 
     protected static final int PROGRESS_X = 79;
     protected static final int PROGRESS_Y = 34;

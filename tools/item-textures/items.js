@@ -1,0 +1,227 @@
+// Textures d'items 16x16 — mêmes règles que les blocs.
+//
+// Les items dataient d'avant la calibration : ils étaient dessinés en cartes de
+// pixels, à la main, avec des palettes inventées au fil de l'eau. Ils ne juraient
+// pas seuls, mais à côté du marbre ils appartenaient à un autre mod.
+//
+// Règles reprises telles quelles :
+//   - palette INDEXÉE, aucun fondu alpha, arêtes franches ;
+//   - les teintes viennent des MÊMES familles que les blocs (marbre, laiton,
+//     cuivre, fer, violet/cyan/ambre de la Résonance) ;
+//   - formes prises dans les tables de spans quand elles sont symétriques, donc
+//     centrées au pixel près ;
+//   - un item = une silhouette. Deux objets ne doivent jamais se distinguer par la
+//     seule couleur : dans une barre d'action on lit la forme d'abord.
+
+const { Canvas } = require('./draw');
+const { fill, outline } = require('./shapes');
+
+const S = 16;
+
+// --- Familles de teintes, communes avec les blocs -------------------------
+const V = { line: '#3A1D57', deep: '#5C2C86', mid: '#8A47B8', lite: '#B57CE0', hot: '#E4CCF7' };
+const C = { line: '#0E4449', deep: '#166B72', mid: '#27A3AC', lite: '#5FD6DC', hot: '#CFF6F8' };
+const A = { line: '#6E4A15', deep: '#8E5A15', mid: '#D8922A', lite: '#F0B863', hot: '#FBE0B0' };
+const M = { line: '#8E8E8E', deep: '#B8B8B8', mid: '#D3D3D3', lite: '#E0E0E0', hot: '#F2F2F2' };
+const IRON = { line: '#1E2228', deep: '#2E323A', mid: '#454B56', lite: '#5E6672', hot: '#828A96' };
+const BRASS = { line: '#6E5420', deep: '#8A6A2A', mid: '#C9A24A', lite: '#E8CE8A', hot: '#F7EBC4' };
+const COPPER = { line: '#5E3517', deep: '#8A4E24', mid: '#A8632F', lite: '#C9834E', hot: '#E0A87A' };
+const WOOD = { line: '#33240F', deep: '#4A3520', mid: '#6E5436', lite: '#8F7048', hot: '#B08E5E' };
+const PAPER = { line: '#6E5E3A', deep: '#9E8A5E', mid: '#C6B183', lite: '#DCCBA4', hot: '#EFE3C6' };
+const SLUDGE = { line: '#241E2C', deep: '#3A3048', mid: '#4E4260', lite: '#665A7A', hot: '#847A96' };
+
+/** Cristal : losange taillé, trois facettes. La forme signature du mod. */
+function crystal(c, p, x, y, w, h) {
+  const cx = x + w / 2, cy = y + h / 2;
+  const spans = [];
+  for (let j = 0; j < h; j++) {
+    const t = 1 - Math.abs((j + 0.5) - h / 2) / (h / 2);
+    const half = Math.max(1, Math.round((w / 2) * t));
+    spans.push([y + j, Math.round(cx - half), Math.round(cx + half) - 1]);
+  }
+  outline(c, spans, p.line);
+  fill(c, spans, p.mid);
+  // Facette éclairée : la moitié gauche, d'un cran plus clair. Deux valeurs
+  // suffisent à dire « taillé » ; trois font du dégradé, donc de la bouillie.
+  for (const [yy, x0, x1] of spans) {
+    const midX = Math.round((x0 + x1) / 2);
+    for (let xx = x0; xx <= midX; xx++) c.set(xx, yy, p.lite);
+  }
+  c.set(Math.round(cx) - 1, Math.round(cy) - 2, p.hot);
+  return spans;
+}
+
+/** Pastille métallique 2x2 avec son point de lumière. */
+function stud(c, p, x, y) {
+  c.rect(x, y, 2, 2, p.mid);
+  c.set(x, y, p.lite);
+  c.set(x + 1, y + 1, p.deep);
+  return c;
+}
+
+/** Barre pleine cernée : la brique des outils et des plaques. */
+function bar(c, p, x, y, w, h) {
+  c.rect(x - 1, y - 1, w + 2, h + 2, p.line);
+  c.rect(x, y, w, h, p.mid);
+  c.rect(x, y, w, 1, p.lite);
+  c.rect(x, y + h - 1, w, 1, p.deep);
+  return c;
+}
+
+const items = {
+  // --- La chaîne de raffinage : même forme, matière de plus en plus noble ----
+  // Elles DOIVENT se ressembler (c'est la même pierre à trois états) mais la
+  // taille et l'éclat progressent, donc on les distingue côte à côte.
+  raw_resonance_crystal: (c) => {
+    // Brut : un éclat ébréché, asymétrique, plus une esquille.
+    outline(c, [[3, 6, 9], [4, 5, 10], [5, 4, 10], [6, 4, 11], [7, 4, 11],
+      [8, 5, 10], [9, 5, 10], [10, 6, 9]], V.line);
+    fill(c, [[3, 6, 9], [4, 5, 10], [5, 4, 10], [6, 4, 11], [7, 4, 11],
+      [8, 5, 10], [9, 5, 10], [10, 6, 9]], V.deep);
+    fill(c, [[4, 5, 7], [5, 4, 7], [6, 4, 7], [7, 5, 7], [8, 5, 7]], V.mid);
+    c.set(6, 5, V.lite);
+    c.rect(10, 11, 3, 3, V.line);
+    c.rect(11, 12, 2, 2, V.deep);
+  },
+  stable_resonance_crystal: (c) => crystal(c, V, 3, 2, 10, 12),
+  refined_resonance_crystal: (c) => {
+    crystal(c, C, 3, 1, 10, 14);
+    c.set(6, 5, C.hot);
+    c.set(9, 9, C.hot);
+  },
+
+  // --- Matière ouvrée -------------------------------------------------------
+  resonance_component: (c) => {
+    // Une plaque usinée, quatre pastilles, un cristal serti : un objet FABRIQUÉ.
+    bar(c, IRON, 3, 4, 10, 8);
+    for (const [x, y] of [[4, 5], [10, 5], [4, 9], [10, 9]]) stud(c, BRASS, x, y);
+    c.rect(7, 6, 2, 4, V.mid);
+    c.set(7, 6, V.hot);
+  },
+  resonance_dust: (c) => {
+    // Un tas conique : la seule silhouette « en vrac » du lot.
+    outline(c, [[9, 6, 9], [10, 4, 11], [11, 3, 12], [12, 2, 13], [13, 1, 14]], V.line);
+    fill(c, [[9, 6, 9], [10, 4, 11], [11, 3, 12], [12, 2, 13], [13, 1, 14]], V.deep);
+    fill(c, [[10, 5, 8], [11, 4, 9], [12, 3, 10], [13, 2, 11]], V.mid);
+    for (const [x, y] of [[5, 4], [9, 2], [11, 6], [3, 7]]) c.set(x, y, V.lite);
+  },
+  raw_flux_deposit: (c) => {
+    // Un caillou irrégulier, moucheté : ça se brosse, ça ne se taille pas.
+    const rock = [[4, 5, 10], [5, 3, 12], [6, 2, 13], [7, 2, 13],
+      [8, 2, 13], [9, 3, 12], [10, 4, 11], [11, 6, 9]];
+    outline(c, rock, IRON.line);
+    fill(c, rock, IRON.mid);
+    fill(c, [[5, 4, 7], [6, 3, 6], [7, 3, 5]], IRON.lite);
+    for (const [x, y] of [[5, 6], [9, 5], [7, 8], [11, 8], [4, 9]]) c.set(x, y, V.mid);
+  },
+  resonance_sludge: (c) => {
+    // Une masse qui coule, deux gouttes de longueurs différentes.
+    const blob = [[4, 4, 11], [5, 3, 12], [6, 2, 13], [7, 2, 13], [8, 3, 12], [9, 4, 11]];
+    outline(c, blob, SLUDGE.line);
+    fill(c, blob, SLUDGE.mid);
+    fill(c, [[5, 4, 7], [6, 3, 6]], SLUDGE.lite);
+    c.rect(4, 10, 2, 3, SLUDGE.mid);
+    c.rect(9, 10, 2, 5, SLUDGE.mid);
+    c.rect(4, 10, 1, 3, SLUDGE.line);
+    c.rect(9, 10, 1, 5, SLUDGE.line);
+    c.set(6, 6, SLUDGE.hot);
+  },
+  resonance_spore: (c) => {
+    // Une capsule organique : la seule forme molle, et la seule qui flotte.
+    const pod = [[5, 6, 9], [6, 5, 10], [7, 4, 11], [8, 4, 11], [9, 5, 10], [10, 6, 9]];
+    outline(c, pod, V.line);
+    fill(c, pod, V.mid);
+    fill(c, [[6, 5, 7], [7, 4, 6], [8, 4, 6]], V.lite);
+    c.set(6, 7, V.hot);
+    c.set(7, 2, V.lite);
+    c.set(10, 3, V.lite);
+  },
+  custode_alloy_fragment: (c) => {
+    // Une plaque BRISÉE : bord droit en escalier, liseré laiton en haut.
+    const shard = [[3, 3, 11], [4, 3, 12], [5, 3, 11], [6, 3, 10],
+      [7, 3, 10], [8, 3, 9], [9, 3, 8], [10, 3, 7], [11, 3, 6], [12, 3, 5]];
+    outline(c, shard, IRON.line);
+    fill(c, shard, IRON.mid);
+    c.rect(3, 3, 9, 1, BRASS.mid);
+    c.set(3, 3, BRASS.lite);
+    fill(c, [[5, 4, 5], [6, 4, 5], [7, 4, 5]], IRON.lite);
+    c.set(6, 6, IRON.line);
+    c.set(9, 8, IRON.line);
+  },
+
+  // --- Outils : silhouettes franchement différentes -------------------------
+  resonance_tuner: (c) => {
+    // Diagonale : c'est un outil qu'on tient. Manche bois, tête laiton, molette.
+    for (let i = 0; i < 7; i++) bar(c, WOOD, 3 + i, 12 - i, 2, 2);
+    bar(c, BRASS, 9, 3, 5, 5);
+    c.rect(10, 4, 3, 3, A.mid);
+    c.set(11, 5, A.hot);
+  },
+  resonance_locator: (c) => {
+    // Rond : une boussole. Aucun autre item n'est circulaire.
+    const disc = [[3, 6, 9], [4, 4, 11], [5, 3, 12], [6, 2, 13], [7, 2, 13],
+      [8, 2, 13], [9, 2, 13], [10, 3, 12], [11, 4, 11], [12, 6, 9]];
+    outline(c, disc, IRON.line);
+    fill(c, disc, IRON.mid);
+    fill(c, [[4, 5, 7], [5, 4, 6]], IRON.lite);
+    fill(c, [[5, 6, 9], [6, 5, 10], [7, 5, 10], [8, 5, 10], [9, 6, 9]], IRON.line);
+    c.rect(7, 5, 2, 5, C.mid);
+    c.rect(7, 6, 2, 2, C.hot);
+  },
+  resonance_storage_cell: (c) => {
+    // Une pile debout, avec sa borne et sa fenêtre de charge.
+    bar(c, IRON, 4, 3, 8, 11);
+    c.rect(6, 1, 4, 2, BRASS.mid);
+    c.set(6, 1, BRASS.lite);
+    c.rect(6, 5, 4, 7, IRON.line);
+    c.rect(6, 5, 4, 4, C.mid);
+    c.rect(6, 5, 4, 1, C.hot);
+    c.rect(6, 9, 4, 3, C.deep);
+  },
+  resonance_catalyst_core: (c) => {
+    // Un octogone serti : compact, scellé, symétrique. Ça s'installe et s'oublie.
+    const oct = [[3, 6, 9], [4, 4, 11], [5, 3, 12], [6, 3, 12], [7, 3, 12],
+      [8, 3, 12], [9, 3, 12], [10, 4, 11], [11, 6, 9]];
+    outline(c, oct, BRASS.line);
+    fill(c, oct, BRASS.mid);
+    fill(c, [[4, 5, 7], [5, 4, 6]], BRASS.lite);
+    fill(c, [[5, 6, 9], [6, 5, 10], [7, 5, 10], [8, 5, 10], [9, 6, 9]], V.deep);
+    c.rect(7, 6, 2, 3, V.mid);
+    c.set(7, 6, V.hot);
+  },
+
+  // --- Papier et lore -------------------------------------------------------
+  resonance_blueprint: (c) => {
+    // Une feuille bien découpée, tracés violets. Bord NET : c'est un plan.
+    bar(c, PAPER, 2, 2, 12, 12);
+    for (const [y, w] of [[4, 8], [6, 5], [8, 9], [10, 6]]) c.rect(3, y, w, 1, V.mid);
+    c.rect(3, 3, 10, 1, PAPER.hot);
+  },
+  codex_fragment: (c) => {
+    // Une page DÉCHIRÉE : bord droit irrégulier. C'est ce qui la distingue du plan.
+    const page = [[2, 3, 10], [3, 3, 11], [4, 3, 10], [5, 3, 12], [6, 3, 11],
+      [7, 3, 12], [8, 3, 10], [9, 3, 11], [10, 3, 9], [11, 3, 10], [12, 3, 8]];
+    outline(c, page, PAPER.line);
+    fill(c, page, PAPER.mid);
+    for (const [y, w] of [[4, 5], [6, 6], [8, 4], [10, 5]]) c.rect(4, y, w, 1, PAPER.line);
+    c.rect(4, 3, 6, 1, PAPER.hot);
+  },
+  resonance_codex: (c) => {
+    // Un tome relié : tranche de pages à droite, emblème sur la couverture.
+    bar(c, V, 2, 2, 11, 12);
+    c.rect(12, 3, 2, 10, PAPER.mid);
+    c.rect(12, 3, 2, 1, PAPER.hot);
+    c.rect(2, 2, 2, 12, V.deep);
+    fill(c, [[6, 6, 8], [7, 5, 9], [8, 6, 8]], V.hot);
+  },
+  fossilized_ration: (c) => {
+    // Un paquet ficelé : la corde en croix est ce qui dit « nourriture emballée ».
+    bar(c, WOOD, 3, 4, 10, 9);
+    c.rect(7, 4, 2, 9, WOOD.line);
+    c.rect(3, 7, 10, 2, WOOD.line);
+    c.rect(4, 5, 3, 2, WOOD.lite);
+    c.rect(6, 2, 4, 2, WOOD.deep);
+  },
+};
+
+module.exports = { items, S };
