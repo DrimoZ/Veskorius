@@ -3,7 +3,6 @@ package com.veskorius.item;
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
 import java.util.List;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -164,24 +163,11 @@ public class ResonanceTunerItem extends Item {
                 .append(mode.label().copy().withStyle(selected ? ChatFormatting.GREEN : ChatFormatting.GRAY)));
         }
 
-        tooltip.add(Component.empty());
-
-        if (Screen.hasShiftDown()) {
-            tooltip.add(Component.translatable("item.veskorius.resonance_tuner.controls")
-                .withStyle(ChatFormatting.YELLOW));
-            control(tooltip, "item.veskorius.resonance_tuner.ctrl_apply");
-            control(tooltip, "item.veskorius.resonance_tuner.ctrl_cycle");
-            control(tooltip, "item.veskorius.resonance_tuner.ctrl_dismantle");
-        } else {
-            tooltip.add(Component.literal("⇧ ")
-                .withStyle(ChatFormatting.DARK_GRAY)
-                .append(Component.translatable("tooltip.veskorius.hold_shift")
-                    .withStyle(ChatFormatting.GRAY)));
-        }
-    }
-
-    private static void control(List<Component> tooltip, String key) {
-        tooltip.add(Component.literal(" • ").withStyle(ChatFormatting.DARK_GRAY)
-            .append(Component.translatable(key).withStyle(ChatFormatting.GRAY)));
+        // Le bloc « maintenir ⇧ pour les commandes » a besoin de savoir si Shift est
+        // enfoncé, information purement client. Il vit donc dans
+        // TunerTooltipHandler (Dist.CLIENT) et s'ajoute à la suite de ces lignes :
+        // référencer net.minecraft.client depuis cette classe — instanciée aussi sur un
+        // serveur dédié, où ce package n'existe pas — serait un NoClassDefFoundError qui
+        // n'attend qu'un appelant.
     }
 }

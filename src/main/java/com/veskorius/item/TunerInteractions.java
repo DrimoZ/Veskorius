@@ -2,15 +2,19 @@ package com.veskorius.item;
 
 import com.veskorius.Veskorius;
 import com.veskorius.block.entity.AbstractMachineBlockEntity;
+import com.veskorius.block.entity.FieldEmitterBlockEntity;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -43,24 +47,52 @@ public final class TunerInteractions {
             return;
         }
 
-        // Empêche l'ouverture du GUI de la machine (et toute autre interaction du
-        // bloc), des deux côtés. Le travail réel n'a lieu que côté serveur.
+        Level level = event.getLevel();
+        BlockPos pos = event.getPos();
+        Player player = event.getEntity();
+        boolean dismantling = player.isShiftKeyDown();
+
+        // N'intercepter que ce que le Tuner sait réellement traiter. Annuler
+        // inconditionnellement rendait l'outil hostile : Tuner en main, on ne pouvait plus
+        // ouvrir un coffre, un four ou une porte, ni poser un bloc — l'événement était
+        // consommé avant même de regarder la cible.
+        if (!isTunerTarget(level, pos, dismantling)) {
+            return;
+        }
+
+        // Cible valide : on prend la main, ce qui empêche l'ouverture du GUI de la machine.
+        // Des deux côtés ; le travail réel n'a lieu que côté serveur.
         event.setCanceled(true);
         event.setCancellationResult(InteractionResult.SUCCESS);
 
-        Level level = event.getLevel();
         if (level.isClientSide) {
             return;
         }
 
-        Player player = event.getEntity();
-        BlockPos pos = event.getPos();
-
-        if (player.isShiftKeyDown()) {
+        if (dismantling) {
             dismantle(level, pos, player);
         } else {
             ResonanceTunerItem.applyMode(ResonanceTunerItem.modeOf(stack), level, pos, player);
         }
+    }
+
+    /**
+     * Vrai si le Tuner doit prendre la main sur ce bloc.
+     *
+     * <p>En <b>démontage</b> (shift), la cible est n'importe quel bloc-entité, y compris
+     * d'un autre mod — c'est la portée voulue par 12-UX. En <b>application de mode</b>, la
+     * cible est une machine de Veskorius : tous les modes (Pivoter, On/Off, Surchauffe,
+     * Redstone, Accorder) agissent sur nos block entities, et rien d'autre. Tout le reste
+     * garde son interaction normale.
+     */
+    private static boolean isTunerTarget(Level level, BlockPos pos, boolean dismantling) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be == null) {
+            return false;
+        }
+        return dismantling
+            || be instanceof AbstractMachineBlockEntity
+            || be instanceof FieldEmitterBlockEntity;
     }
 
     // --- Démontage -----------------------------------------------------------
@@ -85,11 +117,14 @@ public final class TunerInteractions {
         // pour que le onRemove de la machine ne les redépose pas au sol.
         loot.addAll(collectContents(level, pos, state, be));
 
-        // Puis le bloc lui-même, sous sa forme d'objet.
-        ItemStack blockItem = new ItemStack(state.getBlock());
-        if (!blockItem.isEmpty()) {
-            loot.add(blockItem);
-        }
+        // Puis le bloc lui-même — via sa TABLE DE BUTIN, pas un `new ItemStack(block)`.
+        // La différence n'est pas cosmétique : fabriquer l'objet à partir du bloc ignore
+        // toute règle de butin et transforme le Tuner en clé universelle, y compris sur
+        // les blocs-entités que le jeu ne rend jamais en survie (spawner, trial_spawner,
+        // vault…). Passer par la table respecte les règles de chaque bloc, vanilla comme
+        // moddé, et rend nos machines telles quelles. À faire AVANT le retrait : la table
+        // a besoin de l'état et de la block entity.
+        loot.addAll(dismantleDrops(level, pos, state, be, player));
 
         // Retire le bloc sans effet secondaire de drop (les inventaires sont vides).
         level.removeBlock(pos, false);
@@ -98,6 +133,24 @@ public final class TunerInteractions {
             ItemHandlerHelper.giveItemToPlayer(player, stack);
         }
         actionBar(player, Component.translatable("item.veskorius.resonance_tuner.dismantled"));
+    }
+
+    /**
+     * Ce que le bloc lâche quand le Tuner le démonte, d'après sa <b>table de butin</b>.
+     *
+     * <p>L'outil passé au contexte est une pioche en netherite : le démontage est censé
+     * être un dévissage propre, pas un coup de poing — sans quoi toutes nos machines
+     * ({@code requiresCorrectToolForDrops}) ne rendraient rien, puisque le joueur tient un
+     * Tuner. Aucun Silk Touch : on ne veut pas non plus transformer l'outil en pioche
+     * enchantée universelle.
+     */
+    private static List<ItemStack> dismantleDrops(Level level, BlockPos pos, BlockState state,
+                                                  BlockEntity be, Player player) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return List.of();
+        }
+        return Block.getDrops(state, serverLevel, pos, be, player,
+            new ItemStack(Items.NETHERITE_PICKAXE));
     }
 
     /**

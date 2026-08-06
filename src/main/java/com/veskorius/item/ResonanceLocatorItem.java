@@ -266,14 +266,21 @@ public class ResonanceLocatorItem extends Item {
         }
     }
 
+    /**
+     * Puise {@code want} Osc sur les Storage Cell portées, en <b>enchaînant les cellules</b>
+     * jusqu'à obtenir le compte. S'arrêter à la première non vide donnait une recharge
+     * amputée dès qu'une cellule presque à plat passait devant une cellule pleine : le
+     * joueur transporte l'énergie, l'outil doit la voir en entier.
+     */
     private static int drawFromStorageCell(Player player, int want) {
-        for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
+        int drawn = 0;
+        for (int slot = 0; slot < player.getInventory().getContainerSize() && drawn < want; slot++) {
             ItemStack cell = player.getInventory().getItem(slot);
-            if (cell.getItem() instanceof ResonanceStorageCellItem && ResonanceStorageCellItem.getCharge(cell) > 0) {
-                return ResonanceStorageCellItem.extractCharge(cell, want);
+            if (cell.getItem() instanceof ResonanceStorageCellItem) {
+                drawn += ResonanceStorageCellItem.extractCharge(cell, want - drawn);
             }
         }
-        return 0;
+        return drawn;
     }
 
     // --- Affichage ------------------------------------------------------------

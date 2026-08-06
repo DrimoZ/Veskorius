@@ -66,11 +66,21 @@ public class StructureGameTests {
     }
 
     /**
+     * Nombre de tirages de la table de loot vérifiés. « Garanti » veut dire « à
+     * <b>chaque</b> tirage » : une vérification à un seul tirage ne distingue pas un
+     * pool certain d'un pool à 50 % de chances, et laisse donc passer précisément le
+     * bug qu'elle est censée interdire (c'est arrivé — un pool unique à 1 roll avec
+     * deux entrées donnait « Component OU Gold », et ce test passait une fois sur deux).
+     */
+    private static final int LOOT_ROLLS = 30;
+
+    /**
      * <b>Anti-régression de progression.</b> La recette du Field Emitter exige 4 Resonance
-     * Component, or ceux-ci ne s'obtiennent qu'au Component Assembler — qui a besoin d'un
-     * champ, que seul le Field Emitter fournit. L'Avant-poste doit donc <b>garantir</b> de
-     * quoi fabriquer le premier Field Emitter, sinon un joueur neuf ne peut jamais atteindre
-     * le T2. Ce test roule la table de loot et vérifie l'amorçage garanti.
+     * Component + 2 Gold, or les Component ne s'obtiennent qu'au Component Assembler — qui a
+     * besoin d'un champ, que seul le Field Emitter fournit. L'Avant-poste doit donc
+     * <b>garantir</b> de quoi fabriquer le premier Field Emitter, sinon un joueur neuf ne peut
+     * jamais atteindre le T2. Ce test roule la table {@link #LOOT_ROLLS} fois et exige
+     * l'amorçage complet à chaque fois — « garanti » ne se teste pas sur un tirage unique.
      */
     @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
     public static void outpostLootGuaranteesBootstrapComponents(GameTestHelper helper) {
@@ -86,15 +96,21 @@ public class StructureGameTests {
                     net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(ANCHOR)))
                 .create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.CHEST);
 
-        int components = 0;
-        for (net.minecraft.world.item.ItemStack stack : table.getRandomItems(params)) {
-            if (stack.is(com.veskorius.item.ModItems.RESONANCE_COMPONENT.get())) {
-                components += stack.getCount();
+        for (int roll = 1; roll <= LOOT_ROLLS; roll++) {
+            int components = 0;
+            int gold = 0;
+            for (net.minecraft.world.item.ItemStack stack : table.getRandomItems(params)) {
+                if (stack.is(com.veskorius.item.ModItems.RESONANCE_COMPONENT.get())) {
+                    components += stack.getCount();
+                } else if (stack.is(net.minecraft.world.item.Items.GOLD_INGOT)) {
+                    gold += stack.getCount();
+                }
             }
+            helper.assertTrue(components >= 4 && gold >= 2,
+                "L'Avant-poste doit garantir 4 Resonance Component + 2 Gold (amorçage du 1er "
+                    + "Field Emitter) à CHAQUE tirage ; au tirage " + roll + "/" + LOOT_ROLLS
+                    + " : " + components + " Component, " + gold + " Gold");
         }
-        helper.assertTrue(components >= 4,
-            "L'Avant-poste doit garantir >= 4 Resonance Component (amorçage du 1er Field "
-                + "Emitter), vaut : " + components);
         helper.succeed();
     }
 
