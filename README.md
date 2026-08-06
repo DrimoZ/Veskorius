@@ -132,25 +132,42 @@ ce fichier.
   (le « tell » visuel), avec ~15 % de croûtes de `raw_flux_deposit` **brossables** (brosse
   vanilla → flux, alternative T1 au Quartz). La boucle T1 est jouable en survie, minage comme
   brossage.
-- **Textures d'items** : les 17 sprites 16×16 sont du vrai pixel art (silhouette distincte par
-  objet, familles de teintes par matière — violet brut → violet stable → cyan raffiné). Sources
-  éditables dans `tools/item-textures/` (cartes de pixels lisibles, hors build Gradle). Le Codex
-  a désormais sa propre texture au lieu du modèle de livre vanilla.
 - **Châssis par palier** (`fractured` T1 / `attuned` T2 / `veskorian` T3) : base **de craft** —
   une machine = le châssis de son palier + ce qui la distingue — **et de texture**, puisque le
   châssis porte les flancs et le dessus de toutes les machines de son palier. Le palier se lit
   donc sur le bloc, à distance. Chaque châssis contient le précédent. Détail : `05-Machines.md`.
-- **Textures de blocs 32×32** empilées par couches (matière, grain, trame, dégradé directionnel,
-  usure, biseau, occlusion, vignette, spéculaires ; roche en trois octaves + fissures). Direction
-  artistique : la technologie donne la géométrie, la magie donne le tracé — des gravures creusées
-  qui convergent vers le cœur et **s'allument quand la Résonance passe**, interrompues au T1
-  (de la ruine récupérée). Sources dans `tools/block-textures/`.
+- **Textures 16×16, calibrées sur des mesures** (blocs, items, GUI ; sources dans
+  `tools/{block,item,gui}-textures/`, hors build Gradle). La règle qui les gouverne toutes vient
+  d'avoir mesuré les assets plutôt que de les décrire de mémoire :
+  - le vanilla tient en **4 à 19 couleurs** par texture (`stone` 4, `deepslate` 5,
+    `blast_furnace_front` 16) — d'où **palette indexée et aucun fondu alpha**. Composer en fondu
+    fabrique des dizaines de teintes presque identiques, ce qui donne de la bouillie quel que
+    soit le style ;
+  - il est en revanche **très bruité** (46-85 % des pixels diffèrent de leur voisin) mais à
+    faible amplitude : ce qui fait la matière est la *fréquence* du grain, pas son amplitude ;
+  - le marbre d'Astral Sorcery est **quasi blanc et neutre** (luminance 203-238, R=G=B) — le
+    contraste vient de l'accent, jamais du matériau. D'où le marbre veskorien, encrassé au T1,
+    blanc restauré au T2, sombre poli au T3 ;
+  - un GUI vanilla est un **aplat** (four : 6 couleurs, panneau `#c6c6c6`) — donc aucun grain
+    sur les panneaux, contrairement aux blocs.
+  Les formes symétriques passent par des tables de spans vérifiées (`x0 + x1 = 15` par ligne,
+  marge d'1 px) : sur une grille 16×16 le centre tombe entre les pixels 7 et 8, et centrer sur 8
+  décale tout d'un demi-pixel.
+- **Une façade par machine, pas un logo dans un cadre** : cristal serré dans des mors, plaques
+  boulonnées, roue sur socle, mâchoires, cuve à niveau, caisse percée, lentille, grille. Idem en
+  GUI, **un fichier par machine** (bande de titre à sa couleur + bandeau d'atelier).
 - **États actif/inactif visibles** : les variantes `lit` pointaient le même modèle et le modèle
   était un `cube_all` — une machine en marche, à l'arrêt ou hors champ étaient identiques, et
   l'orientation invisible. Les machines sont maintenant orientées, avec façade éteinte et façade
   allumée ; les émetteurs ont gagné une propriété `LIT`.
-- **Modèles 3D** là où ça vaut le coup : lunette en relief sur les machines, tour à étages pour
-  les émetteurs, pupitre à écran incliné pour la console d'attunement.
+- **Une silhouette 3D par machine** : socle à étage, presse, roue sur bâti, deux mâchoires
+  séparées par un vide traversant, cuve élancée, nichoir évidé, grille ajourée, tour d'émission,
+  pupitre incliné pour la console. `noOcclusion()` partout où le bloc n'est plus un cube plein.
+
+> **État visuel (2026-08-06)** : reconnaissable et cohérent, **pas abouti**. Le porteur du projet
+> juge le rendu encore insatisfaisant esthétiquement ; la passe de finition reste à faire. Ce qui
+> est acquis et à ne pas re-perdre, c'est la *méthode* ci-dessus — les quatre versions précédentes
+> ont échoué en composant en fondu alpha, pas en choisissant le mauvais style.
 
 Consulter `veskorius-design/13-Registry-Index.md` pour l'état « codé / à coder » de tout le
 contenu prévu : c'est le point de départ avant de reprendre le développement, plutôt que de
