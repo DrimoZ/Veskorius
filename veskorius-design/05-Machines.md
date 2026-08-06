@@ -28,6 +28,7 @@ tableau "Vue d'ensemble", précédée de `craft:`.
 | Rift Ward Emitter | 2 Rift Essence + 4 Veskorian Alloy Block |
 | Slag Vent | 4 Iron Ingot + 1 Redstone + 1 Resonance Component |
 | Crystal Roost | 4 Planches (peu importe l'essence) + 2 Stable Resonance Crystal + 1 Botte de Foin |
+| Damping Array | 4 Iron Ingot + 1 Refined Resonance Crystal + 1 Redstone Block *(ajouté 2026-08-06 : le bloc était codé et craftable, mais absent de ce tableau)* |
 | Crystal Crusher | 3 Cobblestone + 1 Iron Ingot (voir Vue d'ensemble, #22) |
 | Flux Compressor | 4 Iron Ingot + 2 Veskorian Alloy Ingot + 1 Redstone Block (#23) |
 | Convergence Core | 12 Veskorian Alloy Block + 6 Harmonic Lattice + 4 Hyper Refined Crystal + 4 Concentrated Flux |

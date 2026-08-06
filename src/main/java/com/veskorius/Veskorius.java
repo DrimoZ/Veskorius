@@ -87,8 +87,8 @@ public class Veskorius {
     public Veskorius(IEventBus modEventBus, ModContainer modContainer) {
         // Config d'équilibrage exposée aux modpack makers (type SERVER : synchronisée,
         // par monde, livrable via defaultconfigs/). Découpée PAR THÈME (14-Configuration.md)
-        // pour qu'un modpack surcharge un domaine sans toucher aux autres.
-        // À venir avec leur système : veskorius-harmonics.toml, veskorius-structures.toml.
+        // pour qu'un modpack surcharge un domaine sans toucher aux autres. Pas de
+        // veskorius-structures.toml : ces valeurs vivent dans le JSON structure_set.
         modContainer.registerConfig(ModConfig.Type.SERVER, BasicsConfig.SPEC, "veskorius-basics.toml");
         modContainer.registerConfig(ModConfig.Type.SERVER, MachinesConfig.SPEC, "veskorius-machines.toml");
         modContainer.registerConfig(ModConfig.Type.SERVER, GenerationConfig.SPEC, "veskorius-generation.toml");

@@ -41,48 +41,76 @@ Un modpack place ces fichiers sous `data/veskorius/…` (ou un autre namespace p
 depuis le registre au moment de la génération, pas à l'exécution — une valeur TOML n'aurait aucun
 effet dessus et casserait la surcharge par datapack.
 
-## Config TOML — `veskorius-server.toml`
+## Config TOML — fichiers, sections et clés
 
-Fichier de type **SERVER** (`VeskoriusConfig`, `ModConfigSpec`), câblé le 2026-07-22.
+Fichiers de type **SERVER** (`ModConfigSpec`), câblés le 2026-07-22, **découpés par thème** le
+2026-07-23 (voir la section « Découpage » plus bas pour le pourquoi).
 
 **Pourquoi SERVER (et pas COMMON/CLIENT)** : ces valeurs affectent la logique de jeu. En type
 SERVER, NeoForge les **synchronise** vers les clients connectés (pas de désync sur les capacités
-affichées), les stocke **par monde** (`saves/<monde>/serverconfig/veskorius-server.toml`), et
-permet à un modpack de **livrer ses défauts** via `defaultconfigs/veskorius-server.toml` (copié dans
-chaque nouveau monde). C'est le choix robuste : cohérent en multijoueur, résistant à la triche
-client, et propre à chaque partie.
+affichées), les stocke **par monde** (`saves/<monde>/serverconfig/<fichier>.toml`), et permet à un
+modpack de **livrer ses défauts** via `defaultconfigs/<fichier>.toml` (copié dans chaque nouveau
+monde). C'est le choix robuste : cohérent en multijoueur, résistant à la triche client, et propre à
+chaque partie.
 
-**Pour un modpack maker** : placer le fichier ajusté dans `defaultconfigs/veskorius-server.toml` à
-la racine de l'instance. Il devient le défaut de tout nouveau monde. Pour un monde existant, éditer
-`saves/<monde>/serverconfig/veskorius-server.toml`.
+**Pour un modpack maker** : placer les fichiers ajustés dans `defaultconfigs/` à la racine de
+l'instance. Ils deviennent le défaut de tout nouveau monde. Pour un monde existant, éditer
+`saves/<monde>/serverconfig/`.
 
-Valeurs exposées (défauts = valeurs de design d'origine) :
+Valeurs exposées (défauts = valeurs de design d'origine). **Les noms de fichier et de section
+ci-dessous sont ceux du TOML réel** — un tableau qui donnerait d'autres noms enverrait le modpack
+maker éditer des clés qui n'existent pas.
 
-| Section | Clé | Défaut | Effet |
-|---|---|---|---|
-| `energy` | `fieldEmitterRange` | 8 | Portée (rayon, blocs) d'un Field Emitter |
-| `energy` | `fieldEmitterCapacity` | 4000 | Réserve max d'Osc d'un émetteur (un multiple de la valeur d'un carburant permet d'en stocker plusieurs d'avance) |
-| `energy` | `storageCellCapacity` | 8000 | Capacité d'une Resonance Storage Cell |
-| `energy` | `storageCellChargeRate` | 20 | Osc/tick absorbés par une cellule dans un champ |
-| `machines` | `augmentSpeedBonusPercent` | 15 | Bonus de vitesse (%) d'un Catalyst Core |
-| `machines` | `overheatSpeedMultiplier` | 2.0 | Surchauffe : diviseur de la durée de cycle |
-| `machines` | `overheatOscMultiplier` | 2.0 | Surchauffe : multiplicateur de la conso d'Osc |
-| `machines` | `overheatInputLossChance` | 0.2 | Surchauffe : proba de perdre l'entrée sans sortie |
-| `tools` | `locatorCapacity` | 100 | Batterie interne du Resonance Locator (Osc) |
-| `tools` | `locatorCostPerUse` | 5 | Osc par ping du Locator |
-| `tools` | `locatorRechargeRate` | 5 | Osc/tick de recharge du Locator |
-| `tools` | `locatorRange` | 40 | Portée de détection du Locator (blocs) |
-| `entities` | `custodeHealth` | 30 | PV du Custode (individus nouvellement apparus) |
-| `entities` | `custodeDamage` | 6 | Dégâts d'attaque du Custode |
-| `entities` | `custodeDetectionRange` | 6 | Rayon de ciblage passif du Custode |
-| `entities` | `custodeAlertRange` | 16 | Rayon d'alerte quand une machine du site est cassée |
-| `entities` | `striderMilkCooldown` | 6000 | Cooldown de traite du Fileur (ticks) |
-| `entities` | `roostStriderRange` | 6 | Rayon dans lequel un Fileur active un Crystal Roost |
-| `world` | `sporeGrowthChance` | 0.05 | Chance par random tick que la pierre veinée pousse un spore (face exposée, faible lumière) |
+| Fichier | Section | Clé | Défaut | Effet |
+|---|---|---|---|---|
+| `basics` | `field` | `fieldEmitterRange` | 8 | Portée (rayon, blocs) d'un Field Emitter |
+| `basics` | `field` | `fieldEmitterCapacity` | 4000 | Réserve max d'Osc d'un émetteur (un multiple de la valeur d'un carburant permet d'en stocker plusieurs d'avance) |
+| `basics` | `portable` | `storageCellCapacity` | 8000 | Capacité d'une Resonance Storage Cell |
+| `basics` | `portable` | `storageCellChargeRate` | 20 | Osc/tick absorbés par une cellule dans un champ |
+| `basics` | `portable` | `locatorCapacity` | 100 | Batterie interne du Resonance Locator (Osc) |
+| `basics` | `portable` | `locatorCostPerUse` | 5 | Osc par ping du Locator |
+| `basics` | `portable` | `locatorRechargeRate` | 5 | Osc/tick de recharge du Locator |
+| `basics` | `portable` | `locatorRange` | 40 | Portée de détection du Locator (blocs) |
+| `machines` | `augment` | `augmentSpeedBonusPercent` | 15 | Bonus de vitesse (%) d'un Catalyst Core |
+| `machines` | `augment` | `augmentSlots` | 1 | Slots d'augment actifs (1-4) |
+| `machines` | `augment` | `augmentStacking` | `FREE` | Cumul d'un même effet : `FORBID` / `CAPPED` / `FREE` |
+| `machines` | `augment` | `augmentStackingCap` | 2 | Plafond de cumul quand `augmentStacking = CAPPED` |
+| `machines` | `overheat` | `overheatSpeedMultiplier` | 2.0 | Surchauffe : diviseur de la durée de cycle |
+| `machines` | `overheat` | `overheatOscMultiplier` | 2.0 | Surchauffe : multiplicateur de la conso d'Osc |
+| `machines` | `overheat` | `overheatInputLossChance` | 0.2 | Surchauffe : proba de perdre l'entrée sans sortie |
+| `mobs` | `custode` | `custodeHealth` | 30 | PV du Custode (individus nouvellement apparus) |
+| `mobs` | `custode` | `custodeDamage` | 6 | Dégâts d'attaque du Custode |
+| `mobs` | `custode` | `custodeDetectionRange` | 6 | Rayon de ciblage passif du Custode |
+| `mobs` | `custode` | `custodeAlertRange` | 16 | Rayon d'alerte quand une machine du site est cassée |
+| `mobs` | `fauna` | `striderMilkCooldown` | 6000 | Cooldown de traite du Fileur (ticks) |
+| `mobs` | `fauna` | `roostStriderRange` | 6 | Rayon dans lequel un Fileur active un Crystal Roost |
+| `generation` | `world` | `sporeGrowthChance` | 0.05 | Chance par random tick que la pierre veinée pousse un spore (face exposée, faible lumière) |
+| `harmonics` | `harmonics` | `enabled` | `true` | **Interrupteur maître** du système Harmoniques & Dissonance |
+| `harmonics` | `harmonics` | `bandCount` | 3 | Nombre de bandes sélectionnables (1-3) |
+| `harmonics` | `harmonics` | `detuneOscMultiplier` | 1.5 | Surcoût d'Osc d'une machine désaccordée |
+| `harmonics` | `harmonics` | `dissonancePerDetunedTick` | 1 | Dissonance injectée par tick de fonctionnement désaccordé |
+| `harmonics` | `harmonics` | `dissonanceCapacity` | 2000 | Plafond de dissonance d'un émetteur (= seuil de décharge) |
+| `harmonics` | `harmonics` | `dissonanceUnstableThreshold` | 0.75 | Fraction du plafond au-delà de laquelle le champ devient intermittent |
+| `harmonics` | `harmonics` | `dissonanceDecayPerSecond` | 1 | Décroissance naturelle de la dissonance (0 = Damping Array obligatoire) |
+| `harmonics` | `discharge` | `enabled` | `true` | Décharge AoE au plafond de dissonance |
+| `harmonics` | `discharge` | `radius` | 6 | Rayon de l'impulsion (blocs) |
+| `harmonics` | `discharge` | `damage` | 6.0 | Dégâts par entité touchée (0 = visuel/sonore seul) |
+| `harmonics` | `discharge` | `releaseFraction` | 0.5 | Fraction du plafond purgée par décharge (soupape) |
+| `harmonics` | `discharge` | `cooldownTicks` | 100 | Ticks minimum entre deux décharges |
+| `harmonics` | `damping` | `dampingRange` | 16 | Rayon de nettoyage d'un Damping Array |
+| `harmonics` | `damping` | `dampingCycleTicks` | 100 | Durée d'un cycle de damping |
+| `harmonics` | `hud` | `enabled` | `true` | HUD de champ (à `false` : aucun paquet émis) |
+| `harmonics` | `hud` | `updateIntervalTicks` | 10 | Ticks entre deux lectures |
 
-Chaque défaut est re-testé par le GameTest `configDefaultsMatchDesign` : le changer sans mettre à
-jour ce dossier fait échouer la suite (même discipline que la réécriture des valeurs de référence
-dans les autres tests).
+Les défauts de `basics`, `machines` (surchauffe + bonus d'augment), `mobs` et `generation` sont
+re-testés par le GameTest `configDefaultsMatchDesign` : les changer sans mettre à jour ce dossier
+fait échouer la suite.
+
+> **Trou de couverture connu (relevé 2026-08-06).** `configDefaultsMatchDesign` ne couvre **pas**
+> les défauts de `harmonics` (bandes, dissonance, décharge, damping, HUD) ni les clés A9
+> (`augmentSlots`, `augmentStacking`, `augmentStackingCap`) : ces lignes du tableau ne sont donc
+> tenues que par la relecture. Ce fichier a longtemps affirmé l'inverse (« il couvre tous les
+> thèmes d'un coup ») — c'était faux. À étendre.
 
 ## Doctrine (révisée 2026-07-23) : tout doit pouvoir se moduler, jusqu'à se désactiver
 
@@ -129,13 +157,13 @@ façade, donc il couvre tous les thèmes d'un coup.
 | `harmonics` | `enabled` | **Interrupteur maître.** À `false`, le mod redevient « champ simple » (aucune bande, aucune dissonance) — comportement T1 partout |
 | `harmonics` | `bandCount` | Nombre de bandes harmoniques (défaut 3) |
 | `harmonics` | `detuneOscMultiplier` | Surcoût d'Osc d'une machine désaccordée |
-| `harmonics` | `dissonancePerCycle` / `dischargeThreshold` | Vitesse d'accumulation et seuil de décharge |
+| `harmonics` | `dissonancePerDetunedTick` / `dissonanceCapacity` | Vitesse d'accumulation et plafond (le plafond **est** le seuil de décharge) |
 | `harmonics.discharge` | `enabled` / `radius` / `damage` / `releaseFraction` / `cooldownTicks` | **Décharge de résonance** au plafond : impulsion AoE (défauts : activée, rayon 6, 6 dégâts, purge 50 % du plafond, cooldown 100 ticks). `damage=0` garde l'effet visuel/sonore sans blesser ; `enabled=false` retire l'impulsion (la dissonance reste plafonnée) |
 | `harmonics.hud` | `enabled` / `updateIntervalTicks` | HUD de champ : envoi serveur→client aux seuls porteurs du Locator. À `false`, **aucun paquet n'est émis** (défaut : activé, 10 ticks). Indépendant de l'interrupteur maître — harmoniques coupées, le HUD se réduit à la réserve, ce qui reste vrai |
 | `machines.augment` | `augmentSlots` | ✅ **codé (A9)** — nombre de slots d'augment actifs, 1-4 (défaut **1** = comportement historique). Max réservé fixe (4) |
 | `machines.augment` | `augmentStacking` / `augmentStackingCap` | ✅ **codé (A9)** — cumul d'un même effet entre slots : `FORBID` / `CAPPED` (+ cap) / `FREE` (défaut). Ne mord qu'avec >1 slot |
-| `machines` | `overheatIgnoresStable` | La surchauffe garde-t-elle son risque sur une recette `stable` ? |
-| `generation` | `gasIntensityByStrata` | Intensité du gaz de Résonance par strate (**garantit le scaling de difficulté**, voir `07`) |
+| `machines` | `overheatIgnoresStable` | ⚠️ **Pas codé.** La surchauffe garde-t-elle son risque sur une recette `stable` ? Aujourd'hui elle le garde **toujours** — c'est le comportement décrit par `05` et `06`, mais le réglage promis (« sauf config contraire ») n'existe pas encore |
+| `generation` | `gasIntensityByStrata` | ⚠️ **Pas codé** (arrive avec le gaz de Résonance, Phase 2). Intensité du gaz par strate (**garantit le scaling de difficulté**, voir `07`) |
 
 ## Reste à faire / différé (roadmap config)
 
@@ -160,12 +188,17 @@ façade, donc il couvre tous les thèmes d'un coup.
    `veskorius-client.toml`) le jour où une préférence d'affichage apparaît (icône de surchauffe,
    couleurs de barre…), pas avant.
 5. **Nouvelles constantes des Phases 2-4** — chaque machine/mob/structure à venir apportera ses
-   propres nombres. Les faire passer par `VeskoriusConfig` dès leur écriture, plutôt que de les
+   propres nombres. Les faire passer par la spec de leur thème dès leur écriture, plutôt que de les
    retrofit (même leçon que le slot d'augment).
+6. **Étendre `configDefaultsMatchDesign`** aux thèmes qu'il ne couvre pas encore (`harmonics`,
+   clés A9), pour que le tableau de ce fichier redevienne tenu par la suite de tests et non par
+   la seule relecture.
 
 ## Règle d'implémentation (pour toute nouvelle constante d'équilibrage)
 
-1. La déclarer dans `VeskoriusConfig` (SPEC + un getter de commodité).
+1. La déclarer dans la **spec du thème concerné** (`BasicsConfig`, `MachinesConfig`,
+   `GenerationConfig`, `MobsConfig`, `HarmonicsConfig`), puis exposer un getter de commodité
+   sur `VeskoriusConfig` — la façade ne déclare plus aucune valeur depuis le découpage.
 2. La **lire à l'exécution**, jamais en `static final` ni au chargement de classe : la config
    SERVER n'est pas encore chargée à ce moment-là (elle l'est au chargement du monde).
 3. Réécrire son défaut comme valeur attendue dans `configDefaultsMatchDesign`, et laisser les tests

@@ -170,10 +170,27 @@ shift, l'interaction du bloc (ouverture du GUI de la machine) a la priorité et 
 ne se déclenche jamais. L'événement se produit avant la résolution bloc/item ; le Tuner l'annule
 pour prendre la main.
 
-Le démontage lit le contenu du bloc via, dans l'ordre : la capability ItemHandler (autres mods +
-Field Emitter), l'inventaire direct des machines du mod (qui ne l'exposent pas), puis l'interface
-`Container` vanilla. À surveiller : outil puissant (retrait instantané avec contenu, sans outil
-requis) — sur un serveur, une intégration avec les mods de protection reste à faire.
+**Il ne l'annule que sur une cible qu'il sait traiter** *(corrigé le 2026-08-06)* : une block
+entity de Veskorius pour l'application d'un mode, n'importe quelle block entity pour le démontage
+en shift. Tout le reste garde son interaction normale. L'annulation était auparavant
+inconditionnelle, avant même de regarder la cible : Tuner en main, on ne pouvait plus ouvrir un
+coffre, un four ou une porte, ni poser un bloc — un outil de configuration ne doit pas confisquer
+le clic droit du joueur.
+
+Le démontage lit le contenu du bloc via, dans l'ordre : **l'inventaire interne direct de nos
+machines d'abord** (surtout pas leur capability sidée, volontairement insert-only sur les entrées,
+qui ne rendrait ni les entrées ni l'augment), puis la capability ItemHandler pour tout le reste
+(autres mods, Field Emitter), puis l'interface `Container` vanilla. *(Ordre corrigé le 2026-08-06 :
+ce paragraphe donnait l'inverse depuis l'origine.)*
+
+Le **bloc lui-même** est rendu via sa **table de butin** (`Block.getDrops`), pas fabriqué à partir
+du bloc. *(Corrigé le 2026-08-06.)* La version précédente faisait `new ItemStack(block)`, ce qui
+ignorait toute règle de butin : le Tuner rendait en survie des blocs-entités que le jeu ne donne
+jamais (spawner, trial_spawner, vault). Passer par la table respecte les règles de chaque bloc,
+vanilla comme moddé.
+
+À surveiller : outil puissant (retrait instantané avec contenu, sans outil requis) — sur un
+serveur, une intégration avec les mods de protection reste à faire.
 
 | Mode | Action au clic droit | Cible |
 |---|---|---|

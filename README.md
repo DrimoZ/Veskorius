@@ -111,8 +111,8 @@ ce fichier.
   frappé) — jamais agressif à distance. **Posé par la génération de l'Avant-poste** (garde le site),
   pas de spawn errant. Drop 2-4 `custode_alloy_fragment`, **substitut 1:1 du fer** dans les recettes
   Veskorius (tag `iron_substitutes`) — récompense le combat plutôt que le minage.
-- **Passe de polish** (configs/actions/mécaniques) : config étendue (`tools`/`entities` — Locator,
-  Custode, Fileur, Roost tous tunables) ; **défense de site** (casser une machine Veskorius alerte
+- **Passe de polish** (configs/actions/mécaniques) : config étendue (`basics.portable` et
+  `mobs.custode`/`mobs.fauna` — Locator, Custode, Fileur, Roost tous tunables) ; **défense de site** (casser une machine Veskorius alerte
   les Custodes proches) ; retours de la traite du Fileur (son, particules, message de cooldown) ;
   sons des mobs.
 - **Récolte de spore** : la Resonance Veined Stone pousse un `resonance_spore` (état `spored`) sur

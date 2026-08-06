@@ -47,14 +47,18 @@ rien : ce sont du lore lisible (et parfois des indices d'exploration).
 ## Habitation Modeste
 
 **Strate sociale** : Peuple du réseau. **Y** : 0 à -20, aussi en surface. **Fréquence** : la
-plus commune, ~1 / 800 blocs.
+plus commune. *(Valeur codée : `RandomSpreadStructurePlacement` spacing 20 / separation 7, soit
+~1 / 320 blocs — plus dense que le « ~1 / 800 » que ce fichier annonçait. Chiffre de départ à
+valider en playtest ; la source de vérité est le `structure_set`, surchargeable par datapack.)*
 
 - **Fonction** : variété de loot quotidien, premier contact avec l'esthétique veskorienne sans
   rien de technique. Sert aussi à apprendre le geste « lire un fragment » sur un enjeu faible.
 - **Ambiance** : petites pièces, mobilier simple, jamais de machine.
-- **Loot** (coffre) : `fossilized_ration` (nourriture flavor) ×2-4, matériaux T1 communs
-  (cobblestone, copper, parfois 1 raw crystal), et 1 `codex_fragment` "de vie quotidienne"
-  (pur lore, non consommé à la lecture, aucun déblocage).
+- **Loot** (coffre) : 2-4 tirages parmi `fossilized_ration` (nourriture flavor) ×1-3, cobblestone
+  ×4-8 et copper ingot ×1-3 ; plus 1 `codex_fragment` "de vie quotidienne" garanti (pur lore, non
+  consommé à la lecture, aucun déblocage). *(Corrigé 2026-08-06 : ce fichier listait « parfois
+  1 raw crystal », qui n'a jamais été dans la table — le cristal brut se mine, il ne se trouve pas
+  dans une maison.)*
 - **Machines/mobs** : aucun.
 
 ---
@@ -62,7 +66,9 @@ plus commune, ~1 / 800 blocs.
 ## Avant-poste
 
 **Strate sociale** : mixte Architectes / peuple du réseau. **Y** : 0 à -40. **Fréquence** :
-1 / 1500 blocs.
+*(Valeur codée : spacing 32 / separation 9, soit ~1 / 512 blocs — plus dense que le « 1 / 1500 »
+que ce fichier annonçait. Même remarque que ci-dessus : à valider en playtest, la vérité est dans
+le `structure_set`.)*
 
 - **Fonction** : premier lieu où le joueur rencontre le principe de champ (T2). Porte du T2.
 - **Ambiance** : petit atelier, une **console d'attunement** (`attunement_console`) encore intacte

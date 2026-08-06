@@ -13,12 +13,13 @@ package com.veskorius.config;
  *   <li>{@link MachinesConfig} → {@code veskorius-machines.toml} (augments, surchauffe)</li>
  *   <li>{@link GenerationConfig} → {@code veskorius-generation.toml} (croissance, aléas)</li>
  *   <li>{@link MobsConfig} → {@code veskorius-mobs.toml} (gardiens, faune)</li>
+ *   <li>{@link HarmonicsConfig} → {@code veskorius-harmonics.toml} (bandes, dissonance,
+ *       décharge, damping, HUD — avec interrupteur maître)</li>
  * </ul>
  *
- * <p>À venir avec leur système : {@code veskorius-harmonics.toml} (bandes, dissonance,
- * damping — avec interrupteur maître) et {@code veskorius-structures.toml} (fréquences
- * et densité de mobs), livrés en même temps que le code qu'ils pilotent plutôt qu'en
- * avance (une config qui ne pilote rien est un piège).
+ * <p>Pas de {@code veskorius-structures.toml} : fréquence et placement des structures vivent
+ * dans le JSON datapack ({@code structure_set}), déjà surchargeable — un TOML qui les
+ * dupliquerait serait une clé qui ne pilote rien, c'est-à-dire un piège (14-Configuration.md).
  *
  * <p><b>Cette classe ne déclare aucune valeur</b> : elle n'expose que les accesseurs de
  * commodité, ce qui a permis de découper les fichiers <em>sans toucher un seul

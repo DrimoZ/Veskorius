@@ -56,8 +56,9 @@ public class ModItems {
 
     /**
      * Augment transversal (05-Machines.md, 04-Materials.md groupe 4). S'insère dans
-     * le slot d'augment de n'importe quelle machine active : +15% de vitesse de
-     * cycle en permanence, un seul par machine, jamais consommé. Membre du tag
+     * un slot d'augment de n'importe quelle machine active : +15% de vitesse de cycle en
+     * permanence, jamais consommé. Le nombre de slots et le cumul d'un même effet sont
+     * réglables en config depuis A9 ({@code machines.augment}, défaut 1 slot). Membre du tag
      * {@code veskorius:machine_augments} — l'effet est déjà porté par le socle
      * ({@code AbstractMachineBlockEntity}), cet item ne fait que remplir le tag.
      */
@@ -123,8 +124,9 @@ public class ModItems {
 
     /**
      * Le Codex de Résonance (15-Codex-Guidebook.md) : manuel en jeu qui s'écrit tout
-     * seul. Non empilable (chaque exemplaire porte son propre état de déblocage sur le
-     * Data Component {@code codex_unlocked}). Donné à la première connexion.
+     * seul. Non empilable (c'est un artefact qu'on garde, pas un consommable) ; son état de
+     * déblocage vit sur le JOUEUR (attachment {@code codex_unlocks}), pas sur l'objet.
+     * Donné à la première connexion.
      */
     public static final DeferredItem<ResonanceCodexItem> RESONANCE_CODEX =
         ITEMS.registerItem("resonance_codex",

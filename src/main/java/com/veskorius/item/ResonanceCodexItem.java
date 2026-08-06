@@ -14,8 +14,11 @@ import net.minecraft.world.level.Level;
 /**
  * Le Codex de Résonance (15-Codex-Guidebook.md) : le manuel en jeu, qui s'écrit tout
  * seul au fil de la progression. Clic droit → ouvre l'écran du Codex (côté client).
- * L'état de déblocage est porté par l'objet ({@link ModDataComponents#CODEX_UNLOCKED}),
- * lu directement par le GUI — pas de packet custom.
+ *
+ * <p>L'état de déblocage est porté par <b>le joueur</b>
+ * ({@link com.veskorius.codex.ModAttachments#CODEX_UNLOCKS}), pas par cet objet : la
+ * connaissance s'accumule même Codex rangé dans un coffre, et survit à la mort. Le client en
+ * reçoit une copie via {@code CodexSyncPayload} ; l'objet n'est qu'une clé d'ouverture.
  */
 public class ResonanceCodexItem extends Item {
 
