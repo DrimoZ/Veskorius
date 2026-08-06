@@ -132,7 +132,11 @@ ce fichier.
   (le « tell » visuel), avec ~15 % de croûtes de `raw_flux_deposit` **brossables** (brosse
   vanilla → flux, alternative T1 au Quartz). La boucle T1 est jouable en survie, minage comme
   brossage.
-- Textures placeholder (couleur unie) — à remplacer par du vrai pixel art en Phase 6.
+- **Textures d'items** : les 17 sprites 16×16 sont du vrai pixel art (silhouette distincte par
+  objet, familles de teintes par matière — violet brut → violet stable → cyan raffiné). Sources
+  éditables dans `tools/item-textures/` (cartes de pixels lisibles, hors build Gradle). Le Codex
+  a désormais sa propre texture au lieu du modèle de livre vanilla. Les textures de **blocs**
+  restent des aplats de couleur — passe visuelle de la Phase 6.
 
 Consulter `veskorius-design/13-Registry-Index.md` pour l'état « codé / à coder » de tout le
 contenu prévu : c'est le point de départ avant de reprendre le développement, plutôt que de

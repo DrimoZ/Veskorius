@@ -30,8 +30,10 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.CODEX_FRAGMENT.get());
         basicItem(ModItems.FOSSILIZED_RATION.get());
 
-        // Codex : reprend le modèle du livre vanilla (aucune texture custom requise).
-        withExistingParent("resonance_codex", mcLoc("item/book"));
+        // Codex : texture propre plutôt que le livre vanilla. Le manuel signature du mod
+        // ne devrait pas se confondre, dans une barre d'action, avec un livre
+        // d'enchantement — c'est l'objet que le joueur cherchera le plus souvent.
+        basicItem(ModItems.RESONANCE_CODEX.get());
 
         basicItem(ModItems.CUSTODE_ALLOY_FRAGMENT.get());
 
