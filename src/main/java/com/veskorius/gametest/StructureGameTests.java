@@ -110,7 +110,7 @@ public class StructureGameTests {
             "outpost_wing_store", "outpost_wing_quarters", "outpost_wing_collapsed",
             "hamlet", "hamlet_dwelling", "hamlet_workshop", "hamlet_cistern",
             "hamlet_collapsed", "ruin_marker", "ruin_marker_pillar", "sunken_chamber",
-            "guard_post", "drill_shaft"}) {
+            "drill_shaft"}) {
             place(helper, wing);
             for (BlockPos pos : allPositions(helper, 25, 17, 25)) {
                 BlockState state = helper.getBlockState(pos);
@@ -220,6 +220,20 @@ public class StructureGameTests {
             ANCHOR.offset(6, 24, 7), ANCHOR.offset(8, 5, 9), 15, 28, 15);
     }
 
+    /**
+     * <b>Le Sigma se traverse, des serres à la console.</b> Le sas y est traité comme
+     * franchissable — c'est le puzzle des relais qui l'ouvre, et ce test-là mesure la
+     * CIRCULATION, pas la serrure. Il garde en revanche le déambulatoire : une salle
+     * centrale scellée n'a de sens que si l'on peut en faire le tour, et le réflexe de
+     * percer le sanctuaire pour relier deux ailes est exactement ce qu'il interdit.
+     */
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 200)
+    public static void sigmaIsWalkableFromGreenhousesToConsole(GameTestHelper helper) {
+        place(helper, "sigma_laboratory");
+        assertWalkable(helper, "sigma_laboratory",
+            ANCHOR.offset(26, 3, 5), ANCHOR.offset(18, 4, 19), 39, 22, 39);
+    }
+
     private static boolean inBox(BlockPos p, int w, int h, int d) {
         return p.getX() >= 1 && p.getX() <= w && p.getY() >= 1 && p.getY() <= h
             && p.getZ() >= 1 && p.getZ() <= d;
@@ -286,6 +300,7 @@ public class StructureGameTests {
     /** Les pièces et leur gabarit, pour les tests qui balaient un volume entier. */
     private static final String[][] PIECES = {
         {"outpost", "39", "31", "39"},
+        {"sigma_laboratory", "39", "22", "39"},
         {"guard_post", "27", "32", "27"},
         {"drill_shaft", "15", "28", "15"},
         {"outpost_wing_store", "15", "11", "15"},

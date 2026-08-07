@@ -144,6 +144,14 @@ ce fichier.
     découvert. Et le **Puits de Forage abandonné**, la structure qui manquait au T1 : un fût de
     vingt blocs, six plateformes décalées, le foreur brisé au fond sur la poche de cristal qu'il
     cherchait. Elle ne débloque rien — elle enseigne « descendre = cristaux » dans la première heure.
+  - **Phase F — le Sigma Laboratory**, et le seul vrai puzzle du mod. Une **roue** :
+    sanctuaire octogonal scellé, déambulatoire annulaire, quatre ailes. Deux **relais
+    endommagés** à réparer avant que le premier ne retombe (90 s). La simultanéité n'a demandé
+    aucune serrure à deux clés : un relais **rediffuse**, il ne produit pas, donc il ne se répare
+    que s'il est déjà dans un champ. Les deux sont posés **en chaîne** — A dans la portée de
+    l'émetteur encore vivant, B dans la portée de A seulement, le sas dans la portée de B
+    seulement — et la simultanéité devient une **contrainte de trajet**. A→sas = 21 blocs pour une
+    portée de 20 : c'est ce chiffre qui fait exister le puzzle.
   - **Cinq tests d'invariants**, dont `optionalWingsNeverCarryTheCriticalPath` : le chemin critique
     du T2 vit dans la pièce de départ, jamais dans un pool. C'est la troisième fois que le mod se
     protège de cette classe de bug ; cette fois dans les deux sens.

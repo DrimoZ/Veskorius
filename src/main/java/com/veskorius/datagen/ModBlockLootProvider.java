@@ -47,6 +47,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         // La console d'attunement minée ne donne RIEN (« machine morte non
         // récupérable » — 08-Structures.md) : que des gravats, aucun objet.
         add(ModBlocks.ATTUNEMENT_CONSOLE.get(), LootTable.lootTable());
+        add(ModBlocks.SIGMA_CONSOLE.get(), LootTable.lootTable());
 
         // --- Architecture de donjon (17-Dungeons.md §4) -----------------------
         // Tout se récupère : ce qu'on trouve en ruine doit pouvoir être rebâti.

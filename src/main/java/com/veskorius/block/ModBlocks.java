@@ -402,6 +402,38 @@ public class ModBlocks {
                 .lightLevel(state -> state.getValue(FieldSensitiveBlock.POWERED) ? 6 : 0));
 
     /**
+     * <b>Console du Sigma Laboratory</b> : même geste, palier au-dessus. Elle rend le
+     * blueprint T3 (03-Progression.md) et se génère derrière le sas que les deux relais
+     * ouvrent — la récompense du seul vrai puzzle du mod.
+     */
+    public static final DeferredBlock<AttunementConsoleBlock> SIGMA_CONSOLE =
+        BLOCKS.registerBlock("sigma_console",
+            props -> new AttunementConsoleBlock(props, 3),
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_ORANGE)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .noOcclusion()
+                .lightLevel(state -> 4));
+
+    /**
+     * <b>Relais endommagé</b> : le puzzle du Sigma. Réparé au Resonance Component, il
+     * rediffuse la Résonance 90 secondes — voir {@link DamagedRelayBlock}. Indestructible
+     * et sans objet : récupérable, il donnerait un relais T3 gratuit au milieu du donjon
+     * dont c'est précisément la récompense.
+     */
+    public static final DeferredBlock<DamagedRelayBlock> DAMAGED_RELAY =
+        BLOCKS.registerBlock("damaged_relay",
+            DamagedRelayBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_ORANGE)
+                .strength(-1.0f, 3600000.0f)
+                .sound(SoundType.METAL)
+                .noLootTable()
+                .noOcclusion()
+                .lightLevel(state -> state.getValue(DamagedRelayBlock.LIT) ? 11 : 2));
+
+    /**
      * <b>Émetteur ancien</b> — l'émetteur de champ que les Veskoriens avaient laissé en
      * place, à sec. C'est <b>littéralement un {@link FieldEmitterBlock}</b> : même bloc,
      * même block entity, même carburant. Ce choix est le cœur du geste de l'Avant-poste

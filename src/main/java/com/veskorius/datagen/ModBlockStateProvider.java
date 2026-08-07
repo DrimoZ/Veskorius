@@ -85,6 +85,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // propriété FACING (elle est posée par la génération, jamais par un joueur) —
         // la reconnaître ne doit donc pas dépendre de l'angle sous lequel on l'aborde.
         simpleBlock(ModBlocks.ATTUNEMENT_CONSOLE.get(), consoleModel());
+        simpleBlock(ModBlocks.SIGMA_CONSOLE.get(), sigmaConsoleModel());
+        // Relais endommagé : la silhouette de l'émetteur, sur le châssis T3. Le joueur
+        // doit reconnaître un appareil de réseau avant de savoir ce qu'il fait.
+        emitter(ModBlocks.DAMAGED_RELAY.get(), "damaged_relay", VESKORIAN);
 
         // --- Architecture de donjon (17-Dungeons.md §4) -----------------------
         architecture();
@@ -375,10 +379,23 @@ public class ModBlockStateProvider extends BlockStateProvider {
      * que l'écran soit lisible.
      */
     private ModelFile consoleModel() {
-        ResourceLocation shell = modLoc("block/" + FRACTURED + "_side");
-        ResourceLocation top = modLoc("block/" + FRACTURED + "_top");
-        ResourceLocation screen = modLoc("block/attunement_console_front");
-        var b = models().getBuilder("attunement_console")
+        return consoleModel("attunement_console", FRACTURED);
+    }
+
+    /**
+     * La console du Sigma : <b>même pupitre, châssis de haute époque</b>. Deux blocs, une
+     * seule silhouette — le geste qui ouvre un palier doit se reconnaître d'un coup d'œil
+     * au T3 comme au T2, seule la matière dit qu'on a changé d'âge.
+     */
+    private ModelFile sigmaConsoleModel() {
+        return consoleModel("sigma_console", VESKORIAN);
+    }
+
+    private ModelFile consoleModel(String name, String chassisName) {
+        ResourceLocation shell = modLoc("block/" + chassisName + "_side");
+        ResourceLocation top = modLoc("block/" + chassisName + "_top");
+        ResourceLocation screen = modLoc("block/" + name + "_front");
+        var b = models().getBuilder(name)
             .parent(BLOCK_ROOT)
             .texture("particle", screen)
             .texture("side", shell)

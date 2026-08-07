@@ -38,6 +38,7 @@ public class ModStructureTagsProvider extends TagsProvider<Structure> {
         tag(ModTags.Structures.LOCATABLE)
             .addOptional(ModStructures.MODEST_DWELLING.location())
             .addOptional(ModStructures.OUTPOST.location())
+            .addOptional(ModStructures.SIGMA_LABORATORY.location())
             .addOptional(ModStructures.GUARD_POST.location())
             .addOptional(ModStructures.DRILL_SHAFT.location());
     }

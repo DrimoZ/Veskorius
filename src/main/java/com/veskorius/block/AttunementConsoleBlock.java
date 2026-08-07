@@ -23,8 +23,12 @@ import net.minecraft.world.phys.BlockHitResult;
  */
 public class AttunementConsoleBlock extends Block {
 
-    /** Tier du blueprint que cette console restaure. */
-    private static final int TIER = 2;
+    /**
+     * Tier du blueprint que cette console restaure. Paramètre et non constante depuis
+     * que le Sigma Laboratory a la sienne : deux blocs, un seul comportement — la porte
+     * d'un palier est toujours le même geste, seul le palier change.
+     */
+    private final int tier;
 
     /**
      * Volume du pupitre : le socle plus l'écran incliné. Le modèle n'occupe plus tout le
@@ -38,7 +42,12 @@ public class AttunementConsoleBlock extends Block {
             box(2.0, 5.0, 3.0, 14.0, 13.0, 9.0));
 
     public AttunementConsoleBlock(Properties properties) {
+        this(properties, 2);
+    }
+
+    public AttunementConsoleBlock(Properties properties, int tier) {
         super(properties);
+        this.tier = tier;
     }
 
     @Override
@@ -54,7 +63,7 @@ public class AttunementConsoleBlock extends Block {
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         }
-        boolean given = tryGiveBlueprint(player, TIER);
+        boolean given = tryGiveBlueprint(player, tier);
         // L'advancement tier2_field se déclenche tout seul quand le joueur a un
         // blueprint (InventoryChangeTrigger, voir ModAdvancementProvider).
         player.displayClientMessage(Component.translatable(given

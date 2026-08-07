@@ -142,6 +142,11 @@ for(const open of[false,true]){
 // C'est volontaire — le joueur doit reconnaître l'objet qu'il fabriquera plus
 // tard, dans un état antérieur au sien. Le T2 s'apprend ici, avant d'être craft.
 tex.ancient_emitter_front=front('t1',0x748,faces.field_emitter,false);
+// Sigma : la haute époque. Marbre sombre poli et ambre — on doit voir au premier
+// coup d'oeil qu'on a changé d'âge, pas seulement de salle.
+tex.sigma_console_front=front('t3',0x74C,faces.attunement_console,true);
+tex.damaged_relay_front=front('t3',0x74D,faces.field_emitter,false);
+tex.damaged_relay_front_on=front('t3',0x74D,faces.field_emitter,true);
 tex.ancient_emitter_front_on=front('t1',0x748,faces.field_emitter,true);
 
 const out=process.argv[2];fs.mkdirSync(out,{recursive:true});

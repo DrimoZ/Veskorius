@@ -439,7 +439,7 @@ que ce soit.
 | **C** | Les trois mécaniques : sas, conduits alimentés, émetteur ancien | ✅ 2026-08-07 |
 | **D** | Avant-poste à trois paliers + Hameau creusé | ✅ 2026-08-07 |
 | **E** | Poste de Garde ✅, Puits de Forage ✅ — Relais Station à faire | partielle |
-| **F** | Sigma Laboratory | à faire |
+| **F** | Sigma Laboratory ✅ | faite |
 
 **Ce que A→D a livré** (112 GameTest au vert) : `FieldSensitiveBlock` (socle commun de la lampe,
 du conduit et du sas), `ResonanceBulkheadBlock`, `DissonanceBloomBlock`, onze blocs

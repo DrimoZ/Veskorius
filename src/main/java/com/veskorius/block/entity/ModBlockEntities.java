@@ -48,6 +48,12 @@ public class ModBlockEntities {
                     ModBlocks.FIELD_EMITTER.get(), ModBlocks.ANCIENT_EMITTER.get())
                 .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DamagedRelayBlockEntity>>
+        DAMAGED_RELAY = BLOCK_ENTITIES.register("damaged_relay",
+            () -> BlockEntityType.Builder
+                .of(DamagedRelayBlockEntity::new, ModBlocks.DAMAGED_RELAY.get())
+                .build(null));
+
     /** Émetteur Accordable : même émetteur, bande harmonique choisie (06-Energy.md). */
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TunableFieldEmitterBlockEntity>>
         TUNABLE_FIELD_EMITTER = BLOCK_ENTITIES.register("tunable_field_emitter",

@@ -76,6 +76,11 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.DISSONANCE_BLOOM, "Efflorescence de Dissonance");
         addBlock(ModBlocks.RESONANCE_BULKHEAD, "Sas de Résonance");
         addBlock(ModBlocks.ANCIENT_EMITTER, "Émetteur Ancien");
+        addBlock(ModBlocks.SIGMA_CONSOLE, "Console Sigma");
+        addBlock(ModBlocks.DAMAGED_RELAY, "Relais Endommagé");
+        add("block.veskorius.damaged_relay.restored", "Le relais se remet à bourdonner");
+        add("block.veskorius.damaged_relay.already", "Ce relais tourne déjà");
+        add("block.veskorius.damaged_relay.no_field", "Un relais rediffuse — il lui faut un champ à relayer");
 
         // Châssis de palier : la base de craft et de texture des machines.
         addBlock(ModBlocks.FRACTURED_CHASSIS, "Châssis Fracturé");

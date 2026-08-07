@@ -82,6 +82,11 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.DISSONANCE_BLOOM, "Dissonance Bloom");
         addBlock(ModBlocks.RESONANCE_BULKHEAD, "Resonance Bulkhead");
         addBlock(ModBlocks.ANCIENT_EMITTER, "Ancient Emitter");
+        addBlock(ModBlocks.SIGMA_CONSOLE, "Sigma Console");
+        addBlock(ModBlocks.DAMAGED_RELAY, "Damaged Relay");
+        add("block.veskorius.damaged_relay.restored", "The relay hums back to life");
+        add("block.veskorius.damaged_relay.already", "This relay is already running");
+        add("block.veskorius.damaged_relay.no_field", "A relay rebroadcasts — it needs a field to carry");
         add("block.veskorius.attunement_console.restored", "The console wakes — blueprint restored");
         add("block.veskorius.attunement_console.already", "You already carry this blueprint");
 

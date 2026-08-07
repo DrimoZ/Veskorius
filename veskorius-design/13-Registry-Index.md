@@ -170,7 +170,7 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 | Avant-poste | `outpost` | 08, 17 (✅ codé — donjon à **trois paliers** : sas de Résonance, émetteur ancien, console, 2 ailes facultatives en jigsaw) |
 | Poste de Garde | `guard_post` | 08, 17 (✅ codé — **tour inversée** : vis ouverte sur un puits de 23 blocs, deux paliers d'alcôves, arsenal voûté au fond) |
 | Puits de Forage abandonné | `drill_shaft` | 17 §6 (✅ codé — la structure T1, commune et sans déblocage : elle enseigne « descendre = cristaux ») |
-| Sigma Laboratory | `sigma_laboratory` | 08 |
+| Sigma Laboratory | `sigma_laboratory` | 08, 17 (✅ codé — la roue : sanctuaire octogonal scellé, déambulatoire, quatre ailes, puzzle des deux relais) |
 | Archive Régionale | `regional_archive` | 08 |
 | Cœur de Faille (poche générée, pas une structure `structure_set` classique) | `rift_pocket` | 07, 08 |
 

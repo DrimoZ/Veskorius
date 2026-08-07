@@ -76,6 +76,7 @@ public final class ModStructures {
     public static final ResourceKey<StructureTemplatePool> OUTPOST_WING_POOL = poolKey("outpost/wing");
     public static final ResourceKey<StructureTemplatePool> OUTPOST_CAP_POOL = poolKey("outpost/cap");
 
+    public static final ResourceKey<StructureTemplatePool> SIGMA_POOL = poolKey("sigma_laboratory");
     public static final ResourceKey<StructureTemplatePool> GUARD_POST_POOL = poolKey("guard_post");
     public static final ResourceKey<StructureTemplatePool> DRILL_SHAFT_POOL = poolKey("drill_shaft");
     public static final ResourceKey<StructureTemplatePool> RUIN_MARKER_POOL = poolKey("ruin_marker");
@@ -108,6 +109,13 @@ public final class ModStructures {
      * moins de 300 blocs d'un Avant-poste. Loot T2, jamais de fragment de recette — le
      * combat y est optionnel et ne garde aucune progression.
      */
+    /**
+     * <b>Sigma Laboratory</b> (08-Structures.md) : strate Architectes, Y −40 à −55, porte
+     * du T3. Le seul VRAI puzzle du mod — deux relais à réparer avant que le premier ne
+     * retombe.
+     */
+    public static final ResourceKey<Structure> SIGMA_LABORATORY = structureKey("sigma_laboratory");
+
     public static final ResourceKey<Structure> GUARD_POST = structureKey("guard_post");
 
     /**
@@ -122,6 +130,7 @@ public final class ModStructures {
 
     public static final ResourceKey<StructureSet> MODEST_DWELLING_SET = setKey("modest_dwelling");
     public static final ResourceKey<StructureSet> OUTPOST_SET = setKey("outpost");
+    public static final ResourceKey<StructureSet> SIGMA_SET = setKey("sigma_laboratory");
     public static final ResourceKey<StructureSet> GUARD_POST_SET = setKey("guard_post");
     public static final ResourceKey<StructureSet> DRILL_SHAFT_SET = setKey("drill_shaft");
     public static final ResourceKey<StructureSet> RUIN_MARKER_SET = setKey("ruin_marker");
@@ -187,6 +196,10 @@ public final class ModStructures {
         context.register(RUIN_MARKER_POOL, rigid(empty, List.of(
             Pair.of(StructurePoolElement.single(id("ruin_marker_pillar").toString(), ruined), 2),
             Pair.of(StructurePoolElement.single(id("ruin_marker").toString(), ruined), 1))));
+        // Pièce de départ NON usée : elle porte le chemin critique du T3 (les deux relais,
+        // le sas, la console). Même règle qu'à l'Avant-poste, même raison.
+        context.register(SIGMA_POOL, rigid(empty, List.of(
+            Pair.of(StructurePoolElement.single(id("sigma_laboratory").toString()), 1))));
         context.register(GUARD_POST_POOL, rigid(empty, List.of(
             Pair.of(StructurePoolElement.single(id("guard_post").toString()), 1))));
         context.register(DRILL_SHAFT_POOL, rigid(empty, List.of(
@@ -210,6 +223,10 @@ public final class ModStructures {
         // Poste de Garde : 35 de haut, donc plancher entre −40 et −38 pour tenir dans la
         // strate « 0 à −40 ». C'est une TOUR : elle occupe presque toute la strate à elle
         // seule, et c'est le propos.
+        // Sigma : 20 de haut, strate −40 à −55 (07-World-Generation.md). Plancher entre
+        // −55 et −44 pour qu'il y tienne entièrement.
+        context.register(SIGMA_LABORATORY, jigsaw(overworld,
+            pools.getOrThrow(SIGMA_POOL), -55, -44));
         context.register(GUARD_POST, jigsaw(overworld,
             pools.getOrThrow(GUARD_POST_POOL), -40, -38));
         // Puits de forage : peu profond, dans la strate des poches de cristal (0 à −20).
@@ -246,6 +263,11 @@ public final class ModStructures {
         // Poste de Garde : 1 / ~3000 blocs (08-Structures.md). Sel proche de celui de
         // l'Avant-poste pour qu'ils tombent souvent dans la même région — le dossier dit
         // « souvent à moins de 300 blocs d'un Avant-poste ».
+        // Sigma : 1 / 6000 blocs (08-Structures.md). La structure la plus rare codée à ce
+        // jour, et c'est voulu — c'est une porte de palier, pas un lieu de passage.
+        context.register(SIGMA_SET, new StructureSet(
+            structures.getOrThrow(SIGMA_LABORATORY),
+            new RandomSpreadStructurePlacement(56, 16, RandomSpreadType.LINEAR, 91_204_663)));
         context.register(GUARD_POST_SET, new StructureSet(
             structures.getOrThrow(GUARD_POST),
             new RandomSpreadStructurePlacement(40, 12, RandomSpreadType.LINEAR, 74_328_701)));

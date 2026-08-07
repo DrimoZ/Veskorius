@@ -180,14 +180,42 @@ le `structure_set`.)*
 
 **Strate sociale** : Architectes. **Y** : -40 à -55. **Fréquence** : 1 / 6000 blocs.
 
+> **✅ CODÉ le 2026-08-07 — la ROUE** (`17-Dungeons.md` §5.4). Sanctuaire octogonal **scellé** au
+> centre, **déambulatoire** annulaire tout autour, quatre ailes qui s'y ouvrent. Le sanctuaire
+> n'a qu'un sas, au sud ; les trois autres orientations sont murées et **vitrées** — on voit la
+> console pendant tout le donjon sans pouvoir l'atteindre, et c'est ce qui donne son enjeu au
+> trajet.
+>
+> **Le déambulatoire n'est pas de la décoration** : c'est la réponse au problème que pose toute
+> salle centrale scellée — comment circuler si le centre est fermé ? Le réflexe serait de percer
+> le sanctuaire, ce qui le déscellerait. On contourne, comme le fait l'architecture réelle quand
+> elle protège un cœur.
+
 - **Fonction** : centre de recherche sur la Résonance, débloque le T3.
-- **Ambiance** : silencieux, quelques machines encore alimentées seules dans le noir, deux
-  portes verrouillées, salle centrale coupée du reste.
-- **Puzzle** : réparer deux Relais endommagés, la salle centrale s'ouvre seulement si les deux
-  sont actifs simultanément.
+- **Ambiance** : silencieux, **une machine encore alimentée** (l'émetteur des serres tourne
+  toujours — c'est le contraste avec l'Avant-poste, où tout est mort et où c'est le joueur qui
+  rallume), verrières crevées sur le vide, sanctuaire coupé du reste.
+- **Puzzle** : réparer **deux Relais endommagés** (`damaged_relay`, un Resonance Component chacun)
+  avant que le premier ne retombe — 90 secondes.
+  > **Comment la simultanéité est obtenue sans inventer de serrure à deux clés.** Un relais ne se
+  > répare que s'il est **déjà couvert par un champ actif** : il rediffuse, il ne produit pas. Les
+  > deux relais sont donc posés **en chaîne** — A dans la portée de l'émetteur encore vivant, B
+  > (sur le déambulatoire ouest, devant la chambre de dissonance) dans la portée de A seulement,
+  > et le sas dans la portée de B seulement. La simultanéité devient une **contrainte de trajet**,
+  > pas un compteur caché, et le joueur comprend la règle en la vivant. Géométrie vérifiée :
+  > A→sas = 21 blocs pour une portée de 20 — A seul n'ouvre rien, et c'est le chiffre qui fait
+  > exister le puzzle.
+  >
+  > *Piège évité au codage* : faire vérifier « suis-je dans un champ ? » à chaque tick aurait
+  > envoyé le gestionnaire de champ d'un relais à l'autre en **récursion infinie** — deux blocs
+  > posés côte à côte suffisaient. Le contrôle a lieu une seule fois, au clic.
 - **Lore** : fragments sur la propagation par champ, mention indirecte de l'Effondrement.
-- **Loot garanti (salle centrale)** : fragment débloquant le Resonance Relay.
-- **Machines débloquées** : Resonance Relay.
+- **Loot garanti (salle centrale)** : la `sigma_console` — même geste qu'à l'Avant-poste, palier
+  au-dessus : elle rend le **blueprint T3**.
+- **Aile ouest — chambre de dissonance** : un émetteur qu'on n'a jamais coupé. Le meilleur butin
+  facultatif est dedans, et on y entre en **gérant une mécanique du mod** (Damping Array à 16
+  blocs, la décharge en porte 6 : `06` garantit qu'on peut toujours nettoyer à distance sûre).
+- **Machines débloquées** : Resonance Relay (le blueprint T3 les ouvre toutes, voir `03`).
 
 ---
 
