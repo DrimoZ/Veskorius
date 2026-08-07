@@ -59,6 +59,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.CRYSTAL_CRUSHER, "Crystal Crusher");
         addBlock(ModBlocks.CRYSTAL_ROOST, "Crystal Roost");
         addBlock(ModBlocks.DAMPING_ARRAY, "Damping Array");
+        addBlock(ModBlocks.VESKORIAN_ALLOY_FORGE, "Veskorian Alloy Forge");
 
         // Châssis de palier : la base de craft et de texture des machines.
         addBlock(ModBlocks.FRACTURED_CHASSIS, "Fractured Chassis");

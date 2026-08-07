@@ -416,6 +416,21 @@ public class ModBlocks {
      * construction du palier et brique des machines T5 — à la fois décoratif et
      * structurel, comme les châssis.
      */
+    /**
+     * Machine #10 (05-Machines.md). <b>Porte d'entrée du T3</b> : c'est elle qui produit
+     * l'alliage dont dépend tout le palier — et la scorie dont il faut s'occuper.
+     */
+    public static final DeferredBlock<VeskorianAlloyForgeBlock> VESKORIAN_ALLOY_FORGE =
+        BLOCKS.registerBlock("veskorian_alloy_forge",
+            VeskorianAlloyForgeBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_ORANGE)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(MACHINE_GLOW));
+
     public static final DeferredBlock<net.minecraft.world.level.block.Block> VESKORIAN_ALLOY_BLOCK =
         BLOCKS.registerSimpleBlock("veskorian_alloy_block",
             BlockBehaviour.Properties.of()

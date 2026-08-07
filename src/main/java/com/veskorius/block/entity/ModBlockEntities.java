@@ -60,6 +60,12 @@ public class ModBlockEntities {
                 .of(ArchivePedestalBlockEntity::new, ModBlocks.ARCHIVE_PEDESTAL.get())
                 .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<VeskorianAlloyForgeBlockEntity>>
+        VESKORIAN_ALLOY_FORGE = BLOCK_ENTITIES.register("veskorian_alloy_forge",
+            () -> BlockEntityType.Builder
+                .of(VeskorianAlloyForgeBlockEntity::new, ModBlocks.VESKORIAN_ALLOY_FORGE.get())
+                .build(null));
+
     /** Émetteur Accordable : même émetteur, bande harmonique choisie (06-Energy.md). */
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TunableFieldEmitterBlockEntity>>
         TUNABLE_FIELD_EMITTER = BLOCK_ENTITIES.register("tunable_field_emitter",

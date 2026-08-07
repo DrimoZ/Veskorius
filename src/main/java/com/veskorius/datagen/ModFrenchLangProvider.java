@@ -62,6 +62,7 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.CRYSTAL_CRUSHER, "Broyeur de Cristaux");
         addBlock(ModBlocks.CRYSTAL_ROOST, "Perchoir à Cristaux");
         addBlock(ModBlocks.DAMPING_ARRAY, "Matrice d'Amortissement");
+        addBlock(ModBlocks.VESKORIAN_ALLOY_FORGE, "Forge d'Alliage Veskorien");
 
         // Architecture de donjon (17-Dungeons.md §4)
         addBlock(ModBlocks.VEINED_STONE_BRICKS, "Briques de Pierre Veinée");

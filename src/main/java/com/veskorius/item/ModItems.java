@@ -266,6 +266,9 @@ public class ModItems {
     public static final DeferredItem<BlockItem> DISSONANCE_BLOOM_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.DISSONANCE_BLOOM);
 
+    public static final DeferredItem<BlockItem> VESKORIAN_ALLOY_FORGE_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.VESKORIAN_ALLOY_FORGE);
+
     public static final DeferredItem<BlockItem> VESKORIAN_ALLOY_BLOCK_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.VESKORIAN_ALLOY_BLOCK);
 

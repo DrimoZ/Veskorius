@@ -34,6 +34,8 @@ public class ClientModEvents {
         event.register(ModMenuTypes.CRYSTAL_CRUSHER.get(), CrystalCrusherScreen::new);
         event.register(ModMenuTypes.CRYSTAL_ROOST.get(), CrystalRoostScreen::new);
         event.register(ModMenuTypes.DAMPING_ARRAY.get(), com.veskorius.client.screen.DampingArrayScreen::new);
+        event.register(ModMenuTypes.VESKORIAN_ALLOY_FORGE.get(),
+            com.veskorius.client.screen.VeskorianAlloyForgeScreen::new);
     }
 
     /**

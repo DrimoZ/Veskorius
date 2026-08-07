@@ -48,4 +48,8 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<DampingArrayMenu>>
         DAMPING_ARRAY = MENUS.register("damping_array",
             () -> IMenuTypeExtension.create(DampingArrayMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<VeskorianAlloyForgeMenu>>
+        VESKORIAN_ALLOY_FORGE = MENUS.register("veskorian_alloy_forge",
+            () -> IMenuTypeExtension.create(VeskorianAlloyForgeMenu::new));
 }

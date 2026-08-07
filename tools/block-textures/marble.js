@@ -57,6 +57,7 @@ const MARBLE = {
 const V = { deep: '#5C2C86', mid: '#8A47B8', lite: '#B57CE0', hot: '#E4CCF7' };
 const C = { deep: '#166B72', mid: '#27A3AC', lite: '#5FD6DC', hot: '#CFF6F8' };
 const WOOD = { deep: '#4A3520', mid: '#6E5436', lite: '#8F7048' };
+const A = { deep: '#8E5A15', mid: '#D8922A', lite: '#F0B863', hot: '#FBE0B0' };
 const IRON = { deep: '#2E323A', mid: '#454B56', lite: '#5E6672' };
 
 /** Marbre : semis dense à faible amplitude, plus quelques fissures au T1. */
@@ -203,6 +204,23 @@ const faces = {
   },
 
   // UN PUPITRE : bandeau de laiton et lignes de texte, alignées sur la grille.
+  // UNE GUEULE DE FOUR : une arche noire barrée d'une grille, sous un manteau
+  // massif. Aucune autre machine du mod n'a d'ouverture aussi large — on doit
+  // reconnaître « ça fond du métal » sans lire une ligne.
+  veskorian_alloy_forge: (c, m, a, on) => {
+    slab(c, 0, 0, 16, 5, m.metal, m.metalHi, m.line);
+    slab(c, 1, 5, 14, 10, m.tones[1], m.tones[3], m.line);
+    const mouth = [[7, 4, 11], [8, 3, 12], [9, 3, 12], [10, 3, 12], [11, 3, 12], [12, 3, 12], [13, 3, 12]];
+    outline(c, mouth, m.dark);
+    fill(c, mouth, on ? A.deep : m.dark);
+    if (on) {
+      fill(c, [[9, 4, 11], [10, 4, 11], [11, 4, 11]], A.mid);
+      fill(c, [[10, 6, 9], [11, 6, 9]], A.hot);
+    }
+    for (let x = 4; x <= 11; x += 2) c.rect(x, 7, 1, 6, on ? m.line : m.dark);
+    for (const [x, y] of [[2, 2], [13, 2]]) { c.rect(x, y, 2, 2, m.metalHi); c.set(x, y, m.metal); }
+  },
+
   attunement_console: (c, m, a, on) => {
     slab(c, 1, 1, 14, 3, m.metal, m.metalHi, m.line);
     c.rect(2, 5, 12, 9, m.dark);

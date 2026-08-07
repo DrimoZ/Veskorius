@@ -45,6 +45,7 @@ const ACCENT = {
   crystal_roost: { deep: '#4A3520', mid: '#6E5436', hi: '#8F7048' },
   damping_array: { deep: '#166B72', mid: '#27A3AC', hi: '#5FD6DC' },
   field_emitter: { deep: '#5C2C86', mid: '#8A47B8', hi: '#B57CE0' },
+  veskorian_alloy_forge: { deep: '#8E5A15', mid: '#D8922A', hi: '#F0B863' },
 };
 
 /** Rectangle en relief : liseré clair en haut/gauche, sombre en bas/droite. */

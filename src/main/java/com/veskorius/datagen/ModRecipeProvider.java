@@ -143,6 +143,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.REDSTONE_BLOCK)
                 .requires(blueprint(2)));
 
+        // Veskorian Alloy Forge (#10) : la porte du T3, et la PREMIÈRE recette à exiger
+        // le blueprint T3. Jusqu'ici le plan T2 ouvrait tout ; il s'arrête ici.
+        machine(recipeOutput, ModBlocks.VESKORIAN_ALLOY_FORGE.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.REFINED_RESONANCE_CRYSTAL.get(), b -> b
+                .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
+                .requires(ModTags.Items.IRON_SUBSTITUTES)
+                .requires(ModTags.Items.IRON_SUBSTITUTES)
+                .requires(blueprint(3)));
+
         // Émetteur Accordable : un Field Emitter + 2 Refined Crystal (l'accord demande
         // du cristal raffiné) + blueprint T2 rendu. Upgrade, pas une machine de plus.
         net.minecraft.data.recipes.ShapelessRecipeBuilder
@@ -364,6 +373,24 @@ public class ModRecipeProvider extends RecipeProvider {
      * en dur ; un datapack peut les changer ou en ajouter sans recompiler.
      */
     private void buildMachineRecipes(RecipeOutput recipeOutput) {
+
+        // Veskorian Alloy Forge (#10) : 2 Refined Crystal + 2 lingots → 1 alliage, 20 s,
+        // 4 Osc/tick. La SCORIE n'est pas dans la recette : elle sort à chaque cycle,
+        // quelle que soit la branche (voir VeskorianAlloyForgeBlockEntity). Un datapack
+        // qui ajoute un alliage produira donc sa scorie comme les autres.
+        //
+        // Le métal d'entrée décide de la branche, et c'est un vrai choix : le FER donne
+        // le structurel, l'OR le conducteur — seul admis par le Resonance Relay.
+        MachineRecipeBuilder.forging(ModItems.VESKORIAN_ALLOY_INGOT.get(), 1)
+            .input(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
+            .input(ModTags.Items.IRON_SUBSTITUTES, 2)
+            .time(400).osc(4)
+            .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "forging/veskorian_alloy_ingot"));
+        MachineRecipeBuilder.forging(ModItems.VESKORIAN_CONDUCTIVE_ALLOY_INGOT.get(), 1)
+            .input(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
+            .input(net.minecraft.world.item.Items.GOLD_INGOT, 2)
+            .time(400).osc(4)
+            .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "forging/veskorian_conductive_alloy_ingot"));
         // Stabilizer : Raw Crystal + flux (Quartz via tag) → Stable Crystal, 30 s,
         // autonome (05-Machines.md #1).
         MachineRecipeBuilder.stabilizing(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 1)

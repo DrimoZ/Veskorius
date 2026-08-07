@@ -38,6 +38,10 @@ public class ModRecipeSerializers {
     public static final DeferredHolder<RecipeSerializer<?>, WhetstoneRecipeSerializer> SHARPENING =
         RECIPE_SERIALIZERS.register("sharpening", WhetstoneRecipeSerializer::new);
 
+    public static final DeferredHolder<RecipeSerializer<?>, MachineRecipeSerializer> FORGING =
+        RECIPE_SERIALIZERS.register("forging",
+            () -> new MachineRecipeSerializer(ModRecipeTypes.FORGING::get));
+
     public static final DeferredHolder<RecipeSerializer<?>, EmitterFuelRecipeSerializer> FUELING =
         RECIPE_SERIALIZERS.register("fueling", EmitterFuelRecipeSerializer::new);
 

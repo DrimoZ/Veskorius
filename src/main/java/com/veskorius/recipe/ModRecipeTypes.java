@@ -22,6 +22,7 @@ public class ModRecipeTypes {
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> PURIFYING = register("purifying");
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> CRUSHING = register("crushing");
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> ROOSTING = register("roosting");
+    public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> FORGING = register("forging");
     public static final DeferredHolder<RecipeType<?>, RecipeType<WhetstoneRecipe>> SHARPENING = register("sharpening");
     public static final DeferredHolder<RecipeType<?>, RecipeType<EmitterFuelRecipe>> FUELING = register("fueling");
     public static final DeferredHolder<RecipeType<?>, RecipeType<DampingAgentRecipe>> DAMPING = register("damping");

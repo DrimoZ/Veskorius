@@ -59,6 +59,11 @@ public class MachineRecipeBuilder {
             ModRecipeSerializers.CRUSHING::get, new ItemStack(result, count));
     }
 
+    public static MachineRecipeBuilder forging(ItemLike result, int count) {
+        return new MachineRecipeBuilder(ModRecipeTypes.FORGING::get,
+            ModRecipeSerializers.FORGING::get, new ItemStack(result, count));
+    }
+
     public static MachineRecipeBuilder roosting(ItemLike result, int count) {
         return new MachineRecipeBuilder(ModRecipeTypes.ROOSTING::get,
             ModRecipeSerializers.ROOSTING::get, new ItemStack(result, count));

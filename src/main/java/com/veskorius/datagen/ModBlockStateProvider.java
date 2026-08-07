@@ -50,6 +50,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.FLUX_PURIFIER.get(), "flux_purifier", ATTUNED, TANK);
         machine(ModBlocks.CRYSTAL_ROOST.get(), "crystal_roost", ATTUNED, NEST);
         machine(ModBlocks.DAMPING_ARRAY.get(), "damping_array", VESKORIAN, SLATS);
+        machine(ModBlocks.VESKORIAN_ALLOY_FORGE.get(), "veskorian_alloy_forge", VESKORIAN, PRESS);
 
         // --- Émetteurs de champ ----------------------------------------------
         // Même traitement, sur la propriété LIT ajoutée à FieldEmitterBlock : un

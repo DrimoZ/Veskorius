@@ -134,7 +134,7 @@ ne sont pas comptés dans les 23 machines : ce sont des blocs de construction, p
 | 5 | `flux_purifier` | T2 | ✅ codé (cycle 45s, 2 Osc/tick, mode surchauffe). **Seule machine accordable avant la T3** (universelle par défaut, cycle réversible) — sans elle le mode « Accorder » n'aurait aucune cible, voir `06` |
 | 8 | `crystal_roost` | T2 | ✅ codé (production passive : 2 Quartz → 1 Raw Crystal 600s, si un Fileur < 6 blocs) |
 | 9 | `resonance_relay` | T3 | À coder (Phase 2) |
-| 10 | `veskorian_alloy_forge` | T3 | À coder (Phase 2) |
+| 10 | `veskorian_alloy_forge` | T3 | ✅ codé — 2 Refined + 2 lingots → alliage + scorie ; le métal décide de la branche |
 | 11 | `structural_synthesizer` | T3 | À coder (Phase 2) |
 | 12 | `deep_crystal_driller` | T3 | À coder (Phase 2) |
 | 13 | `slag_vent` | T3 | À coder (Phase 2) |

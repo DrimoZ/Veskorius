@@ -11,6 +11,7 @@ import com.veskorius.block.entity.CrystalCrusherBlockEntity;
 import com.veskorius.block.entity.CrystalRoostBlockEntity;
 import com.veskorius.block.entity.FieldEmitterBlockEntity;
 import com.veskorius.block.entity.FluxPurifierBlockEntity;
+import com.veskorius.block.entity.VeskorianAlloyForgeBlockEntity;
 import com.veskorius.block.entity.RedstoneMode;
 import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
 import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
@@ -1791,6 +1792,77 @@ public class MachineGameTests {
     private static IItemHandler inventoryOf(GameTestHelper helper) {
         ResonanceStabilizerBlockEntity machine = helper.getBlockEntity(MACHINE);
         return machine.getInventory();
+    }
+
+    // =====================================================================
+    // Veskorian Alloy Forge (#10) — la porte du T3
+    // =====================================================================
+
+    private static final BlockPos FORGE = new BlockPos(10, 1, 8);
+    private static final int FORGE_TICKS = 20 * 20;
+
+    /**
+     * <b>La forge produit un alliage ET une scorie, dans deux slots distincts.</b>
+     * La scorie n'étant pas dans la recette mais dans la machine (voir
+     * {@code VeskorianAlloyForgeBlockEntity}), rien dans les données ne la garantit :
+     * seul ce test le fait.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = FORGE_TICKS + 200)
+    public static void forgeProducesAlloyAndSlag(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                helper.setBlock(FORGE, ModBlocks.VESKORIAN_ALLOY_FORGE.get());
+                IItemHandler inv = machineInventory(helper, FORGE);
+                inv.insertItem(VeskorianAlloyForgeBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2), false);
+                inv.insertItem(VeskorianAlloyForgeBlockEntity.SLOT_METAL,
+                    new ItemStack(Items.IRON_INGOT, 2), false);
+            })
+            .thenExecuteAfter(FORGE_TICKS + 10, () -> {
+                IItemHandler inv = machineInventory(helper, FORGE);
+                helper.assertTrue(inv.getStackInSlot(VeskorianAlloyForgeBlockEntity.SLOT_OUTPUT)
+                        .is(ModItems.VESKORIAN_ALLOY_INGOT.get()),
+                    "Le fer doit donner l'alliage STRUCTUREL, vaut : "
+                        + inv.getStackInSlot(VeskorianAlloyForgeBlockEntity.SLOT_OUTPUT));
+                helper.assertTrue(inv.getStackInSlot(VeskorianAlloyForgeBlockEntity.SLOT_SLAG)
+                        .is(ModItems.FLUX_SLAG.get()),
+                    "Chaque cycle doit produire une scorie : c'est une propriété de la "
+                        + "machine, pas de la recette — donc rien dans les données ne la garantit");
+            })
+            .thenSucceed();
+    }
+
+    /**
+     * <b>Slot de scorie plein = forge à l'arrêt.</b>
+     *
+     * <p>C'est le cœur du design du palier, et il ne tient qu'à cette ligne : sans ce
+     * blocage, le déchet serait un item décoratif qu'on jette, le Slag Vent n'aurait
+     * aucune raison d'exister, et « le joueur reproduit en miniature la cause de
+     * l'Effondrement » (02-Lore.md) resterait une phrase dans un fichier.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = FORGE_TICKS + 200)
+    public static void forgeStallsWhenSlagBacksUp(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                helper.setBlock(FORGE, ModBlocks.VESKORIAN_ALLOY_FORGE.get());
+                IItemHandler inv = machineInventory(helper, FORGE);
+                inv.insertItem(VeskorianAlloyForgeBlockEntity.SLOT_CRYSTAL,
+                    new ItemStack(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2), false);
+                inv.insertItem(VeskorianAlloyForgeBlockEntity.SLOT_METAL,
+                    new ItemStack(Items.IRON_INGOT, 2), false);
+                inv.insertItem(VeskorianAlloyForgeBlockEntity.SLOT_SLAG,
+                    new ItemStack(ModItems.FLUX_SLAG.get(), 64), false);
+            })
+            .thenExecuteAfter(FORGE_TICKS + 10, () -> {
+                IItemHandler inv = machineInventory(helper, FORGE);
+                helper.assertTrue(inv.getStackInSlot(VeskorianAlloyForgeBlockEntity.SLOT_OUTPUT).isEmpty(),
+                    "Scorie bloquée : la forge ne doit RIEN produire. Sans ce blocage, le "
+                        + "déchet du T3 n'est qu'un item décoratif et le Slag Vent n'a plus "
+                        + "de raison d'être");
+            })
+            .thenSucceed();
     }
 
     private static int progressOf(GameTestHelper helper) {
