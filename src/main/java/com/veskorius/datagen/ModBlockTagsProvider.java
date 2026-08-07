@@ -2,6 +2,7 @@ package com.veskorius.datagen;
 
 import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
+import com.veskorius.tag.ModTags;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -37,7 +38,8 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             .add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get())
             .add(ModBlocks.RESONANCE_VEINED_STONE.get())
             .add(ModBlocks.RAW_FLUX_DEPOSIT.get())
-            .add(ModBlocks.ATTUNEMENT_CONSOLE.get());
+            .add(ModBlocks.ATTUNEMENT_CONSOLE.get())
+            .add(ARCHITECTURE);
         tag(BlockTags.NEEDS_STONE_TOOL)
             .add(ModBlocks.FRACTURED_CHASSIS.get())
             .add(ModBlocks.ATTUNED_CHASSIS.get())
@@ -52,6 +54,34 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             .add(ModBlocks.CRYSTAL_ROOST.get())
             .add(ModBlocks.DAMPING_ARRAY.get())
             .add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get())
+            .add(ModBlocks.RESONANCE_VEINED_STONE.get())
+            .add(ARCHITECTURE);
+
+        // Blocs que le pourrissage des pièces de structure a le DROIT de manger
+        // (17-Dungeons.md §2.4). C'est une liste blanche, pas une liste noire, et c'est
+        // le point important : BlockRotProcessor ne retire que ce qui est ici. Une
+        // console, un coffre, un sas ou un émetteur ancien n'y sera jamais, donc aucun
+        // ajout futur de pièce ne pourra rendre un Avant-poste infranchissable en
+        // effaçant statistiquement son chemin critique. Le même bug a déjà été trouvé
+        // deux fois sur le loot d'amorçage ; ici il est impossible par construction.
+        tag(ModTags.Blocks.STRUCTURE_ROTTABLE)
+            .add(ARCHITECTURE)
             .add(ModBlocks.RESONANCE_VEINED_STONE.get());
     }
+
+    /**
+     * La maçonnerie de donjon, citée trois fois ci-dessus. Extraite pour que l'ajout
+     * d'un bloc d'architecture ne demande qu'une ligne, et surtout pour qu'il ne puisse
+     * pas atterrir dans deux tags sur trois.
+     */
+    private static final net.minecraft.world.level.block.Block[] ARCHITECTURE = {
+        ModBlocks.VEINED_STONE_BRICKS.get(),
+        ModBlocks.CRACKED_VEINED_STONE_BRICKS.get(),
+        ModBlocks.CHISELED_VEINED_STONE.get(),
+        ModBlocks.VEINED_STONE_BRICK_STAIRS.get(),
+        ModBlocks.VEINED_STONE_BRICK_SLAB.get(),
+        ModBlocks.VEINED_STONE_BRICK_WALL.get(),
+        ModBlocks.RESONANCE_LAMP.get(),
+        ModBlocks.CONDUIT_LINE.get(),
+    };
 }

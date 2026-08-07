@@ -220,7 +220,8 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
 
         double damage = HarmonicsConfig.dischargeDamage();
         if (damage > 0) {
-            net.minecraft.world.damagesource.DamageSource source = dischargeSource(level);
+            net.minecraft.world.damagesource.DamageSource source =
+                com.veskorius.energy.ModDamageTypes.discharge(level);
             net.minecraft.world.phys.AABB box =
                 new net.minecraft.world.phys.AABB(pos).inflate(radius);
             double radiusSqr = radius * radius;
@@ -241,14 +242,6 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
         spawnDischargeParticles(level, center, radius);
         level.playSound(null, pos, net.minecraft.sounds.SoundEvents.CONDUIT_DEACTIVATE,
             net.minecraft.sounds.SoundSource.BLOCKS, 1.2f, 0.6f);
-    }
-
-    /** Source de dégâts dédiée (message de mort de lore, voir {@link com.veskorius.energy.ModDamageTypes}). */
-    private static net.minecraft.world.damagesource.DamageSource dischargeSource(ServerLevel level) {
-        return new net.minecraft.world.damagesource.DamageSource(
-            level.registryAccess()
-                .registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
-                .getHolderOrThrow(com.veskorius.energy.ModDamageTypes.RESONANCE_DISCHARGE));
     }
 
     /** Éclat central + onde de particules de la bande sur la sphère de portée. */

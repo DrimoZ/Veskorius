@@ -84,6 +84,28 @@ est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments 
 | `raw_flux_deposit` (bloc) | 07 | ✅ codé (croûte brossable → item `raw_flux_deposit`) |
 | `attunement_console` | 08 | ✅ codé — bloc de l'Avant-poste, clic droit sur place → blueprint T2 ; miné = gravats, sans objet |
 
+## Blocs — architecture de donjon (ajouté 2026-08-07, voir `17-Dungeons.md` §4)
+
+Le donjon n'avait que **huit** blockstates à sa disposition, dont un seul du mod : les ruines
+veskoriennes étaient bâties en deepslate vanilla, donc indiscernables de l'intérieur d'un donjon
+quelconque. On ne fait pas d'architecture sans vocabulaire.
+
+| Registry name | Rôle | Statut code |
+|---|---|---|
+| `veined_stone_bricks` | la maçonnerie de base | ✅ codé (craft + scie de pierre) |
+| `cracked_veined_stone_bricks` | usure (cuisson, ou processor à la pose) | ✅ codé |
+| `chiseled_veined_stone` | le seul bloc « écrit » : seuils et salles maîtresses | ✅ codé |
+| `veined_stone_brick_stairs` / `_slab` / `_wall` | la famille de construction attendue | ✅ codé |
+| `resonance_lamp` | éclairage veskorien ; **s'allume dans un champ** (lum. 3 → 14) | ✅ codé |
+| `conduit_line` | le fil d'Ariane ; **s'allume dans un champ** (lum. 0 → 7) | ✅ codé |
+| `dissonance_bloom` | croûte de l'Effondrement, **sans collision** : on la traverse, ça blesse | ✅ codé |
+| `resonance_bulkhead` | **le sas** : ouvert seulement dans un champ. Indestructible, sans objet | ✅ codé |
+| `ancient_emitter` | émetteur de structure à sec — **le même bloc et la même block entity que `field_emitter`**. Indestructible, sans objet | ✅ codé |
+
+Les trois blocs réactifs au champ partagent `FieldSensitiveBlock` (propriété `powered`, tick
+programmé toutes les ~2 à 4 s). Le tag `#veskorius:structure_rottable` liste ceux que le
+pourrissage des pièces a le droit de retirer — **liste blanche**, pour qu'un oubli soit inoffensif.
+
 Note : le dossier nommait « poches de Raw Resonance Crystal » sans nommer le bloc généré (l'item
 `raw_resonance_crystal` existait, pas un bloc). `resonance_crystal_cluster` est ce bloc — une
 formation cristalline distinctive (pas un minerai façon fer, rejeté dans `04-Materials.md`), qui
@@ -144,8 +166,8 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 
 | Nom en jeu (prose) | Registry name proposé | Défini dans |
 |---|---|---|
-| Habitation Modeste | `modest_dwelling` | 08 (✅ codé — **vraie `Structure` jigsaw** (A7) : structure + template_pool + structure_set, pièce NBT, `#locatable`) |
-| Avant-poste | `outpost` | 08 (✅ codé — `Structure` jigsaw avec console + Custode gardien intégrés à la pièce NBT) |
+| Habitation Modeste → **Hameau** | `modest_dwelling` | 08, 17 (✅ codé — place commune + 3 à 6 logis tirés d'un pool. **Nom de registre conservé exprès** : le changer casserait mondes, datapacks, `#locatable` et advancements) |
+| Avant-poste | `outpost` | 08, 17 (✅ codé — donjon à **trois paliers** : sas de Résonance, émetteur ancien, console, 2 ailes facultatives en jigsaw) |
 | Poste de Garde | `guard_post` | 08 (À coder Phase 2 — même socle `ModStructures`) |
 | Sigma Laboratory | `sigma_laboratory` | 08 |
 | Archive Régionale | `regional_archive` | 08 |

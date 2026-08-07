@@ -43,6 +43,9 @@ public class ModDataGenerators {
         .add(Registries.PLACED_FEATURE, ModWorldGen::bootstrapPlacedFeatures)
         .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldGen::bootstrapBiomeModifiers)
         // Structures jigsaw (A7) : pools de pièces, structures, sets de placement.
+        // Les processors sont déclarés AVANT les pools : un pool référence ses listes
+        // de processors par Holder, donc elles doivent exister quand il se construit.
+        .add(Registries.PROCESSOR_LIST, com.veskorius.worldgen.ModProcessorLists::bootstrap)
         .add(Registries.TEMPLATE_POOL, com.veskorius.worldgen.ModStructures::bootstrapTemplatePools)
         .add(Registries.STRUCTURE, com.veskorius.worldgen.ModStructures::bootstrapStructures)
         .add(Registries.STRUCTURE_SET, com.veskorius.worldgen.ModStructures::bootstrapStructureSets);

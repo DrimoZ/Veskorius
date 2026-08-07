@@ -6,7 +6,9 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageScaling;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.level.Level;
 
 /**
  * Types de dégâts propres au mod (registre datapack {@code minecraft:damage_type}),
@@ -26,6 +28,21 @@ public final class ModDamageTypes {
             ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "resonance_discharge"));
 
     private ModDamageTypes() {
+    }
+
+    /**
+     * Source de dégâts de la décharge de résonance, prête à l'emploi.
+     *
+     * <p>Deux appelants aujourd'hui — la décharge d'un champ saturé
+     * ({@code FieldEmitterBlockEntity}) et le contact avec une efflorescence de
+     * dissonance ({@code DissonanceBloomBlock}) — et c'est voulu : c'est la même
+     * substance et la même cause (`06-Energy.md`), donc le même message de mort. Le
+     * helper existe pour que ça reste vrai sans recopier la résolution du registre.
+     */
+    public static DamageSource discharge(Level level) {
+        return new DamageSource(level.registryAccess()
+            .registryOrThrow(Registries.DAMAGE_TYPE)
+            .getHolderOrThrow(RESONANCE_DISCHARGE));
     }
 
     public static void bootstrap(BootstrapContext<DamageType> context) {

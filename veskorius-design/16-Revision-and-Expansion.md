@@ -102,8 +102,15 @@ est une micro-progression satisfaisante ; l'index sert aussi la Phase 2 (trouver
 > « repérer une fois le T2 acquis », ce que `/locate` + Locator couvrent mieux ; (b) **pas de
 > `veskorius-structures.toml`** : fréquence/espacement/biomes vivent dans le JSON `structure_set`/
 > `structure`, déjà surchargeable par datapack — un TOML redondant violerait la règle « pas de clé
-> qui ne fait rien » de `14`. Reste Phase 6 : vrais layouts multi-pièces (aujourd'hui une salle
-> meublée).
+> qui ne fait rien » de `14`.
+>
+> **✅ COMPLÉTÉ le 2026-08-07 — voir `17-Dungeons.md`.** Le « reste Phase 6 » (vrais layouts
+> multi-pièces) est fait, et l'audit qui l'a précédé a révélé que le jigsaw n'était **jamais** entré
+> en service : aucune pièce ne portait de bloc jigsaw et la profondeur d'assemblage valait 1, donc
+> ajouter une pièce au pool *remplaçait* le bâtiment au lieu de l'agrandir. La décision « structures
+> en jigsaw » était juste — elle n'était simplement pas encore appliquée. Elle l'est : profondeur 5,
+> connecteurs réels, pools de bouchons en `fallback`, processors d'usure, et un GameTest
+> (`piecesExposeRealJigsawConnectors`) qui empêche la promesse de redevenir creuse.
 
 **Problème (résolu).** Nos structures étaient des `RuinFeature` (boîtes creuses posées comme une
 *feature*). Pas de `/locate`, pas de vraies pièces, placement approximatif. Le porteur veut **de

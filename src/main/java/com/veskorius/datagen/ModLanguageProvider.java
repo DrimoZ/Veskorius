@@ -68,6 +68,19 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.RESONANCE_VEINED_STONE, "Resonance Veined Stone");
         addBlock(ModBlocks.RAW_FLUX_DEPOSIT, "Raw Flux Deposit");
         addBlock(ModBlocks.ATTUNEMENT_CONSOLE, "Attunement Console");
+
+        // Architecture de donjon (17-Dungeons.md §4)
+        addBlock(ModBlocks.VEINED_STONE_BRICKS, "Veined Stone Bricks");
+        addBlock(ModBlocks.CRACKED_VEINED_STONE_BRICKS, "Cracked Veined Stone Bricks");
+        addBlock(ModBlocks.CHISELED_VEINED_STONE, "Chiseled Veined Stone");
+        addBlock(ModBlocks.VEINED_STONE_BRICK_STAIRS, "Veined Stone Brick Stairs");
+        addBlock(ModBlocks.VEINED_STONE_BRICK_SLAB, "Veined Stone Brick Slab");
+        addBlock(ModBlocks.VEINED_STONE_BRICK_WALL, "Veined Stone Brick Wall");
+        addBlock(ModBlocks.RESONANCE_LAMP, "Resonance Lamp");
+        addBlock(ModBlocks.CONDUIT_LINE, "Resonance Conduit");
+        addBlock(ModBlocks.DISSONANCE_BLOOM, "Dissonance Bloom");
+        addBlock(ModBlocks.RESONANCE_BULKHEAD, "Resonance Bulkhead");
+        addBlock(ModBlocks.ANCIENT_EMITTER, "Ancient Emitter");
         add("block.veskorius.attunement_console.restored", "The console wakes — blueprint restored");
         add("block.veskorius.attunement_console.already", "You already carry this blueprint");
 
