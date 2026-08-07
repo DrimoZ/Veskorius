@@ -103,6 +103,14 @@ public class ModLanguageProvider extends LanguageProvider {
         add("item.veskorius.stable_resonance_crystal.hint", "Fuels a Field Emitter, or refine it in a Flux Purifier.");
         add("item.veskorius.resonance_component.hint", "Core part of Tier 2 machines and portable batteries.");
         add("item.veskorius.resonance_dust.hint", "A quick crush of raw crystal. Feeds the Component Assembler.");
+        addItem(ModItems.VESKORIAN_ALLOY_INGOT, "Veskorian Alloy Ingot");
+        addItem(ModItems.VESKORIAN_CONDUCTIVE_ALLOY_INGOT, "Veskorian Conductive Alloy Ingot");
+        addItem(ModItems.FLUX_SLAG, "Flux Slag");
+        addItem(ModItems.SYNTHESIS_RESIDUE, "Synthesis Residue");
+        addItem(ModItems.CONCENTRATED_FLUX, "Concentrated Flux");
+        addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Block of Veskorian Alloy");
+        add("item.veskorius.veskorian_alloy_ingot.hint", "Structural metal of Tier 3. Forge gold instead of iron for the conductive kind.");
+        add("item.veskorius.flux_slag.hint", "Forge waste. The same residue that, region-wide, caused the Collapse.");
         addItem(ModItems.RAW_FLUX_DEPOSIT, "Raw Flux Deposit");
         addItem(ModItems.RESONANCE_CATALYST_CORE, "Resonance Catalyst Core");
         addItem(ModItems.RESONANCE_TUNER, "Resonance Tuner");

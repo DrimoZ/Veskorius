@@ -411,6 +411,19 @@ public class ModBlocks {
      * {@link ArchivePedestalBlock}). Généré en structure, sans objet — c'est un meuble de
      * lieu, pas du mobilier qu'on emporte.
      */
+    /**
+     * <b>Bloc d'alliage veskorien</b> (Structural Synthesizer, T3). Matériau de
+     * construction du palier et brique des machines T5 — à la fois décoratif et
+     * structurel, comme les châssis.
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> VESKORIAN_ALLOY_BLOCK =
+        BLOCKS.registerSimpleBlock("veskorian_alloy_block",
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_LIGHT_GRAY)
+                .strength(5.0f, 8.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops());
+
     public static final DeferredBlock<ArchivePedestalBlock> ARCHIVE_PEDESTAL =
         BLOCKS.registerBlock("archive_pedestal",
             ArchivePedestalBlock::new,

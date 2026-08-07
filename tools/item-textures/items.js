@@ -28,6 +28,10 @@ const BRASS = { line: '#6E5420', deep: '#8A6A2A', mid: '#C9A24A', lite: '#E8CE8A
 const COPPER = { line: '#5E3517', deep: '#8A4E24', mid: '#A8632F', lite: '#C9834E', hot: '#E0A87A' };
 const WOOD = { line: '#33240F', deep: '#4A3520', mid: '#6E5436', lite: '#8F7048', hot: '#B08E5E' };
 const PAPER = { line: '#6E5E3A', deep: '#9E8A5E', mid: '#C6B183', lite: '#DCCBA4', hot: '#EFE3C6' };
+// Alliage veskorien : un acier PÂLE veiné de violet, et surtout pas le fer vanilla
+// — dessiné dans la palette IRON, le lingot virait au galet sombre, illisible à
+// côté du minerai brut. Un alliage se reconnaît à sa clarté.
+const ALLOY = { line: '#2A2833', deep: '#4A4658', mid: '#7C7890', lite: '#A8A4BA', hot: '#D2CEE0' };
 const SLUDGE = { line: '#241E2C', deep: '#3A3048', mid: '#4E4260', lite: '#665A7A', hot: '#847A96' };
 
 /** Cristal : losange taillé, trois facettes. La forme signature du mod. */
@@ -66,6 +70,25 @@ function bar(c, p, x, y, w, h) {
   c.rect(x, y, w, 1, p.lite);
   c.rect(x, y + h - 1, w, 1, p.deep);
   return c;
+}
+
+/**
+ * Lingot hexagonal : face supérieure éclairée, flancs biseautés, arête basse
+ * sombre. C'est LA silhouette d'un lingot, et elle n'appartient qu'à eux dans ce
+ * mod — tout le reste est rond (minerais) ou taillé (cristaux).
+ */
+function ingot(c, p, vein) {
+  const body = [[5, 5, 10], [6, 4, 11], [7, 3, 12], [8, 3, 12], [9, 4, 11], [10, 5, 10]];
+  outline(c, body, p.line);
+  fill(c, body, p.mid);
+  fill(c, [[5, 6, 9]], p.hot);
+  fill(c, [[6, 5, 10]], p.lite);
+  fill(c, [[10, 6, 9]], p.deep);
+  if (vein) {
+    for (let x = 4; x <= 11; x++) c.set(x, 8, vein.mid);
+    c.set(5, 8, vein.hot);
+    c.set(10, 8, vein.hot);
+  }
 }
 
 const items = {
@@ -221,6 +244,52 @@ const items = {
     c.rect(3, 7, 10, 2, WOOD.line);
     c.rect(4, 5, 3, 2, WOOD.lite);
     c.rect(6, 2, 4, 2, WOOD.deep);
+  },
+
+  // --- Matériaux T3 (04-Materials, 05-Machines) ---------------------------
+  //
+  // Contrainte du fichier, et elle a failli être ratée : « un item = une
+  // silhouette ; deux objets ne doivent jamais se distinguer par la seule
+  // couleur ». Les deux lingots dessinés en galets ronds étaient impossibles à
+  // séparer du raw_flux_deposit et de la scorie — quatre cailloux gris dans une
+  // barre d'action. D'où un LINGOT hexagonal, à face supérieure éclairée : la
+  // silhouette la plus universellement lisible qui soit, et la seule du mod.
+  veskorian_alloy_ingot: (c) => {
+    ingot(c, ALLOY, null);
+  },
+  // La conductrice se lit à sa VEINE et à son laiton, pas à une nuance de gris :
+  // même silhouette, un filet de résonance qui la traverse de part en part.
+  veskorian_conductive_alloy_ingot: (c) => {
+    ingot(c, BRASS, V);
+  },
+  // Scorie : ANGULEUSE et mate, là où les minerais sont ronds. C'est un déchet,
+  // il doit se refuser à l'oeil avant même qu'on lise son nom.
+  flux_slag: (c) => {
+    const shard = [[4, 7, 9], [5, 5, 11], [6, 4, 12], [7, 3, 12], [8, 3, 11], [9, 4, 9], [10, 6, 8]];
+    outline(c, shard, SLUDGE.line);
+    fill(c, shard, SLUDGE.deep);
+    fill(c, [[5, 6, 8], [6, 5, 7]], SLUDGE.mid);
+    c.rect(2, 11, 3, 2, SLUDGE.deep); c.rect(2, 11, 1, 2, SLUDGE.line);
+    c.rect(11, 10, 3, 3, SLUDGE.deep); c.rect(11, 10, 1, 3, SLUDGE.line);
+    c.set(7, 5, V.deep); c.set(6, 8, V.line);
+  },
+  // Résidu de synthèse : une poudre TASSÉE en galette, pas un tas. Elle sort
+  // d'une presse, elle ne s'est pas déposée.
+  synthesis_residue: (c) => {
+    bar(c, M, 3, 7, 10, 5);
+    c.rect(4, 8, 8, 3, SLUDGE.mid);
+    for (const [x, y] of [[5, 9], [8, 8], [10, 10]]) c.set(x, y, V.deep);
+    c.rect(3, 6, 10, 1, M.hot);
+  },
+  concentrated_flux: (c) => {
+    const vial = [[3, 6, 9], [4, 5, 10], [5, 4, 11], [6, 4, 11], [7, 4, 11],
+      [8, 4, 11], [9, 4, 11], [10, 5, 10], [11, 6, 9], [12, 7, 8]];
+    outline(c, vial, IRON.line);
+    fill(c, vial, C.deep);
+    fill(c, [[5, 5, 10], [6, 5, 10], [7, 5, 10], [8, 5, 10]], C.mid);
+    fill(c, [[6, 6, 9], [7, 6, 9]], C.hot);
+    bar(c, IRON, 5, 2, 6, 2);
+    c.set(7, 3, C.hot); c.set(8, 3, C.lite);
   },
 };
 

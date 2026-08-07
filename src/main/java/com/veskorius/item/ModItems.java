@@ -82,6 +82,40 @@ public class ModItems {
     public static final DeferredItem<Item> RESONANCE_SPORE =
         ITEMS.registerSimpleItem("resonance_spore", new Item.Properties().stacksTo(64));
 
+    // --- Matériaux T3 (04-Materials.md, 05-Machines.md) ---------------------
+    //
+    // La première matière que le joueur FABRIQUE au lieu de la raffiner : la chaîne
+    // T1-T2 partait du cristal et le purifiait, celle-ci part du métal et l'allie.
+    // C'est le changement de nature qui marque le palier, pas le nombre d'étapes.
+
+    /** Alliage veskorien : substrat structurel de tout le T3+ (Veskorian Alloy Forge). */
+    public static final DeferredItem<Item> VESKORIAN_ALLOY_INGOT =
+        ITEMS.registerSimpleItem("veskorian_alloy_ingot", new Item.Properties().stacksTo(64));
+
+    /**
+     * Variante <b>conductrice</b> : même forge, or au lieu de fer. Elle seule permet
+     * le Resonance Relay — la branche du métal décide donc de ce qu'on peut bâtir, et
+     * c'est un vrai choix de planification (04-Materials.md).
+     */
+    public static final DeferredItem<Item> VESKORIAN_CONDUCTIVE_ALLOY_INGOT =
+        ITEMS.registerSimpleItem("veskorian_conductive_alloy_ingot", new Item.Properties().stacksTo(64));
+
+    /**
+     * <b>Scorie de flux</b> : le déchet de la Forge. Ce n'est pas un rebut anodin —
+     * c'est chimiquement la substance qui, accumulée à l'échelle régionale, a déclenché
+     * l'Effondrement (02-Lore.md). Le joueur reproduit la cause en miniature.
+     */
+    public static final DeferredItem<Item> FLUX_SLAG =
+        ITEMS.registerSimpleItem("flux_slag", new Item.Properties().stacksTo(64));
+
+    /** Résidu du Structural Synthesizer. Débouchés en T4 (Reclaimer, voir 16 §5). */
+    public static final DeferredItem<Item> SYNTHESIS_RESIDUE =
+        ITEMS.registerSimpleItem("synthesis_residue", new Item.Properties().stacksTo(64));
+
+    /** Flux concentré : carburant du Damping Array, et brique du Convergence Core (T5). */
+    public static final DeferredItem<Item> CONCENTRATED_FLUX =
+        ITEMS.registerSimpleItem("concentrated_flux", new Item.Properties().stacksTo(64));
+
     /** Œuf d'apparition du Fileur de Cristal. */
     public static final DeferredItem<DeferredSpawnEggItem> CRYSTAL_STRIDER_SPAWN_EGG =
         ITEMS.registerItem("crystal_strider_spawn_egg",
@@ -231,6 +265,9 @@ public class ModItems {
 
     public static final DeferredItem<BlockItem> DISSONANCE_BLOOM_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.DISSONANCE_BLOOM);
+
+    public static final DeferredItem<BlockItem> VESKORIAN_ALLOY_BLOCK_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.VESKORIAN_ALLOY_BLOCK);
 
     public static final DeferredItem<BlockItem> VEINED_STONE_COLUMN_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.VEINED_STONE_COLUMN);

@@ -55,6 +55,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             .add(ModBlocks.DAMPING_ARRAY.get())
             .add(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get())
             .add(ModBlocks.RESONANCE_VEINED_STONE.get())
+            .add(ModBlocks.VESKORIAN_ALLOY_BLOCK.get())
             .add(ARCHITECTURE);
 
         // Blocs que le pourrissage des pièces de structure a le DROIT de manger

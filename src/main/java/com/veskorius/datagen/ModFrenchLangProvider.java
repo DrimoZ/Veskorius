@@ -101,6 +101,14 @@ public class ModFrenchLangProvider extends LanguageProvider {
         add("item.veskorius.stable_resonance_crystal.hint", "Alimente un Émetteur de Champ, ou raffinez-le dans un Purificateur de Flux.");
         add("item.veskorius.resonance_component.hint", "Pièce maîtresse des machines de Palier 2 et des batteries portables.");
         add("item.veskorius.resonance_dust.hint", "Un broyage rapide de cristal brut. Alimente l'Assembleur de Composants.");
+        addItem(ModItems.VESKORIAN_ALLOY_INGOT, "Lingot d'Alliage Veskorien");
+        addItem(ModItems.VESKORIAN_CONDUCTIVE_ALLOY_INGOT, "Lingot d'Alliage Conducteur");
+        addItem(ModItems.FLUX_SLAG, "Scorie de Flux");
+        addItem(ModItems.SYNTHESIS_RESIDUE, "Résidu de Synthèse");
+        addItem(ModItems.CONCENTRATED_FLUX, "Flux Concentré");
+        addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Bloc d'Alliage Veskorien");
+        add("item.veskorius.veskorian_alloy_ingot.hint", "Métal structurel du Palier 3. Forgez de l'or au lieu du fer pour la variante conductrice.");
+        add("item.veskorius.flux_slag.hint", "Déchet de forge. La substance même qui, à l'échelle d'une région, a causé l'Effondrement.");
         addItem(ModItems.RAW_FLUX_DEPOSIT, "Dépôt de Flux Brut");
         addItem(ModItems.RESONANCE_CATALYST_CORE, "Cœur Catalyseur de Résonance");
         addItem(ModItems.RESONANCE_TUNER, "Accordeur de Résonance");

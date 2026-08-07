@@ -28,6 +28,19 @@ public class ModRecipeProvider extends RecipeProvider {
 
         buildArchitectureRecipes(recipeOutput);
 
+        // Décompactage du bloc d'alliage. Le COMPACTAGE, lui, n'est PAS une recette
+        // d'établi : le bloc sort du Structural Synthesizer (05-Machines.md #11), qui
+        // exige un champ. Offrir un 9-en-1 à l'établi court-circuiterait la machine —
+        // c'est la classe d'erreur qui vide un palier de son contenu sans qu'on s'en
+        // aperçoive, parce que la recette « évidente » a l'air inoffensive.
+        net.minecraft.data.recipes.ShapelessRecipeBuilder
+            .shapeless(RecipeCategory.MISC, ModItems.VESKORIAN_ALLOY_INGOT.get(), 9)
+            .requires(ModBlocks.VESKORIAN_ALLOY_BLOCK.get())
+            .unlockedBy(getHasName(ModItems.VESKORIAN_ALLOY_INGOT.get()),
+                has(ModItems.VESKORIAN_ALLOY_INGOT.get()))
+            .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(
+                Veskorius.MOD_ID, "veskorian_alloy_ingot_from_block"));
+
         // --- Machines T1 : châssis Fracturé + ce qui les distingue -------------
         //
         // La grammaire de fabrication est désormais « le boîtier de mon palier, plus

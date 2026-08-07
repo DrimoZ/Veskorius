@@ -104,6 +104,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
      * comme le joueur s'y attend, sinon on ne bâtit pas avec.
      */
     private void architecture() {
+        simpleBlockWithItem(ModBlocks.VESKORIAN_ALLOY_BLOCK.get(),
+            cubeAll(ModBlocks.VESKORIAN_ALLOY_BLOCK.get()));
         simpleBlockWithItem(ModBlocks.VEINED_STONE_BRICKS.get(),
             cubeAll(ModBlocks.VEINED_STONE_BRICKS.get()));
         simpleBlockWithItem(ModBlocks.CRACKED_VEINED_STONE_BRICKS.get(),

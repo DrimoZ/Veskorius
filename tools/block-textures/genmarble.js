@@ -141,6 +141,16 @@ for(const open of[false,true]){
 // Émetteur ancien : la façade de l'émetteur T2, montée sur le châssis FRACTURÉ.
 // C'est volontaire — le joueur doit reconnaître l'objet qu'il fabriquera plus
 // tard, dans un état antérieur au sien. Le T2 s'apprend ici, avant d'être craft.
+// Bloc d'alliage veskorien : de la tôle rivetée, pas du marbre. C'est le seul bloc
+// du mod qui doit se lire « métal » avant de se lire « veskorien ».
+{const ALLOY={tones:['#5E5A70','#6E6A80','#7C7890','#8A86A0'],w:[3,4,3,2],
+  line:'#4A4658',dark:'#3A3648',metal:'#A8A4BA',metalHi:'#D2CEE0',crack:null};
+ const c=marble(ALLOY,0x74E);
+ slab(c,0,0,S,S,ALLOY.tones[1],ALLOY.tones[3],ALLOY.line);
+ for(const y of[3,12]){for(let x=1;x<15;x++)c.set(x,y,ALLOY.line);}
+ for(const[x,y]of[[3,3],[12,3],[3,12],[12,12]]){c.rect(x,y,2,2,ALLOY.metal);c.set(x,y,ALLOY.metalHi);}
+ c.rect(6,6,4,4,ALLOY.dark);c.rect(7,7,2,2,V.deep);c.set(7,7,V.mid);
+ edges(c,ALLOY);tex.veskorian_alloy_block=c;}
 tex.ancient_emitter_front=front('t1',0x748,faces.field_emitter,false);
 // Sigma : la haute époque. Marbre sombre poli et ambre — on doit voir au premier
 // coup d'oeil qu'on a changé d'âge, pas seulement de salle.

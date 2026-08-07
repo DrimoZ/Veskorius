@@ -84,6 +84,13 @@ public class Veskorius {
                 output.accept(ModItems.CRYSTAL_ROOST_ITEM.get());
                 output.accept(ModItems.DAMPING_ARRAY_ITEM.get());
                 output.accept(ModItems.RESONANCE_SLUDGE.get());
+                // Matériaux T3.
+                output.accept(ModItems.VESKORIAN_ALLOY_INGOT.get());
+                output.accept(ModItems.VESKORIAN_CONDUCTIVE_ALLOY_INGOT.get());
+                output.accept(ModItems.VESKORIAN_ALLOY_BLOCK_ITEM.get());
+                output.accept(ModItems.FLUX_SLAG.get());
+                output.accept(ModItems.SYNTHESIS_RESIDUE.get());
+                output.accept(ModItems.CONCENTRATED_FLUX.get());
                 // Architecture de donjon (17-Dungeons.md) : groupée en fin d'onglet
                 // parce qu'on la cherche en construisant, pas en progressant.
                 output.accept(ModItems.VEINED_STONE_BRICKS_ITEM.get());
