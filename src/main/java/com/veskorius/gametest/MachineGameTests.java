@@ -1214,6 +1214,39 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    /**
+     * <b>Anti-régression de contenu atteignable.</b> Le Fileur ne peut PAS compter sur le
+     * spawn naturel : la génération de monde place les {@code CREATURE} en surface
+     * ({@code getTopNonCollidingPos}), ce que sa règle Y ≤ 0 refuse, et le spawn à
+     * l'exécution est plafonné à 10 individus <i>persistants</i> — un plafond que la faune
+     * de surface occupe en permanence. Sans peuplement par la feature, l'espèce n'existe
+     * pas, et le Crystal Roost (qui exige un Fileur à moins de 6 blocs) est du contenu
+     * inatteignable.
+     *
+     * <p>Ce test vérifie donc le seul chemin qui peuple réellement le monde : une poche de
+     * cristal avec de l'air à côté doit accoucher d'au moins un Fileur.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void crystalPocketSeedsStriders(GameTestHelper helper) {
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        BlockPos crystal = helper.absolutePos(MACHINE);
+        // Un cristal, et de l'air au-dessus : la configuration minimale d'une paroi ouverte.
+        level.setBlockAndUpdate(crystal, ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get().defaultBlockState());
+
+        int before = level.getEntitiesOfClass(CrystalStriderEntity.class,
+            new net.minecraft.world.phys.AABB(crystal).inflate(8.0)).size();
+        com.veskorius.worldgen.ResonanceCrystalPocketFeature.seedStriders(
+            level, level.getRandom(), java.util.Set.of(crystal));
+        int after = level.getEntitiesOfClass(CrystalStriderEntity.class,
+            new net.minecraft.world.phys.AABB(crystal).inflate(8.0)).size();
+
+        helper.assertTrue(after > before,
+            "Une poche de cristal bordée d'air doit peupler au moins un Fileur — sans quoi "
+                + "l'espèce n'apparaît jamais (le spawn naturel ne la place pas) et le Crystal "
+                + "Roost devient inatteignable. Avant : " + before + ", après : " + after);
+        helper.succeed();
+    }
+
     /** Le bébé issu de la reproduction est bien un autre Fileur de Cristal. */
     @GameTest(template = EMPTY, timeoutTicks = 40)
     public static void striderBreedsIntoStrider(GameTestHelper helper) {

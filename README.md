@@ -118,7 +118,7 @@ ce fichier.
 - **Récolte de spore** : la Resonance Veined Stone pousse un `resonance_spore` (état `spored`) sur
   une face exposée en faible luminosité, récolté au clic droit (sans casser la pierre), puis
   repousse — la reproduction du Fileur devient jouable en survie. Taux de pousse configurable.
-- Harnais `GameTest` : **103 tests** (machines, augments, automatisation d'objets, Codex, harmoniques, structures… +
+- Harnais `GameTest` : **104 tests** (machines, augments, automatisation d'objets, Codex, harmoniques, structures… +
   Custode, défense de site, récolte de spore, amorçage T2 garanti, défauts de config),
   `./gradlew runGameTestServer`. Le serveur de test charge tout le datapack sans erreur. Ce qui est
   **visuel ou réseau** (rendu des GUI et du HUD, particules, coupole, génération réelle des

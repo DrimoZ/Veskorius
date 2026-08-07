@@ -43,6 +43,30 @@ blocs d'un Roost nourri, celui-ci génère passivement 1 Raw Resonance Crystal t
 secondes — un deuxième mécanisme d'obtention, tout aussi lent, pensé comme complément et non
 remplacement du minage.
 
+### Comment il apparaît réellement (corrigé le 2026-08-06)
+
+> **Le Fileur est peuplé PAR LA FEATURE de poche de cristal, pas par la table de spawn.**
+> Une poche sur trois (`strider_chance`, data-driven) abrite 1 à 2 individus.
+
+Le spawn naturel ne pouvait pas marcher, et c'est **mesuré sur le code vanilla**, pas supposé :
+
+| Chemin | Pourquoi il échoue |
+|---|---|
+| Génération de monde | `NaturalSpawner.spawnMobsForChunkGeneration` — le chemin qui peuple un monde en animaux passifs — choisit ses positions avec `getTopNonCollidingPos`, c'est-à-dire **en surface**. La règle de placement du Fileur exige Y ≤ 0 : elle refuse donc chaque tentative. |
+| Spawn à l'exécution | `spawnForChunk` ne tente les catégories persistantes que quand `gameTime % 400 == 0`, et `MobCategory.CREATURE` a un plafond de **10** individus avec `isPersistent = true` — un plafond que la faune de surface, qui ne despawn jamais, occupe en permanence. |
+
+Conséquence : l'espèce n'apparaissait jamais, et **tout le Crystal Roost était du contenu
+inatteignable** puisqu'il exige un Fileur à moins de 6 blocs.
+
+Peupler par la feature colle d'ailleurs mieux au design que la table de spawn : ce fichier dit
+« faune des poches de cristal », donc le Fileur doit être **dans** une poche, pas là où l'algorithme
+de spawn veut bien le mettre. Une poche sur trois seulement : les rencontrer doit rester une
+trouvaille, et qui veut un cheptel passe par la reproduction au spore.
+
+L'entrée de spawn naturel est **conservée** (un filet d'eau très lent, et un point d'accroche pour
+un datapack qui voudrait la retoucher), mais elle n'est plus ce sur quoi la progression repose.
+Un GameTest — `crystalPocketSeedsStriders` — verrouille le chemin qui compte.
+
 ## Custode Archiviste (mini-boss optionnel)
 
 Gardien d'élite qui protège la salle profonde de l'Archive Régionale, séparée de la salle de

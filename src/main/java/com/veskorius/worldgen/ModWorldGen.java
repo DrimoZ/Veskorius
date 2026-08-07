@@ -46,6 +46,22 @@ public final class ModWorldGen {
     /** ~15% of shell blocks are a brushable flux crust (04-Materials.md). */
     private static final float FLUX_CHANCE = 0.15f;
     /**
+     * Une poche sur trois abrite des Fileurs de Cristal.
+     *
+     * <p>C'est ce qui rend l'espèce réellement présente : elle est déclarée en
+     * {@code MobCategory.CREATURE} avec un spawn borné à Y ≤ 0, or la génération de monde
+     * ne place les CREATURE qu'en SURFACE et le spawn à l'exécution est plafonné à 10
+     * individus persistants — saturés en permanence par la faune de surface. Le Fileur
+     * n'apparaissait donc jamais, et le Crystal Roost, qui en exige un à moins de
+     * 6 blocs, était du contenu inatteignable. Détail dans
+     * {@link ResonanceCrystalPocketFeature#seedStriders}.
+     *
+     * <p>Une poche sur trois plutôt que toutes : les rencontrer doit rester une trouvaille,
+     * et un joueur qui veut un cheptel passe par la reproduction (au {@code resonance_spore}),
+     * pas par le ratissage de poches.
+     */
+    private static final float STRIDER_CHANCE = 0.34f;
+    /**
      * Pocket rarity: one attempt on average every {@code POCKET_RARITY} chunks (not
      * several per chunk). Tuned so pockets are a bit rarer than diamond — a pocket
      * is still a large node (several crystals + shell), so rare is not stingy.
@@ -78,7 +94,7 @@ public final class ModWorldGen {
         // The vanilla ore feature would only make the cluster, without the shell.
         context.register(RESONANCE_CRYSTAL_POCKET_CF,
             new ConfiguredFeature<>(ModFeatures.CRYSTAL_POCKET.get(),
-                new CrystalPocketConfiguration(CRYSTAL_TRIES, SHELL_THICKNESS, FLUX_CHANCE)));
+                new CrystalPocketConfiguration(CRYSTAL_TRIES, SHELL_THICKNESS, FLUX_CHANCE, STRIDER_CHANCE)));
     }
 
     public static void bootstrapPlacedFeatures(BootstrapContext<PlacedFeature> context) {
@@ -101,10 +117,16 @@ public final class ModWorldGen {
             HolderSet.direct(placed.getOrThrow(RESONANCE_CRYSTAL_POCKET_PF)),
             GenerationStep.Decoration.UNDERGROUND_ORES));
 
-        // Neutral fauna of the pockets: the Crystal Strider (09-Entities.md). Added to
-        // the CREATURE spawns of the whole Overworld; the Y 0/-40 band restriction is
-        // in the spawn placement rule (ModEntityEvents). Weight/count to validate in
-        // playtest (underground creature spawning is limited by the vanilla algorithm).
+        // Fauna of the pockets: the Crystal Strider (09-Entities.md).
+        //
+        // This spawn entry is kept, but it is NOT what actually populates the world —
+        // measured against the vanilla spawner, it can't be: world generation places
+        // CREATURE mobs at the SURFACE (getTopNonCollidingPos), which the Y ≤ 0 rule
+        // rejects; and runtime CREATURE spawning is gated on `gameTime % 400 == 0` and
+        // capped at 10 PERSISTENT individuals — a cap surface animals hold permanently.
+        // The Striders are therefore seeded with the crystal pockets themselves (see
+        // ResonanceCrystalPocketFeature#seedStriders). This entry only remains as the
+        // slow trickle it always was, and so that a datapack can retune it.
         context.register(ADD_CRYSTAL_STRIDER, new BiomeModifiers.AddSpawnsBiomeModifier(
             biomes.getOrThrow(BiomeTags.IS_OVERWORLD),
             List.of(new MobSpawnSettings.SpawnerData(ModEntities.CRYSTAL_STRIDER.get(), 8, 1, 3))));
