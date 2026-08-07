@@ -54,6 +54,15 @@ public class ModDataGenerators {
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
+        // Registres datapack du mod (worldgen, structures, types de dégâts). Déclaré
+        // AVANT les autres providers parce qu'il expose un lookup ENRICHI de nos propres
+        // entrées : le lookup nu de l'événement ne connaît que le vanilla, donc tout
+        // provider qui référence une de nos structures (les advancements de découverte)
+        // échouerait sur « Missing element veskorius:modest_dwelling ».
+        DatapackBuiltinEntriesProvider datapackEntries = new DatapackBuiltinEntriesProvider(
+            output, lookupProvider, DATAPACK_ENTRIES, Set.of(Veskorius.MOD_ID));
+        CompletableFuture<HolderLookup.Provider> withModEntries = datapackEntries.getRegistryProvider();
+
         generator.addProvider(event.includeClient(),
             new ModBlockStateProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(),
@@ -70,9 +79,9 @@ public class ModDataGenerators {
         generator.addProvider(event.includeServer(),
             new ModStructurePieceProvider(output));
         generator.addProvider(event.includeServer(),
-            new ModStructureTagsProvider(output, lookupProvider, existingFileHelper));
+            new ModStructureTagsProvider(output, withModEntries, existingFileHelper));
         generator.addProvider(event.includeServer(),
-            new ModAdvancementProvider(output, lookupProvider, existingFileHelper));
+            new ModAdvancementProvider(output, withModEntries, existingFileHelper));
         generator.addProvider(event.includeServer(),
             new LootTableProvider(output, Set.of(),
                 List.of(
@@ -92,8 +101,8 @@ public class ModDataGenerators {
         generator.addProvider(event.includeServer(),
             new ModItemTagsProvider(output, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
 
-        // Worldgen (poches de cristal) + biome modifier, via les registres datapack.
-        generator.addProvider(event.includeServer(),
-            new DatapackBuiltinEntriesProvider(output, lookupProvider, DATAPACK_ENTRIES, Set.of(Veskorius.MOD_ID)));
+        // Worldgen (poches de cristal) + biome modifier + structures, via les registres
+        // datapack. L'instance est créée en tête de méthode : voir la note là-haut.
+        generator.addProvider(event.includeServer(), datapackEntries);
     }
 }

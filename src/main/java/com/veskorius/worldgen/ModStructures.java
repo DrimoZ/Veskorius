@@ -69,8 +69,15 @@ public final class ModStructures {
         HolderGetter<StructureTemplatePool> pools = context.lookup(Registries.TEMPLATE_POOL);
         Holder<StructureTemplatePool> empty = pools.getOrThrow(Pools.EMPTY);
 
+        // L'Habitation Modeste a DEUX plans, tirés au sort à poids égal. C'est le premier
+        // bénéfice concret du choix jigsaw (16 §2) : varier ne coûte qu'une entrée de plus
+        // dans le pool, aucune plomberie. Deux plans suffisent à casser l'impression de
+        // bâtiment tamponné — c'est la structure la plus commune du mod, on la reverra
+        // souvent.
         context.register(MODEST_DWELLING_POOL, new StructureTemplatePool(empty,
-            List.of(Pair.of(StructurePoolElement.single(id("modest_dwelling").toString()), 1)),
+            List.of(
+                Pair.of(StructurePoolElement.single(id("modest_dwelling").toString()), 1),
+                Pair.of(StructurePoolElement.single(id("modest_dwelling_workshop").toString()), 1)),
             StructureTemplatePool.Projection.RIGID));
         context.register(OUTPOST_POOL, new StructureTemplatePool(empty,
             List.of(Pair.of(StructurePoolElement.single(id("outpost").toString()), 1)),

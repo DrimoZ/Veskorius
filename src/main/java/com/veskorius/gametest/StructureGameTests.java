@@ -27,7 +27,7 @@ public class StructureGameTests {
 
     private static final String FIELD_ARENA = "field_arena";
 
-    /** Coin de pose de la pièce (elle fait 7×5×7 ; l'arène en fait 21). */
+    /** Coin de pose de la pièce (la plus grande fait 13×7×11 ; l'arène en fait 21). */
     private static final BlockPos ANCHOR = new BlockPos(2, 1, 2);
 
     /**
@@ -39,7 +39,8 @@ public class StructureGameTests {
     public static void outpostPieceCarriesConsoleChestAndGuardian(GameTestHelper helper) {
         place(helper, "outpost");
 
-        helper.assertBlockPresent(ModBlocks.ATTUNEMENT_CONSOLE.get(), ANCHOR.offset(3, 1, 3));
+        // La console trône sur son estrade centrale (13×7×11, cf. ModStructurePieceProvider).
+        helper.assertBlockPresent(ModBlocks.ATTUNEMENT_CONSOLE.get(), ANCHOR.offset(6, 3, 5));
         helper.assertBlockPresent(Blocks.CHEST, ANCHOR.offset(1, 1, 1));
         // Coquille en pierre veinée (un mur d'angle).
         helper.assertBlockPresent(ModBlocks.RESONANCE_VEINED_STONE.get(), ANCHOR.offset(0, 0, 0));
@@ -59,8 +60,8 @@ public class StructureGameTests {
     public static void dwellingPieceIsLootRoomOnly(GameTestHelper helper) {
         place(helper, "modest_dwelling");
 
-        helper.assertBlockPresent(Blocks.CHEST, ANCHOR.offset(1, 1, 1));
-        helper.assertBlockNotPresent(ModBlocks.ATTUNEMENT_CONSOLE.get(), ANCHOR.offset(3, 1, 3));
+        helper.assertBlockPresent(Blocks.CHEST, ANCHOR.offset(8, 1, 7));
+        helper.assertBlockNotPresent(ModBlocks.ATTUNEMENT_CONSOLE.get(), ANCHOR.offset(6, 3, 5));
         helper.assertEntityNotPresent(ModEntities.CUSTODE.get());
         helper.succeed();
     }
@@ -118,7 +119,7 @@ public class StructureGameTests {
     @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
     public static void pieceInteriorIsHollow(GameTestHelper helper) {
         place(helper, "modest_dwelling");
-        BlockState interior = helper.getBlockState(ANCHOR.offset(3, 2, 3));
+        BlockState interior = helper.getBlockState(ANCHOR.offset(5, 3, 4));
         helper.assertTrue(interior.isAir(), "L'intérieur de la pièce doit être creux, vaut : "
             + interior);
         helper.succeed();

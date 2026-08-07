@@ -159,6 +159,21 @@ public class ModLanguageProvider extends LanguageProvider {
         // Advancements (feedback, tâche 10).
         add("advancements.veskorius.tier1_awakening.title", "The Awakening");
         add("advancements.veskorius.tier1_awakening.description", "Pick up a Raw Resonance Crystal");
+        add("advancements.veskorius.find_dwelling.title", "Someone Lived Here");
+        add("advancements.veskorius.find_dwelling.description",
+            "Step inside a Modest Dwelling. The furniture is still in place — they left in a hurry.");
+        add("advancements.veskorius.find_outpost.title", "The Dead Machine");
+        add("advancements.veskorius.find_outpost.description",
+            "Reach an Outpost. Something in the rubble is still listening.");
+        add("advancements.veskorius.first_chassis.title", "Salvaged Frame");
+        add("advancements.veskorius.first_chassis.description",
+            "Build a Fractured Chassis. Every machine you will ever make starts as one of these.");
+        add("advancements.veskorius.first_field.title", "No Wires");
+        add("advancements.veskorius.first_field.description",
+            "Place a Field Emitter. Power now travels through the air, and only so far.");
+        add("advancements.veskorius.first_strider.title", "Something Still Grows");
+        add("advancements.veskorius.first_strider.description",
+            "Harvest a Resonance Spore. The Crystal Striders will follow it anywhere.");
         add("advancements.veskorius.tier2_field.title", "Short Network");
         add("advancements.veskorius.tier2_field.description", "Restore the field blueprint at an Outpost console");
 

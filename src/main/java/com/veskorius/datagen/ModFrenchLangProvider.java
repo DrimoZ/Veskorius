@@ -203,6 +203,21 @@ public class ModFrenchLangProvider extends LanguageProvider {
         // Advancements.
         add("advancements.veskorius.tier1_awakening.title", "L'Éveil");
         add("advancements.veskorius.tier1_awakening.description", "Ramasser un Cristal de Résonance Brut");
+        add("advancements.veskorius.find_dwelling.title", "Quelqu'un vivait ici");
+        add("advancements.veskorius.find_dwelling.description",
+            "Entrer dans une Habitation Modeste. Le mobilier est encore en place — ils sont partis vite.");
+        add("advancements.veskorius.find_outpost.title", "La machine morte");
+        add("advancements.veskorius.find_outpost.description",
+            "Atteindre un Avant-poste. Quelque chose, sous les gravats, écoute encore.");
+        add("advancements.veskorius.first_chassis.title", "Châssis récupéré");
+        add("advancements.veskorius.first_chassis.description",
+            "Fabriquer un Châssis Fracturé. Toutes vos machines commenceront par là.");
+        add("advancements.veskorius.first_field.title", "Sans un fil");
+        add("advancements.veskorius.first_field.description",
+            "Poser un Field Emitter. L'énergie passe désormais par l'air — et pas plus loin.");
+        add("advancements.veskorius.first_strider.title", "Quelque chose pousse encore");
+        add("advancements.veskorius.first_strider.description",
+            "Récolter un Resonance Spore. Les Fileurs de Cristal le suivront n'importe où.");
         add("advancements.veskorius.tier2_field.title", "Réseau court");
         add("advancements.veskorius.tier2_field.description", "Restaurer le plan du champ à une console d'Avant-poste");
 

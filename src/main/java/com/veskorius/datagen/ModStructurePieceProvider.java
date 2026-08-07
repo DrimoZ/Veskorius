@@ -47,12 +47,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  */
 public class ModStructurePieceProvider implements DataProvider {
 
-    /** Empreinte au sol : salle 7×7, hauteur intérieure 4 (mur y=0 à y=4). */
-    private static final int W = 7;
-    private static final int H = 5;
-    private static final int D = 7;
-
     public static final String MODEST_DWELLING = "modest_dwelling";
+    public static final String MODEST_DWELLING_WORKSHOP = "modest_dwelling_workshop";
     public static final String OUTPOST = "outpost";
 
     private final PackOutput.PathProvider pathProvider;
@@ -66,56 +62,218 @@ public class ModStructurePieceProvider implements DataProvider {
     public CompletableFuture<?> run(CachedOutput cache) {
         return CompletableFuture.allOf(
             write(cache, MODEST_DWELLING, dwelling()),
+            write(cache, MODEST_DWELLING_WORKSHOP, dwellingWorkshop()),
             write(cache, OUTPOST, outpost()));
     }
 
-    /** Habitation Modeste : salle + coffre de quotidien, aucune machine (08-Structures.md). */
+    // --- Matériaux --------------------------------------------------------------
+    // Une palette restreinte et constante fait la « veskorianité » d'un bâtiment mieux
+    // qu'un catalogue de blocs : on doit reconnaître leur maçonnerie avant de lire un
+    // panneau. Pierre veinée pour la structure, deepslate taillée pour l'appareillage,
+    // cuivre pour tout ce qui était mécanique.
+
+    private static final BlockState VEINED = ModBlocks.RESONANCE_VEINED_STONE.get().defaultBlockState();
+    private static final BlockState AIR = Blocks.CAVE_AIR.defaultBlockState();
+    private static final BlockState FLOOR = Blocks.POLISHED_DEEPSLATE.defaultBlockState();
+    private static final BlockState FLOOR_ALT = Blocks.DEEPSLATE_TILES.defaultBlockState();
+    private static final BlockState PILLAR = Blocks.DEEPSLATE_BRICKS.defaultBlockState();
+    private static final BlockState RUBBLE = Blocks.COBBLED_DEEPSLATE.defaultBlockState();
+    private static final BlockState CRACKED = Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState();
+    private static final BlockState COPPER = Blocks.WEATHERED_CUT_COPPER.defaultBlockState();
+    private static final BlockState LAMP = Blocks.LANTERN.defaultBlockState();
+
+    /**
+     * <b>Habitation Modeste, variante « logis ».</b> 11×6×9.
+     *
+     * <p>Le dossier demande « petites pièces, mobilier simple, jamais de machine » — donc
+     * une pièce de vie, pas un donjon : un sol dallé, une alcôve de couchage séparée par
+     * un muret, un âtre, et un plafond partiellement effondré qui a laissé des gravats au
+     * sol. C'est l'effondrement qui raconte l'histoire ; le mobilier intact dit qu'on est
+     * parti vite.
+     */
     private static CompoundTag dwelling() {
-        TemplateBuilder b = new TemplateBuilder(W, H, D);
-        shell(b);
-        b.setLootChest(1, 1, 1, ModWorldGen.MODEST_DWELLING_LOOT);
-        // Mobilier déterministe (le vrai bâtiment est Phase 6) : une habitation vécue.
-        b.set(5, 1, 5, Blocks.CRAFTING_TABLE.defaultBlockState());
-        b.set(5, 1, 1, Blocks.BARREL.defaultBlockState());
-        b.set(1, 1, 5, Blocks.BOOKSHELF.defaultBlockState());
+        TemplateBuilder b = new TemplateBuilder(11, 6, 9);
+        room(b, 11, 6, 9);
+        floorPattern(b, 1, 1, 10, 8);
+
+        // Alcôve de couchage, fermée par un muret bas plutôt qu'un mur plein : la pièce
+        // reste lisible d'un coup d'œil en entrant.
+        for (int z = 1; z <= 3; z++) {
+            b.set(4, 1, z, PILLAR);
+        }
+        b.set(4, 2, 2, PILLAR);
+        b.set(1, 1, 1, Blocks.RED_BED.defaultBlockState());
+        b.set(2, 1, 1, Blocks.BOOKSHELF.defaultBlockState());
+        b.set(1, 1, 3, Blocks.BARREL.defaultBlockState());
+
+        // Coin de vie : établi, âtre, réserve.
+        b.setLootChest(8, 1, 7, ModWorldGen.MODEST_DWELLING_LOOT);
+        b.set(6, 1, 7, Blocks.CRAFTING_TABLE.defaultBlockState());
+        b.set(9, 1, 4, Blocks.FURNACE.defaultBlockState());
+        b.set(8, 1, 1, Blocks.CAULDRON.defaultBlockState());
+        b.set(6, 1, 3, Blocks.FLOWER_POT.defaultBlockState());
+
+        hangingLamps(b, 6, new int[][] {{3, 4}, {8, 4}});
+        collapse(b, 11, 6, 9, 0x5EED1);
+        doorway(b, 5, 8, 11, 9);
         return b.build();
     }
 
     /**
-     * Avant-poste : salle + coffre d'amorçage T2 + <b>console d'attunement</b> (porte du
-     * T2) + un <b>Custode</b> gardien persistant intégré à la pièce (08/09). Le blueprint
-     * vient de la console, jamais du coffre.
+     * <b>Habitation Modeste, variante « atelier de famille ».</b> 9×6×11.
+     *
+     * <p>Deuxième entrée du même pool : le générateur en tire une au hasard. Deux plans
+     * suffisent à casser l'impression de bâtiment tamponné — c'est le premier bénéfice
+     * concret du choix « structures en jigsaw » (`16` §2), et il ne coûte qu'une pièce de
+     * plus, aucune ligne de plomberie.
+     */
+    private static CompoundTag dwellingWorkshop() {
+        TemplateBuilder b = new TemplateBuilder(9, 6, 11);
+        room(b, 9, 6, 11);
+        floorPattern(b, 1, 1, 8, 10);
+
+        // Deux rangées de piliers : l'espace se lit comme une halle, pas comme une boîte.
+        for (int z = 3; z <= 7; z += 2) {
+            b.set(2, 1, z, PILLAR);
+            b.set(2, 2, z, PILLAR);
+            b.set(6, 1, z, PILLAR);
+            b.set(6, 2, z, PILLAR);
+        }
+
+        b.setLootChest(1, 1, 9, ModWorldGen.MODEST_DWELLING_LOOT);
+        b.set(4, 1, 9, Blocks.CRAFTING_TABLE.defaultBlockState());
+        b.set(7, 1, 9, Blocks.BARREL.defaultBlockState());
+        b.set(1, 1, 1, Blocks.RED_BED.defaultBlockState());
+        b.set(7, 1, 1, Blocks.BOOKSHELF.defaultBlockState());
+        b.set(4, 1, 5, Blocks.CAULDRON.defaultBlockState());
+
+        hangingLamps(b, 6, new int[][] {{4, 3}, {4, 8}});
+        collapse(b, 9, 6, 11, 0x5EED2);
+        doorway(b, 4, 10, 9, 11);
+        return b.build();
+    }
+
+    /**
+     * <b>Avant-poste.</b> 13×7×11 — le plus grand des trois, et le seul à mériter de la
+     * hauteur : c'est la porte du T2, le joueur doit sentir en entrant qu'il change
+     * d'échelle.
+     *
+     * <p>Composition : la <b>console d'attunement</b> sur une estrade au centre, sous un
+     * puits de plafond ; l'atelier contre les murs ; des gravats et de la maçonnerie
+     * fissurée partout ailleurs — le dossier dit « une machine morte parmi des gravats »,
+     * donc les gravats doivent être visibles avant la console. Un Custode monte la garde.
      */
     private static CompoundTag outpost() {
-        TemplateBuilder b = new TemplateBuilder(W, H, D);
-        shell(b);
+        TemplateBuilder b = new TemplateBuilder(13, 7, 11);
+        room(b, 13, 7, 11);
+        floorPattern(b, 1, 1, 12, 10);
+
+        // Estrade centrale : trois marches de large, la console au sommet. Le relief
+        // désigne la pièce maîtresse sans qu'on ait à l'éclairer davantage.
+        for (int x = 4; x <= 8; x++) {
+            for (int z = 3; z <= 7; z++) {
+                b.set(x, 1, z, PILLAR);
+            }
+        }
+        for (int x = 5; x <= 7; x++) {
+            for (int z = 4; z <= 6; z++) {
+                b.set(x, 2, z, FLOOR_ALT);
+            }
+        }
+        b.set(6, 3, 5, ModBlocks.ATTUNEMENT_CONSOLE.get().defaultBlockState());
+
+        // Piliers de coin en cuivre oxydé : la trace de l'appareillage démonté.
+        for (int[] c : new int[][] {{2, 2}, {10, 2}, {2, 8}, {10, 8}}) {
+            for (int y = 1; y <= 4; y++) {
+                b.set(c[0], y, c[1], y == 4 ? COPPER : PILLAR);
+            }
+        }
+
+        // L'atelier, contre les murs.
         b.setLootChest(1, 1, 1, ModWorldGen.OUTPOST_LOOT);
-        b.set(3, 1, 3, ModBlocks.ATTUNEMENT_CONSOLE.get().defaultBlockState());
+        b.set(1, 1, 3, Blocks.SMITHING_TABLE.defaultBlockState());
         b.set(1, 1, 5, Blocks.FURNACE.defaultBlockState());
-        b.set(5, 1, 1, Blocks.SMITHING_TABLE.defaultBlockState());
-        b.set(5, 1, 5, Blocks.BARREL.defaultBlockState());
+        b.set(11, 1, 3, Blocks.BARREL.defaultBlockState());
+        b.set(11, 1, 5, Blocks.GRINDSTONE.defaultBlockState());
+        b.set(11, 1, 7, Blocks.CRAFTING_TABLE.defaultBlockState());
+
+        hangingLamps(b, 7, new int[][] {{3, 5}, {9, 5}, {6, 2}, {6, 8}});
+        collapse(b, 13, 7, 11, 0x5EED3);
+        doorway(b, 6, 10, 13, 11);
+
         // Gardien du site : persistant (ne despawn jamais), réactif seulement de près.
         CompoundTag custode = new CompoundTag();
         custode.putString("id", "veskorius:custode");
         custode.putBoolean("PersistenceRequired", true);
-        b.entity(4.5, 1.0, 4.5, 4, 1, 4, custode);
+        b.entity(9.5, 1.0, 5.5, 9, 1, 5, custode);
         return b.build();
     }
 
-    /** Coquille pleine : murs + sol + plafond en pierre veinée, intérieur en air. */
-    private static void shell(TemplateBuilder b) {
-        BlockState wall = ModBlocks.RESONANCE_VEINED_STONE.get().defaultBlockState();
-        BlockState air = Blocks.CAVE_AIR.defaultBlockState();
-        for (int x = 0; x < W; x++) {
-            for (int y = 0; y < H; y++) {
-                for (int z = 0; z < D; z++) {
-                    boolean edge = x == 0 || x == W - 1 || z == 0 || z == D - 1;
-                    boolean floorOrCeil = y == 0 || y == H - 1;
-                    // Intérieur en air : la pièce est creusée dans la roche souterraine.
-                    b.set(x, y, z, edge || floorOrCeil ? wall : air);
+    // --- Vocabulaire de construction --------------------------------------------
+
+    /** Coquille : murs de pierre veinée, sol et plafond pleins, intérieur creusé. */
+    private static void room(TemplateBuilder b, int w, int h, int d) {
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                for (int z = 0; z < d; z++) {
+                    boolean edge = x == 0 || x == w - 1 || z == 0 || z == d - 1;
+                    b.set(x, y, z, edge || y == 0 || y == h - 1 ? VEINED : AIR);
                 }
             }
         }
+    }
+
+    /** Sol en damier de deux dalles : de l'appareillage, pas une nappe de pierre. */
+    private static void floorPattern(TemplateBuilder b, int x0, int z0, int x1, int z1) {
+        for (int x = x0; x < x1; x++) {
+            for (int z = z0; z < z1; z++) {
+                b.set(x, 0, z, (x + z) % 2 == 0 ? FLOOR : FLOOR_ALT);
+            }
+        }
+    }
+
+    /** Lanternes suspendues au plafond : un bâtiment habité s'éclaire par le haut. */
+    private static void hangingLamps(TemplateBuilder b, int h, int[][] spots) {
+        for (int[] s : spots) {
+            b.set(s[0], h - 2, s[1], LAMP.setValue(net.minecraft.world.level.block.LanternBlock.HANGING, true));
+        }
+    }
+
+    /**
+     * Effondrement : quelques blocs de plafond remplacés par de la roche, et les gravats
+     * correspondants au sol. C'est ce qui distingue une ruine d'une maison vide — et c'est
+     * déterministe (graine fixe) pour que la pièce reste reproductible.
+     */
+    private static void collapse(TemplateBuilder b, int w, int h, int d, int seed) {
+        java.util.Random rand = new java.util.Random(seed);
+        for (int n = 0; n < 6; n++) {
+            int x = 1 + rand.nextInt(w - 2);
+            int z = 1 + rand.nextInt(d - 2);
+            b.set(x, h - 1, z, rand.nextBoolean() ? RUBBLE : CRACKED);
+            if (rand.nextBoolean()) {
+                b.set(x, 1, z, RUBBLE);
+            }
+        }
+        // Maçonnerie fissurée au pied des murs : l'usure part toujours du bas.
+        for (int n = 0; n < 8; n++) {
+            int x = 1 + rand.nextInt(w - 2);
+            b.set(x, 1, rand.nextBoolean() ? 0 : d - 1, CRACKED);
+        }
+    }
+
+    /**
+     * Percée d'entrée dans un mur, prolongée d'un pas vers l'extérieur.
+     *
+     * <p>Sans elle, la pièce est une bulle scellée : le joueur tombe dessus en minant et
+     * n'a aucun signe de l'avoir trouvée. Une ouverture donne une chance à une grotte de
+     * la croiser, et fait qu'on ENTRE quelque part au lieu de percer un mur.
+     */
+    private static void doorway(TemplateBuilder b, int x, int z, int w, int d) {
+        for (int y = 1; y <= 2; y++) {
+            b.set(x, y, z, AIR);
+            b.set(x, y, z + 1 < d ? z + 1 : z, AIR);
+        }
+        b.set(x, 3, z, CRACKED);
     }
 
     // --- Construction du NBT de template --------------------------------------
