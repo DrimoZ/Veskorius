@@ -33,18 +33,18 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 public class StructureGameTests {
 
     private static final String FIELD_ARENA = "field_arena";
-    /** Arène élargie : l'Avant-poste fait 21×20×21 et ne tient pas dans 21³. */
+    /** Arène élargie : l'Avant-poste fait 33×26×33 et ne tient dans aucune arène standard. */
     private static final String PIECE_ARENA = "piece_arena";
 
     private static final BlockPos ANCHOR = new BlockPos(1, 1, 1);
 
     // Repères de la pièce de départ de l'Avant-poste (voir ModStructurePieceProvider) :
     // le chemin critique du T2, celui qui n'a le droit d'être ni tiré au sort ni usé.
-    private static final BlockPos CONSOLE = ANCHOR.offset(10, 2, 17);
-    private static final BlockPos BULKHEAD = ANCHOR.offset(10, 1, 13);
-    private static final BlockPos ANCIENT_EMITTER = ANCHOR.offset(14, 1, 10);
-    private static final BlockPos RESERVE_CHEST = ANCHOR.offset(12, 1, 10);
-    private static final BlockPos BOOTSTRAP_CHEST = ANCHOR.offset(3, 1, 11);
+    private static final BlockPos CONSOLE = ANCHOR.offset(26, 4, 21);
+    private static final BlockPos BULKHEAD = ANCHOR.offset(19, 3, 21);
+    private static final BlockPos ANCIENT_EMITTER = ANCHOR.offset(11, 4, 21);
+    private static final BlockPos RESERVE_CHEST = ANCHOR.offset(13, 3, 21);
+    private static final BlockPos BOOTSTRAP_CHEST = ANCHOR.offset(5, 3, 16);
 
     // =====================================================================
     // Le chemin critique
@@ -70,7 +70,7 @@ public class StructureGameTests {
         helper.assertBlockPresent(Blocks.CHEST, BOOTSTRAP_CHEST);
         // Maçonnerie veskorienne, pas du deepslate vanilla : la coquille elle-même doit
         // dire de quelle civilisation on visite les ruines.
-        helper.assertBlockPresent(ModBlocks.VEINED_STONE_BRICKS.get(), ANCHOR.offset(0, 0, 0));
+        helper.assertBlockPresent(ModBlocks.VEINED_STONE_BRICKS.get(), ANCHOR.offset(3, 16, 26));
         helper.assertEntityPresent(ModEntities.CUSTODE.get());
         assertChestHasLootTable(helper, BOOTSTRAP_CHEST);
         helper.succeed();
@@ -108,9 +108,10 @@ public class StructureGameTests {
     public static void optionalWingsNeverCarryTheCriticalPath(GameTestHelper helper) {
         for (String wing : new String[] {
             "outpost_wing_store", "outpost_wing_quarters", "outpost_wing_collapsed",
-            "hamlet", "hamlet_dwelling", "hamlet_workshop", "hamlet_collapsed"}) {
+            "hamlet", "hamlet_dwelling", "hamlet_workshop", "hamlet_cistern",
+            "hamlet_collapsed", "ruin_marker", "ruin_marker_pillar", "sunken_chamber"}) {
             place(helper, wing);
-            for (BlockPos pos : allPositions(helper, 12, 8, 12)) {
+            for (BlockPos pos : allPositions(helper, 13, 9, 13)) {
                 BlockState state = helper.getBlockState(pos);
                 helper.assertTrue(!state.is(ModBlocks.ATTUNEMENT_CONSOLE.get())
                         && !state.is(ModBlocks.RESONANCE_BULKHEAD.get())
@@ -121,6 +122,82 @@ public class StructureGameTests {
             }
         }
         helper.succeed();
+    }
+
+    /**
+     * <b>Le donjon se traverse réellement, de l'entrée à la console.</b>
+     *
+     * <p>C'est le test le plus important du fichier, et celui qui manquait. Un donjon
+     * écrit par code peut être <b>parfaitement valide et infranchissable</b> : une galerie
+     * qui ne perce pas le mur qu'elle est censée relier, un escalier auquel il manque un
+     * bloc de dégagement au sommet, une salle murée par le pan de voûte qu'on vient d'y
+     * faire tomber. Rien ne casse, rien ne lève d'exception — la structure se génère
+     * magnifiquement, et le joueur se retrouve devant de la roche. Ces trois défauts-là
+     * étaient présents, et aucune relecture ne les avait vus ; c'est un parcours
+     * automatique qui les a trouvés.
+     *
+     * <p>On parcourt donc les cases <b>où un joueur tient debout</b> (un bloc de sol, deux
+     * d'air), depuis le vestibule, et on exige d'atteindre la console. Le sas est traité
+     * comme franchissable : il l'est, une fois l'émetteur réveillé, et ce n'est pas ce que
+     * ce test mesure.
+     */
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 200)
+    public static void outpostIsWalkableFromEntranceToConsole(GameTestHelper helper) {
+        place(helper, "outpost");
+        BlockPos start = ANCHOR.offset(21, 16, 6);   // vestibule, contre le mur ouest
+        BlockPos goal = ANCHOR.offset(25, 4, 21);    // devant la console, sur l'estrade
+
+        helper.assertTrue(standable(helper, start), "Le point de départ doit être praticable");
+        java.util.Set<BlockPos> seen = new java.util.HashSet<>();
+        java.util.ArrayDeque<BlockPos> queue = new java.util.ArrayDeque<>();
+        seen.add(start);
+        queue.add(start);
+        while (!queue.isEmpty()) {
+            BlockPos at = queue.poll();
+            if (at.equals(goal)) {
+                helper.succeed();
+                return;
+            }
+            for (net.minecraft.core.Direction dir : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+                // Un joueur monte d'un bloc et descend de plusieurs : on autorise +1 / -3,
+                // ce qui est exactement ce que permet une marche et ce que pardonne une chute.
+                for (int dy = 1; dy >= -3; dy--) {
+                    BlockPos next = at.relative(dir).offset(0, dy, 0);
+                    if (seen.contains(next) || !inPiece(next) || !standable(helper, next)) {
+                        continue;
+                    }
+                    seen.add(next);
+                    queue.add(next);
+                    break;
+                }
+            }
+        }
+        helper.fail("La console n'est pas atteignable depuis le vestibule : le donjon est "
+            + "muré quelque part (" + seen.size() + " cases explorées)");
+    }
+
+    private static boolean inPiece(BlockPos p) {
+        return p.getX() >= 1 && p.getX() <= 33 && p.getY() >= 1 && p.getY() <= 26
+            && p.getZ() >= 1 && p.getZ() <= 33;
+    }
+
+    /** Une case tenable : un appui sous les pieds, et deux blocs libres au-dessus. */
+    private static boolean standable(GameTestHelper helper, BlockPos p) {
+        BlockState ground = helper.getBlockState(p.below());
+        if (!ground.isCollisionShapeFullBlock(helper.getLevel(), helper.absolutePos(p.below()))
+            && !ground.is(ModBlocks.VEINED_STONE_BRICK_SLAB.get())) {
+            return false;
+        }
+        return passable(helper, p) && passable(helper, p.above());
+    }
+
+    private static boolean passable(GameTestHelper helper, BlockPos p) {
+        BlockState state = helper.getBlockState(p);
+        // Le sas compte comme franchissable : il l'est une fois l'émetteur réveillé, et ce
+        // n'est pas ce que ce test mesure.
+        return state.isAir() || state.is(ModBlocks.RESONANCE_BULKHEAD.get())
+            || state.is(ModBlocks.DISSONANCE_BLOOM.get())
+            || state.is(Blocks.WATER);
     }
 
     /**
@@ -138,6 +215,7 @@ public class StructureGameTests {
         assertConnectors(helper, "outpost_wing_store", 2); // entrée + chaînage
         assertConnectors(helper, "hamlet", 4);         // quatre directions
         assertConnectors(helper, "hamlet_dwelling", 2);
+        assertConnectors(helper, "ruin_marker_pillar", 0); // une miette ne s'assemble à rien
         assertConnectors(helper, "outpost_cap", 1);    // le bouchon en a un, et un seul
         helper.succeed();
     }
@@ -169,7 +247,7 @@ public class StructureGameTests {
             com.veskorius.item.CodexEntries.OUTPOST_LOG_4,
         };
         for (int i = 0; i < expected.length; i++) {
-            BlockPos at = ANCHOR.offset(4 + i * 3, 8, 19);
+            BlockPos at = ANCHOR.offset(5 + i * 3, 16, 16);
             net.minecraft.world.level.block.entity.BlockEntity be = helper.getBlockEntity(at);
             helper.assertTrue(be instanceof net.minecraft.world.Container,
                 "Coffre d'archives attendu en " + at + ", vaut : " + be);
@@ -282,7 +360,7 @@ public class StructureGameTests {
     @GameTest(template = PIECE_ARENA, timeoutTicks = 40)
     public static void hamletCentreIsACommonPlace(GameTestHelper helper) {
         place(helper, "hamlet");
-        helper.assertBlockNotPresent(Blocks.CHEST, ANCHOR.offset(5, 1, 5));
+        helper.assertBlockNotPresent(Blocks.CHEST, ANCHOR.offset(6, 1, 6));
         helper.assertEntityNotPresent(ModEntities.CUSTODE.get());
         helper.succeed();
     }
@@ -291,8 +369,8 @@ public class StructureGameTests {
     @GameTest(template = PIECE_ARENA, timeoutTicks = 40)
     public static void hamletDwellingIsALootRoomOnly(GameTestHelper helper) {
         place(helper, "hamlet_dwelling");
-        helper.assertBlockPresent(Blocks.CHEST, ANCHOR.offset(4, 1, 9));
-        assertChestHasLootTable(helper, ANCHOR.offset(4, 1, 9));
+        helper.assertBlockPresent(Blocks.CHEST, ANCHOR.offset(5, 1, 8));
+        assertChestHasLootTable(helper, ANCHOR.offset(5, 1, 8));
         helper.assertEntityNotPresent(ModEntities.CUSTODE.get());
         helper.succeed();
     }
@@ -301,7 +379,7 @@ public class StructureGameTests {
     @GameTest(template = PIECE_ARENA, timeoutTicks = 40)
     public static void pieceInteriorIsHollow(GameTestHelper helper) {
         place(helper, "hamlet_dwelling");
-        BlockState interior = helper.getBlockState(ANCHOR.offset(4, 3, 5));
+        BlockState interior = helper.getBlockState(ANCHOR.offset(5, 2, 5));
         helper.assertTrue(interior.isAir(), "L'intérieur de la pièce doit être creux, vaut : "
             + interior);
         helper.succeed();

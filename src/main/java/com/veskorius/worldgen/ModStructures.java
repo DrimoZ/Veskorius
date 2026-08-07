@@ -76,6 +76,9 @@ public final class ModStructures {
     public static final ResourceKey<StructureTemplatePool> OUTPOST_WING_POOL = poolKey("outpost/wing");
     public static final ResourceKey<StructureTemplatePool> OUTPOST_CAP_POOL = poolKey("outpost/cap");
 
+    public static final ResourceKey<StructureTemplatePool> RUIN_MARKER_POOL = poolKey("ruin_marker");
+    public static final ResourceKey<StructureTemplatePool> SUNKEN_CHAMBER_POOL = poolKey("sunken_chamber");
+
     /**
      * Clé historique du Hameau. Le fichier de conception l'appelle « Habitation Modeste »
      * et le monde l'appelle {@code veskorius:modest_dwelling} : le nom de registre est
@@ -87,8 +90,24 @@ public final class ModStructures {
     public static final ResourceKey<Structure> MODEST_DWELLING = structureKey("modest_dwelling");
     public static final ResourceKey<Structure> OUTPOST = structureKey("outpost");
 
+    /**
+     * <b>Petites ruines.</b> Le monde n'avait que deux structures, toutes deux grandes —
+     * or une civilisation effondrée ne laisse pas deux bâtiments, elle laisse surtout des
+     * miettes. Ces deux-là sont minuscules et fréquentes. Leur rôle n'est pas de
+     * récompenser : c'est de faire qu'on croise du veskorien tout le temps, pour qu'une
+     * <i>vraie</i> structure se distingue par contraste au lieu d'apparaître de nulle part.
+     *
+     * <p>Elles sont volontairement <b>hors du tag {@code #locatable}</b> : les inclure
+     * noierait le mode Structures du Locator sous des bornes de trois blocs, et ferait
+     * perdre à l'outil ce qui fait sa valeur.
+     */
+    public static final ResourceKey<Structure> RUIN_MARKER = structureKey("ruin_marker");
+    public static final ResourceKey<Structure> SUNKEN_CHAMBER = structureKey("sunken_chamber");
+
     public static final ResourceKey<StructureSet> MODEST_DWELLING_SET = setKey("modest_dwelling");
     public static final ResourceKey<StructureSet> OUTPOST_SET = setKey("outpost");
+    public static final ResourceKey<StructureSet> RUIN_MARKER_SET = setKey("ruin_marker");
+    public static final ResourceKey<StructureSet> SUNKEN_CHAMBER_SET = setKey("sunken_chamber");
 
     /**
      * Profondeur d'assemblage. 5 laisse au Hameau ses quatre branches de trois logis, et
@@ -140,7 +159,18 @@ public final class ModStructures {
         context.register(HAMLET_HOUSE_POOL, rigid(pools.getOrThrow(HAMLET_CAP_POOL), List.of(
             Pair.of(StructurePoolElement.single(id("hamlet_dwelling").toString(), worn), 3),
             Pair.of(StructurePoolElement.single(id("hamlet_workshop").toString(), worn), 2),
+            Pair.of(StructurePoolElement.single(id("hamlet_cistern").toString(), worn), 1),
             Pair.of(StructurePoolElement.single(id("hamlet_collapsed").toString(), ruined), 2))));
+
+        // --- Petites ruines ---------------------------------------------------
+        // Une seule pièce, aucun connecteur : leur variété vient de leur NOMBRE et des
+        // processors, pas d'un assemblage. La borne est deux fois plus fréquente que le
+        // bout de galerie — c'est le plus petit signe, il doit être le plus courant.
+        context.register(RUIN_MARKER_POOL, rigid(empty, List.of(
+            Pair.of(StructurePoolElement.single(id("ruin_marker_pillar").toString(), ruined), 2),
+            Pair.of(StructurePoolElement.single(id("ruin_marker").toString(), ruined), 1))));
+        context.register(SUNKEN_CHAMBER_POOL, rigid(empty, List.of(
+            Pair.of(StructurePoolElement.single(id("sunken_chamber").toString(), ruined), 1))));
     }
 
     public static void bootstrapStructures(BootstrapContext<Structure> context) {
@@ -152,13 +182,20 @@ public final class ModStructures {
         // Y porte sur son PLANCHER : -20 à -6 le laisse entièrement entre -20 et 0, la
         // strate que 07-World-Generation.md lui assigne.
         context.register(MODEST_DWELLING, jigsaw(overworld,
-            pools.getOrThrow(HAMLET_POOL), -20, -6));
-        // Avant-poste : la pièce de départ fait 20 de haut. -40 à -22 la maintient donc
-        // exactement dans la strate « 0 à -40 » de 08-Structures.md, toit compris — une
-        // fourchette portant sur le plancher sans tenir compte de la hauteur ferait
-        // dépasser le bâtiment à l'air libre.
+            pools.getOrThrow(HAMLET_POOL), -20, -8));
+        // Petites ruines : peu profondes (on doit les croiser en creusant normalement) et
+        // sans exigence de strate — ce ne sont pas des lieux, ce sont des restes.
+        context.register(RUIN_MARKER, jigsaw(overworld,
+            pools.getOrThrow(RUIN_MARKER_POOL), -30, -6));
+        context.register(SUNKEN_CHAMBER, jigsaw(overworld,
+            pools.getOrThrow(SUNKEN_CHAMBER_POOL), -34, -12));
+        // Avant-poste : la pièce de départ fait 26 de haut depuis qu'elle porte deux
+        // niveaux voûtés et une coupole. -40 à -28 la maintient donc entièrement dans la
+        // strate « 0 à -40 » de 08-Structures.md, clé de voûte comprise — une fourchette
+        // portant sur le plancher sans tenir compte de la hauteur ferait dépasser le
+        // bâtiment à l'air libre.
         context.register(OUTPOST, jigsaw(overworld,
-            pools.getOrThrow(OUTPOST_POOL), -40, -22));
+            pools.getOrThrow(OUTPOST_POOL), -40, -28));
     }
 
     public static void bootstrapStructureSets(BootstrapContext<StructureSet> context) {
@@ -172,6 +209,16 @@ public final class ModStructures {
         context.register(OUTPOST_SET, new StructureSet(
             structures.getOrThrow(OUTPOST),
             new RandomSpreadStructurePlacement(32, 9, RandomSpreadType.LINEAR, 74_328_509)));
+
+        // Petites ruines : denses. La borne toutes les ~130 blocs, la chambre engloutie
+        // toutes les ~350 — assez pour qu'on en croise en creusant sans les chercher, ce
+        // qui est tout leur propos. À valider en playtest comme le reste.
+        context.register(RUIN_MARKER_SET, new StructureSet(
+            structures.getOrThrow(RUIN_MARKER),
+            new RandomSpreadStructurePlacement(8, 3, RandomSpreadType.LINEAR, 51_772_113)));
+        context.register(SUNKEN_CHAMBER_SET, new StructureSet(
+            structures.getOrThrow(SUNKEN_CHAMBER),
+            new RandomSpreadStructurePlacement(22, 8, RandomSpreadType.LINEAR, 66_910_447)));
     }
 
     private static StructureTemplatePool rigid(Holder<StructureTemplatePool> fallback,

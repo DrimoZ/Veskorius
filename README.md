@@ -114,12 +114,27 @@ ce fichier.
     de la machine que le joueur fabriquera ensuite.
   - **Onze blocs d'architecture** (maçonnerie de pierre veinée, gravée, dalle/escalier/muret, lampe,
     conduit, efflorescence de dissonance), textures générées par `tools/block-textures`.
-  - **L'Avant-poste** devient un donjon à **trois paliers autour d'un puits traversant** : on voit
-    la console éteinte treize blocs plus bas avant de savoir comment y descendre ; on la trouve
-    derrière un sas ; on l'ouvre en réveillant l'émetteur ancien avec un Stable Crystal — **le
+  - **Une architecture, pas des cubes** (seconde passe). Chaque salle est **creusée dans la masse**
+    et chemisée séparément — il reste de la **roche** entre elles, et on circule par des galeries.
+    Trois gestes non négociables : **voûte en berceau**, **angles coupés**, et surtout
+    **effondrement causal** (le trou dans la voûte, et la matière manquante **en cône exactement
+    dessous** — c'est cette correspondance, et elle seule, qui se lit comme « ça s'est écroulé »).
+    Plus, pour ce qui doit être remarquable : **rotonde octogonale à coupole** et **escalier en
+    vis**.
+  - **L'Avant-poste** : deux niveaux voûtés reliés par la vis, plus la rotonde de la console
+    derrière le sas. On l'ouvre en réveillant l'émetteur ancien avec un Stable Crystal — **le
     coffre-réserve en garantit un sur place**, contenu fixe, pour qu'aucun tirage ne garde la porte
-    du T2. Allumer réveille aussi les deux Custodes en alcôve : **allumer, c'est armer le donjon**.
-  - **L'Habitation Modeste** devient un **hameau** de 3 à 6 logis tirés d'un pool.
+    du T2. Allumer réveille aussi les Custodes en alcôve : **allumer, c'est armer le donjon**.
+  - **L'Habitation Modeste** devient un **hameau** (logis, atelier, citerne, logis effondré).
+  - **Une échelle de ruines** : bornes de conduit (~1 / 130 blocs), bouts de galerie ensevelis,
+    chambres englouties. Le monde n'avait que deux structures, toutes deux grandes ; une
+    civilisation effondrée laisse surtout des miettes, et c'est le contraste avec elles qui donne
+    son poids à un vrai donjon.
+  - **Un parcours automatisé de bout en bout** (`outpostIsWalkableFromEntranceToConsole`). Un
+    donjon écrit par code peut être **parfaitement valide et infranchissable** : une galerie qui ne
+    perce aucun des deux murs qu'elle relie, un escalier en vis dont la première marche tombe à
+    l'opposé de la galerie qui y mène (on en sort dans le vide, dix blocs de chute). **Les deux
+    étaient présents** et aucune relecture ne les avait vus.
   - **Le jigsaw est réel** : connecteurs, profondeur 5, pools de bouchons en `fallback` (plus de
     branche ouverte sur la roche), processors d'usure (deux ruines ne s'abîment plus pareil),
     spawn overrides (fini les zombies vanilla dans nos ruines), `IGNORE_WATERLOGGING`.

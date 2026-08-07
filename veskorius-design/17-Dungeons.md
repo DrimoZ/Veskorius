@@ -28,6 +28,22 @@ resté un placeholder, et l'audit du code l'a montré noir sur blanc :
 Le point 9 est celui qui compte : on pourrait poser quarante belles salles et rester **un mod de
 structures de plus**. Les huit autres sont de la plomberie ; celui-là est une faute de conception.
 
+### 0 bis. Le second constat (même jour) — « ça se voit que c'est un ordinateur »
+
+La première refonte a corrigé les neuf points ci-dessus et **a quand même raté**. Verdict du
+porteur, et il est juste : *des salles cubiques posées côte à côte*. Trois causes, distinctes de
+toutes les précédentes :
+
+| # | Constat | Ce que ça produisait |
+|---|---|---|
+| A | **On construisait une boîte au lieu de creuser une masse.** Chaque structure était une coquille rectangulaire pleine d'air, cloisonnée en salles rectangulaires. | Un plan d'appartement dans un pavé. Le pire : de l'**air** entre les salles là où il devrait y avoir de la **roche**. |
+| B | **Tout était plat et à angle droit.** Plafonds plats, hauteurs identiques d'une pièce à l'autre, quatre angles droits par salle, rampes droites. | Aucun geste de bâtisseur nulle part. Un plafond plat est le signe le plus sûr qu'un algorithme est passé. |
+| C | **La ruine était du bruit.** Des blocs remplacés au hasard. | « C'est sale », jamais « c'est tombé ». Un tas de gravats ne raconte rien s'il n'est pas **sous le trou d'où il vient**. |
+
+Et un quatrième, de rythme : **le monde n'avait que deux ruines, toutes deux grandes**. Une
+civilisation effondrée ne laisse pas deux bâtiments — elle laisse surtout des miettes. Sans les
+miettes, une vraie structure n'arrive jamais « au terme d'une piste », elle apparaît de nulle part.
+
 ---
 
 ## 1. Doctrine — « le donjon est une machine morte, l'explorer c'est la rallumer »
@@ -60,6 +76,26 @@ salle où un émetteur tourne **désaccordé depuis neuf siècles** est une zone
 Chaque salle **enseigne**, **pique** ou **récompense**. Le remplissage est le rôle des couloirs,
 et le couloir a le droit d'être court. Une salle qui ne fait aucune des trois choses ne va pas
 dans le pool.
+
+### R6 — On creuse une masse, on ne pose pas une boîte
+Une architecture souterraine **évide de la roche**. Chaque salle est donc creusée et chemisée
+séparément, et **il reste de la roche du monde entre les salles** ; on circule par des galeries,
+jamais par une porte percée dans une cloison. Conséquences gratuites : la silhouette extérieure
+cesse d'être un pavé, le plan cesse d'être une grille, et une grotte qui débouche dans une ruine
+devient un accident crédible au lieu d'un bug.
+
+### R7 — Trois gestes, et ils sont non négociables
+**La voûte, l'angle coupé, le cône d'éboulis.** Aucun ornement de mur ne compense leur absence :
+
+| Geste | Ce qu'il remplace | Pourquoi il gagne |
+|---|---|---|
+| **Voûte en berceau** (escaliers retournés, par ressauts) | un plafond plat | un plafond plat est la signature d'un algorithme ; une voûte est la signature d'une main |
+| **Angle coupé** (chanfrein d'un ou deux blocs) | quatre angles droits | un angle droit de plus de deux blocs de haut se lit comme un carton d'emballage |
+| **Effondrement causal** : le trou dans la voûte, et la matière manquante **en cône exactement dessous** | des blocs remplacés au hasard | c'est la correspondance trou/tas qui se lit comme « ça s'est écroulé ». Sans elle, même très dense, ça se lit « c'est sale » |
+
+S'y ajoutent, pour ce qui doit être **remarquable** : la **rotonde octogonale à coupole** (un plan
+non rectangulaire est lu comme important avant qu'on ait rien écrit dedans) et l'**escalier en
+vis** (une rampe droite de quinze mètres se lit comme un tapis roulant).
 
 ### R5 — Un donjon veskorien se lit vers le bas
 Descendre = plus vieux = plus dangereux, cohérent avec les strates Y de `07`. Toute structure de
@@ -141,6 +177,22 @@ même pas exposé à l'usure cosmétique.
 
 > **Le chemin critique d'un tier (console, sas, blueprint, lot d'amorçage) vit toujours dans la
 > pièce de départ, jamais dans un pool optionnel.**
+>
+> **Et le donjon se traverse réellement, de l'entrée au chemin critique.** (Ajouté 2026-08-07,
+> seconde passe.)
+
+Le second invariant a l'air d'une évidence ; c'est le plus dur à tenir. Un donjon écrit par code
+peut être **parfaitement valide et infranchissable** : une galerie qui chemise ses propres bouts et
+ne perce donc aucun des deux murs qu'elle relie ; un escalier en vis dont la première marche tombe
+à l'opposé de la galerie qui y mène, si bien qu'on en sort **dans le vide de la cage** ; une salle
+murée par le pan de voûte qu'on vient d'y faire tomber. Rien ne casse, rien ne lève d'exception,
+la structure se génère magnifiquement — et le joueur se retrouve devant de la roche.
+
+**Les trois exemples ci-dessus étaient réellement présents**, et aucune relecture ne les avait vus.
+C'est un **parcours automatisé** (`outpostIsWalkableFromEntranceToConsole` : on explore les cases où
+un joueur tient debout, avec les tolérances d'un pas — monter d'un bloc, descendre de trois) qui les
+a trouvés. À écrire pour **toute** structure de plus d'une salle : le dessin se relit, la
+circulation non.
 
 `08` l'énonçait déjà en prose, à une époque où la profondeur valait 1 — donc où le risque était
 nul. Avec un jigsaw réel, **c'est devenu une régression possible à chaque ajout de pièce**. La
@@ -320,6 +372,22 @@ couloir d'effroi. Ça coûte une *feature*, pas une structure.
 
 ## 6. Structures neuves justifiées
 
+### 6 bis. L'échelle de ruines — ✅ faite le 2026-08-07
+
+Le monde n'avait que **deux** structures, toutes deux grandes. Il en a maintenant quatre, réparties
+sur une échelle, et c'est ce qui donne enfin une profondeur de champ : une vraie structure se
+distingue **par contraste** au lieu d'apparaître de nulle part.
+
+| Structure | Taille | Densité | Rôle |
+|---|---|---|---|
+| **Borne de conduit** (`ruin_marker`, variante pilier) | 5×7×5 | ~1 / 130 blocs | Un fût brisé, une base dallée, un bout de conduit. **Aucune récompense.** Son seul rôle est qu'on croise du veskorien tout le temps. |
+| **Bout de galerie enseveli** (`ruin_marker`) | 7×6×7 | idem | Trois mètres de voûte et un tas. On comprend qu'il y avait un réseau. |
+| **Chambre engloutie** (`sunken_chamber`) | 13×10×13 | ~1 / 350 blocs | Une salle voûtée à demi comblée, un coffre. Le palier « on a trouvé quelque chose » sans être un donjon. |
+| **Hameau** / **Avant-poste** | 13→33 | 1 / 320 · 1 / 512 | Les lieux. |
+
+Les deux petites sont **volontairement hors du tag `#locatable`** : les y mettre noierait le mode
+Structures du Locator sous des bornes de trois blocs et lui ferait perdre ce qui fait sa valeur.
+
 | Structure | Tier | Strate sociale | Ce qu'elle répare |
 |---|---|---|---|
 | ⭐ **Puits de Forage abandonné** | T1 | Peuple du réseau | **Le T1 n'a aucune structure à lui.** Un puits vertical, un driller brisé, trois plateformes, débouchant sur une poche de cristal. Enseigne « descendre = cristaux » dans la première heure. |
@@ -349,6 +417,14 @@ d'architecture avec leurs textures générées, dix pièces de structure NBT ré
 et cinq tests d'invariants — dont `outpostStartPieceCarriesTheWholeT2Gate`,
 `optionalWingsNeverCarryTheCriticalPath` et `piecesExposeRealJigsawConnectors`, qui gardent
 respectivement §3 dans les deux sens et la réalité du jigsaw.
+
+**Seconde passe du même jour** (suite au verdict « ça se voit que c'est un ordinateur ») : tout le
+dessin est repris sur le vocabulaire de `Masonry` — voûtes, chanfreins, bandeaux, pilastres,
+rotonde à coupole, escalier en vis, effondrement causal, brèches de mur, flaques, concrétions.
+L'Avant-poste passe de trois boîtes empilées (21×20×21) à **deux niveaux voûtés reliés par une vis,
+plus une rotonde à coupole** (33×26×33), chaque salle creusée séparément dans la masse. Le Hameau
+gagne une citerne et des logis de hauteurs différentes. Et **trois nouvelles petites ruines**
+peuplent le monde (§6 bis). 114 GameTest, dont le parcours de bout en bout.
 
 **`dataMarker()` n'a pas été écrit**, contrairement au plan initial : il servait à faire tirer les
 entités à la génération plutôt qu'à les cuire dans le NBT. Les Custodes sont posés directement
@@ -380,6 +456,16 @@ reprendre si le Poste de Garde en demande.
   Il faudrait une block entity dédiée, donc une machine qui peut diverger de celle que le joueur
   fabrique — et c'est justement l'identité stricte entre les deux qui fait la valeur pédagogique
   de la scène. Voir §5.1, note de portée.
+- **Rejeté : une coquille englobante par structure.** C'est la cause racine du « ça se voit que
+  c'est un ordinateur » : une boîte creuse cloisonnée donne un plan d'appartement dans un pavé, et
+  met de l'air là où il devrait y avoir de la roche. Voir R6.
+- **Rejeté : les plafonds plats, même pour les pièces de service.** Une salle de service a le droit
+  d'être nue ; elle n'a pas le droit d'avoir la même section qu'une grande salle. Sans écart de
+  hauteur et de traitement, la grande salle n'a plus d'échelle — c'est le contraste qui fait
+  l'effet, pas la taille absolue.
+- **Rejeté : plus de bruit dans la ruine pour « faire vieux ».** Densifier du remplacement
+  aléatoire ne rapproche jamais de « c'est tombé ». Seule la correspondance trou-dans-la-voûte /
+  cône-au-sol y arrive. Voir R7.
 - **Rejeté : les lits vanilla comme mobilier de couchage.** Outre le pilier 1 (une civilisation de
   la Résonance ne dort pas sur de la laine teinte), un lit occupe deux blocs et une moitié posée
   seule est **retirée** par la mise à jour de voisinage : les trois lits de l'Avant-poste

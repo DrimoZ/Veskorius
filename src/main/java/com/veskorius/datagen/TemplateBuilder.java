@@ -67,6 +67,14 @@ public final class TemplateBuilder {
     }
 
     public void set(int x, int y, int z, BlockState state, CompoundTag blockEntity) {
+        // Écriture hors gabarit ignorée. Les gestes de {@link Masonry} débordent
+        // volontiers — un effondrement ronge le plafond sur trois blocs, un éboulis
+        // s'étale — et découper chaque geste au cas par cas rendrait les pièces
+        // illisibles. Sans ce garde-fou, un débordement produit un NBT que
+        // StructureTemplate.load accepte mais place n'importe où : une erreur silencieuse.
+        if (x < 0 || y < 0 || z < 0 || x >= sx || y >= sy || z >= sz) {
+            return;
+        }
         int index = paletteFor(state);
         CompoundTag entry = new CompoundTag();
         entry.put("pos", intList(x, y, z));

@@ -54,12 +54,13 @@ public class ModStructureTemplateProvider implements DataProvider {
      */
     private static final int ARENA_SIZE = 21;
     /**
-     * Arène dédiée aux tests de structure. L'Avant-poste fait 21×9×21 depuis qu'il est
-     * devenu un donjon : posé à l'ancre (2,1,2) d'une arène de 21, il débordait, et un
-     * test de bloc à l'extérieur du volume échoue de façon opaque (« Expected X, got Air »)
-     * sans jamais dire que c'est la place qui manque.
+     * Arène dédiée aux tests de structure. L'Avant-poste fait <b>33×26×33</b> depuis qu'il
+     * est un vrai donjon (deux niveaux voûtés, un escalier en vis, une rotonde à coupole) :
+     * posé à l'ancre (1,1,1), il lui faut 35 de côté. Une arène trop petite fait échouer
+     * les tests de façon opaque (« Expected X, got Air ») sans jamais dire que c'est la
+     * place qui manque — d'où cette note, qui a déjà servi deux fois.
      */
-    private static final int PIECE_ARENA_SIZE = 25;
+    private static final int PIECE_ARENA_SIZE = 36;
     public static final String PIECE_ARENA_TEMPLATE = "piece_arena";
     public static final String FIELD_ARENA_TEMPLATE = "field_arena";
 
