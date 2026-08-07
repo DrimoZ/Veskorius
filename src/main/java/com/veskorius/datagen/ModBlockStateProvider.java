@@ -116,11 +116,17 @@ public class ModBlockStateProvider extends BlockStateProvider {
         itemModels().withExistingParent("veined_stone_brick_slab", modLoc("block/veined_stone_brick_slab"));
         itemModels().wallInventory("veined_stone_brick_wall", brick);
 
+        // Colonne cannelée : un bloc à axe, comme une bûche. C'est elle qui fait les
+        // colonnades, donc les monuments.
+        axisBlock(ModBlocks.VEINED_STONE_COLUMN.get(),
+            modLoc("block/veined_stone_column"), modLoc("block/veined_stone_column_top"));
+        itemModels().withExistingParent("veined_stone_column", modLoc("block/veined_stone_column"));
+
         // Lampe et conduit : deux états sur POWERED, comme les machines sur LIT. C'est
         // le même contrat de lecture (une façade éteinte, une façade allumée) appliqué
         // aux murs — c'est ce qui fait qu'un donjon alimenté se lit d'un coup d'œil.
         poweredCube(ModBlocks.RESONANCE_LAMP.get(), "resonance_lamp", null);
-        poweredCube(ModBlocks.CONDUIT_LINE.get(), "conduit_line", "veined_stone_bricks");
+        poweredConduit();
 
         simpleBlockWithItem(ModBlocks.DISSONANCE_BLOOM.get(),
             models().cubeAll("dissonance_bloom", modLoc("block/dissonance_bloom"))
@@ -144,6 +150,29 @@ public class ModBlockStateProvider extends BlockStateProvider {
         getVariantBuilder(block).forAllStates(state -> ConfiguredModel.builder()
             .modelFile(state.getValue(FieldSensitiveBlock.POWERED) ? on : off).build());
         itemModels().withExistingParent(name, modLoc("block/" + name));
+    }
+
+    /**
+     * Conduit : deux états d'alimentation × trois axes. L'axe n'est pas du décor — un
+     * conduit est un <b>tracé</b>, et sans lui une descente verticale affichait une
+     * gouttière horizontale à chaque bloc, si bien que le tuyau avait l'air haché en
+     * travers tous les mètres.
+     */
+    private void poweredConduit() {
+        ModelFile off = models().cubeColumn("conduit_line",
+            modLoc("block/conduit_line"), modLoc("block/conduit_line_end"));
+        ModelFile on = models().cubeColumn("conduit_line_on",
+            modLoc("block/conduit_line_on"), modLoc("block/conduit_line_end_on"));
+        getVariantBuilder(ModBlocks.CONDUIT_LINE.get()).forAllStates(state -> {
+            ConfiguredModel.Builder<?> model = ConfiguredModel.builder()
+                .modelFile(state.getValue(FieldSensitiveBlock.POWERED) ? on : off);
+            return switch (state.getValue(com.veskorius.block.ConduitLineBlock.AXIS)) {
+                case X -> model.rotationX(90).rotationY(90).build();
+                case Z -> model.rotationX(90).build();
+                default -> model.build();
+            };
+        });
+        itemModels().withExistingParent("conduit_line", modLoc("block/conduit_line"));
     }
 
     private ModelFile poweredModel(String name, String texture, String topTexture) {

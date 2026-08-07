@@ -94,6 +94,7 @@ public class Veskorius {
                 output.accept(ModItems.VEINED_STONE_BRICK_WALL_ITEM.get());
                 output.accept(ModItems.RESONANCE_LAMP_ITEM.get());
                 output.accept(ModItems.CONDUIT_LINE_ITEM.get());
+                output.accept(ModItems.VEINED_STONE_COLUMN_ITEM.get());
                 output.accept(ModItems.DISSONANCE_BLOOM_ITEM.get());
             })
             .build());

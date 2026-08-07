@@ -72,6 +72,7 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.VEINED_STONE_BRICK_WALL, "Muret de Pierre Veinée");
         addBlock(ModBlocks.RESONANCE_LAMP, "Lampe de Résonance");
         addBlock(ModBlocks.CONDUIT_LINE, "Conduit de Résonance");
+        addBlock(ModBlocks.VEINED_STONE_COLUMN, "Colonne de Pierre Veinée");
         addBlock(ModBlocks.DISSONANCE_BLOOM, "Efflorescence de Dissonance");
         addBlock(ModBlocks.RESONANCE_BULKHEAD, "Sas de Résonance");
         addBlock(ModBlocks.ANCIENT_EMITTER, "Émetteur Ancien");

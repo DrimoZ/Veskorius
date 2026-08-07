@@ -78,6 +78,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.VEINED_STONE_BRICK_WALL, "Veined Stone Brick Wall");
         addBlock(ModBlocks.RESONANCE_LAMP, "Resonance Lamp");
         addBlock(ModBlocks.CONDUIT_LINE, "Resonance Conduit");
+        addBlock(ModBlocks.VEINED_STONE_COLUMN, "Veined Stone Column");
         addBlock(ModBlocks.DISSONANCE_BLOOM, "Dissonance Bloom");
         addBlock(ModBlocks.RESONANCE_BULKHEAD, "Resonance Bulkhead");
         addBlock(ModBlocks.ANCIENT_EMITTER, "Ancient Emitter");

@@ -83,5 +83,6 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         ModBlocks.VEINED_STONE_BRICK_WALL.get(),
         ModBlocks.RESONANCE_LAMP.get(),
         ModBlocks.CONDUIT_LINE.get(),
+        ModBlocks.VEINED_STONE_COLUMN.get(),
     };
 }

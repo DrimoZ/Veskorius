@@ -272,6 +272,15 @@ public class ModRecipeProvider extends RecipeProvider {
             ModBlocks.VEINED_STONE_BRICK_SLAB.get(), stone, 2);
         stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS,
             ModBlocks.VEINED_STONE_BRICK_SLAB.get(), bricks, 2);
+        stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS,
+            ModBlocks.VEINED_STONE_COLUMN.get(), bricks);
+
+        // Colonne : deux briques l'une sur l'autre, comme le pilier de quartz vanilla.
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.VEINED_STONE_COLUMN.get(), 2)
+            .pattern("#").pattern("#")
+            .define('#', bricks)
+            .unlockedBy(getHasName(bricks), has(bricks))
+            .save(output);
 
         // Lampe : la brique + un Stable Crystal. Fabricable dès le T1 (le Stabilizer est
         // autonome), même si elle ne s'allumera qu'une fois un champ posé — c'est

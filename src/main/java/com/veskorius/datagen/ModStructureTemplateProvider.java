@@ -60,7 +60,7 @@ public class ModStructureTemplateProvider implements DataProvider {
      * les tests de façon opaque (« Expected X, got Air ») sans jamais dire que c'est la
      * place qui manque — d'où cette note, qui a déjà servi deux fois.
      */
-    private static final int PIECE_ARENA_SIZE = 36;
+    private static final int PIECE_ARENA_SIZE = 42;
     public static final String PIECE_ARENA_TEMPLATE = "piece_arena";
     public static final String FIELD_ARENA_TEMPLATE = "field_arena";
 

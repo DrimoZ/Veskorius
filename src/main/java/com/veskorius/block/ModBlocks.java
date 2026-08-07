@@ -357,10 +357,19 @@ public class ModBlocks {
      * maçonnerie, éteinte sur une branche morte, vivante sur une branche alimentée. Le
      * joueur suit la lumière, sans carte ni marqueur.
      */
-    public static final DeferredBlock<FieldSensitiveBlock> CONDUIT_LINE =
+    public static final DeferredBlock<ConduitLineBlock> CONDUIT_LINE =
         BLOCKS.registerBlock("conduit_line",
-            FieldSensitiveBlock::new,
+            ConduitLineBlock::new,
             masonry().lightLevel(state -> state.getValue(FieldSensitiveBlock.POWERED) ? 7 : 0));
+
+    /**
+     * <b>Colonne cannelée.</b> Le bloc qui fait les colonnades, donc celui qui fait les
+     * monuments : c'est la <b>verticalité répétée</b> qui donne l'impression de hauteur,
+     * bien plus que la hauteur réelle. Sans lui, une grande salle reste une grande boîte.
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.RotatedPillarBlock> VEINED_STONE_COLUMN =
+        BLOCKS.registerBlock("veined_stone_column",
+            net.minecraft.world.level.block.RotatedPillarBlock::new, masonry());
 
     /**
      * <b>Efflorescence de dissonance</b> (règle R3). Sans collision : on la traverse, et

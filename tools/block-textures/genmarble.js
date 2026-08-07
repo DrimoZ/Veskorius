@@ -88,8 +88,11 @@ for(const on of[false,true]){
   outline(c,DISC12,ROCK.line);fill(c,DISC12,a.deep);
   ring(c,DISC12,DISC8,on?a.mid:ROCK.dark);fill(c,DISC8,a.mid);fill(c,DISC4,a.hot);
   edges(c,ROCK);tex['resonance_lamp'+(on?'_on':'')]=c;}
-// Conduit : une gouttière horizontale prise dans le mur. Le fil d'Ariane du
-// donjon — il ne décore pas, il indique où l'énergie passe encore.
+// Conduit : une gouttière prise dans le mur. Le fil d'Ariane du donjon — il ne
+// décore pas, il indique où l'énergie passe encore. Le bloc porte un AXE, donc il
+// lui faut aussi une COUPE (la face du bout) : sans elle, un conduit vertical
+// affiche une gouttière horizontale sur son sommet, et le tuyau a l'air coupé en
+// travers.
 for(const on of[false,true]){
   const c=bricks(0x745);const a=on?V:DEAD;
   c.rect(0,6,S,4,ROCK.dark);
@@ -97,6 +100,27 @@ for(const on of[false,true]){
     c.set(x,7,a.deep);c.set(x,8,a.mid);}
   for(let x=1;x<S;x+=5){c.set(x,7,a.hot);c.set(x,8,a.lite);}
   edges(c,ROCK);tex['conduit_line'+(on?'_on':'')]=c;}
+for(const on of[false,true]){
+  const c=marble(ROCK,0x749);const a=on?V:DEAD;
+  slab(c,0,0,S,S,ROCK.tones[1],ROCK.tones[3],ROCK.line);
+  c.rect(6,6,4,4,ROCK.dark);c.rect(7,7,2,2,a.mid);c.set(7,7,a.hot);
+  edges(c,ROCK);tex['conduit_line_end'+(on?'_on':'')]=c;}
+// Colonne cannelée : le bloc qui fait les colonnades, donc celui qui fait les
+// monuments. Trois cannelures verticales et deux bagues — c'est la verticalité
+// répétée qui donne l'impression de hauteur, bien plus que la hauteur réelle.
+{const c=marble(ROCK,0x74A);
+ slab(c,1,0,14,S,ROCK.tones[1],ROCK.tones[3],ROCK.line);
+ for(const x of[4,7,10]){for(let y=0;y<S;y++){c.set(x,y,ROCK.line);c.set(x+1,y,ROCK.tones[3]);}}
+ for(const y of[1,14]){for(let x=1;x<15;x++)c.set(x,y,ROCK.tones[3]);}
+ for(const y of[2,13]){for(let x=1;x<15;x++)c.set(x,y,ROCK.line);}
+ c.set(7,7,V.deep);c.set(8,7,V.mid);c.set(7,8,V.mid);c.set(8,8,V.deep);
+ edges(c,ROCK);tex.veined_stone_column=c;}
+{const c=marble(ROCK,0x74B);
+ slab(c,1,1,14,14,ROCK.tones[1],ROCK.tones[3],ROCK.line);
+ outline(c,DISC12,ROCK.line);fill(c,DISC12,ROCK.tones[2]);
+ ring(c,DISC12,DISC8,ROCK.dark);fill(c,DISC8,ROCK.tones[0]);
+ fill(c,DISC4,V.deep);
+ edges(c,ROCK);tex.veined_stone_column_top=c;}
 // Efflorescence de dissonance : ni un minerai ni une mousse — une CROÛTE grise
 // et violacée, terne. La couleur doit dire « déchet », pas « trésor », sinon le
 // joueur la mine au lieu de s'en méfier.

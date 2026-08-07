@@ -33,18 +33,18 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 public class StructureGameTests {
 
     private static final String FIELD_ARENA = "field_arena";
-    /** Arène élargie : l'Avant-poste fait 33×26×33 et ne tient dans aucune arène standard. */
+    /** Arène élargie : l'Avant-poste fait 39×31×39 et ne tient dans aucune arène standard. */
     private static final String PIECE_ARENA = "piece_arena";
 
     private static final BlockPos ANCHOR = new BlockPos(1, 1, 1);
 
     // Repères de la pièce de départ de l'Avant-poste (voir ModStructurePieceProvider) :
     // le chemin critique du T2, celui qui n'a le droit d'être ni tiré au sort ni usé.
-    private static final BlockPos CONSOLE = ANCHOR.offset(26, 4, 21);
-    private static final BlockPos BULKHEAD = ANCHOR.offset(19, 3, 21);
-    private static final BlockPos ANCIENT_EMITTER = ANCHOR.offset(11, 4, 21);
-    private static final BlockPos RESERVE_CHEST = ANCHOR.offset(13, 3, 21);
-    private static final BlockPos BOOTSTRAP_CHEST = ANCHOR.offset(5, 3, 16);
+    private static final BlockPos CONSOLE = ANCHOR.offset(31, 4, 22);
+    private static final BlockPos BULKHEAD = ANCHOR.offset(24, 3, 22);
+    private static final BlockPos ANCIENT_EMITTER = ANCHOR.offset(13, 4, 22);
+    private static final BlockPos RESERVE_CHEST = ANCHOR.offset(16, 4, 22);
+    private static final BlockPos BOOTSTRAP_CHEST = ANCHOR.offset(6, 3, 16);
 
     // =====================================================================
     // Le chemin critique
@@ -70,7 +70,7 @@ public class StructureGameTests {
         helper.assertBlockPresent(Blocks.CHEST, BOOTSTRAP_CHEST);
         // Maçonnerie veskorienne, pas du deepslate vanilla : la coquille elle-même doit
         // dire de quelle civilisation on visite les ruines.
-        helper.assertBlockPresent(ModBlocks.VEINED_STONE_BRICKS.get(), ANCHOR.offset(3, 16, 26));
+        helper.assertBlockPresent(ModBlocks.VEINED_STONE_BRICKS.get(), ANCHOR.offset(3, 20, 17));
         helper.assertEntityPresent(ModEntities.CUSTODE.get());
         assertChestHasLootTable(helper, BOOTSTRAP_CHEST);
         helper.succeed();
@@ -111,7 +111,7 @@ public class StructureGameTests {
             "hamlet", "hamlet_dwelling", "hamlet_workshop", "hamlet_cistern",
             "hamlet_collapsed", "ruin_marker", "ruin_marker_pillar", "sunken_chamber"}) {
             place(helper, wing);
-            for (BlockPos pos : allPositions(helper, 13, 9, 13)) {
+            for (BlockPos pos : allPositions(helper, 25, 17, 25)) {
                 BlockState state = helper.getBlockState(pos);
                 helper.assertTrue(!state.is(ModBlocks.ATTUNEMENT_CONSOLE.get())
                         && !state.is(ModBlocks.RESONANCE_BULKHEAD.get())
@@ -144,8 +144,8 @@ public class StructureGameTests {
     @GameTest(template = PIECE_ARENA, timeoutTicks = 200)
     public static void outpostIsWalkableFromEntranceToConsole(GameTestHelper helper) {
         place(helper, "outpost");
-        BlockPos start = ANCHOR.offset(21, 16, 6);   // vestibule, contre le mur ouest
-        BlockPos goal = ANCHOR.offset(25, 4, 21);    // devant la console, sur l'estrade
+        BlockPos start = ANCHOR.offset(22, 18, 11);  // vestibule, hors du cône d'éboulis
+        BlockPos goal = ANCHOR.offset(30, 4, 22);    // devant la console, sur l'estrade
 
         helper.assertTrue(standable(helper, start), "Le point de départ doit être praticable");
         java.util.Set<BlockPos> seen = new java.util.HashSet<>();
@@ -177,15 +177,22 @@ public class StructureGameTests {
     }
 
     private static boolean inPiece(BlockPos p) {
-        return p.getX() >= 1 && p.getX() <= 33 && p.getY() >= 1 && p.getY() <= 26
-            && p.getZ() >= 1 && p.getZ() <= 33;
+        return p.getX() >= 1 && p.getX() <= 39 && p.getY() >= 1 && p.getY() <= 31
+            && p.getZ() >= 1 && p.getZ() <= 39;
     }
 
-    /** Une case tenable : un appui sous les pieds, et deux blocs libres au-dessus. */
+    /**
+     * Une case tenable : un appui sous les pieds, et deux blocs libres au-dessus.
+     *
+     * <p>« Un appui » se mesure sur la <b>forme de collision</b>, pas sur « est-ce un cube
+     * plein » : un escalier, une dalle, un gradin portent parfaitement un joueur. La
+     * première version exigeait un cube plein et déclarait donc infranchissable une
+     * estrade bordée de nez de marche — le test se trompait, pas le donjon.
+     */
     private static boolean standable(GameTestHelper helper, BlockPos p) {
-        BlockState ground = helper.getBlockState(p.below());
-        if (!ground.isCollisionShapeFullBlock(helper.getLevel(), helper.absolutePos(p.below()))
-            && !ground.is(ModBlocks.VEINED_STONE_BRICK_SLAB.get())) {
+        BlockPos below = p.below();
+        if (helper.getBlockState(below)
+            .getCollisionShape(helper.getLevel(), helper.absolutePos(below)).isEmpty()) {
             return false;
         }
         return passable(helper, p) && passable(helper, p.above());
@@ -195,9 +202,73 @@ public class StructureGameTests {
         BlockState state = helper.getBlockState(p);
         // Le sas compte comme franchissable : il l'est une fois l'émetteur réveillé, et ce
         // n'est pas ce que ce test mesure.
-        return state.isAir() || state.is(ModBlocks.RESONANCE_BULKHEAD.get())
-            || state.is(ModBlocks.DISSONANCE_BLOOM.get())
-            || state.is(Blocks.WATER);
+        return state.getCollisionShape(helper.getLevel(), helper.absolutePos(p)).isEmpty()
+            || state.is(ModBlocks.RESONANCE_BULKHEAD.get());
+    }
+
+    /**
+     * <b>Rien ne flotte.</b> Aucun bloc d'aucune pièce n'a ses six voisins en l'air.
+     *
+     * <p>Défaut le plus visible et le plus bête de la version précédente : lampes et
+     * conduits étaient posés sur la case <b>intérieure</b> adjacente au mur — donc dans le
+     * vide — et formaient des rangées de blocs en lévitation le long de chaque paroi. Une
+     * relecture ne le voit pas (le code dit « pose un conduit le long du mur ouest », ce
+     * qui est exactement ce qu'il fait) ; on ne le voit qu'en jeu, ou avec ce test.
+     *
+     * <p>La règle qui en découle, et qui vaut pour toute décoration future : elle
+     * <b>remplace</b> un bloc de mur, elle ne s'y accole pas. Ce qui doit éclairer le
+     * centre d'une salle se suspend à la clé de voûte par une chaîne.
+     */
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 200)
+    public static void nothingFloatsInAnyPiece(GameTestHelper helper) {
+        for (String[] piece : PIECES) {
+            place(helper, piece[0]);
+            int w = Integer.parseInt(piece[1]);
+            int h = Integer.parseInt(piece[2]);
+            int d = Integer.parseInt(piece[3]);
+            for (BlockPos pos : BlockPos.betweenClosed(ANCHOR, ANCHOR.offset(w - 1, h - 1, d - 1))) {
+                if (helper.getBlockState(pos).isAir() || !isolated(helper, pos)) {
+                    continue;
+                }
+                helper.fail("Bloc en lévitation dans « " + piece[0] + " » en "
+                    + pos.subtract(ANCHOR) + " (" + helper.getBlockState(pos)
+                    + ") — une décoration murale doit REMPLACER un bloc de mur, pas s'y accoler");
+            }
+            clear(helper, w, h, d);
+        }
+        helper.succeed();
+    }
+
+    /** Les pièces et leur gabarit, pour les tests qui balaient un volume entier. */
+    private static final String[][] PIECES = {
+        {"outpost", "39", "31", "39"},
+        {"outpost_wing_store", "15", "11", "15"},
+        {"outpost_wing_quarters", "15", "11", "15"},
+        {"outpost_wing_collapsed", "15", "11", "15"},
+        {"hamlet", "25", "17", "25"},
+        {"hamlet_dwelling", "15", "12", "15"},
+        {"hamlet_workshop", "15", "12", "15"},
+        {"hamlet_cistern", "15", "12", "15"},
+        {"hamlet_collapsed", "15", "12", "15"},
+        {"ruin_marker", "11", "9", "11"},
+        {"ruin_marker_pillar", "7", "9", "7"},
+        {"sunken_chamber", "17", "13", "17"},
+    };
+
+    private static boolean isolated(GameTestHelper helper, BlockPos pos) {
+        for (net.minecraft.core.Direction dir : net.minecraft.core.Direction.values()) {
+            if (!helper.getBlockState(pos.relative(dir)).isAir()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Vide l'arène entre deux pièces : sans ça, la précédente fausse la suivante. */
+    private static void clear(GameTestHelper helper, int w, int h, int d) {
+        for (BlockPos pos : BlockPos.betweenClosed(ANCHOR, ANCHOR.offset(w - 1, h - 1, d - 1))) {
+            helper.setBlock(pos, Blocks.AIR);
+        }
     }
 
     /**
@@ -211,7 +282,7 @@ public class StructureGameTests {
      */
     @GameTest(template = PIECE_ARENA, timeoutTicks = 40)
     public static void piecesExposeRealJigsawConnectors(GameTestHelper helper) {
-        assertConnectors(helper, "outpost", 2);        // deux ailes facultatives
+        assertConnectors(helper, "outpost", 1);        // une aile facultative
         assertConnectors(helper, "outpost_wing_store", 2); // entrée + chaînage
         assertConnectors(helper, "hamlet", 4);         // quatre directions
         assertConnectors(helper, "hamlet_dwelling", 2);
@@ -247,7 +318,7 @@ public class StructureGameTests {
             com.veskorius.item.CodexEntries.OUTPOST_LOG_4,
         };
         for (int i = 0; i < expected.length; i++) {
-            BlockPos at = ANCHOR.offset(5 + i * 3, 16, 16);
+            BlockPos at = ANCHOR.offset(10 + i * 6, 18, 16);
             net.minecraft.world.level.block.entity.BlockEntity be = helper.getBlockEntity(at);
             helper.assertTrue(be instanceof net.minecraft.world.Container,
                 "Coffre d'archives attendu en " + at + ", vaut : " + be);
@@ -360,7 +431,7 @@ public class StructureGameTests {
     @GameTest(template = PIECE_ARENA, timeoutTicks = 40)
     public static void hamletCentreIsACommonPlace(GameTestHelper helper) {
         place(helper, "hamlet");
-        helper.assertBlockNotPresent(Blocks.CHEST, ANCHOR.offset(6, 1, 6));
+        helper.assertBlockNotPresent(Blocks.CHEST, ANCHOR.offset(12, 4, 12));
         helper.assertEntityNotPresent(ModEntities.CUSTODE.get());
         helper.succeed();
     }
@@ -369,8 +440,8 @@ public class StructureGameTests {
     @GameTest(template = PIECE_ARENA, timeoutTicks = 40)
     public static void hamletDwellingIsALootRoomOnly(GameTestHelper helper) {
         place(helper, "hamlet_dwelling");
-        helper.assertBlockPresent(Blocks.CHEST, ANCHOR.offset(5, 1, 8));
-        assertChestHasLootTable(helper, ANCHOR.offset(5, 1, 8));
+        helper.assertBlockPresent(Blocks.CHEST, ANCHOR.offset(7, 2, 11));
+        assertChestHasLootTable(helper, ANCHOR.offset(7, 2, 11));
         helper.assertEntityNotPresent(ModEntities.CUSTODE.get());
         helper.succeed();
     }
@@ -379,7 +450,7 @@ public class StructureGameTests {
     @GameTest(template = PIECE_ARENA, timeoutTicks = 40)
     public static void pieceInteriorIsHollow(GameTestHelper helper) {
         place(helper, "hamlet_dwelling");
-        BlockState interior = helper.getBlockState(ANCHOR.offset(5, 2, 5));
+        BlockState interior = helper.getBlockState(ANCHOR.offset(7, 4, 7));
         helper.assertTrue(interior.isAir(), "L'intérieur de la pièce doit être creux, vaut : "
             + interior);
         helper.succeed();

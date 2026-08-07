@@ -77,6 +77,36 @@ Chaque salle **enseigne**, **pique** ou **récompense**. Le remplissage est le r
 et le couloir a le droit d'être court. Une salle qui ne fait aucune des trois choses ne va pas
 dans le pool.
 
+### R8 — Une civilisation se lit à ses proportions, jamais à son mobilier
+*(Ajoutée à la troisième passe, sur le constat « des micro-salles hyper-chargées en blocs pas
+utiles ».)* Une salle de 27 mètres à double colonnade et huit mètres sous voûte dit « ils étaient
+nombreux et ils bâtissaient ». La même salle réduite à 9 mètres et remplie de tonneaux, d'établis
+et de pots de fleurs dit « un ordinateur a rempli une case ». Donc, dans cet ordre :
+
+1. **De la hauteur et du vide** avant tout. Huit blocs sous voûte pour une salle d'apparat.
+2. **Un ordre** : colonnades, arcades aveugles, pilastres engagés, frises, gradins. C'est la
+   **répétition verticale** qui donne l'impression de hauteur, pas la hauteur réelle.
+3. **Au plus deux ou trois meubles par salle.** Un meuble de plus ne remplit pas un vide, il
+   supprime une proportion.
+4. **Un écart de traitement entre les salles.** Une salle de service a le droit d'être nue ; elle
+   n'a pas le droit d'avoir la même section qu'une salle d'apparat, sinon la salle d'apparat n'a
+   plus d'échelle. C'est le contraste qui fait l'effet, jamais la taille absolue.
+
+> **Pilastres et frises sont *engagés dans le mur*, jamais posés sur la rangée intérieure.** Ils
+> restent parfaitement lisibles à plat (c'est la texture de colonne qui les fait lire, pas le
+> relief), et posés en saillie ils mangeaient un bloc d'espace jouable tout autour de chaque
+> salle — dont, une fois, pile devant une sortie de galerie, ce qui **murait le donjon**.
+
+### R9 — Rien ne flotte, et rien ne coule
+- **Toute décoration murale REMPLACE un bloc de mur**, elle ne s'y accole pas. Lampes et conduits
+  posés sur la case intérieure adjacente formaient des rangées de blocs en lévitation le long de
+  chaque paroi — le défaut le plus visible et le plus bête des versions précédentes. Ce qui doit
+  éclairer le **centre** d'une salle se suspend à la clé de voûte par une **chaîne**.
+- **Aucun bloc à gravité.** Le gravier posé dans une voûte crevée s'effondre au premier chargement
+  de chunk : la ruine se dégrade toute seule, jamais deux fois pareil, et le dessin est perdu.
+- **Aucune source d'eau.** Décorative sur le papier, une flaque devient une inondation dès qu'un
+  bloc voisin manque. Le point bas se raconte par le **dépôt**, pas par le liquide.
+
 ### R6 — On creuse une masse, on ne pose pas une boîte
 Une architecture souterraine **évide de la roche**. Chaque salle est donc creusée et chemisée
 séparément, et **il reste de la roche du monde entre les salles** ; on circule par des galeries,
@@ -418,6 +448,22 @@ et cinq tests d'invariants — dont `outpostStartPieceCarriesTheWholeT2Gate`,
 `optionalWingsNeverCarryTheCriticalPath` et `piecesExposeRealJigsawConnectors`, qui gardent
 respectivement §3 dans les deux sens et la réalité du jigsaw.
 
+**Troisième passe (même jour) : le monumental.** Constat du porteur — « des micro-salles
+hyper-chargées en blocs pas utiles », « toujours trop carré », « pas assez comme une civilisation »,
+et des blocs qui flottent. D'où R8 et R9, et une refonte de **toutes** les pièces, pas seulement du
+Hameau :
+
+| | Avant | Après |
+|---|---|---|
+| Avant-poste | 33×26×33, 2 niveaux | **39×31×39**, deux niveaux à **huit blocs sous voûte**, nef de **31 m à double colonnade**, rotonde à coupole et colonnes engagées |
+| Hameau | une placette + 4 cabanes détachées (un lotissement) | **une halle à colonnade de 19 m**, logis **taillés dans les bas-côtés** sous arcade, escalier d'apparat, foyer commun |
+| Petites ruines | 5→13 de côté | 7→17, voûtées, à colonnade pour la chambre engloutie |
+| Palette | maçonnerie du mod seule | + **accents vanilla** : deepslate poli (sol), carrelage (bordures), **cuivre patiné** et **grilles de cuivre** (frises), **chaînes** (lustres) |
+| Nouveau bloc | — | **colonne cannelée** (à axe) ; le conduit devient **à axe** lui aussi, sinon un tracé vertical a l'air haché en travers |
+
+Nouveau garde-fou :  balaie **les douze pièces** et refuse tout bloc dont
+les six voisins sont de l'air.
+
 **Seconde passe du même jour** (suite au verdict « ça se voit que c'est un ordinateur ») : tout le
 dessin est repris sur le vocabulaire de `Masonry` — voûtes, chanfreins, bandeaux, pilastres,
 rotonde à coupole, escalier en vis, effondrement causal, brèches de mur, flaques, concrétions.
@@ -456,6 +502,10 @@ reprendre si le Poste de Garde en demande.
   Il faudrait une block entity dédiée, donc une machine qui peut diverger de celle que le joueur
   fabrique — et c'est justement l'identité stricte entre les deux qui fait la valeur pédagogique
   de la scène. Voir §5.1, note de portée.
+- **Rejeté : meubler pour remplir.** Le réflexe devant une grande salle vide est d'y poser des
+  tonneaux. C'est l'inverse qu'il faut faire : agrandir encore et enlever le reste. Voir R8.
+- **Rejeté : le gravier et l'eau comme matières de ruine.** Voir R9 — l'un s'effondre, l'autre
+  inonde. Les deux ont l'air d'une bonne idée jusqu'au premier chargement de chunk.
 - **Rejeté : une coquille englobante par structure.** C'est la cause racine du « ça se voit que
   c'est un ordinateur » : une boîte creuse cloisonnée donne un plan d'appartement dans un pavé, et
   met de l'air là où il devrait y avoir de la roche. Voir R6.
