@@ -88,12 +88,18 @@ passer à « châssis + distinctif » à leur codage.
 
 ## Vue d'ensemble (recettes de fonctionnement + blocs passifs)
 
+> **Les recettes de construction ne sont PAS ici.** La colonne « Input » décrit ce qu'une machine
+> consomme **à chaque cycle** une fois posée. Quelques blocs passifs y portaient aussi un
+> `craft:` — c'était un doublon du tableau ci-dessus, et il a effectivement dérivé : le Field
+> Emitter y annonçait encore l'ancienne recette après le passage aux châssis. Une seule source par
+> valeur, sinon l'une des deux ment tôt ou tard.
+
 | # | Machine | Tier | Input (par cycle) | Output | Temps | Énergie |
 |---|---|---|---|---|---|---|
 | 1 | Resonance Stabilizer | T1 | Raw Crystal + Quartz | Stable Crystal | 30s | autonome |
 | 2 | Component Assembler | T1 | Stable Crystal + 2 Iron Ingot | 2 Resonance Component | 5s | 3 Osc/tick |
 | 3 | Resonance Whetstone | T1 | Outil endommagé + Stable Crystal | Outil réparé de 25% | 8s | autonome |
-| 4 | Field Emitter | T2 | craft: 4 Component + Stable Crystal + 2 Gold Ingot | champ, portée 8 | — | réserve 4000 Osc |
+| 4 | Field Emitter | T2 | craft: voir le tableau des recettes de construction | champ, portée 8 | — | réserve 4000 Osc |
 | 5 | Flux Purifier | T2 | Stable Crystal + Redstone | Refined Crystal | 45s (22s en surchauffe) | 2 Osc/tick (4 en surchauffe) |
 | 6 | Resonance Storage Cell | T2 | craft: 2 Component + 1 Stable Crystal | stocke 8000 Osc, portable | — | passif |
 | 7 | Resonance Locator | T2 | craft (outil, non consommable) | ping directionnel, **outil à modes** (Ressources / Structures ; maj+clic droit change de mode) | — | 5 Osc/utilisation — *révisé `16` §1* |
