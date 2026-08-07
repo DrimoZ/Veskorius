@@ -41,17 +41,10 @@ public class ModItemModelProvider extends ItemModelProvider {
         withExistingParent("crystal_strider_spawn_egg", mcLoc("item/template_spawn_egg"));
         withExistingParent("custode_spawn_egg", mcLoc("item/template_spawn_egg"));
 
-        // L'objet du Stabilizer reprend le modele de bloc. Il n'est pas genere par
-        // le BlockStateProvider parce que horizontalBlock, contrairement a
-        // simpleBlockWithItem, ne cree pas de modele d'objet.
-        withExistingParent("resonance_stabilizer", modLoc("block/resonance_stabilizer"));
-        withExistingParent("component_assembler", modLoc("block/component_assembler"));
-        withExistingParent("flux_purifier", modLoc("block/flux_purifier"));
-        withExistingParent("resonance_whetstone", modLoc("block/resonance_whetstone"));
-        withExistingParent("field_emitter", modLoc("block/field_emitter"));
-        withExistingParent("tunable_field_emitter", modLoc("block/tunable_field_emitter"));
-        withExistingParent("crystal_crusher", modLoc("block/crystal_crusher"));
-        withExistingParent("crystal_roost", modLoc("block/crystal_roost"));
-        withExistingParent("damping_array", modLoc("block/damping_array"));
+        // Les objets de machine ne sont plus listés ici. Cette liste était à recopier à
+        // chaque machine ajoutée, et rien ne signalait l'oubli : la machine se posait, se
+        // texturait et fonctionnait, seul son objet apparaissait en cube violet. Elle est
+        // désormais produite par ModBlockStateProvider.oriented(), qui est appelé pour
+        // toute machine par construction — voir la note qui y est portée.
     }
 }

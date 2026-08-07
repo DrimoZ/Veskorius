@@ -85,6 +85,7 @@ public class Veskorius {
                 output.accept(ModItems.DAMPING_ARRAY_ITEM.get());
                 output.accept(ModItems.RESONANCE_SLUDGE.get());
                 output.accept(ModItems.VESKORIAN_ALLOY_FORGE_ITEM.get());
+                output.accept(ModItems.RESONANCE_RELAY_ITEM.get());
                 // Matériaux T3.
                 output.accept(ModItems.VESKORIAN_ALLOY_INGOT.get());
                 output.accept(ModItems.VESKORIAN_CONDUCTIVE_ALLOY_INGOT.get());

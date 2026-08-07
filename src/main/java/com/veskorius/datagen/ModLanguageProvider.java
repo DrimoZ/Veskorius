@@ -22,6 +22,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("itemGroup.veskorius.main_tab", "Veskorius");
 
         // Boutons de contrôle des machines (voir MachineControlButton).
+        add("message.veskorius.relay_charge", "Relay: %s/%s Osc");
         add("gui.veskorius.machine_on", "Machine: On (click to turn off)");
         add("gui.veskorius.machine_off", "Machine: Off (click to turn on)");
         add("gui.veskorius.redstone_control", "Redstone control");
@@ -60,6 +61,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.CRYSTAL_ROOST, "Crystal Roost");
         addBlock(ModBlocks.DAMPING_ARRAY, "Damping Array");
         addBlock(ModBlocks.VESKORIAN_ALLOY_FORGE, "Veskorian Alloy Forge");
+        addBlock(ModBlocks.RESONANCE_RELAY, "Resonance Relay");
 
         // Châssis de palier : la base de craft et de texture des machines.
         addBlock(ModBlocks.FRACTURED_CHASSIS, "Fractured Chassis");

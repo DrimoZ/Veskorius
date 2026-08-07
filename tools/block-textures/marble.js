@@ -195,6 +195,34 @@ const faces = {
     fill(c, DISC4, on ? a.hot : m.dark);
   },
 
+  // DEUX ARCS QUI SE RÉPONDENT, décalés à gauche et à droite d'un axe central.
+  // L'émetteur est une cible : concentrique, donc un centre — « ça vient d'ici ».
+  // Le relais doit dire l'inverse : ça entre d'un côté et ça ressort de l'autre. Rien
+  // n'est centré, et c'est tout l'écart de lecture entre une source et un répéteur.
+  resonance_relay: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    slab(c, 6, 0, 4, 16, m.metal, m.metalHi, m.line);
+    // Deux arcs de chaque côté, de plus en plus larges : l'onde qui s'éloigne. Deux et
+    // pas trois — un troisième tomberait sur la colonne 0, que `edges` repasse ensuite
+    // en liseré : il ne resterait de lui que ses deux crochets, lus comme des pixels
+    // égarés. Un motif doit tenir DANS la marge d'un pixel, sinon il n'existe qu'à
+    // moitié une fois le bloc fini.
+    for (let i = 0; i < 2; i++) {
+      const x = 4 - i * 3, h = 6 + i * 6, y = 8 - Math.floor(h / 2);
+      // Éteint, les arcs restent LISIBLES : un relais en panne doit se reconnaître
+      // comme un relais, sinon on ne sait plus lequel des blocs sombres de la ligne
+      // est celui qui ne reçoit plus. Ils perdent leur couleur, pas leur dessin.
+      const col = on ? [a.hot, a.lite][i] : [m.tones[3], m.tones[2]][i];
+      c.rect(x, y, 1, h, col);
+      c.rect(15 - x, y, 1, h, col);
+      c.set(x + 1, y, col);
+      c.set(14 - x, y, col);
+      c.set(x + 1, y + h - 1, col);
+      c.set(14 - x, y + h - 1, col);
+    }
+    c.rect(7, 7, 2, 2, on ? a.hot : m.dark);
+  },
+
   // La même lentille, plus la réglette des trois bandes.
   tunable_field_emitter: (c, m, a, on) => {
     faces.field_emitter(c, m, a, on);

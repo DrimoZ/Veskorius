@@ -13,6 +13,7 @@ import com.veskorius.block.entity.FieldEmitterBlockEntity;
 import com.veskorius.block.entity.FluxPurifierBlockEntity;
 import com.veskorius.block.entity.VeskorianAlloyForgeBlockEntity;
 import com.veskorius.block.entity.RedstoneMode;
+import com.veskorius.block.entity.ResonanceRelayBlockEntity;
 import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
 import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
 import com.veskorius.config.HarmonicsConfig;
@@ -1868,5 +1869,161 @@ public class MachineGameTests {
     private static int progressOf(GameTestHelper helper) {
         ResonanceStabilizerBlockEntity machine = helper.getBlockEntity(MACHINE);
         return machine.getData().get(AbstractMachineBlockEntity.DATA_PROGRESS);
+    }
+
+    // =====================================================================
+    // Resonance Relay (#9) — la portée du réseau
+    // =====================================================================
+
+    /** À 6 blocs de l'émetteur : dans sa portée de 8, donc alimenté. */
+    private static final BlockPos RELAY_A = new BlockPos(4, 1, 10);
+    /** À 9,5 blocs du relais A, mais à 12,7 de l'émetteur : hors de portée de CELUI-CI. */
+    private static final BlockPos FAR = new BlockPos(1, 1, 1);
+    /** Second relais : à portée du premier, hors de portée de l'émetteur. */
+    private static final BlockPos RELAY_B = new BlockPos(1, 1, 3);
+
+    /**
+     * <b>Pourquoi ces tests-là, et eux seuls, réclament chacun leur lot d'exécution.</b>
+     *
+     * <p>Les tests d'un même lot sont posés côte à côte dans le monde et tournent
+     * <b>simultanément</b>. Jusqu'ici c'était sans conséquence : la portée de 8 de
+     * l'émetteur est plus courte que l'écart entre deux arènes, donc aucun champ ne
+     * franchissait la cloison. La portée de <b>20</b> du relais, elle, la franchit — et
+     * {@link ResonanceFieldManager} est un index global, pas un index par arène. Un relais
+     * chargé dans un test alimentait donc les machines du test d'à côté : c'est ainsi que
+     * {@code assemblerIdleWithoutField}, qui n'a rien à voir avec les relais, s'est mis à
+     * échouer en affirmant très correctement qu'il recevait un champ.
+     *
+     * <p>Chaque test de relais tourne donc seul, et <b>déblaie derrière lui</b> — casser le
+     * bloc le retire de l'index. La contrainte est celle du banc d'essai, pas du jeu : dans
+     * un monde, un relais qui couvre vingt blocs de machines est exactement ce qu'on lui
+     * demande.
+     */
+    private static void clearRelayArena(GameTestHelper helper) {
+        helper.setBlock(RELAY_A, Blocks.AIR);
+        helper.setBlock(RELAY_B, Blocks.AIR);
+        helper.setBlock(EMITTER, Blocks.AIR);
+    }
+
+    /**
+     * <b>L'inégalité qui fait exister la machine.</b> Sans elle, le relais ne résoudrait
+     * aucun problème : la position lointaine doit être hors de portée de l'émetteur seul et
+     * dans la portée du relais. Une arène redimensionnée ou une portée retouchée pourrait
+     * casser cette géométrie sans casser aucun autre test — et les tests suivants
+     * passeraient alors pour de mauvaises raisons.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 20)
+    public static void relayGeometryIsWorthTesting(GameTestHelper helper) {
+        int emitterRange = VeskoriusConfig.fieldEmitterRange();
+        helper.assertTrue(EMITTER.distSqr(FAR) > (long) emitterRange * emitterRange,
+            "La position lointaine doit être HORS de portée de l'émetteur seul, sinon le "
+                + "test du relais passerait sans relais");
+        helper.assertTrue(RELAY_A.distSqr(FAR)
+                <= (long) ResonanceRelayBlockEntity.RANGE * ResonanceRelayBlockEntity.RANGE,
+            "…et DANS la portée du relais, sinon aucun relais ne pourrait la couvrir");
+        helper.succeed();
+    }
+
+    /**
+     * <b>Le relais porte réellement le champ plus loin que l'émetteur.</b> C'est la seule
+     * raison d'être de la machine (05-Machines.md #9), et rien d'autre ne la vérifie : la
+     * portée est une donnée, la couverture effective est un comportement.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 200, batch = "relay_reach")
+    public static void relayExtendsTheFieldBeyondTheEmitter(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        helper.startSequence()
+            .thenExecute(() -> chargedEmitter(helper))
+            .thenExecuteAfter(5, () -> helper.assertTrue(
+                ResonanceFieldManager.supply(level, helper.absolutePos(FAR), 1) == 0,
+                "Avant le relais, la position lointaine ne doit être servie par personne"))
+            .thenExecute(() -> helper.setBlock(RELAY_A, ModBlocks.RESONANCE_RELAY.get()))
+            .thenExecuteAfter(40, () -> helper.assertTrue(
+                ResonanceFieldManager.supply(level, helper.absolutePos(FAR), 1) > 0,
+                "Après le relais, elle doit l'être — sinon la machine ne sert à rien"))
+            .thenExecute(() -> clearRelayArena(helper))
+            .thenSucceed();
+    }
+
+    /**
+     * <b>Deux relais à portée l'un de l'autre ne partent pas en récursion.</b>
+     *
+     * <p>C'est la configuration NORMALE d'une chaîne, et c'est exactement celle qui ferait
+     * exploser la pile si {@code extractOsc} rappelait le manager (voir l'en-tête de
+     * {@link ResonanceRelayBlockEntity}). Le bug ne se manifesterait que sur une base déjà
+     * construite, jamais en relecture — d'où ce test, qui échoue par crash et pas par
+     * assertion. Il vérifie en prime que l'énergie franchit bien DEUX sauts.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 300, batch = "relay_chain")
+    public static void relayChainCarriesEnergyWithoutRecursing(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                helper.setBlock(RELAY_A, ModBlocks.RESONANCE_RELAY.get());
+                helper.setBlock(RELAY_B, ModBlocks.RESONANCE_RELAY.get());
+            })
+            .thenExecuteAfter(120, () -> {
+                ResonanceRelayBlockEntity b = helper.getBlockEntity(RELAY_B);
+                helper.assertTrue(b.getReserve() > 0,
+                    "Le second relais est hors de portée de l'émetteur : s'il est chargé, "
+                        + "c'est que l'énergie a franchi deux sauts. Réserve : " + b.getReserve());
+            })
+            .thenExecute(() -> clearRelayArena(helper))
+            .thenSucceed();
+    }
+
+    /**
+     * <b>Un relais isolé ne se nourrit pas de lui-même.</b>
+     *
+     * <p>Il est inscrit à l'index et il est trivialement à portée de sa propre position :
+     * sans la garde du remplissage, il se servirait dans son propre tampon, le manager
+     * s'arrêterait à lui, et aucun relais du monde ne se chargerait jamais. Panne totale et
+     * parfaitement silencieuse — la pire espèce.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 200, batch = "relay_lone")
+    public static void loneRelayNeverFeedsItself(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                helper.setBlock(RELAY_A, ModBlocks.RESONANCE_RELAY.get());
+                ResonanceRelayBlockEntity relay = helper.getBlockEntity(RELAY_A);
+                relay.addDissonance(0); // no-op : force juste le chargement de la BE
+            })
+            .thenExecuteAfter(60, () -> {
+                ResonanceRelayBlockEntity relay = helper.getBlockEntity(RELAY_A);
+                helper.assertTrue(relay.getReserve() == 0,
+                    "Sans source en amont, un relais reste vide. Réserve : " + relay.getReserve());
+                helper.assertFalse(relay.isActive(),
+                    "…et il ne se déclare pas actif, sinon il couvrirait une zone sans rien "
+                        + "pouvoir y fournir");
+            })
+            .thenExecute(() -> clearRelayArena(helper))
+            .thenSucceed();
+    }
+
+    /**
+     * <b>Le relais rediffuse la bande de sa source.</b> Sans ça, intercaler un relais
+     * suffirait à réaccorder une machine désaccordée — le relais laverait les harmoniques,
+     * et toute la mécanique de 06-Energy.md se contournerait avec un bloc à 20 blocs.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 200, batch = "relay_band")
+    public static void relayCarriesTheBandItReceives(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                helper.setBlock(EMITTER, ModBlocks.TUNABLE_FIELD_EMITTER.get());
+                com.veskorius.block.entity.TunableFieldEmitterBlockEntity emitter =
+                    helper.getBlockEntity(EMITTER);
+                emitter.setBand(com.veskorius.energy.HarmonicBand.MEDIAN);
+                emitter.getFuelHandler().insertItem(FieldEmitterBlockEntity.SLOT_FUEL,
+                    new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+                helper.setBlock(RELAY_A, ModBlocks.RESONANCE_RELAY.get());
+            })
+            .thenExecuteAfter(60, () -> {
+                ResonanceRelayBlockEntity relay = helper.getBlockEntity(RELAY_A);
+                helper.assertTrue(relay.getBand() == com.veskorius.energy.HarmonicBand.MEDIAN,
+                    "Le relais doit rediffuser la bande reçue, pas la Fondamentale par "
+                        + "défaut — sinon il blanchit les harmoniques. Bande : " + relay.getBand());
+            })
+            .thenExecute(() -> clearRelayArena(helper))
+            .thenSucceed();
     }
 }

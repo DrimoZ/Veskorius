@@ -4,7 +4,7 @@ const {MARBLE,V,C,S,marble,edges,slab,faces,front,side,top}=require('./marble');
 const {Canvas,rng}=require('./draw');
 const TIER_OF={resonance_stabilizer:'t1',component_assembler:'t1',resonance_whetstone:'t1',
  crystal_crusher:'t1',flux_purifier:'t2',crystal_roost:'t2',field_emitter:'t2',
- tunable_field_emitter:'t2',damping_array:'t3',veskorian_alloy_forge:'t3'};
+ tunable_field_emitter:'t2',damping_array:'t3',veskorian_alloy_forge:'t3',resonance_relay:'t3'};
 const ACCENT={damping_array:C,veskorian_alloy_forge:{deep:'#8E5A15',mid:'#D8922A',lite:'#F0B863',hot:'#FBE0B0'}};
 const tex={};
 for(const k of ['t1','t2','t3']){

@@ -431,6 +431,23 @@ public class ModBlocks {
                 .noOcclusion()
                 .lightLevel(MACHINE_GLOW));
 
+    /**
+     * Machine #9 (05-Machines.md). <b>La portée du réseau, et son seul coût continu.</b>
+     * Même famille visuelle que les émetteurs (FACING + LIT), parce que c'en est un —
+     * simplement un qui ne brûle rien et ne fait que répéter ce qu'il reçoit.
+     */
+    public static final DeferredBlock<ResonanceRelayBlock> RESONANCE_RELAY =
+        BLOCKS.registerBlock("resonance_relay",
+            ResonanceRelayBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                // Mât ajouré : sans ça, on voit à travers le monde par ses vides.
+                .noOcclusion()
+                .lightLevel(EMITTER_GLOW));
+
     public static final DeferredBlock<net.minecraft.world.level.block.Block> VESKORIAN_ALLOY_BLOCK =
         BLOCKS.registerSimpleBlock("veskorian_alloy_block",
             BlockBehaviour.Properties.of()

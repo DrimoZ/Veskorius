@@ -59,6 +59,12 @@ public class ModBlockStateProvider extends BlockStateProvider {
         emitter(ModBlocks.FIELD_EMITTER.get(), "field_emitter", ATTUNED);
         emitter(ModBlocks.TUNABLE_FIELD_EMITTER.get(), "tunable_field_emitter", ATTUNED);
 
+        // Le relais est un émetteur, mais il ne doit PAS ressembler à un émetteur : posé au
+        // milieu d'un trajet, on doit savoir de loin s'il faut le ravitailler (émetteur) ou
+        // seulement remonter sa chaîne (relais). D'où un MÂT là où l'émetteur est une tour —
+        // même famille, silhouette opposée : mince et haut contre large et tassé.
+        relay(ModBlocks.RESONANCE_RELAY.get(), "resonance_relay", VESKORIAN);
+
         // --- Châssis nus ------------------------------------------------------
         // Le bloc de base, posable tel quel. C'est littéralement le boîtier que
         // portent les machines de son palier : côtés et dessus sont les MÊMES fichiers.
@@ -229,7 +235,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
     private void machine(Block block, String name, String chassisName, Shape shape) {
         ModelFile off = shaped(name, chassisName, name + "_front", shape);
         ModelFile on = shaped(name + "_on", chassisName, name + "_front_on", shape);
-        oriented(block, off, on, AbstractMachineBlock.FACING, AbstractMachineBlock.LIT);
+        oriented(block, name, off, on, AbstractMachineBlock.FACING, AbstractMachineBlock.LIT);
     }
 
     /**
@@ -242,7 +248,14 @@ public class ModBlockStateProvider extends BlockStateProvider {
     private void emitter(Block block, String name, String chassisName) {
         ModelFile off = shaped(name, chassisName, name + "_front", TOWER);
         ModelFile on = shaped(name + "_on", chassisName, name + "_front_on", TOWER);
-        oriented(block, off, on, FieldEmitterBlock.FACING, FieldEmitterBlock.LIT);
+        oriented(block, name, off, on, FieldEmitterBlock.FACING, FieldEmitterBlock.LIT);
+    }
+
+    /** Même fabrique, silhouette de mât. Voir la note à l'appel. */
+    private void relay(Block block, String name, String chassisName) {
+        ModelFile off = shaped(name, chassisName, name + "_front", MAST);
+        ModelFile on = shaped(name + "_on", chassisName, name + "_front_on", MAST);
+        oriented(block, name, off, on, FieldEmitterBlock.FACING, FieldEmitterBlock.LIT);
     }
 
 
@@ -252,13 +265,28 @@ public class ModBlockStateProvider extends BlockStateProvider {
      * couple (orientation, état). Le modèle « éteint » garde le nom nu du bloc : c'est
      * lui que réutilisent les modèles d'objet, qui n'ont donc pas à changer.
      */
-    /** Une variante par couple (orientation, état allumé). */
-    private void oriented(Block block, ModelFile off, ModelFile on,
+    /**
+     * Une variante par couple (orientation, état allumé) — <b>et le modèle d'objet</b>.
+     *
+     * <p>Ce dernier était jusqu'ici recopié à la main dans {@code ModItemModelProvider},
+     * une ligne par machine. Le piège est que rien ne signale l'oubli : la machine se pose,
+     * se texture et fonctionne parfaitement, et seul son <b>objet</b> apparaît en cube
+     * violet — dans l'inventaire et dans la main, jamais dans le monde. La Veskorian Alloy
+     * Forge est partie ainsi. Le modèle d'objet est donc produit ici, par la méthode qui ne
+     * peut pas ne pas être appelée : ajouter une machine sans son objet est désormais
+     * impossible plutôt que seulement déconseillé.
+     */
+    private void oriented(Block block, String name, ModelFile off, ModelFile on,
                           DirectionProperty facing, BooleanProperty lit) {
         getVariantBuilder(block).forAllStates((BlockState state) -> ConfiguredModel.builder()
             .modelFile(state.getValue(lit) ? on : off)
             .rotationY(((int) state.getValue(facing).toYRot() + FACING_OFFSET) % 360)
             .build());
+        // Sauf pour les blocs de structure (émetteur ancien, relais endommagé), qui n'ont
+        // volontairement aucun objet : leur en générer un serait un fichier orphelin.
+        if (block.asItem() != net.minecraft.world.item.Items.AIR) {
+            itemModels().withExistingParent(name, modLoc("block/" + name));
+        }
     }
 
     // --- Géométrie 3D ---------------------------------------------------------
@@ -357,6 +385,21 @@ public class ModBlockStateProvider extends BlockStateProvider {
         p.cube(b, 1, 3, 1, 15, 12, 15, "#side", "#top", "#front", false);
         p.cube(b, 3, 12, 3, 13, 15, 13, "#side", "#top", "#side", false);
         p.cube(b, 6, 15, 6, 10, 16, 10, "#top", "#top", "#top", false);
+    };
+
+    /**
+     * Mât relais : semelle étroite, fût mince, deux bras en croix, tête. C'est la seule
+     * silhouette du mod qui laisse voir le décor <b>à travers son milieu</b> sur toute la
+     * largeur du bloc — un appareil qu'on plante en terrain découvert et qu'on doit repérer
+     * de très loin, à contre-jour, en ne lisant que sa découpe.
+     */
+    private static final Shape MAST = (p, b) -> {
+        p.cube(b, 3, 0, 3, 13, 2, 13, "#side", "#top", "#side", false);   // semelle
+        p.cube(b, 6, 2, 6, 10, 11, 10, "#front", "#top", "#front", false); // fût
+        p.bar(b, 1, 8, 7, 15, 9, 9);                                       // bras est-ouest
+        p.bar(b, 7, 10, 1, 9, 11, 15);                                     // bras nord-sud
+        p.cube(b, 5, 11, 5, 11, 14, 11, "#side", "#top", "#front", false); // tête
+        p.cube(b, 7, 14, 7, 9, 16, 9, "#top", "#top", "#top", false);      // pointe
     };
 
     /** Assemble un modèle à partir d'une silhouette et d'un jeu de textures. */

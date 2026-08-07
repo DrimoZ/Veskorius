@@ -152,6 +152,19 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModTags.Items.IRON_SUBSTITUTES)
                 .requires(blueprint(3)));
 
+        // Resonance Relay (#9) : 4 Refined Crystal + 2 Conductive Alloy Ingot + 1 Diamond.
+        //
+        // L'alliage CONDUCTEUR, et lui seul : c'est ici que la branche du métal choisie à la
+        // Forge se paie ou se récompense. Un joueur qui n'a fondu que du fer a de quoi bâtir
+        // et rien pour porter son champ ; il lui faut retourner à la Forge avec de l'or. Deux
+        // lingots interchangeables auraient fait de ce choix une décoration.
+        machine(recipeOutput, ModBlocks.RESONANCE_RELAY.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.VESKORIAN_CONDUCTIVE_ALLOY_INGOT.get(), b -> b
+                .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 4)
+                .requires(ModItems.VESKORIAN_CONDUCTIVE_ALLOY_INGOT.get(), 2)
+                .requires(Items.DIAMOND)
+                .requires(blueprint(3)));
+
         // Émetteur Accordable : un Field Emitter + 2 Refined Crystal (l'accord demande
         // du cristal raffiné) + blueprint T2 rendu. Upgrade, pas une machine de plus.
         net.minecraft.data.recipes.ShapelessRecipeBuilder

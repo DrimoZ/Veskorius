@@ -34,6 +34,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.CRYSTAL_ROOST.get());
         dropSelf(ModBlocks.DAMPING_ARRAY.get());
         dropSelf(ModBlocks.VESKORIAN_ALLOY_FORGE.get());
+        dropSelf(ModBlocks.RESONANCE_RELAY.get());
 
         // La poche de cristal lâche du Raw Resonance Crystal (Fortune s'applique,
         // Silk Touch récupère le bloc lui-même) — comportement de minerai standard.
