@@ -831,22 +831,34 @@ public class MachineGameTests {
      */
     @GameTest(template = EMPTY, timeoutTicks = 40)
     public static void purifierInputLossLogic(GameTestHelper helper) {
-        helper.assertFalse(FluxPurifierBlockEntity.losesInput(false, 0.2f, 0.0f),
+        helper.assertFalse(FluxPurifierBlockEntity.losesInput(false, false, true, 0.2f, 0.0f),
             "Hors surchauffe : aucune perte même au tirage 0");
-        helper.assertFalse(FluxPurifierBlockEntity.losesInput(false, 0.2f, 0.99f),
+        helper.assertFalse(FluxPurifierBlockEntity.losesInput(false, false, true, 0.2f, 0.99f),
             "Hors surchauffe : aucune perte");
-        helper.assertTrue(FluxPurifierBlockEntity.losesInput(true, 0.2f, 0.0f),
+        helper.assertTrue(FluxPurifierBlockEntity.losesInput(true, false, true, 0.2f, 0.0f),
             "Surchauffe, tirage 0 < 0.2 : perte");
-        helper.assertTrue(FluxPurifierBlockEntity.losesInput(true, 0.2f, 0.19f),
+        helper.assertTrue(FluxPurifierBlockEntity.losesInput(true, false, true, 0.2f, 0.19f),
             "Surchauffe, tirage 0.19 < 0.2 : perte");
-        helper.assertFalse(FluxPurifierBlockEntity.losesInput(true, 0.2f, 0.2f),
+        helper.assertFalse(FluxPurifierBlockEntity.losesInput(true, false, true, 0.2f, 0.2f),
             "Surchauffe, tirage == chance : pas de perte (comparaison stricte)");
-        helper.assertFalse(FluxPurifierBlockEntity.losesInput(true, 0.2f, 0.5f),
+        helper.assertFalse(FluxPurifierBlockEntity.losesInput(true, false, true, 0.2f, 0.5f),
             "Surchauffe, tirage 0.5 >= 0.2 : pas de perte");
-        helper.assertFalse(FluxPurifierBlockEntity.losesInput(true, 0.0f, 0.0f),
+        helper.assertFalse(FluxPurifierBlockEntity.losesInput(true, false, true, 0.0f, 0.0f),
             "Chance 0 : jamais de perte");
-        helper.assertTrue(FluxPurifierBlockEntity.losesInput(true, 1.0f, 0.999f),
+        helper.assertTrue(FluxPurifierBlockEntity.losesInput(true, false, true, 1.0f, 0.999f),
             "Chance 1 : toujours perte en surchauffe");
+
+        // Recette `stable` : par DÉFAUT la surchauffe garde son risque. Le contraire
+        // ferait de la surchauffe un gain sans contrepartie sur toute la boucle T1, et
+        // il n'y aurait plus aucune raison de ne pas la laisser allumée en permanence.
+        helper.assertTrue(FluxPurifierBlockEntity.losesInput(true, true, true, 1.0f, 0.5f),
+            "Recette stable + overheatIgnoresStable : le risque de surchauffe demeure");
+        // Réglage inverse : `stable` veut alors dire « ne perd jamais rien, point ».
+        helper.assertFalse(FluxPurifierBlockEntity.losesInput(true, true, false, 1.0f, 0.5f),
+            "Recette stable + overheatIgnoresStable=false : aucune perte possible");
+        // Le réglage ne doit toucher QUE les recettes stables.
+        helper.assertTrue(FluxPurifierBlockEntity.losesInput(true, false, false, 1.0f, 0.5f),
+            "overheatIgnoresStable=false ne protège pas une recette non stable");
         helper.succeed();
     }
 
@@ -1651,6 +1663,9 @@ public class MachineGameTests {
             "Défaut augmentStacking FREE, vaut " + MachinesConfig.augmentStacking());
         helper.assertTrue(MachinesConfig.augmentStackingCap() == 2,
             "Défaut augmentStackingCap 2, vaut " + MachinesConfig.augmentStackingCap());
+        helper.assertTrue(MachinesConfig.overheatIgnoresStable(),
+            "Défaut overheatIgnoresStable true : la surchauffe reste un pari, même sur une "
+                + "recette stable");
         helper.assertTrue(MachinesConfig.MAX_AUGMENT_SLOTS == 4,
             "MAX_AUGMENT_SLOTS vaut 4 — c'est la taille d'inventaire RÉSERVÉE par machine. "
                 + "La changer désaligne les sauvegardes existantes, elle ne doit pas bouger "

@@ -50,6 +50,7 @@ public final class MachinesConfig {
     public static final ModConfigSpec.DoubleValue OVERHEAT_SPEED_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue OVERHEAT_OSC_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue OVERHEAT_INPUT_LOSS_CHANCE;
+    public static final ModConfigSpec.BooleanValue OVERHEAT_IGNORES_STABLE;
 
     static {
         ModConfigSpec.Builder b = new ModConfigSpec.Builder();
@@ -98,6 +99,16 @@ public final class MachinesConfig {
                 "Set to 0.0 to remove the risk entirely (you lose the speed/safety trade-off).")
             .defineInRange("overheatInputLossChance", 0.2, 0.0, 1.0);
 
+        OVERHEAT_IGNORES_STABLE = b
+            .comment("Does overheating keep its risk on a recipe flagged `stable`?",
+                "A `stable` recipe never fails from harmonic detune or dissonance (all T1 recipes",
+                "are, so the opening loop can never frustrate). Overheating is different: it is a",
+                "bet the player switches ON, so by default it stays risky even there —",
+                "otherwise every stable recipe would want overheat permanently enabled and the",
+                "choice would vanish. Set to false to make `stable` mean 'never loses an input,",
+                "full stop'. Design default: true.")
+            .define("overheatIgnoresStable", true);
+
         b.pop();
 
         SPEC = b.build();
@@ -115,6 +126,11 @@ public final class MachinesConfig {
 
     public static int augmentStackingCap() {
         return AUGMENT_STACKING_CAP.getAsInt();
+    }
+
+    /** Vrai si la surchauffe garde son risque sur une recette {@code stable}. */
+    public static boolean overheatIgnoresStable() {
+        return OVERHEAT_IGNORES_STABLE.get();
     }
 
     /**

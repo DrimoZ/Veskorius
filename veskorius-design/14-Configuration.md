@@ -78,6 +78,7 @@ maker éditer des clés qui n'existent pas.
 | `machines` | `overheat` | `overheatSpeedMultiplier` | 2.0 | Surchauffe : diviseur de la durée de cycle |
 | `machines` | `overheat` | `overheatOscMultiplier` | 2.0 | Surchauffe : multiplicateur de la conso d'Osc |
 | `machines` | `overheat` | `overheatInputLossChance` | 0.2 | Surchauffe : proba de perdre l'entrée sans sortie |
+| `machines` | `overheat` | `overheatIgnoresStable` | `true` | La surchauffe garde son risque même sur une recette `stable` |
 | `mobs` | `custode` | `custodeHealth` | 30 | PV du Custode (individus nouvellement apparus) |
 | `mobs` | `custode` | `custodeDamage` | 6 | Dégâts d'attaque du Custode |
 | `mobs` | `custode` | `custodeDetectionRange` | 6 | Rayon de ciblage passif du Custode |
@@ -174,7 +175,7 @@ façade, donc il couvre tous les thèmes d'un coup.
 | `harmonics.hud` | `enabled` / `updateIntervalTicks` | HUD de champ : envoi serveur→client aux seuls porteurs du Locator. À `false`, **aucun paquet n'est émis** (défaut : activé, 10 ticks). Indépendant de l'interrupteur maître — harmoniques coupées, le HUD se réduit à la réserve, ce qui reste vrai |
 | `machines.augment` | `augmentSlots` | ✅ **codé (A9)** — nombre de slots d'augment actifs, 1-4 (défaut **1** = comportement historique). Max réservé fixe (4) |
 | `machines.augment` | `augmentStacking` / `augmentStackingCap` | ✅ **codé (A9)** — cumul d'un même effet entre slots : `FORBID` / `CAPPED` (+ cap) / `FREE` (défaut). Ne mord qu'avec >1 slot |
-| `machines` | `overheatIgnoresStable` | ⚠️ **Pas codé.** La surchauffe garde-t-elle son risque sur une recette `stable` ? Aujourd'hui elle le garde **toujours** — c'est le comportement décrit par `05` et `06`, mais le réglage promis (« sauf config contraire ») n'existe pas encore |
+| `machines.overheat` | `overheatIgnoresStable` | ✅ **codé (2026-08-06)** — la surchauffe garde-t-elle son risque sur une recette `stable` ? Défaut **`true`** : oui. Une recette stable ne rate jamais par *désaccord* (c'est ce qui protège la boucle de départ), mais la surchauffe est un pari que le joueur **active** — sans risque, toute recette stable voudrait la surchauffe en permanence et le choix disparaîtrait. À `false`, `stable` veut dire « ne perd jamais rien, point » |
 | `generation` | `gasIntensityByStrata` | ⚠️ **Pas codé** (arrive avec le gaz de Résonance, Phase 2). Intensité du gaz par strate (**garantit le scaling de difficulté**, voir `07`) |
 
 ## Reste à faire / différé (roadmap config)

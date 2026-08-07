@@ -174,7 +174,8 @@ Les recettes de fonctionnement (`MachineRecipe`, data-driven) gagnent un champ *
 - `stable: true` → la recette **réussit toujours**, quels que soient le désaccord et la dissonance
   de la machine. **Toutes les recettes T1 le sont par défaut.**
 - La **surchauffe** conserve son risque même sur une recette stable (c'est un pari que le joueur
-  choisit d'activer), sauf réglage contraire en config.
+  choisit d'activer), sauf réglage contraire en config — clé `machines.overheat.
+  overheatIgnoresStable`, ✅ codée le 2026-08-06 (défaut `true` : le risque demeure).
 
 Levier direct pour un modpack maker : rendre increvable ce qu'il veut, sans toucher au code.
 

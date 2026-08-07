@@ -196,7 +196,9 @@ cristallisée, la substance même de l'Effondrement.
 Une recette peut être marquée **`stable: true`** (`05`, data-driven) : elle **réussit toujours**, quel
 que soit le désaccord ou la dissonance. Toutes les recettes **T1** le sont par défaut — la boucle de
 départ ne peut jamais frustrer. La **surchauffe** garde son risque (c'est un pari volontaire du
-joueur), sauf config contraire.
+joueur), sauf config contraire (`machines.overheat.overheatIgnoresStable`, ✅ codée le
+2026-08-06 — défaut `true` : le risque demeure, sinon toute recette T1 voudrait la surchauffe en
+permanence et le pari n'en serait plus un).
 
 ### Lecture du champ par le joueur
 
