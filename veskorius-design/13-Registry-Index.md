@@ -168,7 +168,8 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 |---|---|---|
 | Habitation Modeste → **Hameau** | `modest_dwelling` | 08, 17 (✅ codé — place commune + 3 à 6 logis tirés d'un pool. **Nom de registre conservé exprès** : le changer casserait mondes, datapacks, `#locatable` et advancements) |
 | Avant-poste | `outpost` | 08, 17 (✅ codé — donjon à **trois paliers** : sas de Résonance, émetteur ancien, console, 2 ailes facultatives en jigsaw) |
-| Poste de Garde | `guard_post` | 08 (À coder Phase 2 — même socle `ModStructures`) |
+| Poste de Garde | `guard_post` | 08, 17 (✅ codé — **tour inversée** : vis ouverte sur un puits de 23 blocs, deux paliers d'alcôves, arsenal voûté au fond) |
+| Puits de Forage abandonné | `drill_shaft` | 17 §6 (✅ codé — la structure T1, commune et sans déblocage : elle enseigne « descendre = cristaux ») |
 | Sigma Laboratory | `sigma_laboratory` | 08 |
 | Archive Régionale | `regional_archive` | 08 |
 | Cœur de Faille (poche générée, pas une structure `structure_set` classique) | `rift_pocket` | 07, 08 |

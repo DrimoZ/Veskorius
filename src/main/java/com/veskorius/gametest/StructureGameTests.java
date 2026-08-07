@@ -109,7 +109,8 @@ public class StructureGameTests {
         for (String wing : new String[] {
             "outpost_wing_store", "outpost_wing_quarters", "outpost_wing_collapsed",
             "hamlet", "hamlet_dwelling", "hamlet_workshop", "hamlet_cistern",
-            "hamlet_collapsed", "ruin_marker", "ruin_marker_pillar", "sunken_chamber"}) {
+            "hamlet_collapsed", "ruin_marker", "ruin_marker_pillar", "sunken_chamber",
+            "guard_post", "drill_shaft"}) {
             place(helper, wing);
             for (BlockPos pos : allPositions(helper, 25, 17, 25)) {
                 BlockState state = helper.getBlockState(pos);
@@ -144,10 +145,21 @@ public class StructureGameTests {
     @GameTest(template = PIECE_ARENA, timeoutTicks = 200)
     public static void outpostIsWalkableFromEntranceToConsole(GameTestHelper helper) {
         place(helper, "outpost");
-        BlockPos start = ANCHOR.offset(22, 18, 11);  // vestibule, hors du cône d'éboulis
-        BlockPos goal = ANCHOR.offset(30, 4, 22);    // devant la console, sur l'estrade
+        assertWalkable(helper, "outpost",
+            ANCHOR.offset(22, 18, 11),   // vestibule, hors du cône d'éboulis
+            ANCHOR.offset(30, 4, 22),    // devant la console, sur l'estrade
+            39, 31, 39);
+    }
 
-        helper.assertTrue(standable(helper, start), "Le point de départ doit être praticable");
+    /**
+     * Parcourt les cases <b>où un joueur tient debout</b> depuis {@code start}, et exige
+     * d'atteindre {@code goal}. Tolérances d'un pas réel : monter d'un bloc, descendre de
+     * trois.
+     */
+    private static void assertWalkable(GameTestHelper helper, String piece,
+                                       BlockPos start, BlockPos goal, int w, int h, int d) {
+        helper.assertTrue(standable(helper, start),
+            "Le point de départ de « " + piece + " » doit être praticable");
         java.util.Set<BlockPos> seen = new java.util.HashSet<>();
         java.util.ArrayDeque<BlockPos> queue = new java.util.ArrayDeque<>();
         seen.add(start);
@@ -159,11 +171,9 @@ public class StructureGameTests {
                 return;
             }
             for (net.minecraft.core.Direction dir : net.minecraft.core.Direction.Plane.HORIZONTAL) {
-                // Un joueur monte d'un bloc et descend de plusieurs : on autorise +1 / -3,
-                // ce qui est exactement ce que permet une marche et ce que pardonne une chute.
                 for (int dy = 1; dy >= -3; dy--) {
                     BlockPos next = at.relative(dir).offset(0, dy, 0);
-                    if (seen.contains(next) || !inPiece(next) || !standable(helper, next)) {
+                    if (seen.contains(next) || !inBox(next, w, h, d) || !standable(helper, next)) {
                         continue;
                     }
                     seen.add(next);
@@ -172,13 +182,47 @@ public class StructureGameTests {
                 }
             }
         }
-        helper.fail("La console n'est pas atteignable depuis le vestibule : le donjon est "
-            + "muré quelque part (" + seen.size() + " cases explorées)");
+        helper.fail("Dans « " + piece + " », " + goal.subtract(ANCHOR) + " n'est pas atteignable "
+            + "depuis " + start.subtract(ANCHOR) + " : la structure est murée quelque part ("
+            + seen.size() + " cases explorées)");
     }
 
-    private static boolean inPiece(BlockPos p) {
-        return p.getX() >= 1 && p.getX() <= 39 && p.getY() >= 1 && p.getY() <= 31
-            && p.getZ() >= 1 && p.getZ() <= 39;
+    /**
+     * <b>Le Poste de Garde se descend, de la meurtrière à l'arsenal.</b>
+     *
+     * <p>Une tour à quatre paliers desservis par une seule vis est le cas où le défaut
+     * « valide mais infranchissable » est le plus probable : chaque ouverture de palier
+     * doit tomber <b>exactement</b> sur la marche de sa hauteur, sinon elle débouche à
+     * côté — c'est-à-dire dans le vide du puits. C'est pour ça que les sorties sont
+     * <i>calculées</i> ({@code Masonry.spiralExit}) et non placées à l'estime ; ce test
+     * vérifie que le calcul est juste.
+     */
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 200)
+    public static void guardPostIsWalkableFromSlitToArsenal(GameTestHelper helper) {
+        place(helper, "guard_post");
+        assertWalkable(helper, "guard_post",
+            ANCHOR.offset(13, 28, 6), ANCHOR.offset(13, 5, 20), 27, 32, 27);
+    }
+
+    /**
+     * <b>Le Puits de Forage se descend sans se tuer.</b>
+     *
+     * <p>Il n'a pas d'escalier — c'est un chantier abandonné, on descend de plateforme en
+     * plateforme — et c'est justement pour ça qu'il a besoin de ce test : une plateforme
+     * de trop retirée, ou décalée d'un bloc, et la « descente » devient une chute de
+     * quinze mètres. Le parcours n'autorise que ce qu'un joueur encaisse sans y penser
+     * (trois blocs), donc il échoue avant le joueur.
+     */
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 200)
+    public static void drillShaftIsDescendableToTheCrystal(GameTestHelper helper) {
+        place(helper, "drill_shaft");
+        assertWalkable(helper, "drill_shaft",
+            ANCHOR.offset(6, 24, 7), ANCHOR.offset(8, 5, 9), 15, 28, 15);
+    }
+
+    private static boolean inBox(BlockPos p, int w, int h, int d) {
+        return p.getX() >= 1 && p.getX() <= w && p.getY() >= 1 && p.getY() <= h
+            && p.getZ() >= 1 && p.getZ() <= d;
     }
 
     /**
@@ -242,6 +286,8 @@ public class StructureGameTests {
     /** Les pièces et leur gabarit, pour les tests qui balaient un volume entier. */
     private static final String[][] PIECES = {
         {"outpost", "39", "31", "39"},
+        {"guard_post", "27", "32", "27"},
+        {"drill_shaft", "15", "28", "15"},
         {"outpost_wing_store", "15", "11", "15"},
         {"outpost_wing_quarters", "15", "11", "15"},
         {"outpost_wing_collapsed", "15", "11", "15"},

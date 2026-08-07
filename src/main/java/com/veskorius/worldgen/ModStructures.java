@@ -76,6 +76,8 @@ public final class ModStructures {
     public static final ResourceKey<StructureTemplatePool> OUTPOST_WING_POOL = poolKey("outpost/wing");
     public static final ResourceKey<StructureTemplatePool> OUTPOST_CAP_POOL = poolKey("outpost/cap");
 
+    public static final ResourceKey<StructureTemplatePool> GUARD_POST_POOL = poolKey("guard_post");
+    public static final ResourceKey<StructureTemplatePool> DRILL_SHAFT_POOL = poolKey("drill_shaft");
     public static final ResourceKey<StructureTemplatePool> RUIN_MARKER_POOL = poolKey("ruin_marker");
     public static final ResourceKey<StructureTemplatePool> SUNKEN_CHAMBER_POOL = poolKey("sunken_chamber");
 
@@ -101,11 +103,27 @@ public final class ModStructures {
      * noierait le mode Structures du Locator sous des bornes de trois blocs, et ferait
      * perdre à l'outil ce qui fait sa valeur.
      */
+    /**
+     * <b>Poste de Garde</b> (08-Structures.md) : strate Custodes, Y 0 à −40, souvent à
+     * moins de 300 blocs d'un Avant-poste. Loot T2, jamais de fragment de recette — le
+     * combat y est optionnel et ne garde aucune progression.
+     */
+    public static final ResourceKey<Structure> GUARD_POST = structureKey("guard_post");
+
+    /**
+     * <b>Puits de Forage abandonné</b> (17-Dungeons.md §6) : la structure qui manquait au
+     * T1. Peu profonde et commune, elle enseigne « descendre = cristaux » dans la
+     * première heure, sans rien débloquer.
+     */
+    public static final ResourceKey<Structure> DRILL_SHAFT = structureKey("drill_shaft");
+
     public static final ResourceKey<Structure> RUIN_MARKER = structureKey("ruin_marker");
     public static final ResourceKey<Structure> SUNKEN_CHAMBER = structureKey("sunken_chamber");
 
     public static final ResourceKey<StructureSet> MODEST_DWELLING_SET = setKey("modest_dwelling");
     public static final ResourceKey<StructureSet> OUTPOST_SET = setKey("outpost");
+    public static final ResourceKey<StructureSet> GUARD_POST_SET = setKey("guard_post");
+    public static final ResourceKey<StructureSet> DRILL_SHAFT_SET = setKey("drill_shaft");
     public static final ResourceKey<StructureSet> RUIN_MARKER_SET = setKey("ruin_marker");
     public static final ResourceKey<StructureSet> SUNKEN_CHAMBER_SET = setKey("sunken_chamber");
 
@@ -169,6 +187,10 @@ public final class ModStructures {
         context.register(RUIN_MARKER_POOL, rigid(empty, List.of(
             Pair.of(StructurePoolElement.single(id("ruin_marker_pillar").toString(), ruined), 2),
             Pair.of(StructurePoolElement.single(id("ruin_marker").toString(), ruined), 1))));
+        context.register(GUARD_POST_POOL, rigid(empty, List.of(
+            Pair.of(StructurePoolElement.single(id("guard_post").toString()), 1))));
+        context.register(DRILL_SHAFT_POOL, rigid(empty, List.of(
+            Pair.of(StructurePoolElement.single(id("drill_shaft").toString(), worn), 1))));
         context.register(SUNKEN_CHAMBER_POOL, rigid(empty, List.of(
             Pair.of(StructurePoolElement.single(id("sunken_chamber").toString(), ruined), 1))));
     }
@@ -185,6 +207,14 @@ public final class ModStructures {
             pools.getOrThrow(HAMLET_POOL), -20, -8));
         // Petites ruines : peu profondes (on doit les croiser en creusant normalement) et
         // sans exigence de strate — ce ne sont pas des lieux, ce sont des restes.
+        // Poste de Garde : 35 de haut, donc plancher entre −40 et −38 pour tenir dans la
+        // strate « 0 à −40 ». C'est une TOUR : elle occupe presque toute la strate à elle
+        // seule, et c'est le propos.
+        context.register(GUARD_POST, jigsaw(overworld,
+            pools.getOrThrow(GUARD_POST_POOL), -40, -38));
+        // Puits de forage : peu profond, dans la strate des poches de cristal (0 à −20).
+        context.register(DRILL_SHAFT, jigsaw(overworld,
+            pools.getOrThrow(DRILL_SHAFT_POOL), -30, -22));
         context.register(RUIN_MARKER, jigsaw(overworld,
             pools.getOrThrow(RUIN_MARKER_POOL), -30, -6));
         context.register(SUNKEN_CHAMBER, jigsaw(overworld,
@@ -213,6 +243,17 @@ public final class ModStructures {
         // Petites ruines : denses. La borne toutes les ~130 blocs, la chambre engloutie
         // toutes les ~350 — assez pour qu'on en croise en creusant sans les chercher, ce
         // qui est tout leur propos. À valider en playtest comme le reste.
+        // Poste de Garde : 1 / ~3000 blocs (08-Structures.md). Sel proche de celui de
+        // l'Avant-poste pour qu'ils tombent souvent dans la même région — le dossier dit
+        // « souvent à moins de 300 blocs d'un Avant-poste ».
+        context.register(GUARD_POST_SET, new StructureSet(
+            structures.getOrThrow(GUARD_POST),
+            new RandomSpreadStructurePlacement(40, 12, RandomSpreadType.LINEAR, 74_328_701)));
+        // Puits de forage : commun. C'est la première ruine du joueur, elle doit se
+        // croiser tôt et sans la chercher.
+        context.register(DRILL_SHAFT_SET, new StructureSet(
+            structures.getOrThrow(DRILL_SHAFT),
+            new RandomSpreadStructurePlacement(16, 6, RandomSpreadType.LINEAR, 33_814_275)));
         context.register(RUIN_MARKER_SET, new StructureSet(
             structures.getOrThrow(RUIN_MARKER),
             new RandomSpreadStructurePlacement(8, 3, RandomSpreadType.LINEAR, 51_772_113)));

@@ -83,6 +83,9 @@ public class ModStructurePieceProvider implements DataProvider {
     public static final String HAMLET_COLLAPSED = "hamlet_collapsed";
     public static final String HAMLET_CAP = "hamlet_cap";
 
+    public static final String GUARD_POST = "guard_post";
+    public static final String DRILL_SHAFT = "drill_shaft";
+
     public static final String RUIN_MARKER = "ruin_marker";
     public static final String RUIN_MARKER_PILLAR = "ruin_marker_pillar";
     public static final String SUNKEN_CHAMBER = "sunken_chamber";
@@ -108,6 +111,8 @@ public class ModStructurePieceProvider implements DataProvider {
         pieces.put(HAMLET_CISTERN, hamletCistern());
         pieces.put(HAMLET_COLLAPSED, hamletCollapsed());
         pieces.put(HAMLET_CAP, cap(HOUSE_H, HOUSE_D));
+        pieces.put(GUARD_POST, guardPost());
+        pieces.put(DRILL_SHAFT, drillShaft());
         pieces.put(RUIN_MARKER, ruinMarker());
         pieces.put(RUIN_MARKER_PILLAR, ruinMarkerPillar());
         pieces.put(SUNKEN_CHAMBER, sunkenChamber());
@@ -500,6 +505,193 @@ public class ModStructurePieceProvider implements DataProvider {
         houseConnector(b, 1, 2, 7, Direction.WEST);
         houseConnector(b, HOUSE_W - 2, 2, 7, Direction.EAST);
         return b;
+    }
+
+    // =========================================================================
+    // POSTE DE GARDE — la tour inversée (08-Structures.md, 17-Dungeons.md §5.3)
+    // =========================================================================
+    //
+    // Une garnison qui DESCEND. C'est l'image la plus marquante pour le moins cher, et
+    // elle porte le sens du lieu : les Custodes gardaient ce qui était en dessous.
+    //
+    // Deux choix font toute la salle, et aucun ne coûte un bloc de plus :
+    //
+    //   1. L'escalier est OUVERT SUR LE VIDE. Le combat devient positionnel — on recule,
+    //      on contourne, on tombe — au lieu d'être un échange de coups dans un couloir.
+    //   2. LA LUMIÈRE AUGMENTE EN DESCENDANT, l'inverse de l'intuition. Ce n'est pas un
+    //      effet : ça DIT où le réseau a survécu, et donc pourquoi les gardiens du bas
+    //      sont encore debout quand les alcôves du haut sont vides.
+    //
+    //   y30 ┌───────┐  meurtrière — l'entrée, au ras d'une grotte
+    //   y24 │  ░ ░  │  alcôves VIDES               ← noir
+    //   y17 │  ░█░  │  corps de garde (1 Custode)  ← noir
+    //   y10 │  ▓█▓  │  poste bas (2 Custodes)      ← ça s'allume
+    //   y 3 │ █████ │  ARSENAL (butin T2)          ← plein jour
+    //       └───────┘
+
+    private static final int POST_SIZE = 27;
+    private static final int POST_H = 32;
+    private static final int POST_C = 13;
+    /** Marche haute et fond de cage. 27 → 4 = exactement les 24 cases d'un tour de vis. */
+    private static final int POST_TOP = 27;
+    private static final int POST_BOTTOM = 4;
+
+    private static CompoundTag guardPost() {
+        TemplateBuilder b = new TemplateBuilder(POST_SIZE, POST_H, POST_SIZE);
+
+        // L'ARSENAL EN PREMIER, la vis par-dessus : la cage traverse la salle et y plante
+        // son noyau de maçonnerie. C'est l'ordre qui compte — l'inverse ferait creuser
+        // l'arsenal À TRAVERS l'escalier, effaçant ses huit dernières marches et
+        // transformant l'arrivée en chute de sept blocs.
+        guardArsenal(b);
+        Masonry.spiralStair(b, POST_C, POST_C, POST_TOP, POST_BOTTOM, Direction.NORTH);
+
+        // Le puits central : on évide le noyau, si bien que l'escalier tourne autour d'un
+        // VIDE de vingt-trois blocs et non d'une colonne pleine. C'est ce vide qui rend le
+        // combat positionnel — on recule, on contourne, on tombe.
+        b.box(POST_C - 1, POST_BOTTOM + 1, POST_C - 1, POST_C + 1, POST_TOP - 1, POST_C + 1, AIR);
+        for (int y = POST_BOTTOM; y <= POST_TOP + 1; y++) {
+            for (int[] c : new int[][] {{-1, -1}, {1, -1}, {-1, 1}, {1, 1}}) {
+                b.set(POST_C + c[0], y, POST_C + c[1], Masonry.column(Direction.Axis.Y));
+            }
+        }
+        // La gueule de la tour : la cage s'ouvre en grand sur l'arsenal. On y débouche à
+        // découvert, avec deux gardes déjà en poste — le seul endroit du mod où le joueur
+        // est vu avant de voir.
+        b.box(POST_C - 3, POST_BOTTOM + 1, POST_C - 4, POST_C + 3, POST_BOTTOM + 2, POST_C - 4, AIR);
+        for (int x = POST_C - 3; x <= POST_C + 3; x++) {
+            b.set(x, POST_BOTTOM + 3, POST_C - 4, x % 3 == 1 ? GRATE : CHISELED);
+        }
+
+        // L'entrée : une meurtrière au niveau de la marche haute, plein nord.
+        Masonry.gallery(b, POST_C, POST_TOP + 1, POST_C - 8, POST_C, POST_C - 4);
+        b.set(POST_C, POST_TOP + 3, POST_C - 8, GRATE);
+
+        // Les paliers. Chacun s'ouvre EXACTEMENT sur la marche de sa hauteur — calculée,
+        // jamais estimée : une ouverture « à peu près au bon endroit » débouche à côté de
+        // la marche, c'est-à-dire dans le vide du puits.
+        guardLanding(b, 22, false, false);
+        guardLanding(b, 16, true, true);
+        return b.build();
+    }
+
+    /**
+     * Un palier : une chambre creusée à l'écart du puits, reliée par une galerie qui part
+     * de la marche de cette hauteur. Les alcôves du fond sont <b>vides</b> en haut et
+     * occupées en bas — une rangée de niches désertes dit « ils étaient plus nombreux »
+     * sans un mot, et prépare la rencontre d'en dessous.
+     */
+    private static void guardLanding(TemplateBuilder b, int y, boolean manned, boolean lit) {
+        int[] e = Masonry.spiralExit(POST_C, POST_C, POST_TOP, Direction.NORTH, y);
+        int dx = e[2];
+        int dz = e[3];
+        int nearX = POST_C + dx * 5;
+        int nearZ = POST_C + dz * 5;
+        int farX = POST_C + dx * 11;
+        int farZ = POST_C + dz * 11;
+
+        // La chambre : cinq de profondeur, sept de large, perpendiculaire à la sortie.
+        Masonry.chamber(b,
+            Math.min(nearX + dx, farX) - (dx == 0 ? 3 : 0), y, Math.min(nearZ + dz, farZ) - (dz == 0 ? 3 : 0),
+            Math.max(nearX + dx, farX) + (dx == 0 ? 3 : 0), y + 4, Math.max(nearZ + dz, farZ) + (dz == 0 ? 3 : 0),
+            Masonry.Style.common());
+        // La galerie part du mur de cage (distance 4) et finit dans le mur de la chambre.
+        if (dx != 0) {
+            Masonry.gallery(b, Math.min(POST_C + dx * 4, nearX), y, e[1],
+                Math.max(POST_C + dx * 4, nearX), e[1]);
+        } else {
+            Masonry.gallery(b, e[0], y, Math.min(POST_C + dz * 4, nearZ),
+                e[0], Math.max(POST_C + dz * 4, nearZ));
+        }
+
+        for (int k = -2; k <= 2; k += 2) {
+            alcove(b, farX + dx + (dx == 0 ? k : 0), y, farZ + dz + (dz == 0 ? k : 0),
+                dx == 0, manned && k == 0);
+        }
+        if (manned) {
+            b.lootChest(farX - dx, y, farZ - dz, ModWorldGen.OUTPOST_LOOT, Direction.NORTH);
+        }
+        if (lit) {
+            Masonry.chandelier(b, (nearX + farX) / 2, y + 5, (nearZ + farZ) / 2, 1);
+        }
+    }
+
+    /** L'arsenal : la seule salle éclairée, et la seule qui récompense. */
+    private static void guardArsenal(TemplateBuilder b) {
+        Masonry.chamber(b, 3, POST_BOTTOM + 1, 3, 23, POST_BOTTOM + 7, 23, Masonry.Style.noble());
+        Masonry.colonnade(b, 7, POST_BOTTOM + 1, 7, 19, POST_BOTTOM + 7);
+        Masonry.colonnade(b, 19, POST_BOTTOM + 1, 7, 19, POST_BOTTOM + 7);
+
+        b.lootChest(5, POST_BOTTOM + 1, 5, ModWorldGen.OUTPOST_LOOT, Direction.SOUTH);
+        b.lootChest(21, POST_BOTTOM + 1, 21, ModWorldGen.OUTPOST_LOOT, Direction.NORTH);
+        custode(b, 7.5, POST_BOTTOM + 1, 20.5);
+        custode(b, 20.5, POST_BOTTOM + 1, 7.5);
+
+        Masonry.conduitRun(b, 2, POST_BOTTOM + 4, 4, 2, 22);
+        Masonry.conduitRun(b, 24, POST_BOTTOM + 4, 4, 24, 22);
+        Masonry.sconce(b, 2, POST_BOTTOM + 3, 13, Direction.Axis.Z);
+        Masonry.sconce(b, 24, POST_BOTTOM + 3, 13, Direction.Axis.Z);
+        Masonry.chandelier(b, 7, POST_BOTTOM + 8, 7, 2);
+        Masonry.chandelier(b, 19, POST_BOTTOM + 8, 19, 2);
+        Masonry.wallBreach(b, 14, POST_BOTTOM + 1, 24, 5, false, -1, 0x5EEE1);
+        Masonry.silt(b, 6, POST_BOTTOM, 20, 2);
+    }
+
+    // =========================================================================
+    // PUITS DE FORAGE — la structure qui manquait au T1
+    // =========================================================================
+    //
+    // Le T1 n'avait AUCUNE structure à lui : le joueur commençait dans un monde où le
+    // veskorien n'existait qu'en gros morceaux hors de sa portée. Le puits de forage est
+    // sa première ruine : elle ne débloque rien, elle ENSEIGNE — « descendre, c'est
+    // trouver du cristal » — et elle le fait en montrant un chantier qui a fait
+    // exactement ça, jusqu'à ce qu'il s'effondre.
+
+    private static final int DRILL_SIZE = 15;
+    private static final int DRILL_H = 28;
+
+    private static CompoundTag drillShaft() {
+        TemplateBuilder b = new TemplateBuilder(DRILL_SIZE, DRILL_H, DRILL_SIZE);
+
+        // Le fût du puits : sept blocs de côté, chemisé, sur vingt de haut.
+        b.box(3, 4, 3, 11, DRILL_H - 1, 11, BRICK);
+        b.box(4, 4, 4, 10, DRILL_H - 2, 10, AIR);
+        for (int y = 4; y < DRILL_H - 1; y++) {
+            for (int[] c : new int[][] {{4, 4}, {10, 4}, {4, 10}, {10, 10}}) {
+                b.set(c[0], y, c[1], Masonry.column(Direction.Axis.Y));
+            }
+        }
+        Masonry.conduitDrop(b, 3, 5, 7, DRILL_H - 3);
+
+        // Les plateformes : décalées, incomplètes, à trois blocs les unes des autres. On
+        // descend de proche en proche — pas d'escalier, c'est un chantier abandonné, pas
+        // un bâtiment. La chute est le danger, et elle est franchissable.
+        for (int i = 0; i < 6; i++) {
+            int y = DRILL_H - 5 - i * 3;
+            boolean east = i % 2 == 0;
+            b.box(east ? 5 : 8, y, 5, east ? 7 : 10, y, 10, east ? Masonry.TILE : PAVING);
+            b.set(east ? 7 : 8, y + 1, i % 4 < 2 ? 5 : 10, Masonry.COPPER);
+        }
+
+        // Au fond : le foreur brisé, et ce qu'il cherchait.
+        b.box(4, 3, 4, 10, 3, 10, Masonry.ROCK);
+        b.box(5, 4, 5, 9, 4, 9, RUBBLE);
+        b.set(7, 4, 7, ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get().defaultBlockState());
+        for (int[] c : new int[][] {{5, 7}, {9, 7}, {7, 5}, {7, 9}}) {
+            b.set(c[0], 4, c[1], ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get().defaultBlockState());
+            b.set(c[0], 3, c[1], ModBlocks.RESONANCE_VEINED_STONE.get().defaultBlockState());
+        }
+        b.box(6, 5, 6, 8, 6, 8, Masonry.COPPER);
+        b.set(7, 7, 7, CRACKED);
+        b.lootChest(9, 5, 9, ModWorldGen.MODEST_DWELLING_LOOT, Direction.WEST);
+        Masonry.sconce(b, 3, 6, 7, Direction.Axis.Z);
+
+        // La gueule du puits, effondrée : c'est par là qu'une grotte le croise.
+        // Le bouchon d'éboulis se pose AU-DESSUS de la plateforme haute, pas dessus :
+        // un cône de rayon 3 déposé au niveau du premier palier l'ensevelit entièrement et
+        // le puits devient inaccessible par le haut — donc inaccessible tout court.
+        Masonry.collapse(b, 7, 7, 3, DRILL_H - 1, DRILL_H - 2, 0x5EEE2);
+        return b.build();
     }
 
     // =========================================================================

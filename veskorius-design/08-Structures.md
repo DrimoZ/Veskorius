@@ -148,12 +148,31 @@ le `structure_set`.)*
 **Strate sociale** : Custodes. **Y** : 0 à -40, souvent à moins de 300 blocs d'un Avant-poste.
 **Fréquence** : 1 / 3000 blocs.
 
+> **✅ CODÉ le 2026-08-07 — la TOUR INVERSÉE** (`17-Dungeons.md` §5.3). Le « couloir unique » de la
+> première rédaction est abandonné : une garnison qui **descend** dit ce que le lieu garde, un
+> couloir ne dit rien. Deux choix portent toute la structure, et aucun ne coûte un bloc de plus :
+>
+> 1. l'escalier en vis est **ouvert sur un puits de vingt-trois blocs** — le combat devient
+>    positionnel (on recule, on contourne, on tombe) au lieu d'être un échange de coups ;
+> 2. **la lumière augmente en descendant**, l'inverse de l'intuition. Ce n'est pas un effet : ça
+>    *dit* où le réseau a survécu, et donc pourquoi les gardiens du bas sont encore debout quand
+>    les alcôves du haut sont vides.
+>
+> On débouche dans l'**arsenal par le plafond**, à découvert, avec deux gardes déjà en poste — le
+> seul endroit du mod où le joueur est vu avant de voir.
+
 - **Fonction** : premier contact avec un Custode actif (voir `09-Entities.md`).
-- **Ambiance** : couloir unique, un seul Custode en veille, réactif seulement près du point de
-  garde central.
-- **Puzzle** : aucun — le combat est optionnel, évitable en restant hors détection.
-- **Loot** : composants T2, jamais de fragment de recette.
+- **Ambiance** : une tour de 27×32×27 qui descend. Deux paliers d'alcôves — **vides en haut,
+  occupées en bas** : une rangée de niches désertes dit « ils étaient plus nombreux » sans un mot,
+  et prépare la rencontre d'en dessous. Puis l'arsenal voûté à double colonnade.
+- **Puzzle** : aucun — le combat est optionnel, évitable en restant hors détection. Rien de ce que
+  garde la tour n'est sur un chemin critique.
+- **Loot** : composants T2 (table de l'Avant-poste), jamais de fragment de recette.
 - **Machines débloquées** : aucune.
+
+> *Nombre de Custodes* : trois (un par palier occupé, deux à l'arsenal), pas un seul — `16` §6
+> demandait « plusieurs Custodes standard, une patrouille ». Ils restent réactifs à 6 blocs
+> (`09-Entities.md`), donc contournables.
 
 ---
 

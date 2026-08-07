@@ -472,13 +472,7 @@ public final class Masonry {
         b.box(cx - outer, yBottom, cz - outer, cx + outer, yBottom, cz + outer, PAVING);
 
         int[][] ring = ringCells(outer);
-        int side = outer * 2;
-        int offset = switch (entry) {
-            case NORTH -> 0;
-            case EAST -> side;
-            case SOUTH -> side * 2;
-            default -> side * 3;
-        } + side / 2;
+        int offset = entryOffset(entry, outer);
 
         int y = yTop;
         for (int i = 0; i < ring.length && y >= yBottom; i++) {
@@ -492,6 +486,38 @@ public final class Masonry {
             y--;
         }
         return y + 1;
+    }
+
+    /** Rayon extérieur d'une vis. Constant : c'est le gabarit d'une cage d'escalier. */
+    public static final int SPIRAL_RADIUS = 3;
+
+    private static int entryOffset(Direction entry, int outer) {
+        int side = outer * 2;
+        return switch (entry) {
+            case NORTH -> 0;
+            case EAST -> side;
+            case SOUTH -> side * 2;
+            default -> side * 3;
+        } + side / 2;
+    }
+
+    /**
+     * <b>Où la vis passe-t-elle à la hauteur {@code y}, et de quel côté regarde-t-elle
+     * dehors ?</b> Retourne {@code {x, z, dx, dz}} : la case de la marche, et le pas
+     * unitaire vers l'extérieur de la cage.
+     *
+     * <p>Indispensable dès qu'une tour dessert plusieurs niveaux. Une ouverture percée « à
+     * peu près au bon endroit » dans le mur d'une cage débouche à côté de la marche —
+     * c'est-à-dire <b>dans le vide du puits</b>. C'est exactement le défaut qui avait rendu
+     * l'Avant-poste infranchissable ; ici on ne devine plus, on calcule.
+     */
+    public static int[] spiralExit(int cx, int cz, int yTop, Direction entry, int y) {
+        int[][] ring = ringCells(SPIRAL_RADIUS);
+        int index = (entryOffset(entry, SPIRAL_RADIUS) + (yTop - y)) % ring.length;
+        int[] c = ring[(index + ring.length) % ring.length];
+        int dx = Math.abs(c[0]) == SPIRAL_RADIUS ? Integer.signum(c[0]) : 0;
+        int dz = dx != 0 ? 0 : Integer.signum(c[1]);
+        return new int[] {cx + c[0], cz + c[1], dx, dz};
     }
 
     /** Les cases du carré de rayon {@code r}, dans l'ordre horaire. */

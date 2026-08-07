@@ -31,8 +31,14 @@ public class ModStructureTagsProvider extends TagsProvider<Structure> {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
+        // Les LIEUX, pas les restes. Les petites ruines (borne de conduit, bout de galerie,
+        // chambre engloutie) en sont volontairement absentes : les inclure noierait le mode
+        // Structures du Locator sous des bornes de trois blocs, et lui ferait perdre
+        // exactement ce qui fait sa valeur — pointer quelque part où l'on va.
         tag(ModTags.Structures.LOCATABLE)
             .addOptional(ModStructures.MODEST_DWELLING.location())
-            .addOptional(ModStructures.OUTPOST.location());
+            .addOptional(ModStructures.OUTPOST.location())
+            .addOptional(ModStructures.GUARD_POST.location())
+            .addOptional(ModStructures.DRILL_SHAFT.location());
     }
 }

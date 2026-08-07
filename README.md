@@ -138,6 +138,12 @@ ce fichier.
   - **Le jigsaw est réel** : connecteurs, profondeur 5, pools de bouchons en `fallback` (plus de
     branche ouverte sur la roche), processors d'usure (deux ruines ne s'abîment plus pareil),
     spawn overrides (fini les zombies vanilla dans nos ruines), `IGNORE_WATERLOGGING`.
+  - **Phase E** : le **Poste de Garde** devient une *tour inversée* — une garnison qui descend,
+    escalier en vis ouvert sur un puits de 23 blocs (le combat devient positionnel), alcôves vides
+    en haut et occupées en bas, arsenal voûté au fond où l'on débouche **par le plafond**, à
+    découvert. Et le **Puits de Forage abandonné**, la structure qui manquait au T1 : un fût de
+    vingt blocs, six plateformes décalées, le foreur brisé au fond sur la poche de cristal qu'il
+    cherchait. Elle ne débloque rien — elle enseigne « descendre = cristaux » dans la première heure.
   - **Cinq tests d'invariants**, dont `optionalWingsNeverCarryTheCriticalPath` : le chemin critique
     du T2 vit dans la pièce de départ, jamais dans un pool. C'est la troisième fois que le mod se
     protège de cette classe de bug ; cette fois dans les deux sens.

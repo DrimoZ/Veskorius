@@ -420,7 +420,7 @@ Structures du Locator sous des bornes de trois blocs et lui ferait perdre ce qui
 
 | Structure | Tier | Strate sociale | Ce qu'elle répare |
 |---|---|---|---|
-| ⭐ **Puits de Forage abandonné** | T1 | Peuple du réseau | **Le T1 n'a aucune structure à lui.** Un puits vertical, un driller brisé, trois plateformes, débouchant sur une poche de cristal. Enseigne « descendre = cristaux » dans la première heure. |
+| ⭐ **Puits de Forage abandonné** ✅ | T1 | Peuple du réseau | **Le T1 n'avait aucune structure à lui.** Un fût de vingt blocs, six plateformes décalées, le foreur brisé au fond sur la poche de cristal qu'il cherchait. Aucun déblocage : il ENSEIGNE « descendre = cristaux » dans la première heure. Densité ~1 / 260 blocs — c'est la première ruine du joueur, elle doit se croiser sans la chercher. |
 | ⭐ **Relais Station** | T2-T3 | Architectes | Déjà proposée en `16` §5 : petite, commune, gate alternatif au Sigma. |
 | **Dépôt de Slag** | T3 | Architectes (fin d'âge) | Ancienne décharge : blooms de dissonance, sludge, beaucoup d'alliage. **Une zone hostile sans un seul mob** — la démonstration de R3. |
 | **Nécropole des Custodes** | T4, rare | Custodes | Trente alcôves alignées, **trois occupées**. Toute la tension est dans « lesquelles ». |
@@ -438,7 +438,7 @@ que ce soit.
 | **B** | La langue : maçonnerie de pierre veinée (brique / fissurée / gravée / dalle / escalier / muret), lampe, conduit, efflorescence | ✅ 2026-08-07 |
 | **C** | Les trois mécaniques : sas, conduits alimentés, émetteur ancien | ✅ 2026-08-07 |
 | **D** | Avant-poste à trois paliers + Hameau creusé | ✅ 2026-08-07 |
-| **E** | Poste de Garde, Relais Station, Puits de Forage | à faire |
+| **E** | Poste de Garde ✅, Puits de Forage ✅ — Relais Station à faire | partielle |
 | **F** | Sigma Laboratory | à faire |
 
 **Ce que A→D a livré** (112 GameTest au vert) : `FieldSensitiveBlock` (socle commun de la lampe,
