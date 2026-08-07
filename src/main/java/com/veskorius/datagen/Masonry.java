@@ -559,6 +559,50 @@ public final class Masonry {
         return new int[] {cx + c[0], cz + c[1], dx, dz};
     }
 
+    /** Garde-corps : un ouvrage industriel, pas un parapet de pierre. */
+    public static final BlockState RAIL = Blocks.IRON_BARS.defaultBlockState();
+
+    /**
+     * <b>Passerelle hélicoïdale</b> plaquée contre la paroi d'un puits ouvert.
+     *
+     * <p>Ce n'est pas une vis : une vis est une <i>cage</i>, elle enferme et rassure. Une
+     * passerelle est <b>suspendue au-dessus du vide</b>, large de deux, avec un garde-corps
+     * d'un côté et rien de l'autre. Le donjon ne se descend plus, il se <b>longe</b> — et on
+     * voit le fond pendant toute la descente.
+     *
+     * <p>Une marche tous les deux pas, et non un bloc par pas : une passerelle industrielle
+     * est une <b>rampe</b>, pas un escalier. Ça la rend aussi deux fois plus longue à
+     * parcourir, donc deux fois plus impressionnante à traverser du regard.
+     */
+    public static void gantry(TemplateBuilder b, int cx, int cz, int r, int yTop, int yBottom,
+                              Direction entry) {
+        int[][] ring = ringCells(r);
+        int offset = entryOffset(entry, r);
+        int y = yTop;
+        for (int i = 0; i < ring.length && y >= yBottom; i++) {
+            int[] c = ring[(offset + i) % ring.length];
+            int x = cx + c[0];
+            int z = cz + c[1];
+            // La case intérieure adjacente : la passerelle fait deux de large, sinon on
+            // ne la parcourt pas, on l'endure.
+            int ix = Math.abs(c[0]) >= Math.abs(c[1]) ? x - Integer.signum(c[0]) : x;
+            int iz = ix != x ? z : z - Integer.signum(c[1]);
+            b.set(x, y, z, i % 6 == 0 ? CHISELED : PAVING);
+            b.set(ix, y, iz, TILE);
+            // Garde-corps DEBOUT SUR LA PLANCHE INTÉRIEURE, une travée sur deux : ajouré,
+            // on voit à travers. Posé un cran plus loin, côté vide, il <b>flotte</b> — une
+            // rambarde n'a rien sous elle par définition, et c'est le seul endroit du
+            // vocabulaire où la règle « rien ne flotte » demande de réfléchir plutôt que
+            // de recopier.
+            if (i % 2 == 0) {
+                b.set(ix, y + 1, iz, RAIL);
+            }
+            if (i % 2 == 1) {
+                y--;
+            }
+        }
+    }
+
     /** Les cases du carré de rayon {@code r}, dans l'ordre horaire. */
     private static int[][] ringCells(int r) {
         int side = r * 2;

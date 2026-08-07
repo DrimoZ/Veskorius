@@ -640,190 +640,230 @@ public class ModStructurePieceProvider implements DataProvider {
     }
 
     // =========================================================================
-    // SIGMA LABORATORY — la roue (08-Structures.md, 17-Dungeons.md §5.4)
+    // SIGMA LABORATORY — le puits d'essai (08-Structures.md, 17-Dungeons.md §5.4)
     // =========================================================================
     //
-    //   Le seul VRAI puzzle du mod, et il tient en une phrase : réparer deux relais avant
-    //   que le premier ne retombe. Il n'a fallu inventer aucune serrure à deux clés — les
-    //   relais sont posés EN CHAÎNE (le premier dans la portée de l'émetteur encore
-    //   vivant, le second dans la portée du premier seulement), si bien que la
-    //   simultanéité devient une contrainte de TRAJET : quatre-vingt-dix secondes pour
-    //   faire le tour de la roue. Voir DamagedRelayBlockEntity.
+    //   REFAIT DE ZÉRO le 2026-08-07 (quatrième passe). La version précédente était une
+    //   ROUE : quatre ailes identiques aux quatre points cardinaux, autour d'un anneau,
+    //   autour d'un cercle — c'est-à-dire un mandala, la disposition la plus « machine »
+    //   qu'on puisse dessiner. Et elle était PLATE : un seul niveau, tout à la même
+    //   hauteur. Deux défauts qu'aucun ornement ne rattrape.
     //
-    //        z 0        12        24       36
-    //   x=0  ┌────────────────────────────────┐
-    //        │        ┌─ SERRES ─┐            │  RELAIS A (dans le champ de
-    //     6  │        │  [ A ]   │               l'émetteur encore alimenté)
-    //        │        └────╥─────┘            │
-    //    14  │  ┌────┐  ╔══╩══╗  ┌─────────┐  │  le HALL est scellé par un SAS
-    //        │  │DISS│══╣HALL ╠══╡DORTOIRS │  │  qui n'ouvre que dans le champ
-    //        │  │ ☠  │  ║[SAS]║  │         │  │  du RELAIS B
-    //    24  │  └────┘  ╚══╦══╝  └─────────┘  │
-    //        │        ┌────╨─────┐            │
-    //    32  │        │ POMPES   │            │  RELAIS B (portée de A seulement)
-    //        │        │  [ B ]   │            │
-    //   x=38 └────────────────────────────────┘
+    //   Ce qui la remplace part du lore plutôt que d'une figure géométrique : les
+    //   Architectes ont creusé un PUITS D'ESSAI, et c'est l'essai qui a tout cassé. Le
+    //   bâtiment est donc un trou de vingt-deux blocs qu'on longe, pas une figure qu'on
+    //   parcourt.
+    //
+    //   COUPE (le plan ne suffit plus à le décrire — c'est le signe qu'il est enfin bâti)
+    //
+    //   y30 ─────┬──────────────────────────────┬─────   voûte
+    //            │   GALERIE D'ENTRÉE (nord)    │        brèche = l'entrée
+    //   y26 ─────┤▒▒▒▒▒▒╲                ╱▒▒▒▒▒▒├─────   SERRES (est), ouvertes
+    //            │        ╲passerelle  ╱         │        SUR LE VIDE — relais A
+    //            │         ╲ hélicoïdale         │
+    //   y15 ─────┤  POMPES  ═══╬═══  ◄ le PONT   ├─────   relais B, au milieu du
+    //            │  (ouest)     ║      en croix  │        vide, à mi-descente
+    //            │              ║                │
+    //   y 4 ─────┤ DISSONANCE ══╩══ [SAS] ═══════├─────   fond du puits
+    //            │  (ouest bas)     SANCTUAIRE   │        la console, au sud
+    //   y 0 ─────┴──────────────────────────────┴─────
+    //
+    //   Le puzzle descend avec le joueur : relais A en haut (serres), relais B au milieu
+    //   (sur le pont, au-dessus de vingt blocs de vide), sas en bas. La descente EST le
+    //   puzzle, et les quatre-vingt-dix secondes du relais en sont le chronomètre.
 
     private static final int SIG_SIZE = 39;
-    private static final int SIG_H = 22;
-    /** Sol foulé. Un seul niveau : la roue doit se lire d'un coup, c'est son intérêt. */
-    private static final int SIG_Y = 3;
+    private static final int SIG_H = 36;
     private static final int SIG_C = 19;
+    /** Rayon intérieur du puits. Paroi chemisée à ±9. */
+    private static final int PIT_R = 8;
+    private static final int SIG_TOP = 26;
+    private static final int SIG_MID = 15;
+    private static final int SIG_LOW = 4;
 
     private static CompoundTag sigmaLaboratory() {
         TemplateBuilder b = new TemplateBuilder(SIG_SIZE, SIG_H, SIG_SIZE);
 
-        // Les quatre ailes d'abord, le cœur ensuite : le sanctuaire s'inscrit DANS le
-        // déambulatoire, et le déambulatoire mord sur les murs des ailes. Écrit dans
-        // l'autre sens, chaque salle reboucherait la précédente.
+        sigmaPit(b);
+        sigmaEntryGallery(b);
         sigmaGreenhouses(b);
         sigmaPumps(b);
         sigmaDissonance(b);
-        sigmaQuarters(b);
-        sigmaAmbulatory(b);
-        sigmaHall(b);
+        sigmaSanctuary(b);
         return b.build();
     }
 
     /**
-     * <b>Le déambulatoire.</b> Un couloir annulaire qui contourne le sanctuaire et relie
-     * les quatre ailes entre elles.
+     * <b>Le puits d'essai</b> — vingt-deux blocs de vide, une passerelle hélicoïdale
+     * plaquée contre la paroi, un pont en croix à mi-hauteur.
      *
-     * <p>C'est lui qui résout le problème que pose toute salle centrale scellée : comment
-     * circuler si le centre est fermé ? Le réflexe serait de percer le sanctuaire — c'est
-     * exactement ce qu'il ne faut pas faire, sinon il n'est plus scellé. <b>Le relais B est
-     * ici</b>, sur la branche ouest, devant la chambre de dissonance : il faut approcher la
-     * salle dangereuse pour l'atteindre.
+     * <p>C'est la pièce maîtresse, et elle ne se décrit qu'en coupe : depuis la galerie
+     * d'entrée on voit le fond, la console éclairée tout en bas, et le chemin qui y
+     * descend. Tout le donjon tient dans ce premier regard.
      */
-    private static void sigmaAmbulatory(TemplateBuilder b) {
-        // Noyau à 6 et non 7 : à 7, l'anneau se réduisait à des cases reliées en
-        // DIAGONALE aux angles de l'octogone — un couloir qui a l'air continu et qu'on ne
-        // peut pas parcourir. Le déambulatoire doit rester franchissable en pas cardinaux
-        // sur tout son tour, sinon il ne relie rien.
-        Masonry.ambulatory(b, SIG_C, SIG_Y, SIG_C, 6, 10, 5);
-        // Les quatre percées vers les ailes.
-        b.box(SIG_C - 1, SIG_Y, 7, SIG_C + 1, SIG_Y + 2, 9, AIR);
-        b.box(SIG_C - 1, SIG_Y, 29, SIG_C + 1, SIG_Y + 2, 31, AIR);
-        b.box(7, SIG_Y, SIG_C - 1, 9, SIG_Y + 2, SIG_C + 1, AIR);
-        b.box(29, SIG_Y, SIG_C - 1, 31, SIG_Y + 2, SIG_C + 1, AIR);
+    private static void sigmaPit(TemplateBuilder b) {
+        b.box(SIG_C - PIT_R - 1, 2, SIG_C - PIT_R - 1,
+            SIG_C + PIT_R + 1, SIG_H - 3, SIG_C + PIT_R + 1, BRICK);
+        b.box(SIG_C - PIT_R, SIG_LOW - 1, SIG_C - PIT_R,
+            SIG_C + PIT_R, SIG_H - 4, SIG_C + PIT_R, AIR);
+        Masonry.floor(b, SIG_C - PIT_R, SIG_LOW - 1, SIG_C - PIT_R,
+            SIG_C + PIT_R, SIG_C + PIT_R, PAVING);
+        Masonry.barrelVault(b, SIG_C - PIT_R, SIG_C - PIT_R, SIG_C + PIT_R, SIG_C + PIT_R,
+            SIG_H - 4, 3, true);
 
-        b.set(9, SIG_Y, SIG_C, ModBlocks.DAMAGED_RELAY.get().defaultBlockState()
-            .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST));
-        Masonry.sconce(b, SIG_C, SIG_Y + 2, 9, Direction.Axis.X);
-        Masonry.sconce(b, SIG_C, SIG_Y + 2, 29, Direction.Axis.X);
-    }
-
-    /**
-     * <b>Le hall scellé.</b> Rotonde à coupole, console T3 au centre, un seul sas — au
-     * <b>sud</b>, à l'opposé du relais A. Ce n'est pas de la mise en scène : c'est ce qui
-     * force la chaîne. Le relais A, seul, ne porte pas jusqu'ici.
-     */
-    private static void sigmaHall(TemplateBuilder b) {
-        Masonry.rotunda(b, SIG_C, SIG_Y, SIG_C, 5, 8);
-        Masonry.terrace(b, SIG_C - 2, SIG_Y, SIG_C - 2, SIG_C + 2, SIG_C + 2, PAVING);
-        b.set(SIG_C, SIG_Y + 1, SIG_C, ModBlocks.SIGMA_CONSOLE.get().defaultBlockState());
-        Masonry.chandelier(b, SIG_C, SIG_Y + 13, SIG_C, 3);
-
-        // LE SAS : dans le mur sud du sanctuaire, un bloc de large, deux de haut. Les
-        // trois autres orientations sont murées et vitrées — on voit la console pendant
-        // tout le donjon sans pouvoir l'atteindre, et c'est ce qui donne son enjeu au
-        // trajet.
-        b.box(SIG_C - 1, SIG_Y, SIG_C + 6, SIG_C + 1, SIG_Y + 3, SIG_C + 6, BRICK);
-        b.set(SIG_C, SIG_Y, SIG_C + 6, BULKHEAD);
-        b.set(SIG_C, SIG_Y + 1, SIG_C + 6, BULKHEAD);
-        b.set(SIG_C - 1, SIG_Y + 1, SIG_C + 6, GLASS);
-        b.set(SIG_C + 1, SIG_Y + 1, SIG_C + 6, GLASS);
-        b.set(SIG_C, SIG_Y + 2, SIG_C + 6, GRATE);
-        for (int[] c : new int[][] {{SIG_C, SIG_C - 6}, {SIG_C - 6, SIG_C}, {SIG_C + 6, SIG_C}}) {
-            b.box(c[0], SIG_Y, c[1], c[0], SIG_Y + 3, c[1], BRICK);
-            b.set(c[0], SIG_Y + 1, c[1], GLASS);
-            b.set(c[0], SIG_Y + 2, c[1], GRATE);
+        // Colonnes engagées dans la paroi : sans elles, vingt-deux blocs de mur sont une
+        // falaise, pas un ouvrage.
+        for (int d = -PIT_R; d <= PIT_R; d += 4) {
+            for (int y = SIG_LOW; y < SIG_H - 4; y++) {
+                b.set(SIG_C - PIT_R - 1, y, SIG_C + d, Masonry.column(Direction.Axis.Y));
+                b.set(SIG_C + PIT_R + 1, y, SIG_C + d, Masonry.column(Direction.Axis.Y));
+                b.set(SIG_C + d, y, SIG_C - PIT_R - 1, Masonry.column(Direction.Axis.Y));
+                b.set(SIG_C + d, y, SIG_C + PIT_R + 1, Masonry.column(Direction.Axis.Y));
+            }
         }
+        Masonry.gantry(b, SIG_C, SIG_C, PIT_R, SIG_TOP - 1, SIG_LOW - 1, Direction.NORTH);
+
+        // LE PONT, à mi-hauteur, au-dessus de vingt blocs de vide. Sa position n'est pas
+        // choisie à l'oeil : elle est calée sur la hauteur qu'atteint la passerelle
+        // hélicoïdale à cet endroit du puits. Un pont posé « à peu près à mi-hauteur »
+        // passe trois blocs sous elle et ne relie rien — le donjon se génère parfaitement,
+        // et le pont est décoratif.
+        final int bridgeZ = SIG_C + 5;
+        for (int x = SIG_C - PIT_R - 2; x <= SIG_C + PIT_R + 2; x++) {
+            for (int j = -1; j <= 1; j++) {
+                b.set(x, SIG_MID - 1, bridgeZ + j, j == 0 ? PAVING : Masonry.TILE);
+            }
+            // Rambardes debout SUR les planches de rive, pas au-delà : au-delà, elles
+            // n'ont rien sous elles. Le pont devient donc une passe centrale d'une case,
+            // rambardée des deux bords — c'est-à-dire exactement une passerelle.
+            if ((x & 1) == 0) {
+                b.set(x, SIG_MID, bridgeZ - 1, Masonry.RAIL);
+                b.set(x, SIG_MID, bridgeZ + 1, Masonry.RAIL);
+            }
+        }
+        // LE RELAIS B, au milieu du pont — donc au milieu du vide, à mi-descente.
+        b.box(SIG_C - 1, SIG_MID - 1, bridgeZ - 1, SIG_C + 1, SIG_MID - 1, bridgeZ + 1, CHISELED);
+        b.set(SIG_C, SIG_MID, bridgeZ, ModBlocks.DAMAGED_RELAY.get().defaultBlockState()
+            .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+        Masonry.chandelier(b, SIG_C - 5, SIG_H - 1, SIG_C, 4);
+        Masonry.chandelier(b, SIG_C + 5, SIG_H - 1, SIG_C, 4);
     }
 
     /**
-     * <b>Aile nord — les serres.</b> Verrières crevées, cultures mortes : la seule salle du
-     * Sigma qui montre à quoi ils <i>tenaient</i> plutôt qu'à quoi ils travaillaient. C'est
-     * aussi l'entrée (la voûte de verre s'est effondrée) et le point de départ du puzzle :
-     * l'<b>émetteur encore alimenté</b> et le <b>relais A</b> y sont.
+     * <b>Galerie d'entrée</b>, en surplomb au nord. Sa voûte s'est ouverte : c'est par là
+     * qu'une grotte croise le Sigma. Vide — on entre, on avance de six pas, et le sol
+     * s'arrête sur vingt-deux blocs de vide.
+     */
+    private static void sigmaEntryGallery(TemplateBuilder b) {
+        Masonry.chamber(b, 12, SIG_TOP, 3, 26, SIG_TOP + 5, 9, Masonry.Style.noble());
+        b.box(17, SIG_TOP, 10, 21, SIG_TOP + 2, 10, AIR);
+        Masonry.collapse(b, 19, 6, 3, SIG_TOP + 6, SIG_TOP, 0x5EEF1);
+        Masonry.sconce(b, 11, SIG_TOP + 2, 6, Direction.Axis.Z);
+        Masonry.sconce(b, 27, SIG_TOP + 2, 6, Direction.Axis.Z);
+        b.set(19, SIG_TOP, 4, Blocks.LECTERN.defaultBlockState());
+    }
+
+    /**
+     * <b>Les serres, ouvertes sur le vide</b> — la carte postale du mod. Leur mur est a
+     * <b>disparu</b> : la salle donne sur la roche brute et le noir, et sa verrière est
+     * crevée au-dessus. C'est la seule salle du Sigma qui montre à quoi ils <i>tenaient</i>.
+     *
+     * <p>L'émetteur y tourne encore, et le <b>relais A</b> est à côté : le puzzle commence
+     * dans la seule pièce qui donne envie de s'arrêter.
      */
     private static void sigmaGreenhouses(TemplateBuilder b) {
-        Masonry.chamber(b, 10, SIG_Y, 2, 28, SIG_Y + 6, 8, Masonry.Style.noble());
-        Masonry.colonnade(b, 14, SIG_Y, 3, 7, SIG_Y + 6);
-        Masonry.colonnade(b, 24, SIG_Y, 3, 7, SIG_Y + 6);
-        b.box(11, SIG_Y + 7, 3, 27, SIG_Y + 7, 7, GLASS);
-        Masonry.collapse(b, 14, 5, 3, SIG_Y + 7, SIG_Y, 0x5EEF1);
+        Masonry.chamber(b, 29, SIG_TOP, 12, 36, SIG_TOP + 5, 26, Masonry.Style.noble());
+        b.box(28, SIG_TOP, 17, 28, SIG_TOP + 2, 21, AIR);
 
-        fuelledEmitter(b, 22, SIG_Y, 4);
-        b.set(19, SIG_Y, 4, ModBlocks.DAMAGED_RELAY.get().defaultBlockState()
-            .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
-        for (int x = 12; x <= 26; x += 4) {
-            b.set(x, SIG_Y, 7, Blocks.COMPOSTER.defaultBlockState());
+        // Le mur du fond n'existe plus : verrière brisée et rocher nu. On regarde dehors,
+        // et dehors c'est de la pierre — la seule fenêtre d'un peuple souterrain.
+        b.box(37, SIG_TOP - 1, 13, 37, SIG_TOP + 6, 25, Masonry.ROCK);
+        b.box(36, SIG_TOP, 14, 36, SIG_TOP + 4, 24, AIR);
+        for (int z = 13; z <= 25; z += 2) {
+            b.box(36, SIG_TOP, z, 36, SIG_TOP + 4, z, GLASS);
         }
-        Masonry.sconce(b, 9, SIG_Y + 3, 5, Direction.Axis.Z);
-    }
+        Masonry.collapse(b, 34, 21, 3, SIG_TOP + 6, SIG_TOP, 0x5EEF4);
 
-    /** <b>Aile sud — la salle des pompes.</b> Deux Custodes Lourds en poste, et du butin. */
-    private static void sigmaPumps(TemplateBuilder b) {
-        Masonry.chamber(b, 10, SIG_Y, 30, 28, SIG_Y + 6, 36, Masonry.Style.noble());
-        Masonry.colonnade(b, 14, SIG_Y, 31, 35, SIG_Y + 6);
-        Masonry.colonnade(b, 24, SIG_Y, 31, 35, SIG_Y + 6);
-        b.box(17, SIG_Y, 33, 21, SIG_Y + 1, 35, COPPER);
-        b.set(19, SIG_Y + 2, 34, GRATE);
-        b.lootChest(12, SIG_Y, 31, ModWorldGen.OUTPOST_LOOT, Direction.SOUTH);
-        custode(b, 13.5, SIG_Y, 34.5);
-        custode(b, 25.5, SIG_Y, 34.5);
-        Masonry.chandelier(b, 19, SIG_Y + 7, 32, 2);
-        Masonry.wallBreach(b, 15, SIG_Y, 37, 6, false, -1, 0x5EEF2);
+        fuelledEmitter(b, 33, SIG_TOP, 16);
+        b.set(30, SIG_TOP, 16, ModBlocks.DAMAGED_RELAY.get().defaultBlockState()
+            .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST));
+        for (int z = 15; z <= 23; z += 4) {
+            b.set(31, SIG_TOP, z, Blocks.COMPOSTER.defaultBlockState());
+        }
+        Masonry.chandelier(b, 32, SIG_TOP + 6, 20, 2);
     }
 
     /**
-     * <b>Aile ouest — la chambre de dissonance.</b> Un émetteur qu'on n'a jamais coupé,
-     * neuf siècles de dérive. Le meilleur butin facultatif est dedans, et on y entre en
-     * <b>gérant une mécanique du mod</b> : poser un Damping Array (il agit à 16 blocs, la
-     * décharge en porte 6 — `06-Energy.md` garantit donc qu'on peut toujours nettoyer à
-     * distance sûre), couper l'émetteur, ou courir.
+     * <b>Salle des pompes</b>, à mi-hauteur à l'ouest. Elle s'ouvre de plain-pied sur le
+     * pont : c'est le palier naturel de la descente, et la seule salle qu'on traverse en
+     * courant, le relais A comptant déjà ses secondes.
      */
-    private static void sigmaDissonance(TemplateBuilder b) {
-        Masonry.chamber(b, 2, SIG_Y, 12, 8, SIG_Y + 5, 26, Masonry.Style.common());
-        fuelledEmitter(b, 5, SIG_Y, 19);
-        b.box(4, SIG_Y - 1, 18, 6, SIG_Y - 1, 20, CHISELED);
-        b.box(3, SIG_Y, 13, 4, SIG_Y, 14, BLOOM);
-        b.box(6, SIG_Y, 24, 7, SIG_Y, 25, BLOOM);
-        b.set(3, SIG_Y + 1, 13, BLOOM);
-        b.lootChest(7, SIG_Y, 13, ModWorldGen.OUTPOST_LOOT, Direction.WEST);
-        b.lootChest(3, SIG_Y, 25, ModWorldGen.OUTPOST_LOOT, Direction.EAST);
-        Masonry.sconce(b, 1, SIG_Y + 2, 19, Direction.Axis.Z);
+    private static void sigmaPumps(TemplateBuilder b) {
+        Masonry.chamber(b, 2, SIG_MID, 12, 9, SIG_MID + 6, 26, Masonry.Style.noble());
+        b.box(10, SIG_MID, 23, 10, SIG_MID + 2, 25, AIR);
+        Masonry.colonnade(b, 6, SIG_MID, 14, 24, SIG_MID + 6);
+        b.box(3, SIG_MID, 14, 4, SIG_MID + 1, 17, COPPER);
+        b.box(3, SIG_MID, 21, 4, SIG_MID + 1, 24, COPPER);
+        b.set(3, SIG_MID + 2, 15, GRATE);
+        b.set(3, SIG_MID + 2, 23, GRATE);
+        b.lootChest(8, SIG_MID, 13, ModWorldGen.OUTPOST_LOOT, Direction.SOUTH);
+        custode(b, 7.5, SIG_MID, 25.5);
+        Masonry.chandelier(b, 6, SIG_MID + 7, 19, 2);
+        Masonry.wallBreach(b, 1, SIG_MID, 20, 5, true, 1, 0x5EEF2);
     }
 
-    /** <b>Aile est — dortoirs et infirmerie.</b> Le lore, et rien de technique. */
-    private static void sigmaQuarters(TemplateBuilder b) {
-        Masonry.chamber(b, 30, SIG_Y, 12, 36, SIG_Y + 5, 26, Masonry.Style.common());
-        Masonry.arcade(b, 36, SIG_Y, 13, 25, 1);
-        for (int z = 14; z <= 24; z += 4) {
-            cot(b, 31, SIG_Y, z);
-        }
-        b.lootChest(35, SIG_Y, 14, ModWorldGen.MODEST_DWELLING_LOOT, Direction.WEST);
-        b.set(35, SIG_Y, 24, Blocks.LECTERN.defaultBlockState());
-        custode(b, 33.5, SIG_Y, 19.5);
-        Masonry.chandelier(b, 33, SIG_Y + 6, 19, 2);
-        Masonry.collapse(b, 33, 24, 3, SIG_Y + 6, SIG_Y, 0x5EEF3);
+    /**
+     * <b>Chambre de dissonance</b>, au fond, à l'ouest. Un émetteur qu'on n'a jamais coupé,
+     * neuf siècles de dérive. On y entre en <b>gérant une mécanique du mod</b> — poser un
+     * Damping Array (il agit à 16 blocs, la décharge en porte 6, donc `06-Energy.md`
+     * garantit qu'on peut toujours nettoyer à distance sûre), couper l'émetteur, ou courir.
+     */
+    private static void sigmaDissonance(TemplateBuilder b) {
+        Masonry.chamber(b, 2, SIG_LOW, 12, 9, SIG_LOW + 6, 26, Masonry.Style.common());
+        b.box(10, SIG_LOW, 17, 10, SIG_LOW + 2, 21, AIR);
+        fuelledEmitter(b, 5, SIG_LOW, 19);
+        b.box(4, SIG_LOW - 1, 18, 6, SIG_LOW - 1, 20, CHISELED);
+        b.box(2, SIG_LOW, 12, 3, SIG_LOW, 14, BLOOM);
+        b.box(7, SIG_LOW, 24, 8, SIG_LOW, 26, BLOOM);
+        b.set(2, SIG_LOW + 1, 13, BLOOM);
+        b.lootChest(8, SIG_LOW, 13, ModWorldGen.OUTPOST_LOOT, Direction.WEST);
+        b.lootChest(3, SIG_LOW, 25, ModWorldGen.OUTPOST_LOOT, Direction.EAST);
+        Masonry.silt(b, 6, SIG_LOW - 1, 24, 2);
+    }
+
+    /**
+     * <b>Le sanctuaire</b>, au fond du puits, derrière le sas. On l'a vu du premier regard,
+     * vingt-deux blocs plus bas ; on y arrive en dernier.
+     */
+    private static void sigmaSanctuary(TemplateBuilder b) {
+        Masonry.chamber(b, 12, SIG_LOW, 29, 26, SIG_LOW + 8, 35, Masonry.Style.noble());
+        Masonry.terrace(b, 16, SIG_LOW, 31, 22, 34, PAVING);
+        b.set(19, SIG_LOW + 1, 32, ModBlocks.SIGMA_CONSOLE.get().defaultBlockState());
+        Masonry.chandelier(b, 19, SIG_LOW + 9, 32, 3);
+        Masonry.arcade(b, 27, SIG_LOW, 30, 34, 1);
+
+        // LE SAS, dans la paroi sud du puits. Indestructible, et hors de portée du relais
+        // A : seul le relais B du pont l'atteint, ce qui force la chaîne.
+        b.box(18, SIG_LOW, 28, 20, SIG_LOW + 3, 28, BRICK);
+        b.set(19, SIG_LOW, 28, BULKHEAD);
+        b.set(19, SIG_LOW + 1, 28, BULKHEAD);
+        b.set(18, SIG_LOW + 1, 28, GLASS);
+        b.set(20, SIG_LOW + 1, 28, GLASS);
+        b.set(19, SIG_LOW + 2, 28, GRATE);
     }
 
     /**
      * Pose un émetteur ancien <b>déjà alimenté</b> : on lui écrit sa réserve pleine
      * directement dans le NBT de sa block entity.
      *
-     * <p>C'est ce qui distingue le Sigma de l'Avant-poste, et ce n'est pas un détail : à
-     * l'Avant-poste tout est mort et le joueur rallume ; ici <b>quelque chose tourne
-     * encore</b> — 08-Structures.md l'annonce (« quelques machines encore alimentées seules
-     * dans le noir ») — et c'est ce qui rend le puzzle des relais amorçable sans que le
-     * joueur ait à apporter quoi que ce soit.
+     * <p>C'est ce qui distingue le Sigma de l'Avant-poste : là-bas tout est mort et le
+     * joueur rallume ; ici <b>quelque chose tourne encore</b> — 08-Structures.md l'annonce
+     * (« quelques machines encore alimentées seules dans le noir ») — et c'est ce qui rend
+     * le puzzle des relais amorçable sans que le joueur ait à apporter quoi que ce soit.
      *
      * <p>La <b>réserve</b> plutôt qu'un cristal dans le slot : un entier, pas un format
      * d'inventaire à reproduire à la main dans du NBT écrit par nous. Et rien ne la
-     * consomme tant qu'aucune machine n'y puise — un relais rediffuse, il ne prélève pas —
-     * donc l'émetteur tourne encore dans neuf siècles, ce qui est précisément le propos.
+     * consomme tant qu'aucune machine n'y puise — un relais rediffuse, il ne prélève pas.
      */
     private static void fuelledEmitter(TemplateBuilder b, int x, int y, int z) {
         CompoundTag be = new CompoundTag();

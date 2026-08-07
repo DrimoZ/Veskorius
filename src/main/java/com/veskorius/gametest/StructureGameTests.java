@@ -231,7 +231,67 @@ public class StructureGameTests {
     public static void sigmaIsWalkableFromGreenhousesToConsole(GameTestHelper helper) {
         place(helper, "sigma_laboratory");
         assertWalkable(helper, "sigma_laboratory",
-            ANCHOR.offset(26, 3, 5), ANCHOR.offset(18, 4, 19), 39, 22, 39);
+            ANCHOR.offset(13, 26, 4), ANCHOR.offset(18, 5, 32), 39, 36, 39);
+    }
+
+    /**
+     * <b>La chaîne du Sigma tient géométriquement.</b>
+     *
+     * <p>Tout le puzzle du T3 repose sur <b>trois distances</b>, et sur rien d'autre :
+     * l'émetteur encore vivant atteint le relais A, A atteint le relais B, B atteint le
+     * sas — et <b>A n'atteint PAS le sas</b>. C'est cette dernière inégalité qui fait
+     * exister le puzzle : sans elle, un seul relais ouvre la porte et les quatre-vingt-dix
+     * secondes ne servent plus à rien.
+     *
+     * <p>Elle se joue à un bloc près (A→sas vaut 27 pour une portée de 20), et rien dans le
+     * code ne la protège : déplacer une salle de deux mètres pour la faire mieux tomber
+     * suffit à la rompre, sans qu'aucune erreur n'apparaisse. D'où ce test, qui lit les
+     * positions <b>dans la pièce générée</b> plutôt que dans des constantes — c'est la
+     * géométrie réelle qu'on vérifie.
+     */
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 200)
+    public static void sigmaRelayChainIsGeometricallySound(GameTestHelper helper) {
+        place(helper, "sigma_laboratory");
+        int range = 20;
+
+        java.util.List<BlockPos> relays = new java.util.ArrayList<>();
+        BlockPos bulkhead = null;
+        BlockPos emitter = null;
+        for (BlockPos pos : BlockPos.betweenClosed(ANCHOR, ANCHOR.offset(38, 35, 38))) {
+            BlockState state = helper.getBlockState(pos);
+            if (state.is(ModBlocks.DAMAGED_RELAY.get())) {
+                relays.add(pos.immutable());
+            } else if (state.is(ModBlocks.RESONANCE_BULKHEAD.get()) && bulkhead == null) {
+                bulkhead = pos.immutable();
+            } else if (state.is(ModBlocks.ANCIENT_EMITTER.get()) && emitter == null) {
+                emitter = pos.immutable();
+            }
+        }
+        helper.assertTrue(relays.size() == 2,
+            "Le Sigma doit porter exactement deux relais, trouvé : " + relays.size());
+        helper.assertTrue(bulkhead != null && emitter != null,
+            "Le Sigma doit porter un sas et un émetteur ancien");
+
+        // Le relais des serres est celui que l'émetteur atteint ; l'autre est celui du pont.
+        BlockPos a = relays.get(0).distSqr(emitter) < relays.get(1).distSqr(emitter)
+            ? relays.get(0) : relays.get(1);
+        BlockPos c = a.equals(relays.get(0)) ? relays.get(1) : relays.get(0);
+
+        assertWithin(helper, "l'émetteur encore vivant", emitter, a, 8, true);
+        assertWithin(helper, "le relais des serres", a, c, range, true);
+        assertWithin(helper, "le relais du pont", c, bulkhead, range, true);
+        // L'INÉGALITÉ QUI FAIT LE PUZZLE.
+        assertWithin(helper, "le relais des serres", a, bulkhead, range, false);
+        helper.succeed();
+    }
+
+    private static void assertWithin(GameTestHelper helper, String who, BlockPos from,
+                                     BlockPos to, int range, boolean expected) {
+        double d = Math.sqrt(from.distSqr(to));
+        helper.assertTrue(d <= range == expected,
+            who + " est à " + String.format("%.1f", d) + " blocs de " + to.subtract(ANCHOR)
+                + " pour une portée de " + range + " — attendu : "
+                + (expected ? "à portée" : "HORS de portée, sinon un seul relais ouvre le sas"));
     }
 
     private static boolean inBox(BlockPos p, int w, int h, int d) {
@@ -300,7 +360,7 @@ public class StructureGameTests {
     /** Les pièces et leur gabarit, pour les tests qui balaient un volume entier. */
     private static final String[][] PIECES = {
         {"outpost", "39", "31", "39"},
-        {"sigma_laboratory", "39", "22", "39"},
+        {"sigma_laboratory", "39", "36", "39"},
         {"guard_post", "27", "32", "27"},
         {"drill_shaft", "15", "28", "15"},
         {"outpost_wing_store", "15", "11", "15"},

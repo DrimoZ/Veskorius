@@ -180,16 +180,21 @@ le `structure_set`.)*
 
 **Strate sociale** : Architectes. **Y** : -40 à -55. **Fréquence** : 1 / 6000 blocs.
 
-> **✅ CODÉ le 2026-08-07 — la ROUE** (`17-Dungeons.md` §5.4). Sanctuaire octogonal **scellé** au
-> centre, **déambulatoire** annulaire tout autour, quatre ailes qui s'y ouvrent. Le sanctuaire
-> n'a qu'un sas, au sud ; les trois autres orientations sont murées et **vitrées** — on voit la
-> console pendant tout le donjon sans pouvoir l'atteindre, et c'est ce qui donne son enjeu au
-> trajet.
+> **✅ CODÉ le 2026-08-07 — le PUITS D'ESSAI** (`17-Dungeons.md` §5.4). *(La première version
+> était une **roue** — quatre ailes identiques aux quatre points cardinaux autour d'un anneau
+> autour d'un cercle. Un mandala : la disposition la plus « générée » qu'on puisse dessiner, et
+> plate de surcroît. Jetée.)*
 >
-> **Le déambulatoire n'est pas de la décoration** : c'est la réponse au problème que pose toute
-> salle centrale scellée — comment circuler si le centre est fermé ? Le réflexe serait de percer
-> le sanctuaire, ce qui le déscellerait. On contourne, comme le fait l'architecture réelle quand
-> elle protège un cœur.
+> Le bâtiment part maintenant du lore et non d'une figure : les Architectes ont creusé un **puits
+> d'essai**, et c'est l'essai qui a tout cassé. C'est donc un trou de **vingt-deux blocs** qu'on
+> **longe** — passerelle hélicoïdale plaquée contre la paroi, garde-corps d'un côté et le vide de
+> l'autre — avec un **pont** à mi-hauteur et le sanctuaire tout au fond. Depuis la galerie
+> d'entrée on voit la console vingt-deux blocs plus bas, et le chemin qui y descend : **tout le
+> donjon tient dans ce premier regard**.
+>
+> Les annexes sont à des **niveaux différents** — serres en haut (mur est arraché, ouvertes sur la
+> roche nue : la seule fenêtre d'un peuple souterrain), pompes à mi-hauteur, chambre de dissonance
+> au fond. Rien n'est échangeable avec rien.
 
 - **Fonction** : centre de recherche sur la Résonance, débloque le T3.
 - **Ambiance** : silencieux, **une machine encore alimentée** (l'émetteur des serres tourne

@@ -77,6 +77,22 @@ Chaque salle **enseigne**, **pique** ou **récompense**. Le remplissage est le r
 et le couloir a le droit d'être court. Une salle qui ne fait aucune des trois choses ne va pas
 dans le pool.
 
+### R10 — La symétrie est la signature d'une machine
+*(Ajoutée à la quatrième passe, en refaisant le Sigma.)* Le premier Sigma était une **roue** :
+quatre ailes identiques aux quatre points cardinaux, autour d'un anneau, autour d'un cercle. Un
+mandala. C'est la disposition la plus « générée » qu'on puisse dessiner, et **aucun ornement ne la
+rattrape** — les colonnades, les voûtes et les chanfreins ne font que rendre le mandala plus soigné.
+
+Trois corollaires, tous vérifiés sur le Sigma refait :
+
+1. **Pas de plan à symétrie d'ordre 4.** Les annexes ont des tailles, des formes et des <b>niveaux</b>
+   différents. Si deux salles peuvent être échangées sans que le plan change, il en manque une.
+2. **La coupe avant le plan.** Un bâtiment qui se décrit entièrement en vue de dessus est plat, donc
+   mort. Le nouveau Sigma ne se décrit qu'en coupe — c'est le signe qu'il est enfin bâti.
+3. **Un lieu vient d'une cause, pas d'une figure.** Le Sigma n'est plus « une roue » mais « le
+   **puits d'essai** que les Architectes ont creusé, et l'essai a tout cassé ». La forme découle du
+   lore, et non l'inverse ; c'est ce qui fait qu'elle n'aurait pas pu être ailleurs.
+
 ### R8 — Une civilisation se lit à ses proportions, jamais à son mobilier
 *(Ajoutée à la troisième passe, sur le constat « des micro-salles hyper-chargées en blocs pas
 utiles ».)* Une salle de 27 mètres à double colonnade et huit mètres sous voûte dit « ils étaient
