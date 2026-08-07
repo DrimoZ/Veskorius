@@ -14,6 +14,8 @@ import com.veskorius.block.entity.FluxPurifierBlockEntity;
 import com.veskorius.block.entity.RedstoneMode;
 import com.veskorius.block.entity.ResonanceStabilizerBlockEntity;
 import com.veskorius.block.entity.ResonanceWhetstoneBlockEntity;
+import com.veskorius.config.HarmonicsConfig;
+import com.veskorius.config.MachinesConfig;
 import com.veskorius.config.VeskoriusConfig;
 import com.veskorius.energy.ResonanceFieldManager;
 import com.veskorius.event.CustodeAlertHandler;
@@ -1571,6 +1573,91 @@ public class MachineGameTests {
             "Défauts Fileur/Roost : cooldown 6000, portée Roost 6");
         helper.assertTrue(Math.abs(VeskoriusConfig.sporeGrowthChance() - 0.05) < 1e-6,
             "Défaut croissance de spore 0.05, vaut " + VeskoriusConfig.sporeGrowthChance());
+        helper.succeed();
+    }
+
+    /**
+     * Défauts du thème <b>harmoniques</b> (14-Configuration.md).
+     *
+     * <p>Séparé du test précédent parce qu'il comble un trou identifié à la
+     * réanalyse : {@code configDefaultsMatchDesign} ne couvrait que
+     * {@code basics}/{@code machines}/{@code mobs}/{@code generation}, alors que
+     * 14-Configuration.md affirmait qu'il « couvre tous les thèmes d'un coup ».
+     * C'était faux — aucun défaut de {@code harmonics} n'était tenu par autre chose
+     * que la relecture, sur le système le plus riche en curseurs du mod.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void harmonicsConfigDefaultsMatchDesign(GameTestHelper helper) {
+        helper.assertTrue(HarmonicsConfig.enabled(),
+            "Les harmoniques sont actives par défaut (interrupteur maître)");
+        helper.assertTrue(HarmonicsConfig.bandCount() == 3,
+            "Défaut bandCount 3, vaut " + HarmonicsConfig.bandCount());
+        helper.assertTrue(Math.abs(HarmonicsConfig.detuneOscMultiplier() - 1.5) < 1e-6,
+            "Défaut detuneOscMultiplier 1.5, vaut " + HarmonicsConfig.detuneOscMultiplier());
+        helper.assertTrue(HarmonicsConfig.dissonancePerDetunedTick() == 1,
+            "Défaut dissonancePerDetunedTick 1, vaut " + HarmonicsConfig.dissonancePerDetunedTick());
+        helper.assertTrue(HarmonicsConfig.dissonanceCapacity() == 2000,
+            "Défaut dissonanceCapacity 2000, vaut " + HarmonicsConfig.dissonanceCapacity());
+        helper.assertTrue(Math.abs(HarmonicsConfig.dissonanceUnstableThreshold() - 0.75) < 1e-6,
+            "Défaut dissonanceUnstableThreshold 0.75, vaut "
+                + HarmonicsConfig.dissonanceUnstableThreshold());
+        helper.assertTrue(HarmonicsConfig.dissonanceDecayPerSecond() == 1,
+            "Défaut dissonanceDecayPerSecond 1, vaut " + HarmonicsConfig.dissonanceDecayPerSecond());
+
+        helper.assertTrue(HarmonicsConfig.dischargeEnabled(), "Décharge active par défaut");
+        helper.assertTrue(HarmonicsConfig.dischargeRadius() == 6,
+            "Défaut rayon de décharge 6, vaut " + HarmonicsConfig.dischargeRadius());
+        helper.assertTrue(Math.abs(HarmonicsConfig.dischargeDamage() - 6.0) < 1e-6,
+            "Défaut dégâts de décharge 6.0, vaut " + HarmonicsConfig.dischargeDamage());
+        helper.assertTrue(Math.abs(HarmonicsConfig.dischargeReleaseFraction() - 0.5) < 1e-6,
+            "Défaut fraction purgée 0.5, vaut " + HarmonicsConfig.dischargeReleaseFraction());
+        helper.assertTrue(HarmonicsConfig.dischargeCooldownTicks() == 100,
+            "Défaut cooldown de décharge 100, vaut " + HarmonicsConfig.dischargeCooldownTicks());
+
+        // Invariant de conception, pas seulement une valeur : le Damping Array doit
+        // porter PLUS LOIN que la décharge, sinon réparer un champ saturé obligerait à
+        // entrer dans la zone d'impulsion — « aucune décharge forcée sur le joueur qui
+        // répare » (06-Energy.md).
+        helper.assertTrue(HarmonicsConfig.dampingRange() > HarmonicsConfig.dischargeRadius(),
+            "Le Damping Array (" + HarmonicsConfig.dampingRange() + ") doit porter plus loin que "
+                + "la décharge (" + HarmonicsConfig.dischargeRadius() + ") : on doit pouvoir "
+                + "nettoyer un champ saturé hors de portée de l'impulsion");
+        helper.assertTrue(HarmonicsConfig.dampingRange() == 16,
+            "Défaut dampingRange 16, vaut " + HarmonicsConfig.dampingRange());
+        helper.assertTrue(HarmonicsConfig.dampingCycleTicks() == 100,
+            "Défaut dampingCycleTicks 100, vaut " + HarmonicsConfig.dampingCycleTicks());
+
+        helper.assertTrue(HarmonicsConfig.hudEnabled(), "HUD de champ actif par défaut");
+        helper.assertTrue(HarmonicsConfig.hudUpdateInterval() == 10,
+            "Défaut hudUpdateIntervalTicks 10, vaut " + HarmonicsConfig.hudUpdateInterval());
+        helper.succeed();
+    }
+
+    /**
+     * Défauts des <b>slots d'augment</b> (A9, `machines.augment`). Même trou que
+     * ci-dessus : ces trois clés n'étaient couvertes par aucun test.
+     *
+     * <p>Le défaut de {@code augmentSlots} est particulièrement sensible : il vaut 1
+     * pour reproduire <i>exactement</i> le comportement historique (un seul slot). Le
+     * passer à 2 sans le vouloir doublerait silencieusement la vitesse atteignable de
+     * toutes les machines du mod.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void augmentConfigDefaultsMatchDesign(GameTestHelper helper) {
+        helper.assertTrue(MachinesConfig.augmentSlots() == 1,
+            "Défaut augmentSlots 1 (= comportement historique), vaut "
+                + MachinesConfig.augmentSlots());
+        helper.assertTrue(MachinesConfig.augmentStacking() == MachinesConfig.AugmentStacking.FREE,
+            "Défaut augmentStacking FREE, vaut " + MachinesConfig.augmentStacking());
+        helper.assertTrue(MachinesConfig.augmentStackingCap() == 2,
+            "Défaut augmentStackingCap 2, vaut " + MachinesConfig.augmentStackingCap());
+        helper.assertTrue(MachinesConfig.MAX_AUGMENT_SLOTS == 4,
+            "MAX_AUGMENT_SLOTS vaut 4 — c'est la taille d'inventaire RÉSERVÉE par machine. "
+                + "La changer désaligne les sauvegardes existantes, elle ne doit pas bouger "
+                + "sans migration.");
+        // Le nombre configuré ne doit jamais dépasser ce que l'inventaire réserve.
+        helper.assertTrue(MachinesConfig.augmentSlots() <= MachinesConfig.MAX_AUGMENT_SLOTS,
+            "augmentSlots ne peut pas dépasser MAX_AUGMENT_SLOTS");
         helper.succeed();
     }
 

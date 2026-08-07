@@ -102,15 +102,27 @@ maker éditer des clés qui n'existent pas.
 | `harmonics` | `hud` | `enabled` | `true` | HUD de champ (à `false` : aucun paquet émis) |
 | `harmonics` | `hud` | `updateIntervalTicks` | 10 | Ticks entre deux lectures |
 
-Les défauts de `basics`, `machines` (surchauffe + bonus d'augment), `mobs` et `generation` sont
-re-testés par le GameTest `configDefaultsMatchDesign` : les changer sans mettre à jour ce dossier
-fait échouer la suite.
+**Tous** les défauts du tableau ci-dessus sont re-testés : les changer sans mettre à jour ce
+dossier fait échouer la suite. Trois GameTest se partagent le travail, un par famille de
+curseurs :
 
-> **Trou de couverture connu (relevé 2026-08-06).** `configDefaultsMatchDesign` ne couvre **pas**
-> les défauts de `harmonics` (bandes, dissonance, décharge, damping, HUD) ni les clés A9
-> (`augmentSlots`, `augmentStacking`, `augmentStackingCap`) : ces lignes du tableau ne sont donc
-> tenues que par la relecture. Ce fichier a longtemps affirmé l'inverse (« il couvre tous les
-> thèmes d'un coup ») — c'était faux. À étendre.
+| Test | Couvre |
+|---|---|
+| `configDefaultsMatchDesign` | `basics`, `machines.overheat`, le bonus d'augment, `mobs`, `generation` |
+| `harmonicsConfigDefaultsMatchDesign` | tout `harmonics` : bandes, désaccord, dissonance, décharge, damping, HUD |
+| `augmentConfigDefaultsMatchDesign` | `machines.augment` (A9) : `augmentSlots`, `augmentStacking`, `augmentStackingCap`, `MAX_AUGMENT_SLOTS` |
+
+*(Les deux derniers ajoutés le 2026-08-06 : ce fichier affirmait depuis le découpage que la
+couverture était complète — elle ne l'était pas, et le thème le plus riche en curseurs du mod
+n'était tenu que par la relecture.)*
+
+Deux de ces tests vérifient en plus un **invariant de conception**, pas seulement une valeur :
+
+- `dampingRange > dischargeRadius` — le Damping Array doit porter plus loin que la décharge,
+  sinon réparer un champ saturé obligerait à entrer dans la zone d'impulsion, ce que `06` interdit
+  explicitement (« aucune décharge forcée sur le joueur qui répare ») ;
+- `augmentSlots <= MAX_AUGMENT_SLOTS` — le nombre configuré ne peut pas dépasser ce que
+  l'inventaire réserve réellement.
 
 ## Doctrine (révisée 2026-07-23) : tout doit pouvoir se moduler, jusqu'à se désactiver
 
@@ -190,9 +202,9 @@ façade, donc il couvre tous les thèmes d'un coup.
 5. **Nouvelles constantes des Phases 2-4** — chaque machine/mob/structure à venir apportera ses
    propres nombres. Les faire passer par la spec de leur thème dès leur écriture, plutôt que de les
    retrofit (même leçon que le slot d'augment).
-6. **Étendre `configDefaultsMatchDesign`** aux thèmes qu'il ne couvre pas encore (`harmonics`,
-   clés A9), pour que le tableau de ce fichier redevienne tenu par la suite de tests et non par
-   la seule relecture.
+6. ✅ **Couverture de test des défauts** (fait 2026-08-06) — `harmonics` et les clés A9 sont
+   désormais testés, voir le tableau des trois GameTest plus haut. Le tableau de valeurs de ce
+   fichier est de nouveau tenu par la suite, pas par la relecture.
 
 ## Règle d'implémentation (pour toute nouvelle constante d'équilibrage)
 
