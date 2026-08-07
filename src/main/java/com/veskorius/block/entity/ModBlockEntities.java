@@ -39,7 +39,13 @@ public class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FieldEmitterBlockEntity>>
         FIELD_EMITTER = BLOCK_ENTITIES.register("field_emitter",
             () -> BlockEntityType.Builder
-                .of(FieldEmitterBlockEntity::new, ModBlocks.FIELD_EMITTER.get())
+                // L'émetteur ancien des structures partage ce type : c'est le MÊME
+                // émetteur, avec les mêmes règles (17-Dungeons.md §5.1). Deux types
+                // distincts obligeraient à maintenir deux fois le comportement, et
+                // c'est précisément ce qu'on veut éviter — la machine que le joueur
+                // trouve en ruine doit être celle qu'il fabriquera, sans divergence.
+                .of(FieldEmitterBlockEntity::new,
+                    ModBlocks.FIELD_EMITTER.get(), ModBlocks.ANCIENT_EMITTER.get())
                 .build(null));
 
     /** Émetteur Accordable : même émetteur, bande harmonique choisie (06-Energy.md). */

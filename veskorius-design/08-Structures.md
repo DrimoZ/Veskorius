@@ -8,9 +8,16 @@ Chaque structure est rattachée à une strate sociale (`02-Lore.md`) et une stra
 > **✅ CODÉ le 2026-07-23 (A7).** L'Habitation Modeste et l'Avant-poste sont de vraies `Structure`
 > jigsaw (`ModStructures`), leurs pièces des NBT générés par datagen (`ModStructurePieceProvider`),
 > taguées `#veskorius:locatable` → **`/locate` marche, le mode Structures du Locator s'allume**. La
-> `RuinFeature` est supprimée. Pièces placeholder (une salle meublée) ; les vrais layouts
-> multi-pièces sont Phase 6. Les 4 autres structures (Poste de Garde, Sigma, Archive, Faille) restent
-> à créer en Phase 2+ sur ce même socle.
+> `RuinFeature` est supprimée.
+>
+> **✅ VRAIS DONJONS le 2026-08-07 — voir `17-Dungeons.md`.** Les pièces placeholder (une salle
+> meublée, plate, en deepslate vanilla, sans un seul bloc jigsaw) sont remplacées :
+> l'**Avant-poste** est un donjon à **trois paliers autour d'un puits traversant**, avec un **sas
+> de Résonance** qui ne s'ouvre que dans un champ et un **émetteur ancien** à réveiller ;
+> l'**Habitation Modeste** devient un **hameau** de trois à six logis tirés d'un pool. Le jigsaw
+> est enfin réel (profondeur 5, connecteurs, pools de bouchons, processors d'usure). Les 4 autres
+> structures (Poste de Garde, Sigma, Archive, Faille) restent à créer sur ce socle, désormais
+> complet.
 
 Les ruines étaient des `RuinFeature` (boîtes creuses posées comme une *feature*) : pas de
 `/locate`, pas de vraies pièces. **C'est remplacé** par le système `Structure` vanilla, en **jigsaw**.
@@ -51,9 +58,19 @@ plus commune. *(Valeur codée : `RandomSpreadStructurePlacement` spacing 20 / se
 ~1 / 320 blocs — plus dense que le « ~1 / 800 » que ce fichier annonçait. Chiffre de départ à
 valider en playtest ; la source de vérité est le `structure_set`, surchargeable par datapack.)*
 
+> **Devenue un HAMEAU le 2026-08-07 (`17-Dungeons.md` §5.2).** Une maison isolée ne raconte pas un
+> peuple, elle raconte un survivant — or cette structure porte la strate « peuple du réseau » de
+> `02-Lore.md`. C'est donc désormais une **place commune** (galerie, puits, aucun butin) à laquelle
+> se raccrochent **trois à six logis** tirés d'un pool : logis, atelier de famille, logis effondré.
+> La taille varie d'un hameau à l'autre. Le nom de registre reste `veskorius:modest_dwelling` :
+> le renommer casserait les mondes existants, les datapacks, le tag `#veskorius:locatable` et les
+> advancements de découverte, pour un gain purement cosmétique.
+
 - **Fonction** : variété de loot quotidien, premier contact avec l'esthétique veskorienne sans
   rien de technique. Sert aussi à apprendre le geste « lire un fragment » sur un enjeu faible.
-- **Ambiance** : petites pièces, mobilier simple, jamais de machine.
+- **Ambiance** : petites pièces, mobilier simple, jamais de machine. Le **logis effondré** (une
+  entrée sur deux et demie du pool) est une impasse qu'il faut creuser : un hameau dont tous les
+  logis sont intacts n'a pas été abandonné, il a été construit hier.
 - **Loot** (coffre) : 2-4 tirages parmi `fossilized_ration` (nourriture flavor) ×1-3, cobblestone
   ×4-8 et copper ingot ×1-3 ; plus 1 `codex_fragment` "de vie quotidienne" garanti (pur lore, non
   consommé à la lecture, aucun déblocage). *(Corrigé 2026-08-06 : ce fichier listait « parfois
@@ -71,12 +88,25 @@ que ce fichier annonçait. Même remarque que ci-dessus : à valider en playtest
 le `structure_set`.)*
 
 - **Fonction** : premier lieu où le joueur rencontre le principe de champ (T2). Porte du T2.
-- **Ambiance** : petit atelier, une **console d'attunement** (`attunement_console`) encore intacte
-  parmi des gravats — une « machine morte » qu'on peut en fait *réveiller sur place*.
-- **Puzzle** : aucun au sens énigme — mais un **geste sur place** : clic droit sur la console →
-  elle se remet en marche le temps d'un cycle et remet au joueur le **`resonance_blueprint` T2**
-  (s'il n'en a pas déjà un). La console ne se récupère pas (minée = gravats). C'est la porte du T2 :
-  *faire fonctionner l'ancienne machine là où elle se tient*.
+- **Ambiance** : **trois paliers autour d'un puits traversant** (`17-Dungeons.md` §5.1) —
+  vestibule effondré, palier de vie, salle des machines. Depuis le vestibule on voit, treize blocs
+  plus bas, la console éteinte : on sait où on va avant de savoir comment.
+- **Puzzle** : toujours aucune énigme, mais **le geste a pris du corps** (2026-08-07). La console
+  est derrière un **sas de Résonance** indestructible, visible par une baie. À côté, un **émetteur
+  ancien** à sec. Le réveiller — un Stable Resonance Crystal, que le **coffre-réserve garantit sur
+  place** — ouvre le sas, allume la salle… **et réveille les deux Custodes en alcôve**. Allumer,
+  c'est armer le donjon ; c'est le joueur qui décide quand.
+  > *Pourquoi c'est mieux qu'un clic droit sur une console dans une boîte* : le joueur **apprend ce
+  > qu'est un champ dans la salle où il en a eu besoin**, avant de posséder la moindre machine T2
+  > — le pilier 2 appliqué pour la première fois autrement que décorativement. Et l'émetteur ancien
+  > est *littéralement* un `field_emitter` (même bloc, même block entity, même carburant), donc il
+  > ne peut pas diverger de la machine que le joueur fabriquera ensuite.
+  >
+  > *Aucune dépendance circulaire* : le Resonance Stabilizer est autonome (0 Osc, aucun champ), donc
+  > un joueur T1 sait déjà faire un Stable Crystal ; et le coffre-réserve, au **contenu fixe** et non
+  > tiré d'une table, en donne un de toute façon. Deux GameTest gardent ces deux garanties.
+- Le geste final est inchangé : clic droit sur la console → **`resonance_blueprint` T2** (s'il n'en
+  a pas déjà un). La console ne se récupère pas (minée = gravats).
 - **Loot** (coffre-atelier) : **amorçage T2 garanti** = **4 Resonance Component + 2 Gold Ingot**,
   plus des matériaux d'appoint aléatoires (fer, redstone, or). Le blueprint **ne vient pas du
   coffre** mais de la console.
@@ -190,5 +220,9 @@ indépendante des strates normales. **Fréquence** : 1 / 15000 blocs.
 
 ## Ouvert
 
-- Faut-il une variante de surface de l'Avant-poste pour varier le rythme d'exploration en tout
-  début de partie ?
+- ~~Faut-il une variante de surface de l'Avant-poste pour varier le rythme d'exploration en tout
+  début de partie ?~~ **Tranché le 2026-08-07 : oui, mais comme une ENTRÉE, pas comme une seconde
+  structure.** L'Avant-poste a désormais une **brèche au plafond** de son vestibule (trois blocs de
+  gravats minables) : c'est par là qu'une grotte peut le croiser, donc par là qu'on le trouve en
+  explorant. Une variante de surface complète aurait doublé le contenu à maintenir pour dire la
+  même chose, et aurait contredit « le veskorien est souterrain ». *(Même question dans `07`.)*

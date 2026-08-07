@@ -1,56 +1,91 @@
 package com.veskorius.datagen;
 
+import static com.veskorius.datagen.Masonry.AIR;
+import static com.veskorius.datagen.Masonry.BLOOM;
+import static com.veskorius.datagen.Masonry.BRICK;
+import static com.veskorius.datagen.Masonry.BULKHEAD;
+import static com.veskorius.datagen.Masonry.CHISELED;
+import static com.veskorius.datagen.Masonry.COPPER;
+import static com.veskorius.datagen.Masonry.CRACKED;
+import static com.veskorius.datagen.Masonry.GLASS;
+import static com.veskorius.datagen.Masonry.GRATE;
+import static com.veskorius.datagen.Masonry.PAVING;
+import static com.veskorius.datagen.Masonry.RUBBLE;
+import static com.veskorius.datagen.Masonry.SLAB;
+
 import com.google.common.hash.Hashing;
 import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.item.CodexEntries;
+import com.veskorius.worldgen.ModStructures;
 import com.veskorius.worldgen.ModWorldGen;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.SharedConstants;
 import net.minecraft.Util;
+import net.minecraft.core.Direction;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.DoubleTag;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 
 /**
- * Génère les <b>pièces de structure</b> (NBT) de l'Habitation Modeste et de l'Avant-poste
- * (08-Structures.md), consommées par le système jigsaw (voir {@code ModStructures}).
+ * Génère les <b>pièces de structure</b> (NBT) — 08-Structures.md pour le contenu,
+ * 17-Dungeons.md pour la forme, {@link Masonry} pour les gestes.
  *
- * <p><b>Pourquoi générer le NBT par code plutôt qu'à la main dans un structure block :</b>
- * comme le reste du projet, aucune ressource n'est écrite à la main — les pièces dérivent
- * du code, donc restent alignées sur les registres (bloc de mur, console) sans risque de
- * se désynchroniser. Le format produit (size / palette / blocks / entities) est exactement
- * celui que {@code StructureTemplate.load} relit ; il est déjà éprouvé par
- * {@link ModStructureTemplateProvider} (templates vides des GameTest).
+ * <p><b>Troisième passe (2026-08-07) : le monumental.</b> Les deux premières avaient
+ * corrigé la boîte creuse puis le plafond plat ; il restait le défaut le plus difficile à
+ * nommer — <i>« des micro-salles hyper-chargées en blocs pas utiles »</i>. Deux règles en
+ * sortent, et elles gouvernent tout ce fichier :
  *
- * <p>Ce sont des pièces <b>placeholder</b> : une salle de {@code resonance_veined_stone}
- * meublée sommairement (les vrais bâtiments arrivent en Phase 6). Le jigsaw à une seule
- * pièce honore malgré tout le choix « structures en jigsaw » (16 §2) : agrandir = ajouter
- * des pièces au pool, sans réécrire.
+ * <ol>
+ *   <li><b>Une civilisation se lit à ses proportions et à ses ordres, jamais à son
+ *       mobilier.</b> Une salle de 27 mètres à double colonnade et huit mètres sous voûte
+ *       dit « ils étaient nombreux et ils bâtissaient » ; la même salle réduite à 9
+ *       mètres et remplie de tonneaux, d'établis et de pots de fleurs dit « un ordinateur
+ *       a rempli une case ». Donc : <b>de la hauteur et du vide plutôt que des objets</b>,
+ *       et au plus deux ou trois meubles par salle.</li>
+ *   <li><b>Rien ne flotte.</b> Lampes et conduits <b>remplacent</b> le bloc de mur, ils ne
+ *       s'y accolent pas ; le centre d'une salle s'éclaire au lustre, accroché à sa clé de
+ *       voûte. C'était le défaut le plus visible et le plus bête : des rangées de blocs en
+ *       lévitation le long de chaque paroi.</li>
+ * </ol>
+ *
+ * <p>Retirés au passage, et pour de bon : <b>le gravier</b> (bloc à gravité — il
+ * s'effondre au premier chargement de chunk et emporte le dessin) et <b>les sources
+ * d'eau</b> (décoratives sur le papier, une inondation dès qu'un bloc voisin manque).
+ *
+ * <p><b>L'invariant de contenu</b> (17-Dungeons.md §3) : le chemin critique — console,
+ * sas, émetteur ancien, coffre d'amorçage, coffre-réserve — vit <b>dans la pièce de
+ * départ</b>. Le pool ne sert qu'aux ailes facultatives.
  */
 public class ModStructurePieceProvider implements DataProvider {
 
-    public static final String MODEST_DWELLING = "modest_dwelling";
-    public static final String MODEST_DWELLING_WORKSHOP = "modest_dwelling_workshop";
     public static final String OUTPOST = "outpost";
+    public static final String OUTPOST_WING_STORE = "outpost_wing_store";
+    public static final String OUTPOST_WING_QUARTERS = "outpost_wing_quarters";
+    public static final String OUTPOST_WING_COLLAPSED = "outpost_wing_collapsed";
+    public static final String OUTPOST_CAP = "outpost_cap";
+
+    public static final String HAMLET = "hamlet";
+    public static final String HAMLET_DWELLING = "hamlet_dwelling";
+    public static final String HAMLET_WORKSHOP = "hamlet_workshop";
+    public static final String HAMLET_CISTERN = "hamlet_cistern";
+    public static final String HAMLET_COLLAPSED = "hamlet_collapsed";
+    public static final String HAMLET_CAP = "hamlet_cap";
+
+    public static final String RUIN_MARKER = "ruin_marker";
+    public static final String RUIN_MARKER_PILLAR = "ruin_marker_pillar";
+    public static final String SUNKEN_CHAMBER = "sunken_chamber";
 
     private final PackOutput.PathProvider pathProvider;
 
@@ -61,437 +96,547 @@ public class ModStructurePieceProvider implements DataProvider {
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
-        return CompletableFuture.allOf(
-            write(cache, MODEST_DWELLING, dwelling()),
-            write(cache, MODEST_DWELLING_WORKSHOP, dwellingWorkshop()),
-            write(cache, OUTPOST, outpost()));
+        Map<String, CompoundTag> pieces = new LinkedHashMap<>();
+        pieces.put(OUTPOST, outpost());
+        pieces.put(OUTPOST_WING_STORE, wingStore());
+        pieces.put(OUTPOST_WING_QUARTERS, wingQuarters());
+        pieces.put(OUTPOST_WING_COLLAPSED, wingCollapsed());
+        pieces.put(OUTPOST_CAP, cap(WING_H, WING_D));
+        pieces.put(HAMLET, hamlet());
+        pieces.put(HAMLET_DWELLING, hamletDwelling());
+        pieces.put(HAMLET_WORKSHOP, hamletWorkshop());
+        pieces.put(HAMLET_CISTERN, hamletCistern());
+        pieces.put(HAMLET_COLLAPSED, hamletCollapsed());
+        pieces.put(HAMLET_CAP, cap(HOUSE_H, HOUSE_D));
+        pieces.put(RUIN_MARKER, ruinMarker());
+        pieces.put(RUIN_MARKER_PILLAR, ruinMarkerPillar());
+        pieces.put(SUNKEN_CHAMBER, sunkenChamber());
+        return CompletableFuture.allOf(pieces.entrySet().stream()
+            .map(e -> write(cache, e.getKey(), e.getValue()))
+            .toArray(CompletableFuture[]::new));
     }
 
-    // --- Matériaux --------------------------------------------------------------
-    // Une palette restreinte et constante fait la « veskorianité » d'un bâtiment mieux
-    // qu'un catalogue de blocs : on doit reconnaître leur maçonnerie avant de lire un
-    // panneau. Pierre veinée pour la structure, deepslate taillée pour l'appareillage,
-    // cuivre pour tout ce qui était mécanique.
+    private static final String STABLE_CRYSTAL = "veskorius:stable_resonance_crystal";
 
-    private static final BlockState VEINED = ModBlocks.RESONANCE_VEINED_STONE.get().defaultBlockState();
-    private static final BlockState AIR = Blocks.CAVE_AIR.defaultBlockState();
-    private static final BlockState FLOOR = Blocks.POLISHED_DEEPSLATE.defaultBlockState();
-    private static final BlockState FLOOR_ALT = Blocks.DEEPSLATE_TILES.defaultBlockState();
-    private static final BlockState PILLAR = Blocks.DEEPSLATE_BRICKS.defaultBlockState();
-    private static final BlockState RUBBLE = Blocks.COBBLED_DEEPSLATE.defaultBlockState();
-    private static final BlockState CRACKED = Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState();
-    private static final BlockState COPPER = Blocks.WEATHERED_CUT_COPPER.defaultBlockState();
-    private static final BlockState LAMP = Blocks.LANTERN.defaultBlockState();
+    // =========================================================================
+    // AVANT-POSTE — 39×31×39
+    // =========================================================================
+    //
+    //   Deux niveaux, reliés par une VIS unique. Chaque salle est creusée à part ; entre
+    //   elles il reste de la roche. Le circuit est une ARBORESCENCE, pas un couloir :
+    //
+    //        vestibule ──┬── vis ──▼── salle des machines ──[SAS]── rotonde (console)
+    //                    └── grande nef  (le lore, le butin — branche facultative)
+    //
+    //   PLAN, niveau haut (y18-25)          PLAN, niveau bas (y3-10)
+    //   z 0        12       24      38      z 0        12       24      38
+    // x ┌──────────────────────────────┐  x ┌──────────────────────────────┐
+    // 0 │ ╭───╮   ┌──────────┐         │  0 │ ╭───╮                        │
+    //   │ │VIS│═══│ VESTIBULE│         │    │ │VIS│                        │
+    // 8 │ ╰─╥─╯   └────╥─────┘         │  8 │ ╰─╥─╯                        │
+    //   │   ║          ║               │    │   ╚══╗                       │
+    //16 │ ┌─╨──────────╨──────────────┐│ 16 │ ┌────╨─────────┐  ╭────────╮ │
+    //   │ │   G R A N D E   N E F     ││    │ │ SALLE DES    │B │ ROTONDE│ │
+    //30 │ └───────────────────────────┘│ 30 │ └ MACHINES ────┘  ╰────────╯ │
+    // 38└──────────────────────────────┘  38└──────────────────────────────┘
 
-    /**
-     * <b>Habitation Modeste, variante « logis ».</b> 11×6×9.
-     *
-     * <p>Le dossier demande « petites pièces, mobilier simple, jamais de machine » — donc
-     * une pièce de vie, pas un donjon : un sol dallé, une alcôve de couchage séparée par
-     * un muret, un âtre, et un plafond partiellement effondré qui a laissé des gravats au
-     * sol. C'est l'effondrement qui raconte l'histoire ; le mobilier intact dit qu'on est
-     * parti vite.
-     */
-    private static CompoundTag dwelling() {
-        TemplateBuilder b = new TemplateBuilder(11, 6, 9);
-        room(b, 11, 6, 9);
-        floorPattern(b, 1, 1, 10, 8);
+    private static final int OUT_SIZE = 39;
+    private static final int OUT_H = 31;
+    /** Niveau bas : sol foulé à y=3, huit blocs sous voûte. */
+    private static final int LOW = 3;
+    /** Niveau haut : sol foulé à y=18, huit blocs sous voûte. */
+    private static final int HIGH = 18;
+    private static final int VIS_X = 6;
+    private static final int VIS_Z = 6;
 
-        // Alcôve de couchage, fermée par un muret bas plutôt qu'un mur plein : la pièce
-        // reste lisible d'un coup d'œil en entrant.
-        for (int z = 1; z <= 3; z++) {
-            b.set(4, 1, z, PILLAR);
-        }
-        b.set(4, 2, 2, PILLAR);
-        b.set(1, 1, 1, Blocks.RED_BED.defaultBlockState());
-        b.set(2, 1, 1, Blocks.BOOKSHELF.defaultBlockState());
-        b.set(1, 1, 3, Blocks.BARREL.defaultBlockState());
-
-        // Coin de vie : établi, âtre, réserve.
-        b.setLootChest(8, 1, 7, ModWorldGen.MODEST_DWELLING_LOOT);
-        b.set(6, 1, 7, Blocks.CRAFTING_TABLE.defaultBlockState());
-        b.set(9, 1, 4, Blocks.FURNACE.defaultBlockState());
-        b.set(8, 1, 1, Blocks.CAULDRON.defaultBlockState());
-        b.set(6, 1, 3, Blocks.FLOWER_POT.defaultBlockState());
-
-        hangingLamps(b, 6, new int[][] {{3, 4}, {8, 4}});
-        collapse(b, 11, 6, 9, 0x5EED1);
-        doorway(b, 5, 8, 11, 9);
-        return b.build();
-    }
-
-    /**
-     * <b>Habitation Modeste, variante « atelier de famille ».</b> 9×6×11.
-     *
-     * <p>Deuxième entrée du même pool : le générateur en tire une au hasard. Deux plans
-     * suffisent à casser l'impression de bâtiment tamponné — c'est le premier bénéfice
-     * concret du choix « structures en jigsaw » (`16` §2), et il ne coûte qu'une pièce de
-     * plus, aucune ligne de plomberie.
-     */
-    private static CompoundTag dwellingWorkshop() {
-        TemplateBuilder b = new TemplateBuilder(9, 6, 11);
-        room(b, 9, 6, 11);
-        floorPattern(b, 1, 1, 8, 10);
-
-        // Deux rangées de piliers : l'espace se lit comme une halle, pas comme une boîte.
-        for (int z = 3; z <= 7; z += 2) {
-            b.set(2, 1, z, PILLAR);
-            b.set(2, 2, z, PILLAR);
-            b.set(6, 1, z, PILLAR);
-            b.set(6, 2, z, PILLAR);
-        }
-
-        b.setLootChest(1, 1, 9, ModWorldGen.MODEST_DWELLING_LOOT);
-        b.set(4, 1, 9, Blocks.CRAFTING_TABLE.defaultBlockState());
-        b.set(7, 1, 9, Blocks.BARREL.defaultBlockState());
-        b.set(1, 1, 1, Blocks.RED_BED.defaultBlockState());
-        b.set(7, 1, 1, Blocks.BOOKSHELF.defaultBlockState());
-        b.set(4, 1, 5, Blocks.CAULDRON.defaultBlockState());
-
-        hangingLamps(b, 6, new int[][] {{4, 3}, {4, 8}});
-        collapse(b, 9, 6, 11, 0x5EED2);
-        doorway(b, 4, 10, 9, 11);
-        return b.build();
-    }
-
-    /**
-     * <b>Avant-poste — un vrai donjon à quatre salles.</b> 21×9×21.
-     *
-     * <pre>
-     *   z 0  ┌──────────┬──────────┐
-     *        │  HALL    │  CORPS   │   entrée au sud-ouest
-     *        │ d'entrée │ DE GARDE │   (Custode + coffre)
-     *   z 8  ├────╥─────┴────╥─────┤
-     *        │      COULOIR        │
-     *   z12  ├────╥─────┬────╥─────┤
-     *        │ ARCHIVES │ CONSOLE  │   (journal en 4 fragments)
-     *        │          │  + garde │   (porte du T2)
-     *   z20  └──────────┴──────────┘
-     * </pre>
-     *
-     * <p><b>Pourquoi un plan unique et non des pièces jigsaw tirées au sort.</b> La console
-     * est la <b>porte du T2</b> : si elle vivait dans une salle tirée au hasard, une partie
-     * des Avant-postes n'en aurait pas et la progression serait de nouveau suspendue à un
-     * tirage — exactement la classe de bug déjà trouvée sur le coffre d'amorçage. Ici, la
-     * console, l'amorçage et le journal sont dans le plan garanti. Le jigsaw reste
-     * disponible pour ajouter plus tard des ailes <i>facultatives</i>, qui sont sa vraie
-     * place : du bonus, jamais du chemin critique.
-     *
-     * <p><b>La difficulté est un parcours, pas une énigme.</b> `08-Structures.md` refuse
-     * explicitement l'énigme à l'Avant-poste (« un geste sur place »). Le défi est donc
-     * spatial : deux Custodes, l'un au corps de garde qu'on peut contourner, l'autre devant
-     * la console qu'on ne peut pas. Et le couloir est effondré : il faut creuser pour
-     * atteindre les salles du fond.
-     */
     private static CompoundTag outpost() {
-        final int w = 21;
-        final int h = 9;
-        final int d = 21;
-        TemplateBuilder b = new TemplateBuilder(w, h, d);
-        room(b, w, h, d);
-        floorPattern(b, 1, 1, w - 1, d - 1);
+        TemplateBuilder b = new TemplateBuilder(OUT_SIZE, OUT_H, OUT_SIZE);
 
-        // --- Cloisons : quatre salles autour d'un couloir traversant ------------
-        partition(b, h, 10, 1, 10, 7, 4);      // hall | corps de garde
-        partition(b, h, 1, 8, 19, 8, -1);      // salles nord | couloir
-        partition(b, h, 1, 12, 19, 12, -1);    // couloir | salles sud
-        partition(b, h, 10, 13, 10, 19, 16);   // archives | console
-        // Portes du couloir : deux passages nord, deux sud.
-        for (int[] door : new int[][] {{5, 8}, {15, 8}, {5, 12}, {15, 12}}) {
-            openDoor(b, door[0], door[1]);
-        }
+        // La VIS d'abord : c'est la colonne vertébrale. Elle n'a qu'UNE entrée par
+        // niveau — deux paliers au même étage sur une vis, c'est une chute garantie du
+        // côté qui n'a pas la marche.
+        Masonry.spiralStair(b, VIS_X, VIS_Z, HIGH - 1, LOW - 1, Direction.EAST);
+        Masonry.conduitDrop(b, VIS_X - 1, LOW, VIS_Z - 1, HIGH - 2);
 
-        // --- Salle 1 : hall d'entrée. Vide, effondré : on comprend qu'on entre
-        // dans une ruine avant de croiser quoi que ce soit de vivant.
-        doorway(b, 5, 0, w, d);
-        b.set(3, 1, 3, RUBBLE);
-        b.set(4, 1, 3, RUBBLE);
-        b.set(3, 2, 3, RUBBLE);
-        b.set(7, 1, 6, Blocks.SMITHING_TABLE.defaultBlockState());
-        hangingLamps(b, h, new int[][] {{5, 4}});
+        outpostVestibule(b);
+        outpostNave(b);
+        outpostMachineHall(b);
+        outpostRotunda(b);
+        return b.build();
+    }
 
-        // --- Salle 2 : corps de garde. Un Custode et le butin d'appoint : le
-        // combat est optionnel (on peut filer au couloir), la récompense non.
-        b.setLootChest(18, 1, 2, ModWorldGen.OUTPOST_LOOT);
-        b.set(12, 1, 6, Blocks.BARREL.defaultBlockState());
-        b.set(18, 1, 6, Blocks.GRINDSTONE.defaultBlockState());
-        hangingLamps(b, h, new int[][] {{15, 4}});
-        custode(b, 15.5, 4.5);
+    /**
+     * <b>Vestibule</b> — l'entrée, et le seul endroit où le monde pénètre la ruine. Sa
+     * voûte s'est ouverte : le bouchon de roche qui la remplace est ce qu'une grotte peut
+     * croiser, donc ce par quoi on tombe dessus en explorant.
+     *
+     * <p>Volontairement <b>vide</b>. Une salle d'accueil encombrée de tonneaux ne dit rien ;
+     * une salle haute, nue, dont un pan de voûte gît au sol, dit qu'on entre quelque part.
+     */
+    private static void outpostVestibule(TemplateBuilder b) {
+        Masonry.chamber(b, 14, HIGH, 2, 24, HIGH + 7, 12, Masonry.Style.noble());
+        Masonry.gallery(b, 10, HIGH, 6, 13, 6);
+        Masonry.gallery(b, 19, HIGH, 13, 19, 15);
 
-        // --- Couloir : effondré en son milieu. Il faut creuser pour passer —
-        // c'est le seul « obstacle » du donjon, et il ne demande qu'une pioche.
-        for (int x = 8; x <= 12; x++) {
-            for (int y = 1; y <= 3; y++) {
-                b.set(x, y, 10, x % 2 == 0 ? RUBBLE : CRACKED);
+        Masonry.collapse(b, 19, 7, 4, HIGH + 8, HIGH, 0x5EED1);
+        Masonry.wallBreach(b, 25, HIGH, 3, 5, true, -1, 0x5EED2);
+        Masonry.silt(b, 16, HIGH - 1, 11, 2);
+
+        // Alcôve de Custode, VIDE. Quelqu'un veillait ici, et n'y est plus.
+        alcove(b, 13, HIGH, 9, false, false);
+        Masonry.sconce(b, 13, HIGH + 3, 4, Direction.Axis.Z);
+        Masonry.sconce(b, 25, HIGH + 3, 9, Direction.Axis.Z);
+        Masonry.conduitRun(b, 25, HIGH + 5, 3, 25, 11);
+        b.set(25, HIGH + 5, 7, CRACKED);
+
+        wingConnector(b, 19, HIGH, 1, Direction.NORTH);
+    }
+
+    /**
+     * <b>Grande nef</b> — 31 mètres de long, deux colonnades, huit mètres sous voûte. C'est
+     * la pièce qui doit faire dire « ils étaient une civilisation », et elle le fait par sa
+     * <b>section</b>, pas par son contenu : trois meubles en tout.
+     *
+     * <p>Un tiers de la voûte manque, et sa matière est là, en cône, sous le trou. On
+     * contourne le tas pour traverser : c'est lui qui dessine le cheminement, pas une
+     * cloison.
+     */
+    private static void outpostNave(TemplateBuilder b) {
+        Masonry.chamber(b, 4, HIGH, 16, 34, HIGH + 7, 30, Masonry.Style.noble());
+
+        // Les deux colonnades : elles découpent la nef en vaisseau central et bas-côtés.
+        // C'est la répétition verticale qui donne la hauteur, pas la hauteur elle-même.
+        for (int z : new int[] {20, 26}) {
+            for (int x = 7; x <= 31; x += 4) {
+                for (int y = HIGH; y <= HIGH + 6; y++) {
+                    b.set(x, y, z, Masonry.column(Direction.Axis.Y));
+                }
+                b.set(x, HIGH, z, CHISELED);
+                b.set(x, HIGH + 6, z, CHISELED);
+                b.set(x, HIGH + 7, z, CHISELED);
+                if (x + 4 <= 31) {
+                    b.set(x + 1, HIGH + 7, z, Masonry.stair(Direction.EAST, true));
+                    b.set(x + 3, HIGH + 7, z, Masonry.stair(Direction.WEST, true));
+                }
             }
         }
-        hangingLamps(b, h, new int[][] {{3, 10}, {17, 10}});
+        // Bas-côtés surélevés d'un gradin : le vaisseau central se creuse sans qu'on ait
+        // rien à descendre.
+        Masonry.terrace(b, 5, HIGH, 17, 33, 19, PAVING);
+        Masonry.terrace(b, 5, HIGH, 27, 33, 29, PAVING);
 
-        // --- Salle 3 : cabinet d'archives. LE LORE. Quatre coffres alignés le
-        // long du mur, un fragment de journal chacun, DANS L'ORDRE — on lit une
-        // descente en traversant la pièce, pas une anecdote tirée au sort.
-        for (int z = 14; z <= 18; z += 2) {
-            b.set(1, 1, z, Blocks.BOOKSHELF.defaultBlockState());
-            b.set(1, 2, z, Blocks.BOOKSHELF.defaultBlockState());
-        }
-        b.set(5, 1, 16, Blocks.LECTERN.defaultBlockState());
+        Masonry.collapse(b, 14, 24, 5, HIGH + 8, HIGH, 0x5EED3);
+        Masonry.wallBreach(b, 3, HIGH, 22, 6, true, 1, 0x5EED4);
+
+        // LE JOURNAL : quatre coffres DANS L'ORDRE, sous une arcade aveugle du mur nord.
+        // On lit une descente en longeant la nef, pas une anecdote tirée au sort.
+        Masonry.arcade(b, 35, HIGH, 18, 28, 1);
         ResourceLocation[] log = {
             CodexEntries.OUTPOST_LOG_1, CodexEntries.OUTPOST_LOG_2,
             CodexEntries.OUTPOST_LOG_3, CodexEntries.OUTPOST_LOG_4,
         };
         for (int i = 0; i < log.length; i++) {
-            b.setFragmentChest(3 + i * 2, 1, 19, log[i]);
+            b.fragmentChest(10 + i * 6, HIGH, 16, log[i], Direction.SOUTH);
+            b.set(10 + i * 6, HIGH + 1, 15, CHISELED);
         }
-        hangingLamps(b, h, new int[][] {{5, 16}});
+        b.lootChest(6, HIGH, 23, ModWorldGen.OUTPOST_LOOT, Direction.EAST);
+        custode(b, 19.5, HIGH, 23.5);
 
-        // --- Salle 4 : la console. Estrade centrale, piliers de cuivre oxydé,
-        // second Custode. Le relief désigne la pièce maîtresse sans éclairage
-        // supplémentaire ; c'est la seule salle où le sol monte.
-        for (int x = 13; x <= 17; x++) {
-            for (int z = 15; z <= 19; z++) {
-                b.set(x, 1, z, PILLAR);
-            }
-        }
-        for (int x = 14; x <= 16; x++) {
-            for (int z = 16; z <= 18; z++) {
-                b.set(x, 2, z, FLOOR_ALT);
-            }
-        }
-        b.set(15, 3, 17, ModBlocks.ATTUNEMENT_CONSOLE.get().defaultBlockState());
-        for (int[] c : new int[][] {{12, 14}, {18, 14}, {12, 19}, {18, 19}}) {
-            for (int y = 1; y <= 5; y++) {
-                b.set(c[0], y, c[1], y == 5 ? COPPER : PILLAR);
-            }
-        }
-        hangingLamps(b, h, new int[][] {{13, 17}, {17, 17}});
-        custode(b, 12.5, 16.5);
+        Masonry.chandelier(b, 11, HIGH + 7, 23, 2);
+        Masonry.chandelier(b, 19, HIGH + 7, 23, 2);
+        Masonry.chandelier(b, 27, HIGH + 7, 23, 2);
+        Masonry.sconce(b, 3, HIGH + 3, 25, Direction.Axis.Z);
+        Masonry.conduitRun(b, 3, HIGH + 5, 17, 3, 29);
+    }
 
-        collapse(b, w, h, d, 0x5EED3);
+    /**
+     * <b>Salle des machines</b> — la seule pièce encore équipée. L'émetteur ancien y trône
+     * sur une estrade à gradins, à sec ; le sas est dans le mur est ; et le coffre-réserve,
+     * au contenu <b>fixe</b>, garantit le cristal qui ouvre tout.
+     */
+    private static void outpostMachineHall(TemplateBuilder b) {
+        Masonry.chamber(b, 4, LOW, 14, 23, LOW + 7, 30, Masonry.Style.noble());
+        Masonry.gallery(b, VIS_X, LOW, 10, VIS_X, 13);
+        Masonry.colonnade(b, 9, LOW, 17, 27, LOW + 7);
+        Masonry.colonnade(b, 18, LOW, 17, 27, LOW + 7);
+
+        // Estrade à deux gradins. Le relief désigne la pièce maîtresse sans une lampe de
+        // plus — et il porte l'émetteur au niveau du regard.
+        Masonry.terrace(b, 11, LOW - 1, 20, 16, 25, PAVING);
+        Masonry.terrace(b, 12, LOW, 21, 15, 24, CHISELED);
+        b.set(13, LOW + 1, 22, ModBlocks.ANCIENT_EMITTER.get().defaultBlockState()
+            .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST));
+        b.set(14, LOW + 1, 22, Blocks.SMITHING_TABLE.defaultBlockState());
+
+        b.itemChest(16, LOW + 1, 22, STABLE_CRYSTAL, 1, Direction.WEST);
+        b.lootChest(6, LOW, 16, ModWorldGen.OUTPOST_LOOT, Direction.SOUTH);
+
+        // Deux Custodes rangés en alcôve : ils se lèvent quand la salle se réveille.
+        alcove(b, 3, LOW, 19, true, true);
+        alcove(b, 3, LOW, 27, true, true);
+
+        Masonry.conduitRun(b, 3, LOW + 5, 15, 3, 29);
+        Masonry.conduitRun(b, 24, LOW + 5, 15, 24, 29);
+        Masonry.sconce(b, 3, LOW + 3, 23, Direction.Axis.Z);
+        Masonry.sconce(b, 24, LOW + 3, 17, Direction.Axis.Z);
+        Masonry.chandelier(b, 13, LOW + 8, 17, 2);
+        Masonry.chandelier(b, 13, LOW + 8, 28, 2);
+
+        // Neuf siècles de champ qui dérive laissent des traces (02-Lore.md, Âge 4).
+        b.box(20, LOW, 28, 22, LOW, 29, BLOOM);
+        b.set(21, LOW + 1, 29, BLOOM);
+        Masonry.silt(b, 8, LOW - 1, 28, 2);
+        Masonry.wallBreach(b, 12, LOW, 31, 5, false, -1, 0x5EED5);
+
+        // LE SAS, dans le mur est : un bloc de large, deux de haut, indestructible, avec
+        // une baie de part et d'autre — un verrou qui ne montre pas ce qu'il garde n'est
+        // qu'un mur.
+        b.box(24, LOW, 21, 24, LOW + 3, 23, BRICK);
+        b.set(24, LOW, 22, BULKHEAD);
+        b.set(24, LOW + 1, 22, BULKHEAD);
+        b.set(24, LOW + 1, 21, GLASS);
+        b.set(24, LOW + 1, 23, GLASS);
+        b.set(24, LOW + 2, 22, CHISELED);
+        b.set(24, LOW + 3, 22, GRATE);
+    }
+
+    /**
+     * <b>Rotonde de la console</b> — octogonale, à colonnes engagées, coiffée d'une
+     * coupole. Une salle dont le plan n'est pas rectangulaire est lue comme importante
+     * avant qu'on ait rien écrit dedans : c'est le moyen le moins cher de dire « ceci est
+     * la pièce maîtresse », et le seul qui ne dépende pas de l'éclairage.
+     */
+    private static void outpostRotunda(TemplateBuilder b) {
+        Masonry.rotunda(b, 31, LOW, 22, 5, 8);
+        b.box(25, LOW, 21, 25, LOW + 2, 23, AIR);
+
+        Masonry.terrace(b, 29, LOW, 20, 33, 24, PAVING);
+        b.set(31, LOW + 1, 22, ModBlocks.ATTUNEMENT_CONSOLE.get().defaultBlockState());
+        Masonry.chandelier(b, 31, LOW + 12, 22, 3);
+        for (int[] c : new int[][] {{28, 19}, {34, 19}, {28, 25}, {34, 25}}) {
+            Masonry.sconce(b, c[0], LOW + 3, c[1], Direction.Axis.Z);
+        }
+        Masonry.conduitDrop(b, 31, LOW, 17, LOW + 6);
+        Masonry.conduitDrop(b, 31, LOW, 27, LOW + 6);
+    }
+
+    // =========================================================================
+    // Ailes facultatives — 15×11×15
+    // =========================================================================
+
+    private static final int WING_W = 15;
+    private static final int WING_H = 11;
+    private static final int WING_D = 15;
+
+    private static CompoundTag wingStore() {
+        TemplateBuilder b = wingShell(Masonry.Style.common());
+        Masonry.arcade(b, 12, 2, 4, 10, 1);
+        b.lootChest(7, 2, 3, ModWorldGen.OUTPOST_LOOT, Direction.SOUTH);
+        b.set(12, 2, 5, Blocks.BARREL.defaultBlockState());
+        b.set(12, 2, 9, Blocks.BARREL.defaultBlockState());
+        Masonry.chandelier(b, 7, 9, 7, 2);
         return b.build();
     }
 
-    /** Cloison intérieure, avec une porte optionnelle ({@code doorAt} &lt; 0 = pleine). */
-    private static void partition(TemplateBuilder b, int h, int x0, int z0, int x1, int z1, int doorAt) {
-        for (int x = x0; x <= x1; x++) {
-            for (int z = z0; z <= z1; z++) {
-                for (int y = 1; y < h - 1; y++) {
-                    b.set(x, y, z, VEINED);
-                }
-            }
+    private static CompoundTag wingQuarters() {
+        TemplateBuilder b = wingShell(Masonry.Style.common());
+        for (int z = 4; z <= 10; z += 3) {
+            cot(b, 2, 2, z);
         }
-        if (doorAt >= 0) {
-            // Porte percée dans une cloison verticale (x fixe) ou horizontale (z fixe).
-            boolean vertical = x0 == x1;
-            for (int y = 1; y <= 2; y++) {
-                b.set(vertical ? x0 : doorAt, y, vertical ? doorAt : z0, AIR);
-            }
-        }
+        b.lootChest(12, 2, 7, ModWorldGen.OUTPOST_LOOT, Direction.WEST);
+        custode(b, 7.5, 2, 7.5);
+        Masonry.chandelier(b, 7, 9, 7, 2);
+        Masonry.sconce(b, 7, 5, 1, Direction.Axis.X);
+        return b.build();
     }
 
-    /** Percée de 2 blocs de haut dans une cloison, à une position donnée. */
-    private static void openDoor(TemplateBuilder b, int x, int z) {
-        for (int y = 1; y <= 2; y++) {
-            b.set(x, y, z, AIR);
+    /** Galerie effondrée : une impasse à creuser. Le tas raconte d'où il est tombé. */
+    private static CompoundTag wingCollapsed() {
+        TemplateBuilder b = wingShell(Masonry.Style.plain());
+        Masonry.collapse(b, 8, 8, 5, 7, 2, 0x5EED6);
+        Masonry.wallBreach(b, 14, 2, 4, 6, true, -1, 0x5EED7);
+        b.box(2, 2, 11, 4, 2, 12, BLOOM);
+        Masonry.silt(b, 4, 1, 4, 2);
+        return b.build();
+    }
+
+    private static TemplateBuilder wingShell(Masonry.Style style) {
+        TemplateBuilder b = new TemplateBuilder(WING_W, WING_H, WING_D);
+        Masonry.chamber(b, 2, 2, 2, WING_W - 3, 6, WING_D - 3, style);
+        Masonry.conduitRun(b, 1, 5, 3, 1, 11);
+        wingConnector(b, 1, 2, 7, Direction.WEST);
+        wingConnector(b, WING_W - 2, 2, 7, Direction.EAST);
+        return b;
+    }
+
+    // =========================================================================
+    // HAMEAU — 25×17×25 : une nef, pas un lotissement
+    // =========================================================================
+    //
+    // « Une maison isolée raconte un survivant, un hameau raconte un peuple. » La première
+    // version prenait ça au pied de la lettre : quatre cabanes autour d'une placette, donc
+    // un lotissement. Un peuple qui creuse ne juxtapose pas des maisons — il taille UNE
+    // halle et loge dans ses parois. D'où : une nef à colonnade, des logis en alcôves dans
+    // les bas-côtés, un escalier d'apparat pour y descendre.
+
+    private static final int HAM_W = 25;
+    private static final int HAM_H = 17;
+    private static final int HAM_D = 25;
+    private static final int HOUSE_W = 15;
+    private static final int HOUSE_H = 12;
+    private static final int HOUSE_D = 15;
+
+    private static CompoundTag hamlet() {
+        TemplateBuilder b = new TemplateBuilder(HAM_W, HAM_H, HAM_D);
+        Masonry.chamber(b, 3, 4, 3, 21, 11, 21, Masonry.Style.noble());
+
+        // Deux colonnades, un vaisseau central creusé d'un gradin : la halle.
+        Masonry.colonnade(b, 8, 4, 5, 19, 11);
+        Masonry.colonnade(b, 16, 4, 5, 19, 11);
+        b.box(9, 3, 5, 15, 3, 19, PAVING);
+        for (int z = 5; z <= 19; z++) {
+            b.set(8, 3, z, Masonry.pavingStair(Direction.WEST, false));
+            b.set(16, 3, z, Masonry.pavingStair(Direction.EAST, false));
+        }
+
+        // L'escalier d'apparat : on descend DANS la halle, on n'y tombe pas.
+        Masonry.grandStair(b, 11, 13, 4, 8, 4);
+
+        // Le foyer commun : un âtre de cuivre au centre du vaisseau, et rien d'autre.
+        // Un lieu commun se reconnaît à ce qu'il ne contient aucune récompense.
+        b.box(11, 3, 11, 13, 3, 13, COPPER);
+        b.set(12, 4, 12, Blocks.CAMPFIRE.defaultBlockState()
+            .setValue(BlockStateProperties.LIT, Boolean.FALSE));
+        Masonry.chandelier(b, 12, 12, 8, 2);
+        Masonry.chandelier(b, 12, 12, 16, 2);
+        Masonry.conduitRun(b, 2, 8, 4, 2, 20);
+        Masonry.conduitRun(b, 22, 8, 4, 22, 20);
+        Masonry.sconce(b, 2, 6, 12, Direction.Axis.Z);
+        Masonry.sconce(b, 22, 6, 12, Direction.Axis.Z);
+
+        // Les logis sont TAILLÉS DANS LES BAS-CÔTÉS, pas accolés dehors : c'est ça, un
+        // habitat creusé. Le pool n'ajoute que les annexes qui débordent de la halle.
+        Masonry.arcade(b, 3, 4, 5, 19, 2);
+        Masonry.arcade(b, 21, 4, 5, 19, 2);
+        for (int z : new int[] {5, 9, 13, 17}) {
+            cot(b, 3, 4, z);
+            cot(b, 21, 4, z);
+        }
+        b.lootChest(3, 4, 18, ModWorldGen.MODEST_DWELLING_LOOT, Direction.EAST);
+        b.lootChest(21, 4, 6, ModWorldGen.MODEST_DWELLING_LOOT, Direction.WEST);
+
+        Masonry.collapse(b, 18, 18, 4, 12, 4, 0x5EEDE);
+
+        houseConnector(b, 2, 4, 6, Direction.WEST);
+        houseConnector(b, HAM_W - 3, 4, 18, Direction.EAST);
+        houseConnector(b, 12, 4, 2, Direction.NORTH);
+        houseConnector(b, 6, 4, HAM_D - 3, Direction.SOUTH);
+        return b.build();
+    }
+
+    /** Annexe d'habitation : une salle voûtée avec sa niche de couchage. */
+    private static CompoundTag hamletDwelling() {
+        TemplateBuilder b = houseShell(Masonry.Style.common(), 6);
+        Masonry.arcade(b, 12, 2, 4, 10, 1);
+        cot(b, 12, 2, 5);
+        cot(b, 12, 2, 9);
+        b.set(2, 2, 3, Blocks.FURNACE.defaultBlockState());
+        b.lootChest(7, 2, 11, ModWorldGen.MODEST_DWELLING_LOOT, Direction.NORTH);
+        Masonry.chandelier(b, 7, 9, 7, 2);
+        return b.build();
+    }
+
+    /** Atelier : une halle à quatre colonnes libres. Le logis « riche » du hameau. */
+    private static CompoundTag hamletWorkshop() {
+        TemplateBuilder b = houseShell(Masonry.Style.noble(), 7);
+        for (int[] c : new int[][] {{5, 5}, {9, 5}, {5, 9}, {9, 9}}) {
+            for (int y = 2; y <= 8; y++) {
+                b.set(c[0], y, c[1], Masonry.column(Direction.Axis.Y));
+            }
+            b.set(c[0], 2, c[1], CHISELED);
+            b.set(c[0], 8, c[1], CHISELED);
+        }
+        b.set(7, 2, 11, Blocks.CRAFTING_TABLE.defaultBlockState());
+        b.lootChest(2, 2, 11, ModWorldGen.MODEST_DWELLING_LOOT, Direction.EAST);
+        Masonry.chandelier(b, 7, 10, 7, 2);
+        return b.build();
+    }
+
+    /**
+     * Citerne : une salle qui n'est pas un logis. Un hameau fait uniquement de maisons est
+     * un lotissement ; il lui faut un ouvrage collectif pour ressembler à un village.
+     * Elle est <b>à sec</b> — c'est une ruine, et une source d'eau décorative devient une
+     * inondation dès qu'un bloc voisin manque.
+     */
+    private static CompoundTag hamletCistern() {
+        TemplateBuilder b = houseShell(Masonry.Style.noble(), 7);
+        b.box(3, 1, 3, 11, 3, 11, AIR);
+        b.box(3, 0, 3, 11, 0, 11, Masonry.TILE);
+        for (int i = 3; i <= 11; i++) {
+            b.set(i, 1, 3, Masonry.stair(Direction.SOUTH, false));
+            b.set(i, 1, 11, Masonry.stair(Direction.NORTH, false));
+            b.set(3, 1, i, Masonry.stair(Direction.EAST, false));
+            b.set(11, 1, i, Masonry.stair(Direction.WEST, false));
+        }
+        Masonry.silt(b, 7, 0, 7, 3);
+        b.box(7, 2, 3, 7, 8, 3, GRATE);
+        Masonry.chandelier(b, 7, 10, 7, 3);
+        return b.build();
+    }
+
+    /** Annexe effondrée : une impasse qu'il faut creuser. Elle casse la régularité. */
+    private static CompoundTag hamletCollapsed() {
+        TemplateBuilder b = houseShell(Masonry.Style.plain(), 5);
+        Masonry.collapse(b, 7, 7, 5, 6, 2, 0x5EED8);
+        Masonry.wallBreach(b, 1, 2, 5, 5, true, 1, 0x5EED9);
+        b.box(11, 2, 10, 12, 2, 11, BLOOM);
+        Masonry.silt(b, 3, 1, 3, 2);
+        return b.build();
+    }
+
+    private static TemplateBuilder houseShell(Masonry.Style style, int height) {
+        TemplateBuilder b = new TemplateBuilder(HOUSE_W, HOUSE_H, HOUSE_D);
+        Masonry.chamber(b, 2, 2, 2, HOUSE_W - 3, height, HOUSE_D - 3, style);
+        houseConnector(b, 1, 2, 7, Direction.WEST);
+        houseConnector(b, HOUSE_W - 2, 2, 7, Direction.EAST);
+        return b;
+    }
+
+    // =========================================================================
+    // PETITES RUINES — la texture de fond du monde
+    // =========================================================================
+    //
+    // Le monde n'avait que deux ruines, toutes deux grandes. Une civilisation effondrée
+    // ne laisse pas deux bâtiments : elle laisse surtout des miettes. Leur rôle n'est pas
+    // de récompenser, c'est de faire qu'on croise du veskorien tout le temps — et qu'une
+    // VRAIE structure se distingue par contraste au lieu d'apparaître de nulle part.
+
+    /** Bout de galerie enseveli : une travée de voûte et son tas. Aucune récompense. */
+    private static CompoundTag ruinMarker() {
+        TemplateBuilder b = new TemplateBuilder(11, 9, 11);
+        Masonry.chamber(b, 2, 2, 2, 8, 5, 8, Masonry.Style.common());
+        Masonry.collapse(b, 5, 5, 4, 6, 2, 0x5EEDA);
+        Masonry.wallBreach(b, 1, 2, 3, 5, true, 1, 0x5EEDB);
+        Masonry.conduitRun(b, 9, 4, 3, 9, 7);
+        return b.build();
+    }
+
+    /** Borne de conduit : un fût brisé sur sa base dallée. Le plus petit signe veskorien. */
+    private static CompoundTag ruinMarkerPillar() {
+        TemplateBuilder b = new TemplateBuilder(7, 9, 7);
+        b.box(0, 0, 0, 6, 0, 6, RUBBLE);
+        b.box(1, 0, 1, 5, 0, 5, Masonry.TILE);
+        b.box(2, 1, 2, 4, 1, 4, PAVING);
+        b.set(3, 1, 3, CHISELED);
+        for (int y = 2; y <= 5; y++) {
+            b.set(3, y, 3, Masonry.column(Direction.Axis.Y));
+        }
+        b.set(3, 4, 3, Masonry.conduit(Direction.Axis.Y));
+        b.set(3, 6, 3, CRACKED);
+        for (int[] c : new int[][] {{2, 3}, {4, 3}, {3, 2}, {3, 4}}) {
+            b.set(c[0], 1, c[1], SLAB);
+        }
+        b.set(1, 1, 5, RUBBLE);
+        b.set(5, 1, 2, RUBBLE);
+        return b.build();
+    }
+
+    /**
+     * Chambre engloutie : une salle voûtée à demi comblée, un coffre. C'est le format « on
+     * a trouvé quelque chose » sans être un donjon — le palier manquant entre la borne et
+     * l'Avant-poste.
+     */
+    private static CompoundTag sunkenChamber() {
+        TemplateBuilder b = new TemplateBuilder(17, 13, 17);
+        Masonry.chamber(b, 3, 3, 3, 13, 8, 13, Masonry.Style.noble());
+        Masonry.colonnade(b, 6, 3, 5, 11, 8);
+        Masonry.colonnade(b, 10, 3, 5, 11, 8);
+        Masonry.collapse(b, 6, 6, 5, 9, 3, 0x5EEDC);
+        Masonry.wallBreach(b, 14, 3, 8, 5, true, -1, 0x5EEDD);
+        Masonry.silt(b, 11, 2, 11, 2);
+        b.lootChest(12, 3, 5, ModWorldGen.MODEST_DWELLING_LOOT, Direction.WEST);
+        b.box(12, 3, 12, 13, 3, 13, BLOOM);
+        Masonry.conduitRun(b, 2, 6, 4, 2, 12);
+        Masonry.chandelier(b, 8, 9, 10, 2);
+        return b.build();
+    }
+
+    // =========================================================================
+    // Bouchons de fin de branche
+    // =========================================================================
+
+    /**
+     * Bouchon : un mur d'un bloc d'épaisseur qui referme une branche non poursuivie. Sans
+     * lui, une structure sur deux se termine par un trou béant sur la roche, là où le
+     * jigsaw a atteint sa profondeur maximale — d'où sa déclaration en {@code fallback} de
+     * tous les pools. Son connecteur a pour {@code final_state} de la <b>brique</b> : un
+     * bouchon qui se remplace par de l'air ne bouche rien.
+     */
+    private static CompoundTag cap(int height, int depth) {
+        TemplateBuilder b = new TemplateBuilder(1, height, depth);
+        b.box(0, 0, 0, 0, height - 1, depth - 1, BRICK);
+        b.jigsaw(0, 2, depth / 2, Direction.WEST, "veskorius:corridor", "veskorius:corridor",
+            net.minecraft.data.worldgen.Pools.EMPTY, BRICK, true);
+        return b.build();
+    }
+
+    // --- Mobilier (rare, par principe) -------------------------------------------
+
+    /**
+     * Couchette veskorienne : une dalle et un dossier gravé. (Les lits vanilla occupent
+     * deux blocs, et une moitié posée seule est <b>retirée</b> par la mise à jour de
+     * voisinage — ils disparaissaient sans un mot.)
+     */
+    private static void cot(TemplateBuilder b, int x, int y, int z) {
+        b.set(x, y, z, SLAB);
+        b.set(x, y, z + 1, SLAB);
+        b.set(x, y + 1, z, CHISELED);
+    }
+
+    /**
+     * Alcôve de dock : une niche de deux blocs creusée <b>dans l'épaisseur du mur</b>, avec
+     * son linteau. Un Custode rangé qui s'en extrait vaut dix Custodes plantés au sol — et
+     * une alcôve <b>vide</b> raconte autant qu'une occupée.
+     */
+    private static void alcove(TemplateBuilder b, int x, int y, int z, boolean alongZ,
+                               boolean occupied) {
+        int dx = alongZ ? 0 : 1;
+        int dz = alongZ ? 1 : 0;
+        b.set(x, y, z, AIR);
+        b.set(x, y + 1, z, AIR);
+        b.set(x, y + 2, z, CHISELED);
+        b.set(x + dx, y, z + dz, Masonry.column(Direction.Axis.Y));
+        b.set(x - dx, y, z - dz, Masonry.column(Direction.Axis.Y));
+        b.set(x + dx, y + 1, z + dz, Masonry.column(Direction.Axis.Y));
+        b.set(x - dx, y + 1, z - dz, Masonry.column(Direction.Axis.Y));
+        if (occupied) {
+            custode(b, x + 0.5, y, z + 0.5);
         }
     }
 
     /** Un Custode persistant en poste (ne despawn jamais, réactif seulement de près). */
-    private static void custode(TemplateBuilder b, double x, double z) {
+    private static void custode(TemplateBuilder b, double x, int y, double z) {
         CompoundTag tag = new CompoundTag();
         tag.putString("id", "veskorius:custode");
         tag.putBoolean("PersistenceRequired", true);
-        b.entity(x, 1.0, z, (int) x, 1, (int) z, tag);
+        b.entity(x, y, z, (int) x, y, (int) z, tag);
     }
 
-    // --- Vocabulaire de construction --------------------------------------------
-
-    /** Coquille : murs de pierre veinée, sol et plafond pleins, intérieur creusé. */
-    private static void room(TemplateBuilder b, int w, int h, int d) {
-        for (int x = 0; x < w; x++) {
-            for (int y = 0; y < h; y++) {
-                for (int z = 0; z < d; z++) {
-                    boolean edge = x == 0 || x == w - 1 || z == 0 || z == d - 1;
-                    b.set(x, y, z, edge || y == 0 || y == h - 1 ? VEINED : AIR);
-                }
-            }
-        }
+    private static void wingConnector(TemplateBuilder b, int x, int y, int z, Direction front) {
+        b.jigsaw(x, y, z, front, "veskorius:corridor", "veskorius:corridor",
+            ModStructures.OUTPOST_WING_POOL, AIR, true);
+        b.set(x, y + 1, z, AIR);
+        b.set(x, y + 2, z, AIR);
     }
 
-    /** Sol en damier de deux dalles : de l'appareillage, pas une nappe de pierre. */
-    private static void floorPattern(TemplateBuilder b, int x0, int z0, int x1, int z1) {
-        for (int x = x0; x < x1; x++) {
-            for (int z = z0; z < z1; z++) {
-                b.set(x, 0, z, (x + z) % 2 == 0 ? FLOOR : FLOOR_ALT);
-            }
-        }
+    private static void houseConnector(TemplateBuilder b, int x, int y, int z, Direction front) {
+        b.jigsaw(x, y, z, front, "veskorius:corridor", "veskorius:corridor",
+            ModStructures.HAMLET_HOUSE_POOL, AIR, true);
+        b.set(x, y + 1, z, AIR);
+        b.set(x, y + 2, z, AIR);
     }
 
-    /** Lanternes suspendues au plafond : un bâtiment habité s'éclaire par le haut. */
-    private static void hangingLamps(TemplateBuilder b, int h, int[][] spots) {
-        for (int[] s : spots) {
-            b.set(s[0], h - 2, s[1], LAMP.setValue(net.minecraft.world.level.block.LanternBlock.HANGING, true));
-        }
-    }
-
-    /**
-     * Effondrement : quelques blocs de plafond remplacés par de la roche, et les gravats
-     * correspondants au sol. C'est ce qui distingue une ruine d'une maison vide — et c'est
-     * déterministe (graine fixe) pour que la pièce reste reproductible.
-     */
-    private static void collapse(TemplateBuilder b, int w, int h, int d, int seed) {
-        java.util.Random rand = new java.util.Random(seed);
-        for (int n = 0; n < 6; n++) {
-            int x = 1 + rand.nextInt(w - 2);
-            int z = 1 + rand.nextInt(d - 2);
-            b.set(x, h - 1, z, rand.nextBoolean() ? RUBBLE : CRACKED);
-            if (rand.nextBoolean()) {
-                b.set(x, 1, z, RUBBLE);
-            }
-        }
-        // Maçonnerie fissurée au pied des murs : l'usure part toujours du bas.
-        for (int n = 0; n < 8; n++) {
-            int x = 1 + rand.nextInt(w - 2);
-            b.set(x, 1, rand.nextBoolean() ? 0 : d - 1, CRACKED);
-        }
-    }
-
-    /**
-     * Percée d'entrée dans un mur, prolongée d'un pas vers l'extérieur.
-     *
-     * <p>Sans elle, la pièce est une bulle scellée : le joueur tombe dessus en minant et
-     * n'a aucun signe de l'avoir trouvée. Une ouverture donne une chance à une grotte de
-     * la croiser, et fait qu'on ENTRE quelque part au lieu de percer un mur.
-     */
-    private static void doorway(TemplateBuilder b, int x, int z, int w, int d) {
-        for (int y = 1; y <= 2; y++) {
-            b.set(x, y, z, AIR);
-            b.set(x, y, z + 1 < d ? z + 1 : z, AIR);
-        }
-        b.set(x, 3, z, CRACKED);
-    }
-
-    // --- Construction du NBT de template --------------------------------------
-
-    /**
-     * Assemble un {@code StructureTemplate} au format NBT attendu par
-     * {@code StructureTemplate.load} : une palette de blockstates, la liste des blocs
-     * (position + index de palette + NBT de block entity optionnel) et les entités.
-     */
-    private static final class TemplateBuilder {
-
-        private final int sx;
-        private final int sy;
-        private final int sz;
-        private final Map<String, Integer> paletteIndex = new LinkedHashMap<>();
-        private final List<CompoundTag> palette = new ArrayList<>();
-        private final Map<Long, CompoundTag> blocks = new LinkedHashMap<>();
-        private final List<CompoundTag> entities = new ArrayList<>();
-
-        TemplateBuilder(int sx, int sy, int sz) {
-            this.sx = sx;
-            this.sy = sy;
-            this.sz = sz;
-        }
-
-        void set(int x, int y, int z, BlockState state) {
-            set(x, y, z, state, null);
-        }
-
-        void setLootChest(int x, int y, int z, ResourceLocation lootTable) {
-            CompoundTag be = new CompoundTag();
-            be.putString("id", "minecraft:chest");
-            be.putString("LootTable", lootTable.toString());
-            set(x, y, z, Blocks.CHEST.defaultBlockState(), be);
-        }
-
-        /**
-         * Coffre au contenu <b>fixe</b> : un fragment de Codex donné.
-         *
-         * <p>Volontairement pas une table de loot : un journal en quatre parties n'a de
-         * sens que si les quatre sont là et dans l'ordre. Une table les rendrait
-         * aléatoires, et le joueur lirait la fin avant le début — ou pas du tout.
-         */
-        void setFragmentChest(int x, int y, int z, ResourceLocation entry) {
-            CompoundTag item = new CompoundTag();
-            item.putString("id", "veskorius:codex_fragment");
-            item.putInt("count", 1);
-            CompoundTag components = new CompoundTag();
-            components.putString("veskorius:codex_entry", entry.toString());
-            item.put("components", components);
-            item.putByte("Slot", (byte) 0);
-
-            net.minecraft.nbt.ListTag items = new net.minecraft.nbt.ListTag();
-            items.add(item);
-            CompoundTag be = new CompoundTag();
-            be.putString("id", "minecraft:chest");
-            be.put("Items", items);
-            set(x, y, z, Blocks.CHEST.defaultBlockState(), be);
-        }
-
-        void set(int x, int y, int z, BlockState state, CompoundTag blockEntity) {
-            int index = paletteFor(state);
-            CompoundTag entry = new CompoundTag();
-            entry.put("pos", intList(x, y, z));
-            entry.putInt("state", index);
-            if (blockEntity != null) {
-                entry.put("nbt", blockEntity);
-            }
-            // Dernière écriture gagne (les surcharges de mobilier remplacent l'air).
-            blocks.put(key(x, y, z), entry);
-        }
-
-        void entity(double px, double py, double pz, int bx, int by, int bz, CompoundTag nbt) {
-            CompoundTag entry = new CompoundTag();
-            ListTag pos = new ListTag();
-            pos.add(DoubleTag.valueOf(px));
-            pos.add(DoubleTag.valueOf(py));
-            pos.add(DoubleTag.valueOf(pz));
-            entry.put("pos", pos);
-            entry.put("blockPos", intList(bx, by, bz));
-            entry.put("nbt", nbt);
-            entities.add(entry);
-        }
-
-        private int paletteFor(BlockState state) {
-            String stateTag = NbtUtils.writeBlockState(state).toString();
-            Integer existing = paletteIndex.get(stateTag);
-            if (existing != null) {
-                return existing;
-            }
-            int index = palette.size();
-            paletteIndex.put(stateTag, index);
-            palette.add(NbtUtils.writeBlockState(state));
-            return index;
-        }
-
-        CompoundTag build() {
-            CompoundTag tag = new CompoundTag();
-            tag.put("size", intList(sx, sy, sz));
-            ListTag paletteTag = new ListTag();
-            paletteTag.addAll(palette);
-            tag.put("palette", paletteTag);
-            ListTag blocksTag = new ListTag();
-            blocksTag.addAll(blocks.values());
-            tag.put("blocks", blocksTag);
-            ListTag entitiesTag = new ListTag();
-            entitiesTag.addAll(entities);
-            tag.put("entities", entitiesTag);
-            tag.putInt("DataVersion", SharedConstants.getCurrentVersion().getDataVersion().getVersion());
-            return tag;
-        }
-
-        private static ListTag intList(int a, int b, int c) {
-            ListTag list = new ListTag();
-            list.add(IntTag.valueOf(a));
-            list.add(IntTag.valueOf(b));
-            list.add(IntTag.valueOf(c));
-            return list;
-        }
-
-        private static long key(int x, int y, int z) {
-            return ((long) x << 20) | ((long) y << 10) | z;
-        }
-    }
+    // --- Écriture ---------------------------------------------------------------
 
     private CompletableFuture<?> write(CachedOutput cache, String name, CompoundTag tag) {
         Path target = pathProvider.file(

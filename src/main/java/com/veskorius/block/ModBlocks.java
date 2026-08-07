@@ -280,4 +280,153 @@ public class ModBlocks {
                 .requiresCorrectToolForDrops()
                 .noOcclusion()
                 .lightLevel(EMITTER_GLOW));
+
+    // =========================================================================
+    // Architecture de donjon (17-Dungeons.md §4)
+    // =========================================================================
+    //
+    // Ces blocs existent d'abord pour une raison mesurée : les pièces de structure
+    // n'avaient que HUIT blockstates à leur disposition, dont un seul du mod. Une
+    // civilisation de la Résonance bâtissait donc en deepslate poli vanilla, et
+    // aucune ruine n'était reconnaissable comme veskorienne de l'intérieur. On ne
+    // fait pas d'architecture sans vocabulaire ; le voici.
+    //
+    // Ils sont aussi tous posables par le joueur (sauf le sas et l'émetteur ancien,
+    // qui sont du mobilier de structure) : ce qu'on trouve en ruine, on doit pouvoir
+    // le rebâtir — c'est la vision du mod appliquée aux murs.
+
+    /** Propriétés communes de la maçonnerie veskorienne : la même pierre, appareillée. */
+    private static BlockBehaviour.Properties masonry() {
+        return BlockBehaviour.Properties.of()
+            .mapColor(MapColor.DEEPSLATE)
+            .strength(2.0f, 6.0f)
+            .sound(SoundType.DEEPSLATE)
+            .requiresCorrectToolForDrops();
+    }
+
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> VEINED_STONE_BRICKS =
+        BLOCKS.registerSimpleBlock("veined_stone_bricks", masonry());
+
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> CRACKED_VEINED_STONE_BRICKS =
+        BLOCKS.registerSimpleBlock("cracked_veined_stone_bricks", masonry());
+
+    /**
+     * Le seul bloc « écrit » du vocabulaire. Sert de borne : une salle qui en porte est
+     * une salle qui comptait pour eux. À n'employer qu'aux seuils et aux salles
+     * maîtresses — s'il est partout, il ne signale plus rien.
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> CHISELED_VEINED_STONE =
+        BLOCKS.registerSimpleBlock("chiseled_veined_stone", masonry());
+
+    public static final DeferredBlock<net.minecraft.world.level.block.StairBlock> VEINED_STONE_BRICK_STAIRS =
+        BLOCKS.registerBlock("veined_stone_brick_stairs",
+            props -> new net.minecraft.world.level.block.StairBlock(
+                VEINED_STONE_BRICKS.get().defaultBlockState(), props),
+            masonry());
+
+    public static final DeferredBlock<net.minecraft.world.level.block.SlabBlock> VEINED_STONE_BRICK_SLAB =
+        BLOCKS.registerBlock("veined_stone_brick_slab",
+            net.minecraft.world.level.block.SlabBlock::new, masonry());
+
+    public static final DeferredBlock<net.minecraft.world.level.block.WallBlock> VEINED_STONE_BRICK_WALL =
+        BLOCKS.registerBlock("veined_stone_brick_wall",
+            net.minecraft.world.level.block.WallBlock::new, masonry().forceSolidOn());
+
+    /**
+     * <b>Lampe de Résonance</b> — l'éclairage veskorien, et le retour visuel de la règle
+     * R2 (17-Dungeons.md). Elle ne brûle rien : elle s'allume quand un champ actif la
+     * couvre, et s'éteint sinon. Éteinte, elle éclaire tout de même faiblement (3) —
+     * une ruine noire est une ruine qu'on ne visite pas, et le contraste avec l'état
+     * allumé (14) reste largement lisible.
+     *
+     * <p>Elle remplace les lanternes qui décoraient les pièces jusqu'ici : une
+     * civilisation de la Résonance ne s'éclaire pas à la bougie (pilier 1).
+     */
+    public static final DeferredBlock<FieldSensitiveBlock> RESONANCE_LAMP =
+        BLOCKS.registerBlock("resonance_lamp",
+            FieldSensitiveBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(1.5f, 6.0f)
+                .sound(SoundType.AMETHYST)
+                .requiresCorrectToolForDrops()
+                .lightLevel(state -> state.getValue(FieldSensitiveBlock.POWERED) ? 14 : 3));
+
+    /**
+     * <b>Conduit</b> — le fil d'Ariane du donjon (règle R2). Une gouttière prise dans la
+     * maçonnerie, éteinte sur une branche morte, vivante sur une branche alimentée. Le
+     * joueur suit la lumière, sans carte ni marqueur.
+     */
+    public static final DeferredBlock<ConduitLineBlock> CONDUIT_LINE =
+        BLOCKS.registerBlock("conduit_line",
+            ConduitLineBlock::new,
+            masonry().lightLevel(state -> state.getValue(FieldSensitiveBlock.POWERED) ? 7 : 0));
+
+    /**
+     * <b>Colonne cannelée.</b> Le bloc qui fait les colonnades, donc celui qui fait les
+     * monuments : c'est la <b>verticalité répétée</b> qui donne l'impression de hauteur,
+     * bien plus que la hauteur réelle. Sans lui, une grande salle reste une grande boîte.
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.RotatedPillarBlock> VEINED_STONE_COLUMN =
+        BLOCKS.registerBlock("veined_stone_column",
+            net.minecraft.world.level.block.RotatedPillarBlock::new, masonry());
+
+    /**
+     * <b>Efflorescence de dissonance</b> (règle R3). Sans collision : on la traverse, et
+     * la traverser blesse. Voir {@link DissonanceBloomBlock}.
+     */
+    public static final DeferredBlock<DissonanceBloomBlock> DISSONANCE_BLOOM =
+        BLOCKS.registerBlock("dissonance_bloom",
+            DissonanceBloomBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_GRAY)
+                .strength(0.4f)
+                .sound(SoundType.SCULK)
+                .noCollission()
+                .noOcclusion());
+
+    /**
+     * <b>Sas de Résonance</b> — le verrou des donjons (règle R1). Indestructible par
+     * conception : voir {@link ResonanceBulkheadBlock}. Généré uniquement en structure,
+     * donc sans objet ni loot table.
+     */
+    public static final DeferredBlock<ResonanceBulkheadBlock> RESONANCE_BULKHEAD =
+        BLOCKS.registerBlock("resonance_bulkhead",
+            ResonanceBulkheadBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_GRAY)
+                .strength(-1.0f, 3600000.0f)
+                .sound(SoundType.NETHERITE_BLOCK)
+                .noLootTable()
+                .noOcclusion()
+                .lightLevel(state -> state.getValue(FieldSensitiveBlock.POWERED) ? 6 : 0));
+
+    /**
+     * <b>Émetteur ancien</b> — l'émetteur de champ que les Veskoriens avaient laissé en
+     * place, à sec. C'est <b>littéralement un {@link FieldEmitterBlock}</b> : même bloc,
+     * même block entity, même carburant. Ce choix est le cœur du geste de l'Avant-poste
+     * (17-Dungeons.md §5.1) :
+     *
+     * <ul>
+     *   <li>le joueur <b>voit fonctionner</b>, avant de savoir le fabriquer, la machine
+     *       exacte qu'il craftera au T2 — le pilier 2 (« la connaissance est spatiale »)
+     *       appliqué à une machine et non à un texte ;</li>
+     *   <li>le champ qu'il produit est un <b>vrai</b> champ : il ouvre le sas, allume les
+     *       conduits et alimenterait une machine posée à côté. Aucun cas particulier de
+     *       code, donc aucun risque que la « fausse » version diverge de la vraie.</li>
+     * </ul>
+     *
+     * <p>Non minable et sans loot : sinon on le rapporterait chez soi et l'Avant-poste
+     * offrirait gratuitement une machine T2 avant même le blueprint.
+     */
+    public static final DeferredBlock<FieldEmitterBlock> ANCIENT_EMITTER =
+        BLOCKS.registerBlock("ancient_emitter",
+            FieldEmitterBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.STONE)
+                .strength(-1.0f, 3600000.0f)
+                .sound(SoundType.METAL)
+                .noLootTable()
+                .noOcclusion()
+                .lightLevel(EMITTER_GLOW));
 }

@@ -3,6 +3,7 @@ package com.veskorius.datagen;
 import com.veskorius.Veskorius;
 import com.veskorius.block.AbstractMachineBlock;
 import com.veskorius.block.FieldEmitterBlock;
+import com.veskorius.block.FieldSensitiveBlock;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.ResonanceVeinedStoneBlock;
 import net.minecraft.core.Direction;
@@ -84,6 +85,119 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // propriété FACING (elle est posée par la génération, jamais par un joueur) —
         // la reconnaître ne doit donc pas dépendre de l'angle sous lequel on l'aborde.
         simpleBlock(ModBlocks.ATTUNEMENT_CONSOLE.get(), consoleModel());
+
+        // --- Architecture de donjon (17-Dungeons.md §4) -----------------------
+        architecture();
+    }
+
+    /**
+     * La maçonnerie veskorienne et ses trois blocs réactifs au champ.
+     *
+     * <p>Regroupé dans sa propre méthode parce que ces blocs ne suivent pas la grammaire
+     * des machines (pas de façade orientée, pas de châssis) : ils suivent celle des blocs
+     * de construction vanilla, et c'est délibéré — un mur doit se poser et s'assembler
+     * comme le joueur s'y attend, sinon on ne bâtit pas avec.
+     */
+    private void architecture() {
+        simpleBlockWithItem(ModBlocks.VEINED_STONE_BRICKS.get(),
+            cubeAll(ModBlocks.VEINED_STONE_BRICKS.get()));
+        simpleBlockWithItem(ModBlocks.CRACKED_VEINED_STONE_BRICKS.get(),
+            cubeAll(ModBlocks.CRACKED_VEINED_STONE_BRICKS.get()));
+        simpleBlockWithItem(ModBlocks.CHISELED_VEINED_STONE.get(),
+            cubeAll(ModBlocks.CHISELED_VEINED_STONE.get()));
+
+        ResourceLocation brick = modLoc("block/veined_stone_bricks");
+        stairsBlock(ModBlocks.VEINED_STONE_BRICK_STAIRS.get(), brick);
+        slabBlock(ModBlocks.VEINED_STONE_BRICK_SLAB.get(), brick, brick);
+        wallBlock(ModBlocks.VEINED_STONE_BRICK_WALL.get(), brick);
+        // Les escaliers/dalles/murs génèrent plusieurs modèles ; l'objet doit pointer
+        // celui qui les représente en main, sinon il apparaît en cube plein.
+        itemModels().withExistingParent("veined_stone_brick_stairs", modLoc("block/veined_stone_brick_stairs"));
+        itemModels().withExistingParent("veined_stone_brick_slab", modLoc("block/veined_stone_brick_slab"));
+        itemModels().wallInventory("veined_stone_brick_wall", brick);
+
+        // Colonne cannelée : un bloc à axe, comme une bûche. C'est elle qui fait les
+        // colonnades, donc les monuments.
+        axisBlock(ModBlocks.VEINED_STONE_COLUMN.get(),
+            modLoc("block/veined_stone_column"), modLoc("block/veined_stone_column_top"));
+        itemModels().withExistingParent("veined_stone_column", modLoc("block/veined_stone_column"));
+
+        // Lampe et conduit : deux états sur POWERED, comme les machines sur LIT. C'est
+        // le même contrat de lecture (une façade éteinte, une façade allumée) appliqué
+        // aux murs — c'est ce qui fait qu'un donjon alimenté se lit d'un coup d'œil.
+        poweredCube(ModBlocks.RESONANCE_LAMP.get(), "resonance_lamp", null);
+        poweredConduit();
+
+        simpleBlockWithItem(ModBlocks.DISSONANCE_BLOOM.get(),
+            models().cubeAll("dissonance_bloom", modLoc("block/dissonance_bloom"))
+                .renderType("cutout"));
+
+        bulkhead();
+        // L'émetteur ancien réutilise la silhouette de tour de l'émetteur T2 : c'est la
+        // même machine, il doit avoir la même allure (17-Dungeons.md §5.1).
+        emitter(ModBlocks.ANCIENT_EMITTER.get(), "ancient_emitter", FRACTURED);
+    }
+
+    /**
+     * Cube à deux états d'alimentation. {@code topTexture} non nul monte le dessus et le
+     * dessous sur une autre texture : le conduit est une <b>assise de maçonnerie</b>
+     * traversée par une gouttière, pas un cube de conduit — vu de dessus, il doit
+     * disparaître dans le mur.
+     */
+    private void poweredCube(Block block, String name, String topTexture) {
+        ModelFile off = poweredModel(name, name, topTexture);
+        ModelFile on = poweredModel(name + "_on", name + "_on", topTexture);
+        getVariantBuilder(block).forAllStates(state -> ConfiguredModel.builder()
+            .modelFile(state.getValue(FieldSensitiveBlock.POWERED) ? on : off).build());
+        itemModels().withExistingParent(name, modLoc("block/" + name));
+    }
+
+    /**
+     * Conduit : deux états d'alimentation × trois axes. L'axe n'est pas du décor — un
+     * conduit est un <b>tracé</b>, et sans lui une descente verticale affichait une
+     * gouttière horizontale à chaque bloc, si bien que le tuyau avait l'air haché en
+     * travers tous les mètres.
+     */
+    private void poweredConduit() {
+        ModelFile off = models().cubeColumn("conduit_line",
+            modLoc("block/conduit_line"), modLoc("block/conduit_line_end"));
+        ModelFile on = models().cubeColumn("conduit_line_on",
+            modLoc("block/conduit_line_on"), modLoc("block/conduit_line_end_on"));
+        getVariantBuilder(ModBlocks.CONDUIT_LINE.get()).forAllStates(state -> {
+            ConfiguredModel.Builder<?> model = ConfiguredModel.builder()
+                .modelFile(state.getValue(FieldSensitiveBlock.POWERED) ? on : off);
+            return switch (state.getValue(com.veskorius.block.ConduitLineBlock.AXIS)) {
+                case X -> model.rotationX(90).rotationY(90).build();
+                case Z -> model.rotationX(90).build();
+                default -> model.build();
+            };
+        });
+        itemModels().withExistingParent("conduit_line", modLoc("block/conduit_line"));
+    }
+
+    private ModelFile poweredModel(String name, String texture, String topTexture) {
+        return topTexture == null
+            ? models().cubeAll(name, modLoc("block/" + texture))
+            : models().cubeBottomTop(name, modLoc("block/" + texture),
+                modLoc("block/" + topTexture), modLoc("block/" + topTexture));
+    }
+
+    /**
+     * Sas : plaque pleine fermée, seuil de 2 px ouvert. Les deux modèles portent la même
+     * texture de base et se distinguent par leur <b>volume</b> — c'est le mouvement de la
+     * plaque qu'on doit lire, pas un changement de couleur.
+     */
+    private void bulkhead() {
+        ModelFile closed = models().cubeAll("resonance_bulkhead", modLoc("block/resonance_bulkhead"));
+        ModelFile open = models().getBuilder("resonance_bulkhead_open")
+            .parent(BLOCK_ROOT)
+            .texture("all", modLoc("block/resonance_bulkhead_open"))
+            .texture("particle", modLoc("block/resonance_bulkhead_open"))
+            .element().from(0, 0, 0).to(16, 2, 16)
+            .allFaces((dir, face) -> face.texture("#all")).end();
+        getVariantBuilder(ModBlocks.RESONANCE_BULKHEAD.get()).forAllStates(state ->
+            ConfiguredModel.builder()
+                .modelFile(state.getValue(FieldSensitiveBlock.POWERED) ? open : closed).build());
     }
 
     // --- Châssis de palier ---------------------------------------------------

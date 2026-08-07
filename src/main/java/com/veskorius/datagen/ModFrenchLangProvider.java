@@ -63,6 +63,20 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.CRYSTAL_ROOST, "Perchoir à Cristaux");
         addBlock(ModBlocks.DAMPING_ARRAY, "Matrice d'Amortissement");
 
+        // Architecture de donjon (17-Dungeons.md §4)
+        addBlock(ModBlocks.VEINED_STONE_BRICKS, "Briques de Pierre Veinée");
+        addBlock(ModBlocks.CRACKED_VEINED_STONE_BRICKS, "Briques de Pierre Veinée Fissurées");
+        addBlock(ModBlocks.CHISELED_VEINED_STONE, "Pierre Veinée Gravée");
+        addBlock(ModBlocks.VEINED_STONE_BRICK_STAIRS, "Escalier de Pierre Veinée");
+        addBlock(ModBlocks.VEINED_STONE_BRICK_SLAB, "Dalle de Pierre Veinée");
+        addBlock(ModBlocks.VEINED_STONE_BRICK_WALL, "Muret de Pierre Veinée");
+        addBlock(ModBlocks.RESONANCE_LAMP, "Lampe de Résonance");
+        addBlock(ModBlocks.CONDUIT_LINE, "Conduit de Résonance");
+        addBlock(ModBlocks.VEINED_STONE_COLUMN, "Colonne de Pierre Veinée");
+        addBlock(ModBlocks.DISSONANCE_BLOOM, "Efflorescence de Dissonance");
+        addBlock(ModBlocks.RESONANCE_BULKHEAD, "Sas de Résonance");
+        addBlock(ModBlocks.ANCIENT_EMITTER, "Émetteur Ancien");
+
         // Châssis de palier : la base de craft et de texture des machines.
         addBlock(ModBlocks.FRACTURED_CHASSIS, "Châssis Fracturé");
         addBlock(ModBlocks.ATTUNED_CHASSIS, "Châssis Accordé");

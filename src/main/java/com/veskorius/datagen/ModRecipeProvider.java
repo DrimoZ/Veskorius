@@ -26,6 +26,8 @@ public class ModRecipeProvider extends RecipeProvider {
 
         buildChassisRecipes(recipeOutput);
 
+        buildArchitectureRecipes(recipeOutput);
+
         // --- Machines T1 : châssis Fracturé + ce qui les distingue -------------
         //
         // La grammaire de fabrication est désormais « le boîtier de mon palier, plus
@@ -211,6 +213,95 @@ public class ModRecipeProvider extends RecipeProvider {
             .unlockedBy(getHasName(ModItems.REFINED_RESONANCE_CRYSTAL.get()),
                 has(ModItems.REFINED_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
+    }
+
+    /**
+     * Maçonnerie et éclairage veskoriens (17-Dungeons.md §4).
+     *
+     * <p>Tout part du {@code resonance_veined_stone}, qu'on mine autour des poches : la
+     * matière du donjon est celle qu'on trouve dans le sol, appareillée. Aucune de ces
+     * recettes ne demande de blueprint ni de Component — bâtir n'est pas un palier, et
+     * une brique verrouillée derrière un tier serait une brique qu'on n'utilise jamais.
+     *
+     * <p>Chaque forme est aussi taillable à la scie de pierre : c'est l'attente vanilla
+     * pour une famille de blocs de construction, et ça divise par deux le coût en pierre
+     * — donc ça rend la maçonnerie réellement utilisable pour un vrai bâtiment.
+     */
+    private void buildArchitectureRecipes(RecipeOutput output) {
+        var stone = ModBlocks.RESONANCE_VEINED_STONE.get();
+        var bricks = ModBlocks.VEINED_STONE_BRICKS.get();
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, bricks, 4)
+            .pattern("##").pattern("##")
+            .define('#', stone)
+            .unlockedBy(getHasName(stone), has(stone))
+            .save(output);
+
+        // Fissurées : la brique passée au four. Le raccourci vanilla pour « vieilli »,
+        // et le seul moyen d'en obtenir sans démonter une ruine.
+        net.minecraft.data.recipes.SimpleCookingRecipeBuilder
+            .smelting(net.minecraft.world.item.crafting.Ingredient.of(bricks),
+                RecipeCategory.BUILDING_BLOCKS, ModBlocks.CRACKED_VEINED_STONE_BRICKS.get(), 0.1F, 200)
+            .unlockedBy(getHasName(bricks), has(bricks))
+            .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.CHISELED_VEINED_STONE.get())
+            .pattern("#").pattern("#")
+            .define('#', ModBlocks.VEINED_STONE_BRICK_SLAB.get())
+            .unlockedBy(getHasName(bricks), has(bricks))
+            .save(output);
+
+        stairBuilder(ModBlocks.VEINED_STONE_BRICK_STAIRS.get(),
+            net.minecraft.world.item.crafting.Ingredient.of(bricks))
+            .unlockedBy(getHasName(bricks), has(bricks)).save(output);
+        slabBuilder(RecipeCategory.BUILDING_BLOCKS, ModBlocks.VEINED_STONE_BRICK_SLAB.get(),
+            net.minecraft.world.item.crafting.Ingredient.of(bricks))
+            .unlockedBy(getHasName(bricks), has(bricks)).save(output);
+        wallBuilder(RecipeCategory.DECORATIONS, ModBlocks.VEINED_STONE_BRICK_WALL.get(),
+            net.minecraft.world.item.crafting.Ingredient.of(bricks))
+            .unlockedBy(getHasName(bricks), has(bricks)).save(output);
+
+        for (var target : java.util.List.of(bricks, ModBlocks.CHISELED_VEINED_STONE.get(),
+            ModBlocks.VEINED_STONE_BRICK_STAIRS.get(), ModBlocks.VEINED_STONE_BRICK_WALL.get())) {
+            stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS, target, stone);
+            if (target != bricks) {
+                stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS, target, bricks);
+            }
+        }
+        stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS,
+            ModBlocks.VEINED_STONE_BRICK_SLAB.get(), stone, 2);
+        stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS,
+            ModBlocks.VEINED_STONE_BRICK_SLAB.get(), bricks, 2);
+        stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS,
+            ModBlocks.VEINED_STONE_COLUMN.get(), bricks);
+
+        // Colonne : deux briques l'une sur l'autre, comme le pilier de quartz vanilla.
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.VEINED_STONE_COLUMN.get(), 2)
+            .pattern("#").pattern("#")
+            .define('#', bricks)
+            .unlockedBy(getHasName(bricks), has(bricks))
+            .save(output);
+
+        // Lampe : la brique + un Stable Crystal. Fabricable dès le T1 (le Stabilizer est
+        // autonome), même si elle ne s'allumera qu'une fois un champ posé — c'est
+        // volontaire : découvrir qu'une lampe déjà bâtie s'allume quand l'émetteur
+        // démarre est un bien meilleur professeur qu'un tooltip.
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.RESONANCE_LAMP.get(), 2)
+            .pattern(" # ").pattern("#c#").pattern(" # ")
+            .define('#', bricks)
+            .define('c', ModItems.STABLE_RESONANCE_CRYSTAL.get())
+            .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
+                has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
+            .save(output);
+
+        // Conduit : la poussière du Crusher, l'autre voie T1 — les deux branches de
+        // départ mènent donc chacune à un bloc d'architecture, et aucune n'est requise.
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.CONDUIT_LINE.get(), 4)
+            .pattern("###").pattern("ddd").pattern("###")
+            .define('#', bricks)
+            .define('d', ModItems.RESONANCE_DUST.get())
+            .unlockedBy(getHasName(ModItems.RESONANCE_DUST.get()), has(ModItems.RESONANCE_DUST.get()))
+            .save(output);
     }
 
     /**

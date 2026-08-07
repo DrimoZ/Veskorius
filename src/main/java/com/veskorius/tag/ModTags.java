@@ -58,6 +58,28 @@ public final class ModTags {
         }
     }
 
+    public static final class Blocks {
+
+        /**
+         * Blocs que le pourrissage des pièces de structure a le droit de retirer
+         * ({@code BlockRotProcessor}, voir {@code ModProcessorLists} et
+         * 17-Dungeons.md §2.4).
+         *
+         * <p><b>C'est une liste blanche, et c'est tout l'intérêt.</b> Le réflexe serait
+         * de protéger les blocs critiques (une liste noire) ; mais alors, tout bloc
+         * critique ajouté plus tard et oublié dans la liste devient effaçable — et un
+         * Avant-poste dont la console a « pourri » est un Avant-poste infranchissable,
+         * donc une progression bloquée. Avec une liste blanche, l'oubli est inoffensif :
+         * un bloc absent est simplement épargné.
+         */
+        public static final TagKey<net.minecraft.world.level.block.Block> STRUCTURE_ROTTABLE =
+            TagKey.create(Registries.BLOCK,
+                ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "structure_rottable"));
+
+        private Blocks() {
+        }
+    }
+
     public static final class Structures {
 
         /**

@@ -111,6 +111,11 @@ structure qui ne peut pas répondre aux deux n'est pas prête à être écrite.
 
 ## Ouvert
 
-- Faut-il une variante de surface des Avant-postes (actuellement possibles en sous-sol peu
-  profond seulement) pour varier le rythme d'exploration en début de partie ? Probablement oui,
-  à trancher lors de l'écriture détaillée dans `08-Structures.md` v0.2.
+- ~~Faut-il une variante de surface des Avant-postes ?~~ **Tranché le 2026-08-07** (voir `08` et
+  `17-Dungeons.md` §5.1) : pas de variante, mais une **brèche au plafond** du vestibule qui donne
+  aux grottes une chance de croiser la structure. On garde une seule structure à maintenir.
+- *Note de strate (2026-08-07)* : la pièce de départ de l'Avant-poste fait **20 blocs de haut**, et
+  celle du Hameau 6. Les fourchettes Y du `structure` portent sur le **plancher** de la pièce ; elles
+  sont donc réglées à -40/-22 et -20/-6 pour que chaque bâtiment tienne **entièrement** dans la
+  strate que ce fichier lui assigne, toit compris. Une fourchette réglée sur la strate sans tenir
+  compte de la hauteur ferait dépasser l'Avant-poste à l'air libre.

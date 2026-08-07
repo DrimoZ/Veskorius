@@ -98,8 +98,49 @@ ce fichier.
   objet-clé, le `resonance_blueprint` — **ingrédient rendu** dans les recettes du tier (aucune
   recette masquée, tout est visible dans JEI ; ce qui bloque, c'est de ne pas avoir le plan). Le T2
   s'obtient en **réveillant la console** (`attunement_console`) de l'Avant-poste sur place. Les
-  `codex_fragment` sont du lore lisible, pas un gate. Advancements de feedback. *(Vrais layouts
-  multi-pièces = Phase 6 ; fréquence de génération = JSON `structure_set`, à valider en playtest.)*
+  `codex_fragment` sont du lore lisible, pas un gate. Advancements de feedback. *(Fréquence de
+  génération = JSON `structure_set`, à valider en playtest.)*
+- **De vrais donjons** (`17-Dungeons.md`, 2026-08-07). Les pièces de structure étaient des salles
+  plates, identiques d'une ruine à l'autre, bâties en deepslate vanilla — et **sans un seul bloc
+  jigsaw** : la profondeur d'assemblage valait 1, donc ajouter une pièce à un pool *remplaçait* le
+  bâtiment au lieu de l'agrandir. Rien ne le signalait, la structure se générait très bien,
+  simplement toujours seule. Ce qui existe maintenant :
+  - **Une doctrine** : *le donjon est une machine morte, l'explorer c'est la rallumer*. La clé est
+    toujours **un champ**, jamais un objet (pilier 3 rendu spatial) ; la lumière raconte l'état du
+    réseau ; le danger principal est la **dissonance**, pas le mob.
+  - **Trois mécaniques** : le **sas de Résonance** (indestructible, ouvert seulement dans un champ),
+    les **conduits et lampes** qui s'allument avec le champ, et l'**émetteur ancien** — qui est
+    *littéralement* un `field_emitter`, même bloc et même block entity, donc il ne peut pas diverger
+    de la machine que le joueur fabriquera ensuite.
+  - **Onze blocs d'architecture** (maçonnerie de pierre veinée, gravée, dalle/escalier/muret, lampe,
+    conduit, efflorescence de dissonance), textures générées par `tools/block-textures`.
+  - **Une architecture, pas des cubes** (seconde passe). Chaque salle est **creusée dans la masse**
+    et chemisée séparément — il reste de la **roche** entre elles, et on circule par des galeries.
+    Trois gestes non négociables : **voûte en berceau**, **angles coupés**, et surtout
+    **effondrement causal** (le trou dans la voûte, et la matière manquante **en cône exactement
+    dessous** — c'est cette correspondance, et elle seule, qui se lit comme « ça s'est écroulé »).
+    Plus, pour ce qui doit être remarquable : **rotonde octogonale à coupole** et **escalier en
+    vis**.
+  - **L'Avant-poste** : deux niveaux voûtés reliés par la vis, plus la rotonde de la console
+    derrière le sas. On l'ouvre en réveillant l'émetteur ancien avec un Stable Crystal — **le
+    coffre-réserve en garantit un sur place**, contenu fixe, pour qu'aucun tirage ne garde la porte
+    du T2. Allumer réveille aussi les Custodes en alcôve : **allumer, c'est armer le donjon**.
+  - **L'Habitation Modeste** devient un **hameau** (logis, atelier, citerne, logis effondré).
+  - **Une échelle de ruines** : bornes de conduit (~1 / 130 blocs), bouts de galerie ensevelis,
+    chambres englouties. Le monde n'avait que deux structures, toutes deux grandes ; une
+    civilisation effondrée laisse surtout des miettes, et c'est le contraste avec elles qui donne
+    son poids à un vrai donjon.
+  - **Un parcours automatisé de bout en bout** (`outpostIsWalkableFromEntranceToConsole`). Un
+    donjon écrit par code peut être **parfaitement valide et infranchissable** : une galerie qui ne
+    perce aucun des deux murs qu'elle relie, un escalier en vis dont la première marche tombe à
+    l'opposé de la galerie qui y mène (on en sort dans le vide, dix blocs de chute). **Les deux
+    étaient présents** et aucune relecture ne les avait vus.
+  - **Le jigsaw est réel** : connecteurs, profondeur 5, pools de bouchons en `fallback` (plus de
+    branche ouverte sur la roche), processors d'usure (deux ruines ne s'abîment plus pareil),
+    spawn overrides (fini les zombies vanilla dans nos ruines), `IGNORE_WATERLOGGING`.
+  - **Cinq tests d'invariants**, dont `optionalWingsNeverCarryTheCriticalPath` : le chemin critique
+    du T2 vit dans la pièce de départ, jamais dans un pool. C'est la troisième fois que le mod se
+    protège de cette classe de bug ; cette fois dans les deux sens.
 - **Resonance Locator** (#7) : détecteur de résonance à courte portée (~40 blocs). Clic droit →
   ping directionnel vers la source la plus proche — poche de cristal (utile maintenant qu'elles
   sont rares) ou signature de champ (Field Emitter). Batterie interne 100 Osc (5/ping), rechargée

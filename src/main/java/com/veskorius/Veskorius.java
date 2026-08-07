@@ -84,6 +84,18 @@ public class Veskorius {
                 output.accept(ModItems.CRYSTAL_ROOST_ITEM.get());
                 output.accept(ModItems.DAMPING_ARRAY_ITEM.get());
                 output.accept(ModItems.RESONANCE_SLUDGE.get());
+                // Architecture de donjon (17-Dungeons.md) : groupée en fin d'onglet
+                // parce qu'on la cherche en construisant, pas en progressant.
+                output.accept(ModItems.VEINED_STONE_BRICKS_ITEM.get());
+                output.accept(ModItems.CRACKED_VEINED_STONE_BRICKS_ITEM.get());
+                output.accept(ModItems.CHISELED_VEINED_STONE_ITEM.get());
+                output.accept(ModItems.VEINED_STONE_BRICK_STAIRS_ITEM.get());
+                output.accept(ModItems.VEINED_STONE_BRICK_SLAB_ITEM.get());
+                output.accept(ModItems.VEINED_STONE_BRICK_WALL_ITEM.get());
+                output.accept(ModItems.RESONANCE_LAMP_ITEM.get());
+                output.accept(ModItems.CONDUIT_LINE_ITEM.get());
+                output.accept(ModItems.VEINED_STONE_COLUMN_ITEM.get());
+                output.accept(ModItems.DISSONANCE_BLOOM_ITEM.get());
             })
             .build());
 

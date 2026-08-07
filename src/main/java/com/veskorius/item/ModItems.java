@@ -200,4 +200,38 @@ public class ModItems {
 
     public static final DeferredItem<BlockItem> CRYSTAL_ROOST_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_ROOST);
+
+    // BlockItems de l'architecture de donjon (17-Dungeons.md §4). Ce qu'on trouve en
+    // ruine, on doit pouvoir le rebâtir — d'où un objet pour toute la maçonnerie, la
+    // lampe et le conduit. Le SAS et l'ÉMETTEUR ANCIEN n'en ont volontairement pas :
+    // ce sont des pièces de structure, pas du mobilier (voir ModBlocks).
+    public static final DeferredItem<BlockItem> VEINED_STONE_BRICKS_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.VEINED_STONE_BRICKS);
+
+    public static final DeferredItem<BlockItem> CRACKED_VEINED_STONE_BRICKS_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.CRACKED_VEINED_STONE_BRICKS);
+
+    public static final DeferredItem<BlockItem> CHISELED_VEINED_STONE_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.CHISELED_VEINED_STONE);
+
+    public static final DeferredItem<BlockItem> VEINED_STONE_BRICK_STAIRS_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.VEINED_STONE_BRICK_STAIRS);
+
+    public static final DeferredItem<BlockItem> VEINED_STONE_BRICK_SLAB_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.VEINED_STONE_BRICK_SLAB);
+
+    public static final DeferredItem<BlockItem> VEINED_STONE_BRICK_WALL_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.VEINED_STONE_BRICK_WALL);
+
+    public static final DeferredItem<BlockItem> RESONANCE_LAMP_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_LAMP);
+
+    public static final DeferredItem<BlockItem> CONDUIT_LINE_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.CONDUIT_LINE);
+
+    public static final DeferredItem<BlockItem> DISSONANCE_BLOOM_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.DISSONANCE_BLOOM);
+
+    public static final DeferredItem<BlockItem> VEINED_STONE_COLUMN_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.VEINED_STONE_COLUMN);
 }
