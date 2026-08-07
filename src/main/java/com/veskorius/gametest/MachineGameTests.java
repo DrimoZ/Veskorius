@@ -1535,10 +1535,22 @@ public class MachineGameTests {
             g, g, e,
             e, e, e));
 
+        // Un blueprint du MAUVAIS palier : il ne doit pas ouvrir une recette T2.
+        CraftingInput wrongTier = CraftingInput.of(3, 3, List.of(
+            chassis, c, c,
+            g, g, ResonanceBlueprintItem.of(4),
+            e, e, e));
+
         helper.assertTrue(craftsFieldEmitter(level, withBlueprint),
-            "Avec le blueprint, la recette doit produire un Field Emitter");
+            "Avec le blueprint T2, la recette doit produire un Field Emitter");
         helper.assertFalse(craftsFieldEmitter(level, withoutBlueprint),
             "Sans le blueprint, la recette ne doit pas matcher");
+        // C'EST LA VÉRIFICATION QUI MANQUAIT.
+        helper.assertFalse(craftsFieldEmitter(level, wrongTier),
+            "Un blueprint T4 ne doit PAS ouvrir une recette T2 : le gatekeeping de "
+                + "03-Progression.md porte sur le PALIER, pas sur la simple possession d'un "
+                + "plan. `requires(ItemLike)` ignore les data components — le tier ne gardait "
+                + "donc rien, et le plan T2 débloquait déjà tout le mod");
         helper.succeed();
     }
 

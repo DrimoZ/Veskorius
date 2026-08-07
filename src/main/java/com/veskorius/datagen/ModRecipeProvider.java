@@ -70,7 +70,7 @@ public class ModRecipeProvider extends RecipeProvider {
             .requires(ModItems.RESONANCE_COMPONENT.get(), 2)
             .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get())
             .requires(Items.REDSTONE)
-            .requires(ModItems.RESONANCE_BLUEPRINT.get())
+            .requires(blueprint(2))
             .unlockedBy(getHasName(ModItems.REFINED_RESONANCE_CRYSTAL.get()),
                 has(ModItems.REFINED_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
@@ -85,7 +85,7 @@ public class ModRecipeProvider extends RecipeProvider {
             .define('S', ModItems.STABLE_RESONANCE_CRYSTAL.get())
             .define('C', ModItems.RESONANCE_COMPONENT.get())
             .define('I', ModTags.Items.IRON_SUBSTITUTES)
-            .define('P', ModItems.RESONANCE_BLUEPRINT.get())
+            .define('P', blueprint(2))
             .unlockedBy(getHasName(ModItems.RESONANCE_COMPONENT.get()),
                 has(ModItems.RESONANCE_COMPONENT.get()))
             .save(recipeOutput);
@@ -97,7 +97,7 @@ public class ModRecipeProvider extends RecipeProvider {
             .shapeless(RecipeCategory.TOOLS, ModItems.RESONANCE_STORAGE_CELL.get())
             .requires(ModItems.RESONANCE_COMPONENT.get(), 2)
             .requires(ModItems.STABLE_RESONANCE_CRYSTAL.get())
-            .requires(ModItems.RESONANCE_BLUEPRINT.get())
+            .requires(blueprint(2))
             .unlockedBy(getHasName(ModItems.RESONANCE_COMPONENT.get()),
                 has(ModItems.RESONANCE_COMPONENT.get()))
             .save(recipeOutput);
@@ -108,7 +108,7 @@ public class ModRecipeProvider extends RecipeProvider {
             ModItems.STABLE_RESONANCE_CRYSTAL.get(), b -> b
                 .requires(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 2)
                 .requires(Items.REDSTONE_BLOCK)
-                .requires(ModItems.RESONANCE_BLUEPRINT.get()));
+                .requires(blueprint(2)));
 
         // Field Emitter : c'est LUI que l'amorçage garanti de l'Avant-poste doit
         // permettre de fabriquer (4 Component + 2 Gold dans le coffre, voir
@@ -120,7 +120,7 @@ public class ModRecipeProvider extends RecipeProvider {
             ModItems.RESONANCE_COMPONENT.get(), b -> b
                 .requires(ModItems.RESONANCE_COMPONENT.get(), 2)
                 .requires(Items.GOLD_INGOT, 2)
-                .requires(ModItems.RESONANCE_BLUEPRINT.get()));
+                .requires(blueprint(2)));
 
         // --- Machine T3 : châssis Veskorien ------------------------------------
 
@@ -128,7 +128,7 @@ public class ModRecipeProvider extends RecipeProvider {
             ModItems.REFINED_RESONANCE_CRYSTAL.get(), b -> b
                 .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get())
                 .requires(Items.REDSTONE_BLOCK)
-                .requires(ModItems.RESONANCE_BLUEPRINT.get()));
+                .requires(blueprint(2)));
 
         // Émetteur Accordable : un Field Emitter + 2 Refined Crystal (l'accord demande
         // du cristal raffiné) + blueprint T2 rendu. Upgrade, pas une machine de plus.
@@ -136,7 +136,7 @@ public class ModRecipeProvider extends RecipeProvider {
             .shapeless(RecipeCategory.MISC, ModBlocks.TUNABLE_FIELD_EMITTER.get())
             .requires(ModBlocks.FIELD_EMITTER.get())
             .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
-            .requires(ModItems.RESONANCE_BLUEPRINT.get())
+            .requires(blueprint(2))
             .unlockedBy(getHasName(ModItems.REFINED_RESONANCE_CRYSTAL.get()),
                 has(ModItems.REFINED_RESONANCE_CRYSTAL.get()))
             .save(recipeOutput);
@@ -150,7 +150,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(net.minecraft.tags.ItemTags.PLANKS)
                 .requires(net.minecraft.tags.ItemTags.PLANKS)
                 .requires(Items.HAY_BLOCK)
-                .requires(ModItems.RESONANCE_BLUEPRINT.get()));
+                .requires(blueprint(2)));
 
         // Resonance Codex : recette de secours (Livre + Cristal Brut). Le Codex est
         // donné à la première connexion (15-Codex-Guidebook.md) ; ce craft ne sert qu'à
@@ -302,6 +302,29 @@ public class ModRecipeProvider extends RecipeProvider {
             .define('d', ModItems.RESONANCE_DUST.get())
             .unlockedBy(getHasName(ModItems.RESONANCE_DUST.get()), has(ModItems.RESONANCE_DUST.get()))
             .save(output);
+    }
+
+    /**
+     * <b>La clé de craft d'un palier, et de CE palier seulement.</b>
+     *
+     * <p>Le gatekeeping physique de `03-Progression.md` reposait sur une demi-mesure : les
+     * recettes exigeaient bien un {@code resonance_blueprint}, mais
+     * {@code ShapelessRecipeBuilder.requires(ItemLike)} <b>ignore les data components</b> —
+     * donc le tier n'était jamais vérifié. Le plan T2 débloquait tout, y compris ce que le
+     * Sigma et l'Archive sont censés garder derrière leurs énigmes.
+     *
+     * <p>Le contrôle existait pourtant ({@code ResonanceBlueprintItem.tierOf}), mais seules
+     * la console (pour éviter les doublons) et l'infobulle l'appelaient : <b>la valeur
+     * s'affichait, elle ne gardait rien</b>. C'est la classe de bug la plus coûteuse du
+     * projet — une garantie qu'on croit tenue parce qu'on la voit écrite.
+     *
+     * <p>{@code strict = false} : on n'exige que le tier, pas une carte de composants
+     * exacte — un blueprint qui gagnerait plus tard un autre composant resterait valide.
+     */
+    private static net.minecraft.world.item.crafting.Ingredient blueprint(int tier) {
+        return net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(
+            false, com.veskorius.item.ModDataComponents.BLUEPRINT_TIER.get(), tier,
+            ModItems.RESONANCE_BLUEPRINT.get());
     }
 
     /**
