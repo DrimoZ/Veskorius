@@ -39,6 +39,7 @@ public class ModStructureTagsProvider extends TagsProvider<Structure> {
             .addOptional(ModStructures.MODEST_DWELLING.location())
             .addOptional(ModStructures.OUTPOST.location())
             .addOptional(ModStructures.SIGMA_LABORATORY.location())
+            .addOptional(ModStructures.REGIONAL_ARCHIVE.location())
             .addOptional(ModStructures.GUARD_POST.location())
             .addOptional(ModStructures.DRILL_SHAFT.location());
     }

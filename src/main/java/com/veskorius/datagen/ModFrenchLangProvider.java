@@ -77,6 +77,8 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.RESONANCE_BULKHEAD, "Sas de Résonance");
         addBlock(ModBlocks.ANCIENT_EMITTER, "Émetteur Ancien");
         addBlock(ModBlocks.SIGMA_CONSOLE, "Console Sigma");
+        addBlock(ModBlocks.ARCHIVE_PEDESTAL, "Socle d'Archive");
+        add("block.veskorius.archive_pedestal.solved", "L'ordre tient — quelque chose s'éveille plus bas");
         addBlock(ModBlocks.DAMAGED_RELAY, "Relais Endommagé");
         add("block.veskorius.damaged_relay.restored", "Le relais se remet à bourdonner");
         add("block.veskorius.damaged_relay.already", "Ce relais tourne déjà");
@@ -214,6 +216,29 @@ public class ModFrenchLangProvider extends LanguageProvider {
             "Troisième cloche, le quartier se rassemble. Les Architectes vont réveiller la grande tour et "
                 + "toutes les lampes s'embraseront d'un coup. N'apportez rien de métal qui vous soit cher ; "
                 + "les anciens disent que ça attire.");
+
+        // L'Archive : quatre cotes, à lire dans l'ordre (c'est la serrure).
+        add("codex.veskorius.archive.log_1.title", "Cote I — la mesure");
+        add("codex.veskorius.archive.log_1.text",
+            "Première des quatre. On nous demande de consigner, pas de conclure. Donc : sur les "
+            + "onze secteurs, le champ ne rend plus ce qu'on y met. Il rend davantage. "
+            + "L'excédent est faible. L'excédent est partout.");
+        add("codex.veskorius.archive.log_2.title", "Cote II — la somme");
+        add("codex.veskorius.archive.log_2.text",
+            "Deuxième des quatre. Deux champs superposés ne s'additionnent pas — nous "
+            + "l'enseignons à chaque apprenti depuis deux cents ans. À l'échelle d'une région, "
+            + "ils font autre chose. Nous n'avons pas encore de mot pour ça. Il aurait fallu.");
+        add("codex.veskorius.archive.log_3.title", "Cote III — la réponse");
+        add("codex.veskorius.archive.log_3.text",
+            "Troisième des quatre. L'Assemblée a lu la mesure et voté l'extension du réseau. "
+            + "Son raisonnement se tient, et repose entièrement sur l'hypothèse que nous étions "
+            + "venus mettre en doute. Je dois classer ceci et ne rien ajouter.");
+        add("codex.veskorius.archive.log_4.title", "Cote IV — la déchirure");
+        add("codex.veskorius.archive.log_4.text",
+            "Quatrième des quatre. Quelque chose s'est ouvert cette nuit dans la ligne profonde, "
+            + "et ne s'est pas refermé. Ce n'est pas un trou dans la roche. La roche est toujours "
+            + "là. C'est un trou dans l'endroit où la roche est. Qui que vous soyez, lisez-les "
+            + "dans l'ordre. Cela compte.");
         add("codex.veskorius.outpost.log_1.title", "Journal d'opérateur — premier quart");
         add("codex.veskorius.outpost.log_1.text",
             "Console propre sur les trois bandes. Le secteur ronronne comme il doit. "

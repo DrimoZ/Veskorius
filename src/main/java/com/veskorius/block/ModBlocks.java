@@ -406,6 +406,22 @@ public class ModBlocks {
      * blueprint T3 (03-Progression.md) et se génère derrière le sas que les deux relais
      * ouvrent — la récompense du seul vrai puzzle du mod.
      */
+    /**
+     * <b>Socle d'archive</b> : la serrure de la salle de lecture (voir
+     * {@link ArchivePedestalBlock}). Généré en structure, sans objet — c'est un meuble de
+     * lieu, pas du mobilier qu'on emporte.
+     */
+    public static final DeferredBlock<ArchivePedestalBlock> ARCHIVE_PEDESTAL =
+        BLOCKS.registerBlock("archive_pedestal",
+            ArchivePedestalBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.DEEPSLATE)
+                .strength(-1.0f, 3600000.0f)
+                .sound(SoundType.DEEPSLATE)
+                .noLootTable()
+                .noOcclusion()
+                .lightLevel(state -> 2));
+
     public static final DeferredBlock<AttunementConsoleBlock> SIGMA_CONSOLE =
         BLOCKS.registerBlock("sigma_console",
             props -> new AttunementConsoleBlock(props, 3),

@@ -83,6 +83,7 @@ public class ModStructurePieceProvider implements DataProvider {
     public static final String HAMLET_COLLAPSED = "hamlet_collapsed";
     public static final String HAMLET_CAP = "hamlet_cap";
 
+    public static final String REGIONAL_ARCHIVE = "regional_archive";
     public static final String SIGMA_LABORATORY = "sigma_laboratory";
     public static final String GUARD_POST = "guard_post";
     public static final String DRILL_SHAFT = "drill_shaft";
@@ -112,6 +113,7 @@ public class ModStructurePieceProvider implements DataProvider {
         pieces.put(HAMLET_CISTERN, hamletCistern());
         pieces.put(HAMLET_COLLAPSED, hamletCollapsed());
         pieces.put(HAMLET_CAP, cap(HOUSE_H, HOUSE_D));
+        pieces.put(REGIONAL_ARCHIVE, regionalArchive());
         pieces.put(SIGMA_LABORATORY, sigmaLaboratory());
         pieces.put(GUARD_POST, guardPost());
         pieces.put(DRILL_SHAFT, drillShaft());
@@ -874,6 +876,176 @@ public class ModStructurePieceProvider implements DataProvider {
             .setValue(com.veskorius.block.FieldEmitterBlock.LIT, Boolean.TRUE), be);
     }
 
+
+    // =========================================================================
+    // ARCHIVE RÉGIONALE — l'enfilade (08-Structures.md, T4)
+    // =========================================================================
+    //
+    //   Quatre bâtiments faits, quatre figures différentes, et c'est une contrainte et non
+    //   une coquetterie (17-Dungeons.md R10) : l'Avant-poste empile des paliers, le Poste
+    //   de Garde descend une tour, le Hameau creuse une halle, le Sigma longe un puits. Si
+    //   l'Archive était elle aussi un puits à balcons — ce que le croquis d'origine
+    //   proposait — on aurait deux fois la même sensation, et la deuxième ne compterait
+    //   plus.
+    //
+    //   Une archive, c'est des RANGÉES QUI FUIENT. Sa forme est donc une ENFILADE : une nef
+    //   très longue, étroite et haute, dont on ne voit pas le bout, avec des cabinets qui
+    //   s'ouvrent de part et d'autre sans jamais se répondre. La profondeur d'axe remplace
+    //   la profondeur verticale.
+    //
+    //   PLAN (23 × 16 × 40) — et pour une fois c'est le plan qui parle, parce que le sujet
+    //   du bâtiment est justement sa longueur.
+    //
+    //   z0  ┌──────── VESTIBULE ────────┐        voûte crevée = l'entrée
+    //   z7  │      ╔═══════════════╗    │
+    //       │ ┌────╢               ║    │        CABINET OUEST   (cote 1)
+    //  z15  │ └────╢   N E F   D E ║    │
+    //       │      ║   S   R A Y   ║────┴───┐    CABINET EST     (cote 2)
+    //  z25  │      ║   O N N A     ║────┬───┘
+    //       │ ┌────╢   G E S       ║    │        CABINET OUEST BAS, effondré (cote 3)
+    //  z29  │ └────╢               ║    │
+    //       │      ╚═══════╤═══════╝    │        (cote 4 : au fond de la nef)
+    //  z31  │      ┌───────┴───────┐    │        SALLE DU CADRAN : 4 socles
+    //  z35  │      ├─────[SAS]─────┤    │
+    //  z38  │      └ SALLE DE LECTURE ──┘        la récompense T4
+    //
+    //   L'énigme est la première du mod où un fragment sert à autre chose qu'à être lu :
+    //   les quatre cotes portent leur rang dans leur texte, et l'ordre EST la serrure.
+
+    private static final int ARC_W = 23;
+    private static final int ARC_H = 16;
+    private static final int ARC_D = 40;
+    private static final int ARC_Y = 3;
+
+    private static CompoundTag regionalArchive() {
+        TemplateBuilder b = new TemplateBuilder(ARC_W, ARC_H, ARC_D);
+        archiveNave(b);
+        archiveVestibule(b);
+        archiveCabinets(b);
+        archiveDial(b);
+        archiveReadingRoom(b);
+        return b.build();
+    }
+
+    /**
+     * <b>La nef des rayonnages</b> — sept de large, dix de haut, vingt-trois de long. Ces
+     * proportions sont le sujet du bâtiment : on entre, et le regard part <b>tout droit</b>
+     * dans une perspective qui se perd, bordée d'arcades de rayonnages. Rien d'autre n'est
+     * nécessaire pour dire « archive ».
+     *
+     * <p>Les lampes s'espacent en s'éloignant : la salle ne s'assombrit pas d'un coup, elle
+     * s'éteint <b>progressivement</b>, et le fond n'est jamais tout à fait visible depuis
+     * l'entrée.
+     */
+    private static void archiveNave(TemplateBuilder b) {
+        Masonry.chamber(b, 8, ARC_Y, 7, 14, ARC_Y + 9, 29, Masonry.Style.noble());
+        Masonry.arcade(b, 7, ARC_Y, 8, 28, 1);
+        Masonry.arcade(b, 15, ARC_Y, 8, 28, 1);
+
+        for (int z = 8; z <= 28; z += 2) {
+            b.set(7, ARC_Y + 3, z, Blocks.BOOKSHELF.defaultBlockState());
+            b.set(15, ARC_Y + 3, z, Blocks.BOOKSHELF.defaultBlockState());
+        }
+        // L'éclairage se raréfie vers le fond : 8, 13, 19, 26 — les écarts grandissent.
+        for (int z : new int[] {8, 13, 19, 26}) {
+            Masonry.chandelier(b, 11, ARC_Y + 10, z, 2);
+        }
+        Masonry.conduitRun(b, 7, ARC_Y + 6, 8, 7, 28);
+        Masonry.conduitRun(b, 15, ARC_Y + 6, 8, 15, 28);
+
+        Masonry.collapse(b, 11, 21, 3, ARC_Y + 10, ARC_Y, 0x5EEF6);
+        b.fragmentChest(13, ARC_Y, 28, CodexEntries.ARCHIVE_LOG_4, Direction.WEST);
+        custode(b, 11.5, ARC_Y, 24.5);
+    }
+
+    /** <b>Vestibule</b> : large, bas, effondré. On entre par sa voûte crevée. */
+    private static void archiveVestibule(TemplateBuilder b) {
+        Masonry.chamber(b, 5, ARC_Y, 2, 17, ARC_Y + 5, 5, Masonry.Style.common());
+        Masonry.gallery(b, 11, ARC_Y, 5, 11, 7);
+        // Le cône se pose À CÔTÉ de la galerie, jamais dessus : centré sur l'axe, il
+        // rebouche la seule ouverture du vestibule et mure le bâtiment dès la première
+        // salle. C'est la troisième fois qu'un éboulis ferme un passage — le réflexe
+        // « au milieu, ça fait joli » est à surveiller.
+        Masonry.collapse(b, 15, 3, 3, ARC_Y + 6, ARC_Y, 0x5EEF5);
+        Masonry.sconce(b, 4, ARC_Y + 2, 3, Direction.Axis.Z);
+        Masonry.sconce(b, 18, ARC_Y + 2, 3, Direction.Axis.Z);
+    }
+
+    /**
+     * <b>Les cabinets</b>, ouverts sur la nef sans jamais se répondre : deux à l'ouest, un
+     * à l'est, à des profondeurs différentes. Une paire symétrique aurait rendu la nef
+     * régulière, donc morte ; l'asymétrie fait qu'on ne sait jamais d'avance de quel côté
+     * regarder.
+     */
+    private static void archiveCabinets(TemplateBuilder b) {
+        Masonry.chamber(b, 2, ARC_Y, 9, 6, ARC_Y + 4, 14, Masonry.Style.common());
+        Masonry.gallery(b, 7, ARC_Y, 11, 7, 11);
+        b.fragmentChest(3, ARC_Y, 13, CodexEntries.ARCHIVE_LOG_1, Direction.NORTH);
+        b.lootChest(5, ARC_Y, 10, ModWorldGen.OUTPOST_LOOT, Direction.SOUTH);
+        Masonry.chandelier(b, 4, ARC_Y + 5, 12, 1);
+
+        // Le grand cabinet est : deux Custodes et le meilleur butin facultatif.
+        Masonry.chamber(b, 16, ARC_Y, 17, 21, ARC_Y + 6, 26, Masonry.Style.noble());
+        Masonry.gallery(b, 15, ARC_Y, 21, 15, 21);
+        Masonry.colonnade(b, 18, ARC_Y, 19, 24, ARC_Y + 6);
+        b.fragmentChest(20, ARC_Y, 18, CodexEntries.ARCHIVE_LOG_2, Direction.WEST);
+        b.lootChest(20, ARC_Y, 25, ModWorldGen.OUTPOST_LOOT, Direction.WEST);
+        custode(b, 17.5, ARC_Y, 19.5);
+        custode(b, 20.5, ARC_Y, 24.5);
+        Masonry.chandelier(b, 18, ARC_Y + 7, 21, 2);
+
+        // Le cabinet effondré : la cote 3 est sous les gravats. Il faut creuser.
+        Masonry.chamber(b, 2, ARC_Y, 23, 6, ARC_Y + 4, 28, Masonry.Style.plain());
+        Masonry.gallery(b, 7, ARC_Y, 26, 7, 26);
+        Masonry.collapse(b, 4, 25, 3, ARC_Y + 5, ARC_Y, 0x5EEF7);
+        b.fragmentChest(5, ARC_Y, 27, CodexEntries.ARCHIVE_LOG_3, Direction.NORTH);
+    }
+
+    /**
+     * <b>La salle du cadran</b> : quatre socles alignés devant le sas, et l'émetteur mort
+     * derrière eux. Poser les quatre cotes dans l'ordre le rallume — et le sas s'ouvre
+     * comme tous les sas du mod, par un champ. L'énigme ne fabrique pas une serrure, elle
+     * décide seulement ce qui rallume la lumière.
+     */
+    private static void archiveDial(TemplateBuilder b) {
+        Masonry.chamber(b, 6, ARC_Y, 30, 16, ARC_Y + 6, 34, Masonry.Style.noble());
+        Masonry.gallery(b, 11, ARC_Y, 29, 11, 30);
+
+        for (int i = 0; i < 4; i++) {
+            b.set(8 + i * 2, ARC_Y, 32, ModBlocks.ARCHIVE_PEDESTAL.get().defaultBlockState());
+            b.set(8 + i * 2, ARC_Y - 1, 32, CHISELED);
+        }
+        // L'émetteur, À SEC : c'est le cadran qui le rallume, et rien d'autre.
+        b.set(15, ARC_Y, 31, ModBlocks.ANCIENT_EMITTER.get().defaultBlockState()
+            .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.WEST));
+        Masonry.sconce(b, 5, ARC_Y + 3, 32, Direction.Axis.Z);
+        Masonry.sconce(b, 17, ARC_Y + 3, 32, Direction.Axis.Z);
+
+        // LE SAS.
+        b.box(10, ARC_Y, 35, 12, ARC_Y + 3, 35, BRICK);
+        b.set(11, ARC_Y, 35, BULKHEAD);
+        b.set(11, ARC_Y + 1, 35, BULKHEAD);
+        b.set(10, ARC_Y + 1, 35, GLASS);
+        b.set(12, ARC_Y + 1, 35, GLASS);
+        b.set(11, ARC_Y + 2, 35, GRATE);
+    }
+
+    /**
+     * <b>La salle de lecture</b> — intacte, éclairée, la seule pièce du bâtiment que le
+     * temps n'a pas touchée. La console rend le blueprint T4.
+     */
+    private static void archiveReadingRoom(TemplateBuilder b) {
+        Masonry.chamber(b, 6, ARC_Y, 36, 16, ARC_Y + 8, 38, Masonry.Style.noble());
+        Masonry.terrace(b, 9, ARC_Y, 37, 13, 37, PAVING);
+        b.set(11, ARC_Y + 1, 37, ModBlocks.SIGMA_CONSOLE.get().defaultBlockState());
+        Masonry.chandelier(b, 11, ARC_Y + 9, 37, 2);
+        for (int x = 7; x <= 15; x += 4) {
+            b.set(x, ARC_Y, 38, Blocks.BOOKSHELF.defaultBlockState());
+            b.set(x, ARC_Y + 1, 38, Blocks.BOOKSHELF.defaultBlockState());
+        }
+        b.lootChest(7, ARC_Y, 36, ModWorldGen.OUTPOST_LOOT, Direction.EAST);
+        b.lootChest(15, ARC_Y, 36, ModWorldGen.OUTPOST_LOOT, Direction.WEST);
+    }
 
     // =========================================================================
     // PUITS DE FORAGE — la structure qui manquait au T1

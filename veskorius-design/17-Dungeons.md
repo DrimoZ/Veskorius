@@ -93,6 +93,25 @@ Trois corollaires, tous vérifiés sur le Sigma refait :
    **puits d'essai** que les Architectes ont creusé, et l'essai a tout cassé ». La forme découle du
    lore, et non l'inverse ; c'est ce qui fait qu'elle n'aurait pas pu être ailleurs.
 
+### R11 — Une figure ne sert qu'une fois
+*(Ajoutée en écrivant l'Archive.)* R10 dit de fuir la symétrie ; son corollaire est de fuir la
+**répétition de figure**. Le croquis d'origine de l'Archive était « un puits à balcons » — la forme
+même que le Sigma venait de prendre. Deux fois la même sensation, et la deuxième ne compte plus.
+
+L'inventaire des figures déjà servies est donc une contrainte de conception, pas une curiosité :
+
+| Structure | Figure | Sensation |
+|---|---|---|
+| Avant-poste | paliers empilés autour d'un puits | on descend en tournant |
+| Poste de Garde | tour inversée, vis ouverte sur le vide | on descend en se sentant exposé |
+| Hameau | halle à colonnade, logis dans les bas-côtés | on traverse un lieu habité |
+| Sigma | puits d'essai qu'on longe | on voit le fond dès l'entrée |
+| **Archive** | **enfilade** — nef longue, étroite, haute | **on voit loin, jamais le bout** |
+
+L'Archive troque la profondeur verticale contre la **profondeur d'axe**. Une archive, c'est des
+rangées qui fuient ; ses cabinets s'ouvrent de part et d'autre **sans jamais se répondre**, et son
+éclairage s'espace en s'éloignant, si bien que le fond n'est jamais tout à fait visible.
+
 ### R8 — Une civilisation se lit à ses proportions, jamais à son mobilier
 *(Ajoutée à la troisième passe, sur le constat « des micro-salles hyper-chargées en blocs pas
 utiles ».)* Une salle de 27 mètres à double colonnade et huit mètres sous voûte dit « ils étaient
@@ -456,6 +475,7 @@ que ce soit.
 | **D** | Avant-poste à trois paliers + Hameau creusé | ✅ 2026-08-07 |
 | **E** | Poste de Garde ✅, Puits de Forage ✅ — Relais Station à faire | partielle |
 | **F** | Sigma Laboratory ✅ | faite |
+| **G** | Archive Régionale ✅ | faite |
 
 **Ce que A→D a livré** (112 GameTest au vert) : `FieldSensitiveBlock` (socle commun de la lampe,
 du conduit et du sas), `ResonanceBulkheadBlock`, `DissonanceBloomBlock`, onze blocs

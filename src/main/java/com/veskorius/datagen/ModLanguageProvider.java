@@ -83,6 +83,8 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.RESONANCE_BULKHEAD, "Resonance Bulkhead");
         addBlock(ModBlocks.ANCIENT_EMITTER, "Ancient Emitter");
         addBlock(ModBlocks.SIGMA_CONSOLE, "Sigma Console");
+        addBlock(ModBlocks.ARCHIVE_PEDESTAL, "Archive Pedestal");
+        add("block.veskorius.archive_pedestal.solved", "The order holds — something wakes below");
         addBlock(ModBlocks.DAMAGED_RELAY, "Damaged Relay");
         add("block.veskorius.damaged_relay.restored", "The relay hums back to life");
         add("block.veskorius.damaged_relay.already", "This relay is already running");
@@ -170,6 +172,29 @@ public class ModLanguageProvider extends LanguageProvider {
         add("codex.veskorius.daily_life.festival.text",
             "Third bell, the quarter gathers. The Architects will wake the great tower and every lamp will "
                 + "flare at once. Bring nothing metal that you value; the old ones say it pulls.");
+
+        // L'Archive : quatre cotes. Elles portent leur RANG dans leur texte — c'est la
+        // seule indication de l'ordre, et l'ordre est la serrure de la salle de lecture.
+        add("codex.veskorius.archive.log_1.title", "Shelf mark I — the measure");
+        add("codex.veskorius.archive.log_1.text",
+            "First of four. We are asked to record, not to conclude. So: across the eleven "
+            + "sectors, the field no longer returns what we put in. It returns more. "
+            + "The excess is small. The excess is everywhere.");
+        add("codex.veskorius.archive.log_2.title", "Shelf mark II — the sum");
+        add("codex.veskorius.archive.log_2.text",
+            "Second of four. Two fields laid over one another do not add — we have taught "
+            + "this to every apprentice for two hundred years. At the scale of a region, "
+            + "they do something else. We have no word for it yet. We should have made one.");
+        add("codex.veskorius.archive.log_3.title", "Shelf mark III — the answer");
+        add("codex.veskorius.archive.log_3.text",
+            "Third of four. The Assembly has read the measure and voted to extend the grid. "
+            + "Their reasoning is sound and rests entirely on the assumption we came here to "
+            + "question. I am to file this and say nothing further.");
+        add("codex.veskorius.archive.log_4.title", "Shelf mark IV — the tear");
+        add("codex.veskorius.archive.log_4.text",
+            "Fourth of four. Something opened in the deep line last night and did not close. "
+            + "It is not a hole in the rock. The rock is still there. It is a hole in the "
+            + "place where the rock is. Whoever reads these, read them in order. It matters.");
         add("codex.veskorius.outpost.log_1.title", "Operator's log — first quarter");
         add("codex.veskorius.outpost.log_1.text",
             "Console reads clean on all three bands. Sector hums the way it should. "

@@ -294,6 +294,86 @@ public class StructureGameTests {
                 + (expected ? "à portée" : "HORS de portée, sinon un seul relais ouvre le sas"));
     }
 
+    /**
+     * <b>L'Archive se traverse, du vestibule au cadran.</b> Une enfilade est le plan le
+     * plus simple qui soit — et c'est exactement pour ça qu'on la teste : la simplicité
+     * du plan n'empêche pas une galerie de rater son mur.
+     */
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 200)
+    public static void archiveIsWalkableFromVestibuleToDial(GameTestHelper helper) {
+        place(helper, "regional_archive");
+        assertWalkable(helper, "regional_archive",
+            ANCHOR.offset(7, 3, 3), ANCHOR.offset(11, 3, 33), 23, 16, 40);
+    }
+
+    /**
+     * <b>L'énigme de l'Archive est résoluble, et seulement dans le bon ordre.</b>
+     *
+     * <p>Trois choses doivent tenir ensemble, et aucune n'est vérifiable à l'œil : les
+     * <b>quatre cotes</b> sont réellement présentes dans le bâtiment (une cote oubliée dans
+     * un coffre déplacé rend la salle de lecture inatteignable — et rien ne le signale) ;
+     * les <b>quatre socles</b> sont là ; et l'ordre attendu est bien celui des positions,
+     * pas celui de la pose.
+     *
+     * <p>On vérifie aussi qu'un <b>ordre faux ne résout pas</b>. Sans ce second cas, un
+     * comparateur inversé passerait le test en donnant toujours « résolu ».
+     */
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 200)
+    public static void archivePuzzleNeedsTheRightOrder(GameTestHelper helper) {
+        place(helper, "regional_archive");
+
+        java.util.List<BlockPos> pedestals = new java.util.ArrayList<>();
+        java.util.Set<ResourceLocation> found = new java.util.HashSet<>();
+        for (BlockPos pos : BlockPos.betweenClosed(ANCHOR, ANCHOR.offset(22, 15, 39))) {
+            if (helper.getBlockState(pos).is(ModBlocks.ARCHIVE_PEDESTAL.get())) {
+                pedestals.add(pos.immutable());
+            } else if (helper.getLevel().getBlockEntity(helper.absolutePos(pos))
+                instanceof net.minecraft.world.Container box) {
+                for (int i = 0; i < box.getContainerSize(); i++) {
+                    ItemStack stack = box.getItem(i);
+                    if (stack.is(ModItems.CODEX_FRAGMENT.get())) {
+                        found.add(com.veskorius.item.CodexFragmentItem.entryOf(stack));
+                    }
+                }
+            }
+        }
+        helper.assertTrue(pedestals.size() == 4,
+            "L'Archive doit porter quatre socles, trouvé : " + pedestals.size());
+        for (ResourceLocation entry : com.veskorius.item.CodexEntries.ARCHIVE_LOG) {
+            helper.assertTrue(found.contains(entry),
+                "La cote " + entry + " doit être posée quelque part dans l'Archive — sans elle, "
+                    + "la salle de lecture est inatteignable et rien ne le signale");
+        }
+
+        pedestals.sort(java.util.Comparator
+            .comparingInt((BlockPos p) -> p.getX())
+            .thenComparingInt(BlockPos::getZ));
+        // Ordre FAUX : le premier et le dernier échangés.
+        fill(helper, pedestals, new int[] {3, 1, 2, 0});
+        helper.assertTrue(!solved(helper, pedestals.get(0)),
+            "Un ordre faux ne doit pas résoudre l'énigme");
+        // Ordre juste.
+        fill(helper, pedestals, new int[] {0, 1, 2, 3});
+        helper.assertTrue(solved(helper, pedestals.get(0)),
+            "Les quatre cotes dans l'ordre doivent résoudre l'énigme");
+        helper.succeed();
+    }
+
+    private static void fill(GameTestHelper helper, java.util.List<BlockPos> pedestals, int[] order) {
+        for (int i = 0; i < pedestals.size(); i++) {
+            var be = (com.veskorius.block.entity.ArchivePedestalBlockEntity)
+                helper.getBlockEntity(pedestals.get(i));
+            be.take();
+            be.place(com.veskorius.item.CodexFragmentItem.of(
+                com.veskorius.item.CodexEntries.ARCHIVE_LOG[order[i]]));
+        }
+    }
+
+    private static boolean solved(GameTestHelper helper, BlockPos any) {
+        return com.veskorius.block.entity.ArchivePedestalBlockEntity.solved(
+            helper.getLevel(), helper.absolutePos(any));
+    }
+
     private static boolean inBox(BlockPos p, int w, int h, int d) {
         return p.getX() >= 1 && p.getX() <= w && p.getY() >= 1 && p.getY() <= h
             && p.getZ() >= 1 && p.getZ() <= d;
@@ -361,6 +441,7 @@ public class StructureGameTests {
     private static final String[][] PIECES = {
         {"outpost", "39", "31", "39"},
         {"sigma_laboratory", "39", "36", "39"},
+        {"regional_archive", "23", "16", "40"},
         {"guard_post", "27", "32", "27"},
         {"drill_shaft", "15", "28", "15"},
         {"outpost_wing_store", "15", "11", "15"},

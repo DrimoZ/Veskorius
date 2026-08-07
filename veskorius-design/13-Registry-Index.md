@@ -171,7 +171,7 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 | Poste de Garde | `guard_post` | 08, 17 (✅ codé — **tour inversée** : vis ouverte sur un puits de 23 blocs, deux paliers d'alcôves, arsenal voûté au fond) |
 | Puits de Forage abandonné | `drill_shaft` | 17 §6 (✅ codé — la structure T1, commune et sans déblocage : elle enseigne « descendre = cristaux ») |
 | Sigma Laboratory | `sigma_laboratory` | 08, 17 (✅ codé — **le puits d'essai** : 22 blocs de vide, passerelle hélicoïdale, pont à mi-hauteur, sanctuaire au fond. Puzzle des deux relais, qui descend avec le joueur) |
-| Archive Régionale | `regional_archive` | 08 |
+| Archive Régionale | `regional_archive` | 08, 17 (✅ codé — **l’enfilade** : nef de 23 de long, cabinets asymétriques, cadran de 4 socles, salle de lecture. Blocs : `archive_pedestal`) |
 | Cœur de Faille (poche générée, pas une structure `structure_set` classique) | `rift_pocket` | 07, 08 |
 
 ## Ajouts de la révision harmonique (2026-07-23, voir `06`/`16`)

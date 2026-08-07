@@ -229,12 +229,33 @@ le `structure_set`.)*
 **Strate sociale** : Architectes (fin d'âge d'or). **Y** : -55 à -64. **Fréquence** :
 1 / 12000 blocs.
 
+> **✅ CODÉE le 2026-08-07 — l'ENFILADE** (`17-Dungeons.md` R11). *(Le croquis d'origine proposait
+> « un puits à balcons » — la forme même que le Sigma venait de prendre. Deux fois la même
+> sensation, et la deuxième ne compte plus. Jetée.)*
+>
+> Une archive, c'est des **rangées qui fuient**. Sa forme est donc une nef **très longue, étroite et
+> haute** (7 × 10 × 23) dont on ne voit pas le bout, bordée d'arcades de rayonnages, avec des
+> cabinets qui s'ouvrent de part et d'autre **sans jamais se répondre**. L'éclairage s'espace en
+> s'éloignant : le fond n'est jamais tout à fait visible depuis l'entrée. La profondeur d'axe
+> remplace la profondeur verticale.
+
 - **Fonction** : débloque le T4. Site de stockage de connaissances, plus de fragments, moins de
   machines actives que le Sigma Laboratory.
 - **Ambiance** : rangées de socles de stockage, la plupart vides ou effondrés ; une salle de
   lecture centrale intacte.
-- **Puzzle** : reconstituer l'ordre de 4 fragments de Codex dispersés pour déverrouiller la
-  salle de lecture (lecture, pas de combat).
+- **Puzzle** : ✅ **codé.** Les quatre cotes sont dispersées (cabinet ouest, grand cabinet est,
+  cabinet effondré à creuser, fond de la nef) ; on les pose sur les **quatre socles**
+  (`archive_pedestal`) du cadran, et **leur ordre est la serrure**. Lecture, jamais de combat : on
+  reprend une cote d'un clic à main vide, donc se tromper ne bloque rien.
+  > **C'est le premier fragment de Codex du mod qui sert à autre chose qu'à être lu.** Les cotes
+  > portent leur rang dans leur texte, et l'ordre n'est écrit nulle part ailleurs — le pilier 2
+  > (« la connaissance est spatiale ») y trouve son application la plus littérale : *on ne peut pas
+  > résoudre sans avoir lu*.
+  >
+  > **L'issue passe par l'émetteur, pas par une serrure dédiée.** Résoudre rallume l'émetteur mort
+  > de la salle ; le sas s'ouvre ensuite comme tous les sas du mod. Une porte s'ouvre **toujours**
+  > par un champ (`17` R1) — l'énigme ne fait que décider ce qui rallume la lumière. Aucun sas n'a
+  > de serrure particulière, et il n'y en aura jamais.
 - **Lore** : premier fragment explicite sur la sur-résonance et les Failles.
 - **Loot garanti** : fragment débloquant le Harmonic Amplifier + **exactement 3** Hyper Refined
   Crystal — quantité calibrée précisément (voir `05-Machines.md`, section Bootstrap du T4) pour

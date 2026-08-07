@@ -86,6 +86,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // la reconnaître ne doit donc pas dépendre de l'angle sous lequel on l'aborde.
         simpleBlock(ModBlocks.ATTUNEMENT_CONSOLE.get(), consoleModel());
         simpleBlock(ModBlocks.SIGMA_CONSOLE.get(), sigmaConsoleModel());
+        simpleBlock(ModBlocks.ARCHIVE_PEDESTAL.get(), pedestalModel());
         // Relais endommagé : la silhouette de l'émetteur, sur le châssis T3. Le joueur
         // doit reconnaître un appareil de réseau avant de savoir ce qu'il fait.
         emitter(ModBlocks.DAMAGED_RELAY.get(), "damaged_relay", VESKORIAN);
@@ -380,6 +381,23 @@ public class ModBlockStateProvider extends BlockStateProvider {
      */
     private ModelFile consoleModel() {
         return consoleModel("attunement_console", FRACTURED);
+    }
+
+    /**
+     * Socle d'archive : base, fût, tablette. Une silhouette de <b>pupitre de
+     * consultation</b> et non de machine — c'est un meuble de bibliothèque, et il doit se
+     * distinguer au premier regard des consoles qui, elles, donnent quelque chose.
+     */
+    private ModelFile pedestalModel() {
+        var b = models().getBuilder("archive_pedestal")
+            .parent(BLOCK_ROOT)
+            .texture("particle", modLoc("block/chiseled_veined_stone"))
+            .texture("side", modLoc("block/" + VESKORIAN + "_side"))
+            .texture("top", modLoc("block/chiseled_veined_stone"));
+        cube(b, 1, 0, 1, 15, 4, 15, "#side", "#top", "#side", false);
+        cube(b, 3, 4, 3, 13, 12, 13, "#side", "#side", "#side", false);
+        cube(b, 1, 12, 1, 15, 14, 15, "#side", "#top", "#side", false);
+        return b;
     }
 
     /**

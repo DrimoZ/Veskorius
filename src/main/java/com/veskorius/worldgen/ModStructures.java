@@ -76,6 +76,7 @@ public final class ModStructures {
     public static final ResourceKey<StructureTemplatePool> OUTPOST_WING_POOL = poolKey("outpost/wing");
     public static final ResourceKey<StructureTemplatePool> OUTPOST_CAP_POOL = poolKey("outpost/cap");
 
+    public static final ResourceKey<StructureTemplatePool> ARCHIVE_POOL = poolKey("regional_archive");
     public static final ResourceKey<StructureTemplatePool> SIGMA_POOL = poolKey("sigma_laboratory");
     public static final ResourceKey<StructureTemplatePool> GUARD_POST_POOL = poolKey("guard_post");
     public static final ResourceKey<StructureTemplatePool> DRILL_SHAFT_POOL = poolKey("drill_shaft");
@@ -116,6 +117,13 @@ public final class ModStructures {
      */
     public static final ResourceKey<Structure> SIGMA_LABORATORY = structureKey("sigma_laboratory");
 
+    /**
+     * <b>Archive Régionale</b> (08-Structures.md) : strate Architectes de fin d'âge d'or,
+     * Y −55 à −64, porte du T4. Son énigme est la première du mod où un fragment de Codex
+     * sert à autre chose qu'à être lu.
+     */
+    public static final ResourceKey<Structure> REGIONAL_ARCHIVE = structureKey("regional_archive");
+
     public static final ResourceKey<Structure> GUARD_POST = structureKey("guard_post");
 
     /**
@@ -130,6 +138,7 @@ public final class ModStructures {
 
     public static final ResourceKey<StructureSet> MODEST_DWELLING_SET = setKey("modest_dwelling");
     public static final ResourceKey<StructureSet> OUTPOST_SET = setKey("outpost");
+    public static final ResourceKey<StructureSet> ARCHIVE_SET = setKey("regional_archive");
     public static final ResourceKey<StructureSet> SIGMA_SET = setKey("sigma_laboratory");
     public static final ResourceKey<StructureSet> GUARD_POST_SET = setKey("guard_post");
     public static final ResourceKey<StructureSet> DRILL_SHAFT_SET = setKey("drill_shaft");
@@ -198,6 +207,8 @@ public final class ModStructures {
             Pair.of(StructurePoolElement.single(id("ruin_marker").toString(), ruined), 1))));
         // Pièce de départ NON usée : elle porte le chemin critique du T3 (les deux relais,
         // le sas, la console). Même règle qu'à l'Avant-poste, même raison.
+        context.register(ARCHIVE_POOL, rigid(empty, List.of(
+            Pair.of(StructurePoolElement.single(id("regional_archive").toString()), 1))));
         context.register(SIGMA_POOL, rigid(empty, List.of(
             Pair.of(StructurePoolElement.single(id("sigma_laboratory").toString()), 1))));
         context.register(GUARD_POST_POOL, rigid(empty, List.of(
@@ -225,6 +236,10 @@ public final class ModStructures {
         // seule, et c'est le propos.
         // Sigma : 20 de haut, strate −40 à −55 (07-World-Generation.md). Plancher entre
         // −55 et −44 pour qu'il y tienne entièrement.
+        // Archive : 16 de haut, strate −55 à −64. Plancher entre −64 et −56 pour qu'elle
+        // tienne dans la strate la plus profonde du monde normal.
+        context.register(REGIONAL_ARCHIVE, jigsaw(overworld,
+            pools.getOrThrow(ARCHIVE_POOL), -64, -56));
         context.register(SIGMA_LABORATORY, jigsaw(overworld,
             pools.getOrThrow(SIGMA_POOL), -55, -44));
         context.register(GUARD_POST, jigsaw(overworld,
@@ -265,6 +280,10 @@ public final class ModStructures {
         // « souvent à moins de 300 blocs d'un Avant-poste ».
         // Sigma : 1 / 6000 blocs (08-Structures.md). La structure la plus rare codée à ce
         // jour, et c'est voulu — c'est une porte de palier, pas un lieu de passage.
+        // Archive : 1 / 12000 blocs (08-Structures.md), la plus rare du mod.
+        context.register(ARCHIVE_SET, new StructureSet(
+            structures.getOrThrow(REGIONAL_ARCHIVE),
+            new RandomSpreadStructurePlacement(80, 24, RandomSpreadType.LINEAR, 12_557_301)));
         context.register(SIGMA_SET, new StructureSet(
             structures.getOrThrow(SIGMA_LABORATORY),
             new RandomSpreadStructurePlacement(56, 16, RandomSpreadType.LINEAR, 91_204_663)));

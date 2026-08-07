@@ -430,6 +430,20 @@ public class FieldEmitterBlockEntity extends BlockEntity implements IResonanceFi
 
     // --- Accès et cycle de vie ----------------------------------------------
 
+    /**
+     * Remplit la réserve d'un coup, sans brûler de carburant.
+     *
+     * <p>Seul appelant : le socle de l'Archive, quand les quatre cotes sont dans l'ordre
+     * (voir {@code ArchivePedestalBlockEntity}). C'est la doctrine des donjons appliquée
+     * telle quelle — <b>une porte s'ouvre toujours par un champ</b> ; l'énigme ne fait que
+     * décider ce qui rallume l'émetteur. Aucun sas n'a de serrure particulière, et il n'y
+     * en aura jamais.
+     */
+    public void restoreReserve(int osc) {
+        reserve = Math.min(osc, getCapacity());
+        setChanged();
+    }
+
     public ItemStackHandler getFuelHandler() {
         return fuel;
     }
