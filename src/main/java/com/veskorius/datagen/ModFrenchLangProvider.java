@@ -195,6 +195,30 @@ public class ModFrenchLangProvider extends LanguageProvider {
             "Troisième cloche, le quartier se rassemble. Les Architectes vont réveiller la grande tour et "
                 + "toutes les lampes s'embraseront d'un coup. N'apportez rien de métal qui vous soit cher ; "
                 + "les anciens disent que ça attire.");
+        add("codex.veskorius.outpost.log_1.title", "Journal d'opérateur — premier quart");
+        add("codex.veskorius.outpost.log_1.text",
+            "Console propre sur les trois bandes. Le secteur ronronne comme il doit. "
+            + "Marran dit que la ligne profonde dérive encore ; je l'ai consigné. Troisième fois "
+            + "cette saison. On nous répondra que c'est dans les tolérances. C'est dans les tolérances.");
+        add("codex.veskorius.outpost.log_2.title", "Journal d'opérateur — la dérive");
+        add("codex.veskorius.outpost.log_2.text",
+            "Ce n'est pas dans les tolérances. La bande ne tient plus où je la pose. Je réaccorde "
+            + "à l'aube et le soir elle a bougé, toujours dans le même sens, toujours vers les "
+            + "autres. J'ai demandé un second avis. L'Archive répond que le réseau se corrige "
+            + "seul. Le réseau se corrige vers quelque chose.");
+        add("codex.veskorius.outpost.log_3.title", "Journal d'opérateur — la nuit où il a chanté");
+        add("codex.veskorius.outpost.log_3.text",
+            "Tous les émetteurs d'ici à la côte sont tombés sur la même bande en même temps. "
+            + "Personne ne l'avait ordonné. Une nuit durant, le réseau entier a sonné comme une "
+            + "cloche frappée et les lampes ont brûlé blanc. C'était, et je l'écris sans détour, "
+            + "beau. Au matin, la pierre au-dessus de la galerie ouest était fendue de part en part.");
+        add("codex.veskorius.outpost.log_4.title", "Journal d'opérateur — dernière entrée");
+        add("codex.veskorius.outpost.log_4.text",
+            "Ordre est venu d'éteindre le secteur. Je n'ai pas pu. Éteindre suppose que le réseau "
+            + "consente, et il ne répond plus aux demandes — seulement au ton. "
+            + "Je laisse la console vivante et les scellés ouverts. À qui lira ceci : elle écoute "
+            + "encore. Ce n'est pas un avertissement. C'est la seule raison pour laquelle vous "
+            + "pourrez la rallumer.");
         add("codex.veskorius.custode.watch.title", "Custode — ordre permanent");
         add("codex.veskorius.custode.watch.text",
             "Je ne dors pas. Je ne chasse pas. Je tiens cette porte jusqu'au retour des faiseurs. Si tu prends "

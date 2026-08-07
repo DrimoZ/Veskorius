@@ -3,6 +3,7 @@ package com.veskorius.datagen;
 import com.google.common.hash.Hashing;
 import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
+import com.veskorius.item.CodexEntries;
 import com.veskorius.worldgen.ModWorldGen;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -154,59 +155,152 @@ public class ModStructurePieceProvider implements DataProvider {
     }
 
     /**
-     * <b>Avant-poste.</b> 13×7×11 — le plus grand des trois, et le seul à mériter de la
-     * hauteur : c'est la porte du T2, le joueur doit sentir en entrant qu'il change
-     * d'échelle.
+     * <b>Avant-poste — un vrai donjon à quatre salles.</b> 21×9×21.
      *
-     * <p>Composition : la <b>console d'attunement</b> sur une estrade au centre, sous un
-     * puits de plafond ; l'atelier contre les murs ; des gravats et de la maçonnerie
-     * fissurée partout ailleurs — le dossier dit « une machine morte parmi des gravats »,
-     * donc les gravats doivent être visibles avant la console. Un Custode monte la garde.
+     * <pre>
+     *   z 0  ┌──────────┬──────────┐
+     *        │  HALL    │  CORPS   │   entrée au sud-ouest
+     *        │ d'entrée │ DE GARDE │   (Custode + coffre)
+     *   z 8  ├────╥─────┴────╥─────┤
+     *        │      COULOIR        │
+     *   z12  ├────╥─────┬────╥─────┤
+     *        │ ARCHIVES │ CONSOLE  │   (journal en 4 fragments)
+     *        │          │  + garde │   (porte du T2)
+     *   z20  └──────────┴──────────┘
+     * </pre>
+     *
+     * <p><b>Pourquoi un plan unique et non des pièces jigsaw tirées au sort.</b> La console
+     * est la <b>porte du T2</b> : si elle vivait dans une salle tirée au hasard, une partie
+     * des Avant-postes n'en aurait pas et la progression serait de nouveau suspendue à un
+     * tirage — exactement la classe de bug déjà trouvée sur le coffre d'amorçage. Ici, la
+     * console, l'amorçage et le journal sont dans le plan garanti. Le jigsaw reste
+     * disponible pour ajouter plus tard des ailes <i>facultatives</i>, qui sont sa vraie
+     * place : du bonus, jamais du chemin critique.
+     *
+     * <p><b>La difficulté est un parcours, pas une énigme.</b> `08-Structures.md` refuse
+     * explicitement l'énigme à l'Avant-poste (« un geste sur place »). Le défi est donc
+     * spatial : deux Custodes, l'un au corps de garde qu'on peut contourner, l'autre devant
+     * la console qu'on ne peut pas. Et le couloir est effondré : il faut creuser pour
+     * atteindre les salles du fond.
      */
     private static CompoundTag outpost() {
-        TemplateBuilder b = new TemplateBuilder(13, 7, 11);
-        room(b, 13, 7, 11);
-        floorPattern(b, 1, 1, 12, 10);
+        final int w = 21;
+        final int h = 9;
+        final int d = 21;
+        TemplateBuilder b = new TemplateBuilder(w, h, d);
+        room(b, w, h, d);
+        floorPattern(b, 1, 1, w - 1, d - 1);
 
-        // Estrade centrale : trois marches de large, la console au sommet. Le relief
-        // désigne la pièce maîtresse sans qu'on ait à l'éclairer davantage.
-        for (int x = 4; x <= 8; x++) {
-            for (int z = 3; z <= 7; z++) {
+        // --- Cloisons : quatre salles autour d'un couloir traversant ------------
+        partition(b, h, 10, 1, 10, 7, 4);      // hall | corps de garde
+        partition(b, h, 1, 8, 19, 8, -1);      // salles nord | couloir
+        partition(b, h, 1, 12, 19, 12, -1);    // couloir | salles sud
+        partition(b, h, 10, 13, 10, 19, 16);   // archives | console
+        // Portes du couloir : deux passages nord, deux sud.
+        for (int[] door : new int[][] {{5, 8}, {15, 8}, {5, 12}, {15, 12}}) {
+            openDoor(b, door[0], door[1]);
+        }
+
+        // --- Salle 1 : hall d'entrée. Vide, effondré : on comprend qu'on entre
+        // dans une ruine avant de croiser quoi que ce soit de vivant.
+        doorway(b, 5, 0, w, d);
+        b.set(3, 1, 3, RUBBLE);
+        b.set(4, 1, 3, RUBBLE);
+        b.set(3, 2, 3, RUBBLE);
+        b.set(7, 1, 6, Blocks.SMITHING_TABLE.defaultBlockState());
+        hangingLamps(b, h, new int[][] {{5, 4}});
+
+        // --- Salle 2 : corps de garde. Un Custode et le butin d'appoint : le
+        // combat est optionnel (on peut filer au couloir), la récompense non.
+        b.setLootChest(18, 1, 2, ModWorldGen.OUTPOST_LOOT);
+        b.set(12, 1, 6, Blocks.BARREL.defaultBlockState());
+        b.set(18, 1, 6, Blocks.GRINDSTONE.defaultBlockState());
+        hangingLamps(b, h, new int[][] {{15, 4}});
+        custode(b, 15.5, 4.5);
+
+        // --- Couloir : effondré en son milieu. Il faut creuser pour passer —
+        // c'est le seul « obstacle » du donjon, et il ne demande qu'une pioche.
+        for (int x = 8; x <= 12; x++) {
+            for (int y = 1; y <= 3; y++) {
+                b.set(x, y, 10, x % 2 == 0 ? RUBBLE : CRACKED);
+            }
+        }
+        hangingLamps(b, h, new int[][] {{3, 10}, {17, 10}});
+
+        // --- Salle 3 : cabinet d'archives. LE LORE. Quatre coffres alignés le
+        // long du mur, un fragment de journal chacun, DANS L'ORDRE — on lit une
+        // descente en traversant la pièce, pas une anecdote tirée au sort.
+        for (int z = 14; z <= 18; z += 2) {
+            b.set(1, 1, z, Blocks.BOOKSHELF.defaultBlockState());
+            b.set(1, 2, z, Blocks.BOOKSHELF.defaultBlockState());
+        }
+        b.set(5, 1, 16, Blocks.LECTERN.defaultBlockState());
+        ResourceLocation[] log = {
+            CodexEntries.OUTPOST_LOG_1, CodexEntries.OUTPOST_LOG_2,
+            CodexEntries.OUTPOST_LOG_3, CodexEntries.OUTPOST_LOG_4,
+        };
+        for (int i = 0; i < log.length; i++) {
+            b.setFragmentChest(3 + i * 2, 1, 19, log[i]);
+        }
+        hangingLamps(b, h, new int[][] {{5, 16}});
+
+        // --- Salle 4 : la console. Estrade centrale, piliers de cuivre oxydé,
+        // second Custode. Le relief désigne la pièce maîtresse sans éclairage
+        // supplémentaire ; c'est la seule salle où le sol monte.
+        for (int x = 13; x <= 17; x++) {
+            for (int z = 15; z <= 19; z++) {
                 b.set(x, 1, z, PILLAR);
             }
         }
-        for (int x = 5; x <= 7; x++) {
-            for (int z = 4; z <= 6; z++) {
+        for (int x = 14; x <= 16; x++) {
+            for (int z = 16; z <= 18; z++) {
                 b.set(x, 2, z, FLOOR_ALT);
             }
         }
-        b.set(6, 3, 5, ModBlocks.ATTUNEMENT_CONSOLE.get().defaultBlockState());
-
-        // Piliers de coin en cuivre oxydé : la trace de l'appareillage démonté.
-        for (int[] c : new int[][] {{2, 2}, {10, 2}, {2, 8}, {10, 8}}) {
-            for (int y = 1; y <= 4; y++) {
-                b.set(c[0], y, c[1], y == 4 ? COPPER : PILLAR);
+        b.set(15, 3, 17, ModBlocks.ATTUNEMENT_CONSOLE.get().defaultBlockState());
+        for (int[] c : new int[][] {{12, 14}, {18, 14}, {12, 19}, {18, 19}}) {
+            for (int y = 1; y <= 5; y++) {
+                b.set(c[0], y, c[1], y == 5 ? COPPER : PILLAR);
             }
         }
+        hangingLamps(b, h, new int[][] {{13, 17}, {17, 17}});
+        custode(b, 12.5, 16.5);
 
-        // L'atelier, contre les murs.
-        b.setLootChest(1, 1, 1, ModWorldGen.OUTPOST_LOOT);
-        b.set(1, 1, 3, Blocks.SMITHING_TABLE.defaultBlockState());
-        b.set(1, 1, 5, Blocks.FURNACE.defaultBlockState());
-        b.set(11, 1, 3, Blocks.BARREL.defaultBlockState());
-        b.set(11, 1, 5, Blocks.GRINDSTONE.defaultBlockState());
-        b.set(11, 1, 7, Blocks.CRAFTING_TABLE.defaultBlockState());
-
-        hangingLamps(b, 7, new int[][] {{3, 5}, {9, 5}, {6, 2}, {6, 8}});
-        collapse(b, 13, 7, 11, 0x5EED3);
-        doorway(b, 6, 10, 13, 11);
-
-        // Gardien du site : persistant (ne despawn jamais), réactif seulement de près.
-        CompoundTag custode = new CompoundTag();
-        custode.putString("id", "veskorius:custode");
-        custode.putBoolean("PersistenceRequired", true);
-        b.entity(9.5, 1.0, 5.5, 9, 1, 5, custode);
+        collapse(b, w, h, d, 0x5EED3);
         return b.build();
+    }
+
+    /** Cloison intérieure, avec une porte optionnelle ({@code doorAt} &lt; 0 = pleine). */
+    private static void partition(TemplateBuilder b, int h, int x0, int z0, int x1, int z1, int doorAt) {
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                for (int y = 1; y < h - 1; y++) {
+                    b.set(x, y, z, VEINED);
+                }
+            }
+        }
+        if (doorAt >= 0) {
+            // Porte percée dans une cloison verticale (x fixe) ou horizontale (z fixe).
+            boolean vertical = x0 == x1;
+            for (int y = 1; y <= 2; y++) {
+                b.set(vertical ? x0 : doorAt, y, vertical ? doorAt : z0, AIR);
+            }
+        }
+    }
+
+    /** Percée de 2 blocs de haut dans une cloison, à une position donnée. */
+    private static void openDoor(TemplateBuilder b, int x, int z) {
+        for (int y = 1; y <= 2; y++) {
+            b.set(x, y, z, AIR);
+        }
+    }
+
+    /** Un Custode persistant en poste (ne despawn jamais, réactif seulement de près). */
+    private static void custode(TemplateBuilder b, double x, double z) {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("id", "veskorius:custode");
+        tag.putBoolean("PersistenceRequired", true);
+        b.entity(x, 1.0, z, (int) x, 1, (int) z, tag);
     }
 
     // --- Vocabulaire de construction --------------------------------------------
@@ -307,6 +401,30 @@ public class ModStructurePieceProvider implements DataProvider {
             CompoundTag be = new CompoundTag();
             be.putString("id", "minecraft:chest");
             be.putString("LootTable", lootTable.toString());
+            set(x, y, z, Blocks.CHEST.defaultBlockState(), be);
+        }
+
+        /**
+         * Coffre au contenu <b>fixe</b> : un fragment de Codex donné.
+         *
+         * <p>Volontairement pas une table de loot : un journal en quatre parties n'a de
+         * sens que si les quatre sont là et dans l'ordre. Une table les rendrait
+         * aléatoires, et le joueur lirait la fin avant le début — ou pas du tout.
+         */
+        void setFragmentChest(int x, int y, int z, ResourceLocation entry) {
+            CompoundTag item = new CompoundTag();
+            item.putString("id", "veskorius:codex_fragment");
+            item.putInt("count", 1);
+            CompoundTag components = new CompoundTag();
+            components.putString("veskorius:codex_entry", entry.toString());
+            item.put("components", components);
+            item.putByte("Slot", (byte) 0);
+
+            net.minecraft.nbt.ListTag items = new net.minecraft.nbt.ListTag();
+            items.add(item);
+            CompoundTag be = new CompoundTag();
+            be.putString("id", "minecraft:chest");
+            be.put("Items", items);
             set(x, y, z, Blocks.CHEST.defaultBlockState(), be);
         }
 

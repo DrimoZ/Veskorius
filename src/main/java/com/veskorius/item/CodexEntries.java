@@ -24,6 +24,25 @@ public final class CodexEntries {
     /** Indice pointant vers la console de l'Avant-poste. */
     public static final ResourceLocation HINT_WORKSHOP = id("hint/workshop");
 
+    /**
+     * <b>Journal d'un opérateur d'attunement</b> — quatre fragments posés dans l'ordre
+     * dans le cabinet d'archives de l'Avant-poste.
+     *
+     * <p>C'est le premier vrai arc narratif du mod, et il porte l'événement central que
+     * le lore n'avait jamais raconté de l'intérieur : l'Effondrement (`02-Lore.md`).
+     * Jusqu'ici les fragments étaient des instantanés de vie quotidienne, sans avant ni
+     * après ; ceux-ci se suivent, et leur ordre est <b>déterministe</b> — ils sont posés
+     * dans des coffres fixes de la structure, pas tirés au hasard. Un joueur qui traverse
+     * les archives lit une descente, pas une anecdote.
+     *
+     * <p>Ils expliquent aussi, en jeu, pourquoi la console attend encore : personne n'est
+     * revenu l'éteindre.
+     */
+    public static final ResourceLocation OUTPOST_LOG_1 = id("outpost/log_1");
+    public static final ResourceLocation OUTPOST_LOG_2 = id("outpost/log_2");
+    public static final ResourceLocation OUTPOST_LOG_3 = id("outpost/log_3");
+    public static final ResourceLocation OUTPOST_LOG_4 = id("outpost/log_4");
+
     private static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, path);
     }

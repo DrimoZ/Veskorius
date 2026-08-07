@@ -26,29 +26,31 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 public class StructureGameTests {
 
     private static final String FIELD_ARENA = "field_arena";
+    /** Arène élargie : le donjon de l'Avant-poste fait 21×9×21 et ne tient pas dans 21³. */
+    private static final String PIECE_ARENA = "piece_arena";
 
     /** Coin de pose de la pièce (la plus grande fait 13×7×11 ; l'arène en fait 21). */
-    private static final BlockPos ANCHOR = new BlockPos(2, 1, 2);
+    private static final BlockPos ANCHOR = new BlockPos(1, 1, 1);
 
     /**
      * L'Avant-poste embarque sa <b>console d'attunement</b> (la porte du T2), un coffre de
      * loot et un <b>Custode gardien</b> — l'essentiel gameplay que l'ancienne
      * {@code RuinFeature} posait par code et que la pièce NBT doit désormais porter.
      */
-    @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 40)
     public static void outpostPieceCarriesConsoleChestAndGuardian(GameTestHelper helper) {
         place(helper, "outpost");
 
         // La console trône sur son estrade centrale (13×7×11, cf. ModStructurePieceProvider).
-        helper.assertBlockPresent(ModBlocks.ATTUNEMENT_CONSOLE.get(), ANCHOR.offset(6, 3, 5));
-        helper.assertBlockPresent(Blocks.CHEST, ANCHOR.offset(1, 1, 1));
+        helper.assertBlockPresent(ModBlocks.ATTUNEMENT_CONSOLE.get(), ANCHOR.offset(15, 3, 17));
+        helper.assertBlockPresent(Blocks.CHEST, ANCHOR.offset(18, 1, 2));
         // Coquille en pierre veinée (un mur d'angle).
         helper.assertBlockPresent(ModBlocks.RESONANCE_VEINED_STONE.get(), ANCHOR.offset(0, 0, 0));
         // Gardien persistant intégré à la pièce.
         helper.assertEntityPresent(ModEntities.CUSTODE.get());
         // Le coffre a bien conservé sa table de loot au passage par le NBT (sinon il
         // serait vide en jeu — la régression la plus silencieuse possible).
-        assertChestHasLootTable(helper, ANCHOR.offset(1, 1, 1));
+        assertChestHasLootTable(helper, ANCHOR.offset(18, 1, 2));
         helper.succeed();
     }
 
@@ -56,12 +58,12 @@ public class StructureGameTests {
      * L'Habitation Modeste est une salle de loot <b>sans</b> console ni gardien
      * (08-Structures.md : jamais de machine, jamais de Custode).
      */
-    @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 40)
     public static void dwellingPieceIsLootRoomOnly(GameTestHelper helper) {
         place(helper, "modest_dwelling");
 
         helper.assertBlockPresent(Blocks.CHEST, ANCHOR.offset(8, 1, 7));
-        helper.assertBlockNotPresent(ModBlocks.ATTUNEMENT_CONSOLE.get(), ANCHOR.offset(6, 3, 5));
+        helper.assertBlockNotPresent(ModBlocks.ATTUNEMENT_CONSOLE.get(), ANCHOR.offset(15, 3, 17));
         helper.assertEntityNotPresent(ModEntities.CUSTODE.get());
         helper.succeed();
     }
@@ -115,8 +117,45 @@ public class StructureGameTests {
         helper.succeed();
     }
 
+    /**
+     * <b>Le journal de l'Avant-poste est complet et dans l'ordre.</b>
+     *
+     * <p>Les quatre fragments racontent une descente — routine, dérive, la nuit où le
+     * réseau a chanté, l'abandon. Un fragment manquant ou interverti casse le seul arc
+     * narratif suivi du mod, et c'est le genre de régression qu'on ne voit pas : la
+     * structure se génère, les coffres sont là, seul le texte ne raconte plus rien.
+     * D'où des coffres à contenu FIXE plutôt qu'une table de loot, et ce test.
+     */
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 40)
+    public static void outpostCarriesOperatorLogInOrder(GameTestHelper helper) {
+        place(helper, "outpost");
+
+        net.minecraft.resources.ResourceLocation[] expected = {
+            com.veskorius.item.CodexEntries.OUTPOST_LOG_1,
+            com.veskorius.item.CodexEntries.OUTPOST_LOG_2,
+            com.veskorius.item.CodexEntries.OUTPOST_LOG_3,
+            com.veskorius.item.CodexEntries.OUTPOST_LOG_4,
+        };
+        for (int i = 0; i < expected.length; i++) {
+            BlockPos at = ANCHOR.offset(3 + i * 2, 1, 19);
+            net.minecraft.world.level.block.entity.BlockEntity be = helper.getBlockEntity(at);
+            helper.assertTrue(be instanceof net.minecraft.world.Container,
+                "Coffre d'archives attendu en " + at + ", vaut : " + be);
+            net.minecraft.world.item.ItemStack stack =
+                ((net.minecraft.world.Container) be).getItem(0);
+            helper.assertTrue(stack.is(com.veskorius.item.ModItems.CODEX_FRAGMENT.get()),
+                "Le coffre d'archives " + (i + 1) + " doit contenir un fragment, vaut : " + stack);
+            net.minecraft.resources.ResourceLocation entry =
+                com.veskorius.item.CodexFragmentItem.entryOf(stack);
+            helper.assertTrue(expected[i].equals(entry),
+                "Fragment " + (i + 1) + " : attendu " + expected[i] + ", trouvé " + entry
+                    + " — le journal doit se lire dans l'ordre en traversant la salle");
+        }
+        helper.succeed();
+    }
+
     /** L'intérieur est bien creusé (air), pas un bloc plein : on peut y entrer. */
-    @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 40)
     public static void pieceInteriorIsHollow(GameTestHelper helper) {
         place(helper, "modest_dwelling");
         BlockState interior = helper.getBlockState(ANCHOR.offset(5, 3, 4));

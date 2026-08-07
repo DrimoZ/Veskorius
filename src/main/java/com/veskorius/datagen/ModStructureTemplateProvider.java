@@ -53,6 +53,14 @@ public class ModStructureTemplateProvider implements DataProvider {
      * testées (Relay 20, Convergence Core 40) : il faudra agrandir en conséquence.
      */
     private static final int ARENA_SIZE = 21;
+    /**
+     * Arène dédiée aux tests de structure. L'Avant-poste fait 21×9×21 depuis qu'il est
+     * devenu un donjon : posé à l'ancre (2,1,2) d'une arène de 21, il débordait, et un
+     * test de bloc à l'extérieur du volume échoue de façon opaque (« Expected X, got Air »)
+     * sans jamais dire que c'est la place qui manque.
+     */
+    private static final int PIECE_ARENA_SIZE = 25;
+    public static final String PIECE_ARENA_TEMPLATE = "piece_arena";
     public static final String FIELD_ARENA_TEMPLATE = "field_arena";
 
     private final PackOutput.PathProvider pathProvider;
@@ -66,7 +74,8 @@ public class ModStructureTemplateProvider implements DataProvider {
     public CompletableFuture<?> run(CachedOutput cache) {
         return CompletableFuture.allOf(
             write(cache, EMPTY_TEMPLATE, emptyTemplate(EMPTY_SIZE)),
-            write(cache, FIELD_ARENA_TEMPLATE, emptyTemplate(ARENA_SIZE)));
+            write(cache, FIELD_ARENA_TEMPLATE, emptyTemplate(ARENA_SIZE)),
+            write(cache, PIECE_ARENA_TEMPLATE, emptyTemplate(PIECE_ARENA_SIZE)));
     }
 
     /**

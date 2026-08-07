@@ -151,6 +151,29 @@ public class ModLanguageProvider extends LanguageProvider {
         add("codex.veskorius.daily_life.festival.text",
             "Third bell, the quarter gathers. The Architects will wake the great tower and every lamp will "
                 + "flare at once. Bring nothing metal that you value; the old ones say it pulls.");
+        add("codex.veskorius.outpost.log_1.title", "Operator's log — first quarter");
+        add("codex.veskorius.outpost.log_1.text",
+            "Console reads clean on all three bands. Sector hums the way it should. "
+            + "Marran says the deep line is drifting again; I logged it. Third time this season. "
+            + "They will tell us it is within tolerance. It is within tolerance.");
+        add("codex.veskorius.outpost.log_2.title", "Operator's log — the drift");
+        add("codex.veskorius.outpost.log_2.text",
+            "It is not within tolerance. The band will not hold where I set it. I re-tune at "
+            + "dawn and by dusk it has wandered, always the same way, always toward the others. "
+            + "I have asked for a second opinion. The Archive answers that the network is "
+            + "self-correcting. The network is correcting toward something.");
+        add("codex.veskorius.outpost.log_3.title", "Operator's log — the night it sang");
+        add("codex.veskorius.outpost.log_3.text",
+            "Every emitter from here to the coast fell into the same band at once. No one "
+            + "ordered it. For one night the whole network rang like a struck bell and the "
+            + "lamps burned white. It was, and I will write this plainly, beautiful. "
+            + "In the morning the stone above the west gallery had cracked end to end.");
+        add("codex.veskorius.outpost.log_4.title", "Operator's log — last entry");
+        add("codex.veskorius.outpost.log_4.text",
+            "Orders came to shut the sector down. I could not. Shutting down requires the "
+            + "network to agree, and it no longer answers requests — only the tone. "
+            + "I am leaving the console live and the seals open. Whoever reads this: it is "
+            + "still listening. That is not a warning. It is the only reason you can start it again.");
         add("codex.veskorius.custode.watch.title", "Custode — standing order");
         add("codex.veskorius.custode.watch.text",
             "I do not sleep. I do not hunt. I hold this door until the makers return. If you take from the "
