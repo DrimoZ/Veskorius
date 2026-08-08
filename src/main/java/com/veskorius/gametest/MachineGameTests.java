@@ -1957,6 +1957,69 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    /**
+     * <b>Un relais réparé s'éteint tout seul, et c'est l'énigme du Sigma.</b>
+     *
+     * <p>Le puzzle du laboratoire ne demande pas de réparer deux relais : il demande de les
+     * avoir allumés <b>en même temps</b>. C'est l'autonomie limitée — quatre-vingt-dix
+     * secondes — qui crée la contrainte, puisque le second est trop loin pour qu'on y arrive
+     * sans courir. Un relais qui resterait allumé transformerait l'énigme en simple liste de
+     * courses, et rien ne le signalerait : le donjon se terminerait, juste sans tension.
+     *
+     * <p>Cette mécanique n'avait aucun test. Sa géométrie en avait un — le second relais est
+     * bien hors de portée — mais pas son compte à rebours, qui est pourtant la moitié du
+     * dispositif.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void repairedRelayRunsOutOnItsOwn(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.DAMAGED_RELAY.get());
+        com.veskorius.block.entity.DamagedRelayBlockEntity relay = helper.getBlockEntity(MACHINE);
+
+        helper.assertFalse(relay.isRunning(), "Un relais endommagé démarre éteint");
+        relay.repair();
+        helper.assertTrue(relay.isRunning(), "Réparé, il tourne");
+        helper.assertTrue(
+            relay.getTicksLeft() == com.veskorius.block.entity.DamagedRelayBlockEntity.UPTIME,
+            "…avec exactement son autonomie, ni plus ni moins : c'est ce chiffre qui rend "
+                + "les deux relais simultanés difficiles à obtenir. Obtenu : "
+                + relay.getTicksLeft());
+        helper.succeed();
+    }
+
+    /**
+     * <b>Le socle de l'Archive ne garde qu'un objet, et rend le précédent.</b>
+     *
+     * <p>L'énigme de l'Archive demande d'activer quatre socles dans le bon ordre, et
+     * l'ordre se cherche en se trompant. Deux garde-fous rendent l'erreur gratuite, et ce
+     * test les tient : le socle <b>n'accepte qu'un fragment de Codex</b> — poser autre
+     * chose par mégarde ne l'avale pas — et il n'en prend qu'<b>un seul exemplaire</b> de
+     * la pile. Sans le second, poser un fragment coûterait tout le stock ; sans le premier,
+     * on perdrait n'importe quel objet tenu en main.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void archivePedestalHoldsExactlyOneFragment(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.ARCHIVE_PEDESTAL.get());
+        com.veskorius.block.entity.ArchivePedestalBlockEntity pedestal =
+            helper.getBlockEntity(MACHINE);
+
+        helper.assertTrue(pedestal.isEmpty(), "Un socle démarre vide");
+        helper.assertFalse(
+            pedestal.place(new net.minecraft.world.item.ItemStack(
+                ModItems.RAW_RESONANCE_CRYSTAL.get())),
+            "Il refuse ce qui n'est pas un fragment de Codex — sinon chercher l'ordre "
+                + "coûterait les objets qu'on a en main");
+        helper.assertTrue(pedestal.isEmpty(), "…et reste vide après ce refus");
+
+        helper.assertTrue(
+            pedestal.place(new net.minecraft.world.item.ItemStack(
+                ModItems.CODEX_FRAGMENT.get(), 8)),
+            "Il accepte un fragment de Codex");
+        helper.assertTrue(pedestal.getHeld().getCount() == 1,
+            "…un seul exemplaire, jamais la pile entière : sinon poser un fragment "
+                + "coûterait tout le stock. Obtenu : " + pedestal.getHeld().getCount());
+        helper.succeed();
+    }
+
     // --- Utilitaires ---------------------------------------------------------
 
     private static IItemHandler assemblerInventory(GameTestHelper helper) {

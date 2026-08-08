@@ -75,6 +75,19 @@ est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments 
 | `resonance_locator` | 05, 07, 12 | ✅ codé (détecteur courte portée : poche de cristal ou signature de champ ; batterie interne ; modes Ressources/Structures). **Porté, il active le HUD de champ** — inventaire ou slot Curios |
 | `resonance_storage_cell` | 05 | ✅ codé (batterie portable 8000 Osc ; alimente le Locator) |
 
+### Œufs d'apparition
+
+Trois seulement, et c'est délibéré : le Gardien de Faille et le Custode Archiviste n'en
+ont pas. Ce sont des rencontres de LIEU — l'un se lève d'une Ancre posée, l'autre garde
+une salle. Un œuf les rendrait convocables n'importe où, ce qui viderait de son sens le
+fait d'aller les chercher.
+
+| Registry name | Statut code |
+|---|---|
+| `crystal_strider_spawn_egg` | ✅ codé |
+| `custode_spawn_egg` | ✅ codé |
+| `custode_lourd_spawn_egg` | ✅ codé |
+
 ## Blocs — génération naturelle
 
 | Registry name | Défini dans | Statut code |
@@ -83,6 +96,15 @@ est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments 
 | `resonance_veined_stone` | 04, 07 | ✅ codé (coquille des poches, bloc décoratif) |
 | `raw_flux_deposit` (bloc) | 07 | ✅ codé (croûte brossable → item `raw_flux_deposit`) |
 | `attunement_console` | 08 | ✅ codé — bloc de l'Avant-poste, clic droit sur place → blueprint T2 ; miné = gravats, sans objet |
+| `sigma_console` | 08 | ✅ codé — rend le blueprint **T3** ; même geste, autre âge (accent ambre) |
+| `archive_console` | 08 | ✅ codé — rend le blueprint **T4** (accent blanc-bleu). Son absence était un mur : l'Archive ne débloquait rien de plus que le Sigma |
+| `damaged_relay` | 08 | ✅ codé — relais du puzzle Sigma : réparé par 1 Resonance Component, 90 s d'autonomie puis il s'éteint. C'est cette autonomie qui crée la simultanéité |
+| `deformed_stone` | 07 | ✅ codé — coquille des Failles, et le SEUL signe qu'on en a trouvé une (le Locator n'y voit rien) |
+| `rift_core` | 07 | ✅ codé — le noyau flottant au centre d'une Faille. Indestructible, sans loot |
+| `resonance_bloom_bush` | 04, 09 | ✅ codé — la seule culture du mod : 4 stades, cueillette répétée, repousse |
+| `meteoric_crater` | 04, 07 | ✅ codé — dépôt de l'Orage de Résonance. Sans objet : il ne doit pas être stockable, tout ce qui reste au sol disparaît à la fin de l'orage |
+| `resonance_sand` | 04 | ✅ codé — étape intermédiaire du verre : un four ne prend qu'une entrée, et le dossier veut le verre « fondu au four vanilla » |
+| `luminous_resonance_glass` | 04 | ✅ codé — verre teint à l'Extrait Lumineux, luminosité **15** contre 8 |
 
 ## Blocs — architecture de donjon (ajouté 2026-08-07, voir `17-Dungeons.md` §4)
 
@@ -93,6 +115,9 @@ quelconque. On ne fait pas d'architecture sans vocabulaire.
 | Registry name | Rôle | Statut code |
 |---|---|---|
 | `veined_stone_bricks` | la maçonnerie de base | ✅ codé (craft + scie de pierre) |
+| `veined_stone_brick_slab` | dalle de la maçonnerie | ✅ codé (rend DEUX dalles au minage) |
+| `veined_stone_brick_wall` | mur de la maçonnerie | ✅ codé |
+| `veined_stone_column` | colonne cannelée, à axe | ✅ codé — c'est elle qui fait les colonnades, donc les monuments |
 | `cracked_veined_stone_bricks` | usure (cuisson, ou processor à la pose) | ✅ codé |
 | `chiseled_veined_stone` | le seul bloc « écrit » : seuils et salles maîtresses | ✅ codé |
 | `veined_stone_brick_stairs` / `_slab` / `_wall` | la famille de construction attendue | ✅ codé |
@@ -156,12 +181,11 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 
 | Nom en jeu (prose) | Registry name proposé | Défini dans |
 |---|---|---|
-| Custode | `custode` | 09 (✅ codé : garde réactif 30 PV / 6 dég., spawn en Avant-poste, drop fragment) |
-| Custode Lourd | `heavy_custode` | 09 |
-| Fileur de Cristal | `crystal_strider` | 09 (✅ codé : faune neutre, traite, reproduction, spawn) |
-| Custode Archiviste | `custode_archivist` | 09 |
-| Gardien de Faille | `custode_archiviste` | 09 | ✅ codé — 150 PV, réactif à 10 blocs, garde la salle profonde de l'Archive. Attaque signature : marque le sol sous la cible et détone après 1 s, ce qui interdit de camper |
-| `rift_guardian` | 09 |
+| Custode | `custode` | 09 — ✅ codé : garde réactif 30 PV / 6 dég., posté en Avant-poste, lâche du fragment d'alliage |
+| Custode Lourd | `custode_lourd` | 09 — ✅ codé : 60 PV / 9 dég., réactif à 8 blocs, alerte un autre Lourd à 16. Posté par PAIRES au Sigma et à l'Archive |
+| Fileur de Cristal | `crystal_strider` | 09 — ✅ codé : faune neutre, traite, reproduction, spawn |
+| Custode Archiviste | `custode_archiviste` | 09 — ✅ codé : 150 PV, réactif à 10 blocs, garde la salle profonde de l'Archive. Marque le sol sous sa cible et détone après 1 s, ce qui interdit de camper |
+| Gardien de Faille | `rift_guardian` | 09 — ✅ codé : boss final, 300 PV, trois phases aux comportements distincts |
 
 ## Structures — noms de registre proposés
 

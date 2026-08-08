@@ -3,8 +3,8 @@
 Généré à partir du code, pas du dossier de design. Une case cochée ici veut dire
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
-NeoForge 1.21.1 · Java 21 · **219 fichiers Java, ~30 700 lignes** · **49 blocs, 71 items**
-· **161 GameTest en deux processus** (`runFastGameTests` 140 en ~30 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
+NeoForge 1.21.1 · Java 21 · **235 fichiers Java, ~33 200 lignes** · **58 blocs, 88 items**
+· **163 GameTest en deux processus** (`runFastGameTests` 142 en ~27 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
 
@@ -129,7 +129,14 @@ d'alliage et coûte donc le bonus de panoplie).
   Quarante-huit manquaient en français (tout le Codex T3-T4-T5 et les libellés du livre) :
   une clé absente n'est pas une erreur pour Minecraft, il affiche l'identifiant et continue.
 
-## 9. Configuration
+## 9. Garde-fous hors du jeu
+
+`./gradlew audit` — vérifie registre ↔ ressources générées ↔ dossier : modèle manquant,
+blocs sans butin, clé sans traduction française, entrée absente de `13-Registry-Index.md`,
+chiffres faux dans ce fichier. Aucune de ces pannes ne plante ; toutes se découvrent en
+jeu, ou jamais. Les GameTest ne peuvent pas les voir — ils tournent dans le jar.
+
+## 10. Configuration
 
 Cinq fichiers TOML par thème (basics, machines, generation, mobs, harmonics), type
 SERVER, surchargeables par modpack.

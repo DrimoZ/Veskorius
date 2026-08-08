@@ -169,6 +169,20 @@ tasks.matching { it.name in ['runFastGameTests', 'runWorldGameTests'] }.configur
     }
 }
 
+// AUDIT DE COHÉRENCE, hors du jeu.
+//
+// Les GameTest ne voient ni src/generated ni veskorius-design : ils tournent dans le jar.
+// Or la famille de panne la plus coûteuse de ce dépôt vit exactement là — un objet sans
+// modèle, un bloc sans traduction, un inventaire qui annonce des chiffres faux. Rien ne
+// plante ; on le découvre en jeu, ou jamais.
+//
+// L'audit est donc une tâche à part, et elle ÉCHOUE au lieu de prévenir.
+tasks.register('audit', Exec) {
+    group = 'verification'
+    description = 'Vérifie registre ↔ ressources générées ↔ dossier de design.'
+    commandLine 'node', 'tools/audit.js'
+}
+
 // JEI ET JADE NE SONT PLUS SUR LE CLASSPATH DES TESTS.
 //
 // Ils étaient en `localRuntime`, donc dans le runtimeClasspath de TOUS les runs — y

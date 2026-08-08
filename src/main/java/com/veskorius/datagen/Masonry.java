@@ -405,44 +405,7 @@ public final class Masonry {
         }
     }
 
-    /**
-     * <b>Déambulatoire</b> : un couloir annulaire qui fait le tour d'un sanctuaire.
-     *
-     * <p>C'est la réponse au problème que pose toute salle centrale scellée — comment
-     * circuler entre les ailes si le centre est fermé ? Le réflexe est de percer le
-     * sanctuaire ; c'est précisément ce qu'il ne faut pas faire, sinon il n'est plus
-     * scellé. Le déambulatoire contourne, et c'est aussi ce que fait l'architecture réelle
-     * quand elle protège un cœur.
-     */
-    public static void ambulatory(TemplateBuilder b, int cx, int y0, int cz,
-                                  int rInner, int rOuter, int height) {
-        b.box(cx - rOuter - 1, y0 - 1, cz - rOuter - 1,
-            cx + rOuter + 1, y0 + height + 1, cz + rOuter + 1, BRICK);
-        for (int y = y0; y <= y0 + height; y++) {
-            octagonLayer(b, cx, y, cz, rOuter, rOuter / 2, AIR);
-        }
-        octagonLayer(b, cx, y0 - 1, cz, rOuter, rOuter / 2, PAVING);
-        // Le noyau du beignet : on rebouche ce qui doit rester plein, le sanctuaire
-        // s'inscrivant ensuite dedans.
-        b.box(cx - rInner, y0 - 1, cz - rInner, cx + rInner, y0 + height + 1, cz + rInner, BRICK);
-        // Colonnes engagées dans le mur EXTÉRIEUR, une sur trois — jamais sur le bord
-        // carrossable. Un déambulatoire ne fait qu'une à trois cases de large selon
-        // l'endroit ; y planter un fût à chaque case du contour, c'est le murer sur toute
-        // sa longueur. (Il l'était : le Sigma se générait parfaitement, et on ne pouvait
-        // pas faire le tour du sanctuaire.)
-        for (int y = y0; y <= y0 + height; y++) {
-            for (int d = 0; d <= rOuter; d += 3) {
-                b.set(cx + rOuter + 1, y, cz + d, column(Direction.Axis.Y));
-                b.set(cx + rOuter + 1, y, cz - d, column(Direction.Axis.Y));
-                b.set(cx - rOuter - 1, y, cz + d, column(Direction.Axis.Y));
-                b.set(cx - rOuter - 1, y, cz - d, column(Direction.Axis.Y));
-                b.set(cx + d, y, cz + rOuter + 1, column(Direction.Axis.Y));
-                b.set(cx - d, y, cz + rOuter + 1, column(Direction.Axis.Y));
-                b.set(cx + d, y, cz - rOuter - 1, column(Direction.Axis.Y));
-                b.set(cx - d, y, cz - rOuter - 1, column(Direction.Axis.Y));
-            }
-        }
-    }
+    
 
     private static void octagonLayer(TemplateBuilder b, int cx, int y, int cz,
                                      int r, int cut, BlockState state) {

@@ -66,6 +66,20 @@ public class Veskorius {
                 output.accept(ModItems.CUSTODE_ALLOY_FRAGMENT.get());
                 output.accept(ModItems.CRYSTAL_STRIDER_SPAWN_EGG.get());
                 output.accept(ModItems.CUSTODE_SPAWN_EGG.get());
+                output.accept(ModItems.CUSTODE_LOURD_SPAWN_EGG.get());
+
+                // LES BLUEPRINTS AVEC LEUR PALIER, un par tier.
+                //
+                // Un blueprint nu ne sert à rien : le palier vit dans un data component,
+                // et toutes les recettes du mod exigent une valeur précise. Un exemplaire
+                // sans composant ne satisfait donc AUCUNE recette — le donner en créatif
+                // aurait été pire que de ne rien donner, puisqu'il aurait l'air correct.
+                for (int tier = 2; tier <= 4; tier++) {
+                    net.minecraft.world.item.ItemStack plan =
+                        new net.minecraft.world.item.ItemStack(ModItems.RESONANCE_BLUEPRINT.get());
+                    plan.set(com.veskorius.item.ModDataComponents.BLUEPRINT_TIER.get(), tier);
+                    output.accept(plan);
+                }
                 output.accept(ModItems.FOSSILIZED_RATION.get());
                 output.accept(ModItems.RESONANCE_CODEX.get());
                 output.accept(com.veskorius.item.ResonanceBlueprintItem.of(2));

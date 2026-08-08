@@ -50,18 +50,6 @@ public final class TemplateBuilder {
         this.sz = sz;
     }
 
-    public int width() {
-        return sx;
-    }
-
-    public int height() {
-        return sy;
-    }
-
-    public int depth() {
-        return sz;
-    }
-
     public void set(int x, int y, int z, BlockState state) {
         set(x, y, z, state, null);
     }

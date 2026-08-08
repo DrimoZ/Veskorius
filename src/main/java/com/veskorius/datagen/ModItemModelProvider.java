@@ -49,7 +49,17 @@ public class ModItemModelProvider extends ItemModelProvider {
             Item item = holder.get();
             String name = holder.getId().getPath();
 
-            if (item instanceof BlockItem) {
+            // UN ItemNameBlockItem N'EST PAS UN BlockItem ORDINAIRE, et la nuance coûte cher.
+            //
+            // Il en hérite, mais il porte son PROPRE nom et sa propre texture : la Graine
+            // Ancienne pose un buisson de floraison, sans s'appeler comme lui ni lui
+            // ressembler. Le modèle du bloc ne peut donc pas lui servir — et comme le
+            // buisson est un bloc à croissance, il ne produit même pas de modèle d'objet.
+            //
+            // Résultat sans ce cas : une graine parfaitement fonctionnelle, plantable,
+            // récoltable, et affichée en cube violet. Exactement le bug que ce fichier
+            // existe pour empêcher, revenu par la porte de la sous-classe.
+            if (item instanceof BlockItem && !(item instanceof net.minecraft.world.item.ItemNameBlockItem)) {
                 // Le modèle d'objet d'un bloc est le modèle du bloc lui-même.
                 continue;
             }
