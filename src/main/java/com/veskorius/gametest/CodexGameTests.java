@@ -35,6 +35,47 @@ public class CodexGameTests {
     }
 
     /**
+     * <b>Les zones du Codex ne se croisent jamais, et le cadre ne sort jamais de l'écran.</b>
+     *
+     * <p>Ce test existe parce que le défaut est revenu <b>deux fois</b> : du texte
+     * superposé, à chaque fois parce que des coordonnées étaient calculées à la main au
+     * moment de dessiner. Rien ne pouvait le signaler — il fallait ouvrir le jeu, regarder,
+     * et tomber sur le bon écran. La dernière fois, le lien de retour, l'icône et le titre
+     * tombaient à quatre pixels les uns des autres.
+     *
+     * <p>On fait donc calculer la mise en page pour une cinquantaine de tailles de fenêtre,
+     * des plus petites que Minecraft accepte aux plus grandes, et on vérifie deux choses
+     * qu'aucun coup d'œil ne garantit : que les quatre bandes sont <b>disjointes</b>, et
+     * que le cadre <b>tient dans l'écran</b>. Le second point est la seconde plainte : sur
+     * une fenêtre réduite, le livre débordait.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void codexLayoutNeverOverlaps(GameTestHelper helper) {
+        int tabs = com.veskorius.codex.CodexCategory.values().length + 1;
+        for (int w = 320; w <= 1920; w += 100) {
+            for (int h = 240; h <= 1080; h += 120) {
+                var layout = com.veskorius.client.screen.CodexLayout.of(w, h, tabs);
+                helper.assertTrue(layout.fitsIn(w, h),
+                    "Fenêtre " + w + "x" + h + " : le cadre déborde de l'écran — "
+                        + layout.frame());
+                var zones = layout.disjointZones();
+                for (int i = 0; i < zones.length; i++) {
+                    for (int j = i + 1; j < zones.length; j++) {
+                        helper.assertFalse(zones[i].overlaps(zones[j]),
+                            "Fenêtre " + w + "x" + h + " : deux zones se croisent — "
+                                + zones[i] + " et " + zones[j]
+                                + ". C'est exactement ainsi que le texte se superpose.");
+                    }
+                }
+                helper.assertTrue(layout.pageLeft().right() < layout.pageRight().x(),
+                    "Fenêtre " + w + "x" + h + " : les deux pages se touchent, "
+                        + "le texte de gauche mordrait sur celui de droite");
+            }
+        }
+        helper.succeed();
+    }
+
+    /**
      * <b>Chaque entrée du Codex a un texte, et il n'est pas vide.</b>
      *
      * <p>Sans texte, le manuel affiche sa <b>clé de traduction brute</b> —

@@ -50,27 +50,11 @@ public class CodexScreen extends Screen {
 
     // --- Zones ----------------------------------------------------------------
 
-    /** Un rectangle de mise en page. Tout le rendu passe par là, plus aucun offset nu. */
-    private record Rect(int x, int y, int w, int h) {
-        int right() {
-            return x + w;
-        }
-
-        int bottom() {
-            return y + h;
-        }
-
-        boolean has(double mx, double my) {
-            return mx >= x && mx < x + w && my >= y && my < y + h;
-        }
-    }
-
     private enum View { LIST, ENTRY, TREE }
 
-    private static final int TAB_W = 26;
-    private static final int TAB_H = 24;
-    private static final int GUTTER = 12;
-    private static final int PAD = 8;
+    private static final int TAB_W = CodexLayout.TAB_W;
+    private static final int GUTTER = CodexLayout.GUTTER;
+    private static final int PAD = CodexLayout.PAD;
     private static final int ROW_H = 20;
     private static final int NODE = 22;
 
@@ -91,11 +75,14 @@ public class CodexScreen extends Screen {
 
     private final ItemStack codex;
 
-    private Rect frame = new Rect(0, 0, 0, 0);
-    private Rect header = new Rect(0, 0, 0, 0);
-    private Rect pageL = new Rect(0, 0, 0, 0);
-    private Rect pageR = new Rect(0, 0, 0, 0);
-    private Rect body = new Rect(0, 0, 0, 0);
+    private CodexLayout.Rect frame = new CodexLayout.Rect(0, 0, 0, 0);
+    private CodexLayout.Rect header = new CodexLayout.Rect(0, 0, 0, 0);
+    private CodexLayout.Rect toolbar = new CodexLayout.Rect(0, 0, 0, 0);
+    private CodexLayout.Rect footer = new CodexLayout.Rect(0, 0, 0, 0);
+    private int tabH = 24;
+    private CodexLayout.Rect pageL = new CodexLayout.Rect(0, 0, 0, 0);
+    private CodexLayout.Rect pageR = new CodexLayout.Rect(0, 0, 0, 0);
+    private CodexLayout.Rect body = new CodexLayout.Rect(0, 0, 0, 0);
 
     private View view = View.LIST;
     private CodexCategory category = CodexCategory.INTRO;
@@ -121,29 +108,30 @@ public class CodexScreen extends Screen {
 
     @Override
     protected void init() {
-        // Aussi grand que l'écran le permet, dans des bornes qui gardent le texte lisible.
-        int w = Math.min(440, width - 12);
-        int h = Math.min(260, height - 12);
-        frame = new Rect((width - w) / 2, (height - h) / 2, w, h);
-        header = new Rect(frame.x() + TAB_W, frame.y(), frame.w() - TAB_W, 24);
-        body = new Rect(header.x() + PAD, header.bottom() + 20,
-            header.w() - PAD * 2, frame.bottom() - header.bottom() - 20 - PAD);
+        // Toute la géométrie vient de CodexLayout : elle est calculée une fois, à part, et
+        // vérifiée par un test qui la fait tourner sur cinquante tailles d'écran.
+        CodexLayout l = CodexLayout.of(width, height, CodexCategory.values().length + 1);
+        frame = l.frame();
+        header = l.header();
+        toolbar = l.toolbar();
+        body = l.body();
+        pageL = l.pageLeft();
+        pageR = l.pageRight();
+        footer = l.footer();
+        tabH = l.tabHeight();
 
-        int half = (body.w() - GUTTER) / 2;
-        pageL = new Rect(body.x(), body.y(), half, body.h());
-        pageR = new Rect(body.x() + half + GUTTER, body.y(), half, body.h());
-
-        search = new EditBox(font, header.x() + PAD, header.bottom() + 2,
-            header.w() - PAD * 2 - 60, 14, Component.translatable("gui.veskorius.codex.search"));
+        int searchW = Math.clamp(toolbar.w() / 3, 70, 130);
+        search = new EditBox(font, toolbar.x(), toolbar.y(), searchW, 14,
+            Component.translatable("gui.veskorius.codex.search"));
         search.setHint(Component.translatable("gui.veskorius.codex.search"));
-        search.setResponder(s -> {
+        search.setResponder(str -> {
             listScroll = 0;
             entry = null;
-            if (!s.isEmpty()) {
+            if (!str.isEmpty()) {
                 view = View.LIST;
             }
         });
-        addRenderableWidget(search);
+        addWidget(search);
         reflow();
     }
 
@@ -186,6 +174,12 @@ public class CodexScreen extends Screen {
 
     // --- Rendu ----------------------------------------------------------------
 
+    /**
+     * <b>On ne délègue pas le fond au socle.</b> {@code Screen.render} commence par
+     * repeindre son propre fond assombri : appelé après notre dessin, il délavait le
+     * titre, les onglets et le cadre — tout ce qui avait été tracé avant lui. On dessine
+     * donc tout nous-mêmes, dans l'ordre, et le champ de recherche en dernier.
+     */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         graphics.fill(0, 0, width, height, COLOR_SHADE);
@@ -205,7 +199,9 @@ public class CodexScreen extends Screen {
             header.y() + 8, COLOR_DIM, false);
 
         renderTabs(graphics, mouseX, mouseY);
-        super.render(graphics, mouseX, mouseY, partialTick);
+        if (search != null) {
+            search.render(graphics, mouseX, mouseY, partialTick);
+        }
 
         // Le dos, entre les deux pages. Dessiné avant le contenu : il appartient au livre.
         if (view != View.TREE) {
@@ -224,7 +220,7 @@ public class CodexScreen extends Screen {
     private void renderTabs(GuiGraphics graphics, int mouseX, int mouseY) {
         CodexCategory[] cats = CodexCategory.values();
         for (int i = 0; i <= cats.length; i++) {
-            Rect tab = tabRect(i);
+            CodexLayout.Rect tab = tabRect(i);
             boolean isTree = i == cats.length;
             boolean active = isTree ? view == View.TREE
                 : (view != View.TREE && category == cats[i]);
@@ -237,9 +233,11 @@ public class CodexScreen extends Screen {
                     COLOR_HOVER);
             }
             if (isTree) {
-                graphics.drawString(font, "◆", tab.x() + 9, tab.y() + 8, COLOR_ACCENT, false);
+                graphics.drawString(font, "◆", tab.x() + 9, tab.y() + (tab.h() - 8) / 2,
+                    COLOR_ACCENT, false);
             } else {
-                graphics.renderFakeItem(cats[i].icon(), tab.x() + 5, tab.y() + 4);
+                graphics.renderFakeItem(cats[i].icon(), tab.x() + 5,
+                    tab.y() + (tab.h() - 16) / 2);
             }
             if (tab.has(mouseX, mouseY)) {
                 graphics.renderTooltip(font, isTree
@@ -249,8 +247,14 @@ public class CodexScreen extends Screen {
         }
     }
 
-    private Rect tabRect(int index) {
-        return new Rect(frame.x(), frame.y() + 6 + index * (TAB_H + 2), TAB_W, TAB_H);
+    private CodexLayout.Rect tabRect(int index) {
+        return new CodexLayout.Rect(frame.x(), frame.y() + 6 + index * (tabH + 2), TAB_W, tabH);
+    }
+
+    /** Le lien de retour, à gauche de la barre. Une seule définition pour le rendu ET le clic. */
+    private CodexLayout.Rect backRect() {
+        return new CodexLayout.Rect(toolbar.x(), toolbar.y(), font.width(
+            Component.translatable("gui.veskorius.codex.back")) + 4, 14);
     }
 
     private void renderList(GuiGraphics graphics, int mouseX, int mouseY) {
@@ -259,8 +263,8 @@ public class CodexScreen extends Screen {
         Component heading = searching
             ? Component.translatable("gui.veskorius.codex.results", entries.size())
             : Component.translatable(category.titleKey());
-        graphics.drawString(font, heading, header.right() - PAD - font.width(heading),
-            header.bottom() + 6, COLOR_TITLE, false);
+        graphics.drawString(font, heading, toolbar.right() - font.width(heading),
+            toolbar.y() + 3, COLOR_TITLE, false);
 
         if (entries.isEmpty()) {
             graphics.drawString(font, Component.translatable("gui.veskorius.codex.no_results"),
@@ -277,7 +281,7 @@ public class CodexScreen extends Screen {
             if (index >= entries.size()) {
                 break;
             }
-            Rect row = listRow(i, rows);
+            CodexLayout.Rect row = listRow(i, rows);
             CodexEntry e = entries.get(index);
             boolean unlocked = ClientCodexData.isUnlocked(e);
             if (row.has(mouseX, mouseY)) {
@@ -299,9 +303,9 @@ public class CodexScreen extends Screen {
     }
 
     /** Ligne {@code i} de la liste : colonne gauche puis colonne droite. */
-    private Rect listRow(int i, int rows) {
-        Rect column = i < rows ? pageL : pageR;
-        return new Rect(column.x(), body.y() + (i % rows) * ROW_H, column.w(), ROW_H - 2);
+    private CodexLayout.Rect listRow(int i, int rows) {
+        CodexLayout.Rect column = i < rows ? pageL : pageR;
+        return new CodexLayout.Rect(column.x(), body.y() + (i % rows) * ROW_H, column.w(), ROW_H - 2);
     }
 
     private void renderScrollbar(GuiGraphics graphics, int total, int shown, int scroll) {
@@ -321,16 +325,21 @@ public class CodexScreen extends Screen {
 
         // EN-TÊTE DE L'ENTRÉE, sur sa propre bande. C'est ici que trois éléments se
         // marchaient dessus ; ils ont maintenant chacun leur place réservée.
-        Rect back = new Rect(header.x() + PAD, header.bottom() + 4, 44, 12);
+        CodexLayout.Rect back = backRect();
         graphics.drawString(font, Component.translatable("gui.veskorius.codex.back"),
-            back.x(), back.y() + 2, back.has(mouseX, mouseY) ? COLOR_ACCENT : COLOR_DIM, false);
+            back.x(), back.y() + 3, back.has(mouseX, mouseY) ? COLOR_ACCENT : COLOR_DIM, false);
 
-        graphics.renderFakeItem(e.icon(), body.x(), body.y() - 19);
-        graphics.drawString(font,
-            unlocked ? Component.translatable(e.titleKey())
-                : Component.translatable("gui.veskorius.codex.sealed"),
-            body.x() + 21, body.y() - 15, unlocked ? COLOR_TITLE : COLOR_LOCKED, false);
-        graphics.hLine(body.x(), body.right() - 1, body.y() - 3, COLOR_FRAME);
+        // Le titre de l'entrée est ALIGNÉ À DROITE de la barre, le retour à gauche : c'est
+        // ce qui garantit qu'ils ne se croisent jamais, quelle que soit la longueur.
+        Component name = unlocked ? Component.translatable(e.titleKey())
+            : Component.translatable("gui.veskorius.codex.sealed");
+        int avail = toolbar.w() - back.w() - 26;
+        String shown = font.plainSubstrByWidth(name.getString(), avail);
+        int nameX = toolbar.right() - font.width(shown);
+        graphics.renderFakeItem(e.icon(), nameX - 20, toolbar.y() - 1);
+        graphics.drawString(font, shown, nameX, toolbar.y() + 3,
+            unlocked ? COLOR_TITLE : COLOR_LOCKED, false);
+        graphics.hLine(body.x(), body.right() - 1, body.y() - 5, COLOR_FRAME);
 
         int first = page * linesPerSpread();
         int color = unlocked ? COLOR_TEXT : COLOR_LOCKED;
@@ -358,7 +367,7 @@ public class CodexScreen extends Screen {
 
     /** Pied de page : tourne-page à gauche, « et ensuite ? » à droite. Jamais superposés. */
     private void renderFooter(GuiGraphics graphics, CodexEntry e, int mouseX, int mouseY) {
-        int y = frame.bottom() - 12;
+        int y = footer.y() + 4;
         if (pageCount() > 1) {
             String label = (page + 1) + " / " + pageCount();
             graphics.drawString(font, label, pageL.x(), y, COLOR_DIM, false);
@@ -389,8 +398,8 @@ public class CodexScreen extends Screen {
      */
     private void renderTree(GuiGraphics graphics, int mouseX, int mouseY) {
         Component heading = Component.translatable("gui.veskorius.codex.tree");
-        graphics.drawString(font, heading, header.right() - PAD - font.width(heading),
-            header.bottom() + 6, COLOR_TITLE, false);
+        graphics.drawString(font, heading, toolbar.right() - font.width(heading),
+            toolbar.y() + 3, COLOR_TITLE, false);
 
         graphics.enableScissor(body.x(), body.y(), body.right(), body.bottom());
         @Nullable CodexEntry hovered = null;
@@ -620,7 +629,7 @@ public class CodexScreen extends Screen {
     }
 
     private boolean clickEntry(double mouseX, double mouseY) {
-        int y = frame.bottom() - 12;
+        int y = footer.y() + 4;
         if (pageCount() > 1) {
             if (page > 0 && mouseX >= pageL.x() + 28 && mouseX < pageL.x() + 40
                 && mouseY >= y - 2 && mouseY < y + 11) {
@@ -643,7 +652,7 @@ public class CodexScreen extends Screen {
                 return true;
             }
         }
-        if (new Rect(header.x() + PAD, header.bottom() + 4, 60, 14).has(mouseX, mouseY)) {
+        if (backRect().has(mouseX, mouseY)) {
             back();
             return true;
         }
