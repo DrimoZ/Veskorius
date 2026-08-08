@@ -1894,6 +1894,41 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    /**
+     * <b>Seule la pioche en Alliage Veskorien mine la Pierre à Conduits.</b>
+     *
+     * <p>C'est le seul rôle que le dossier réserve à cette pioche, et il ne tient qu'à des
+     * tags : la pierre est déclarée incorrecte pour les six paliers vanilla et omise du tag
+     * veskorien. Une seule ligne de datagen mal placée — la pierre ajoutée au tag veskorien,
+     * ou oubliée dans celui de la netherite — et la règle disparaît <b>en silence</b>. Rien
+     * ne planterait : la pierre deviendrait simplement minable au diamant, et le seul geste
+     * qui distingue le palier 3 du reste s'évaporerait.
+     *
+     * <p>On teste les deux sens, parce qu'un seul ne prouve rien : que la netherite échoue,
+     * et que l'alliage réussisse.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void onlyTheAlloyPickaxeMinesConduitStone(GameTestHelper helper) {
+        net.minecraft.world.level.block.state.BlockState stone =
+            ModBlocks.ANCIENT_CONDUIT_STONE.get().defaultBlockState();
+
+        helper.assertFalse(
+            new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.NETHERITE_PICKAXE)
+                .isCorrectToolForDrops(stone),
+            "La pioche en netherite ne doit RIEN tirer de la Pierre à Conduits — sinon le "
+                + "seul rôle réservé à la pioche d'alliage n'existe plus");
+        helper.assertFalse(
+            new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND_PICKAXE)
+                .isCorrectToolForDrops(stone),
+            "Ni la pioche en diamant");
+        helper.assertTrue(
+            new net.minecraft.world.item.ItemStack(ModItems.VESKORIAN_ALLOY_PICKAXE.get())
+                .isCorrectToolForDrops(stone),
+            "…et la pioche en Alliage Veskorien doit y arriver, sans quoi le bloc est "
+                + "inextractible par qui que ce soit");
+        helper.succeed();
+    }
+
     // --- Utilitaires ---------------------------------------------------------
 
     private static IItemHandler assemblerInventory(GameTestHelper helper) {

@@ -155,6 +155,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockWithItem(ModBlocks.RESONANCE_GLASS.get(),
             models().cubeAll("resonance_glass", modLoc("block/resonance_glass"))
                 .renderType("translucent"));
+        simpleBlockWithItem(ModBlocks.ANCIENT_CONDUIT_STONE.get(),
+            cubeAll(ModBlocks.ANCIENT_CONDUIT_STONE.get()));
         simpleBlockWithItem(ModBlocks.LUMINOUS_RESONANCE_GLASS.get(),
             models().cubeAll("luminous_resonance_glass",
                 modLoc("block/luminous_resonance_glass")).renderType("translucent"));

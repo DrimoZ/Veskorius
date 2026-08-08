@@ -72,6 +72,34 @@ public final class ModTags {
          * donc une progression bloquée. Avec une liste blanche, l'oubli est inoffensif :
          * un bloc absent est simplement épargné.
          */
+        /**
+         * Ce que la pioche en Alliage Veskorien ne peut PAS miner.
+         *
+         * <p>Un palier d'outil se définit par ce qu'il rate, jamais par ce qu'il atteint.
+         * L'alliage empruntait jusqu'ici le tag de la netherite, ce qui le rendait
+         * exactement équivalent à elle — et donc incapable de porter la seule chose que le
+         * dossier lui réserve : miner la {@code ancient_conduit_stone}, que rien d'autre ne
+         * peut extraire. Avec son propre tag, l'alliage cesse d'être une netherite
+         * cosmétique et devient un palier.
+         */
+        public static final TagKey<net.minecraft.world.level.block.Block> INCORRECT_FOR_VESKORIAN_TOOL =
+            TagKey.create(Registries.BLOCK,
+                ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "incorrect_for_veskorian_tool"));
+
+        /**
+         * Les blocs qui exigent la pioche en Alliage Veskorien, exactement comme
+         * {@code needs_diamond_tool} exige le diamant.
+         *
+         * <p>Le mécanisme est celui de vanilla, pas une invention : ce tag est déclaré
+         * INCORRECT pour les six paliers d'outils vanilla, et absent de
+         * {@link #INCORRECT_FOR_VESKORIAN_TOOL}. Ni le diamant ni la netherite n'en tirent
+         * donc rien, et l'alliage seul y arrive — sans une ligne de code, uniquement par
+         * la donnée.
+         */
+        public static final TagKey<net.minecraft.world.level.block.Block> NEEDS_VESKORIAN_TOOL =
+            TagKey.create(Registries.BLOCK,
+                ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "needs_veskorian_tool"));
+
         public static final TagKey<net.minecraft.world.level.block.Block> STRUCTURE_ROTTABLE =
             TagKey.create(Registries.BLOCK,
                 ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "structure_rottable"));

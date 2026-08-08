@@ -62,7 +62,7 @@ est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments 
 | `luminous_extract` | 04 | ✅ codé (2 floraisons au Crystal Crusher ; teint le verre en luminosité 15) |
 | `resonance_glass` | 04 | ✅ codé (4 sable + 1 Cristal Stable → sable de Résonance, fondu au four) |
 | `corrupted_veskorian_alloy_ingot` | 04, 08, 09 | ✅ codé — prime de 15 % à l'extraction (le drop du Gardien reste à faire) |
-| `ancient_conduit_stone` | 04 | À coder (Phase 2, trouvé tel quel) |
+| `ancient_conduit_stone` | 04 | ✅ codé (bouts des conduits dans les 4 donjons ; minable à la SEULE pioche d'alliage) |
 
 ## Outils, armure, augment (items sans bloc associé)
 

@@ -91,6 +91,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         // Cristal Stable.
         dropSelf(ModBlocks.RESONANCE_GLASS.get());
         dropSelf(ModBlocks.LUMINOUS_RESONANCE_GLASS.get());
+        dropSelf(ModBlocks.ANCIENT_CONDUIT_STONE.get());
         dropSelf(ModBlocks.DISSONANCE_BLOOM.get());
         // Une dalle double rend DEUX dalles : sans cette table dédiée, la moitié du
         // bloc disparaît au minage.

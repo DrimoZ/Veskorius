@@ -845,6 +845,20 @@ public class ModStructurePieceProvider implements DataProvider {
         Masonry.chandelier(b, 19, SIG_LOW + 9, 32, 3);
         Masonry.arcade(b, 27, SIG_LOW, 30, 34, 1);
 
+        // DEUX CONDUITS EN HAUTEUR, et le Sigma n'en avait aucun.
+        //
+        // C'est un manque qu'on ne voit qu'en cherchant autre chose : tous les autres
+        // donjons portent le fil lumineux qui dit « l'énergie passe encore par ici », et le
+        // laboratoire — le donjon du palier 3, celui qui tourne encore — en était le seul
+        // dépourvu. Il en avait pourtant le plus besoin : c'est la salle où quelque chose
+        // fonctionne, et rien ne le montrait avant d'ouvrir la console.
+        //
+        // Posés à SIG_LOW + 7, sous la voûte : hors d'atteinte, donc sans effet sur la
+        // traversabilité. Leurs extrémités sont de la Pierre à Conduits — un joueur du
+        // palier 2 les verra sans pouvoir les prendre.
+        Masonry.conduitRun(b, 13, SIG_LOW + 7, 30, 13, 34);
+        Masonry.conduitRun(b, 25, SIG_LOW + 7, 30, 25, 34);
+
         // LE SAS, dans la paroi sud du puits. Indestructible, et hors de portée du relais
         // A : seul le relais B du pont l'atteint, ce qui force la chaîne.
         b.box(18, SIG_LOW, 28, 20, SIG_LOW + 3, 28, BRICK);

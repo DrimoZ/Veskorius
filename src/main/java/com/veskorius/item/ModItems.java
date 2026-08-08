@@ -367,6 +367,10 @@ public class ModItems {
     public static final DeferredItem<BlockItem> RESONANCE_SAND_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_SAND);
 
+    /** Pierre à Conduits Ancienne : trouvée en ruine, minable à la seule pioche d'alliage. */
+    public static final DeferredItem<BlockItem> ANCIENT_CONDUIT_STONE_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.ANCIENT_CONDUIT_STONE);
+
     /** Verre Lumineux : le Verre de Résonance teint, luminosité 15. */
     public static final DeferredItem<BlockItem> LUMINOUS_RESONANCE_GLASS_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.LUMINOUS_RESONANCE_GLASS);

@@ -706,9 +706,28 @@ public final class Masonry {
     public static void conduitRun(TemplateBuilder b, int x0, int y, int z0, int x1, int z1) {
         boolean alongZ = z1 != z0;
         BlockState state = conduit(alongZ ? Direction.Axis.Z : Direction.Axis.X);
-        for (int x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) {
-            for (int z = Math.min(z0, z1); z <= Math.max(z0, z1); z++) {
-                b.set(x, y, z, state);
+        int minX = Math.min(x0, x1);
+        int maxX = Math.max(x0, x1);
+        int minZ = Math.min(z0, z1);
+        int maxZ = Math.max(z0, z1);
+        // LES DEUX BOUTS SONT DE LA PIERRE À CONDUITS, pas du conduit.
+        //
+        // C'est là que ce bloc devait vivre : le conduit ne part pas de nulle part, il SORT
+        // d'une pierre traversée. Un joueur qui suit une ligne lumineuse jusqu'à son terme
+        // tombe sur la seule matière du mod que sa pioche ne peut pas prendre — et il s'en
+        // souviendra en revenant au palier 3 avec l'alliage.
+        //
+        // Le remplacement est sans conséquence sur les tests de traversabilité : le conduit
+        // est déjà un cube plein, et on échange un cube plein contre un autre. La garde de
+        // longueur évite qu'un run court ne devienne intégralement de la pierre et perde sa
+        // fonction première, qui est d'indiquer où l'énergie passe encore.
+        boolean longEnough = (maxX - minX) + (maxZ - minZ) >= 4;
+        BlockState anchor = ModBlocks.ANCIENT_CONDUIT_STONE.get().defaultBlockState();
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                boolean end = longEnough
+                    && ((x == minX && z == minZ) || (x == maxX && z == maxZ));
+                b.set(x, y, z, end ? anchor : state);
             }
         }
     }

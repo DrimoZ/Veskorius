@@ -55,7 +55,28 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             .add(ModBlocks.RESONANCE_VEINED_STONE.get())
             .add(ModBlocks.RAW_FLUX_DEPOSIT.get())
             .add(ModBlocks.ATTUNEMENT_CONSOLE.get())
+            .add(ModBlocks.ANCIENT_CONDUIT_STONE.get())
             .add(ARCHITECTURE);
+        // LA PIERRE À CONDUITS N'EST MINABLE QUE PAR L'ALLIAGE.
+        //
+        // Un palier d'outil se dit en négatif : on inscrit le tag comme INCORRECT pour les
+        // six paliers vanilla, et on l'omet du tag veskorien. Ni le diamant ni la netherite
+        // n'en tirent alors quoi que ce soit, et l'alliage seul y arrive — sans une ligne
+        // de code, uniquement par la donnée. C'est le mécanisme exact de needs_diamond_tool.
+        tag(ModTags.Blocks.NEEDS_VESKORIAN_TOOL)
+            .add(ModBlocks.ANCIENT_CONDUIT_STONE.get());
+        for (net.minecraft.tags.TagKey<net.minecraft.world.level.block.Block> incorrect :
+                java.util.List.of(BlockTags.INCORRECT_FOR_WOODEN_TOOL,
+                    BlockTags.INCORRECT_FOR_STONE_TOOL, BlockTags.INCORRECT_FOR_IRON_TOOL,
+                    BlockTags.INCORRECT_FOR_GOLD_TOOL, BlockTags.INCORRECT_FOR_DIAMOND_TOOL,
+                    BlockTags.INCORRECT_FOR_NETHERITE_TOOL)) {
+            tag(incorrect).addTag(ModTags.Blocks.NEEDS_VESKORIAN_TOOL);
+        }
+        // Le tag veskorien existe et reste VIDE : l'alliage ne rate rien. Il doit tout de
+        // même être généré, sinon le palier référence un tag absent et chaque bloc devient
+        // incassable à la pioche d'alliage.
+        tag(ModTags.Blocks.INCORRECT_FOR_VESKORIAN_TOOL);
+
         tag(BlockTags.NEEDS_STONE_TOOL)
             .add(ModBlocks.FRACTURED_CHASSIS.get())
             .add(ModBlocks.ATTUNED_CHASSIS.get())

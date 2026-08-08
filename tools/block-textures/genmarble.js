@@ -263,6 +263,21 @@ tex.ancient_emitter_front_on=front('t1',0x748,faces.field_emitter,true);
  for(let i=4;i<12;i++){c.set(i,3,G.lite);c.set(i,12,G.lite);c.set(3,i,G.lite);c.set(12,i,G.lite);}
  tex.luminous_resonance_glass=c;}
 
+// Pierre à Conduits Ancienne : de la pierre TRAVERSÉE. Des canaux gravés en creux, pas
+// des veines — la veine dit « il y a du cristal dedans », le canal dit « quelqu'un a fait
+// passer quelque chose ici ». C'est toute la différence entre le tell d'une poche et le
+// tell d'une ruine, et les deux blocs doivent être distinguables au premier regard.
+{const c=marble(ROCK,0x764);
+ // Deux canaux orthogonaux, en creux, qui se croisent hors centre : un motif centré
+ // lirait comme un ornement. Décentré, il lit comme de la plomberie.
+ for(let x=0;x<S;x++){c.set(x,6,ROCK.line);c.set(x,7,ROCK.dark);c.set(x,8,ROCK.line);}
+ for(let y=0;y<S;y++){c.set(11,y,ROCK.line);c.set(12,y,ROCK.dark);c.set(13,y,ROCK.line);}
+ // Ce qui reste du flux : quelques points éteints, pas une ligne continue. Les conduits
+ // sont MORTS — s'ils brillaient, le joueur croirait à un bloc actif.
+ for(const[x,y]of[[2,7],[6,7],[12,3],[12,11],[12,7]])c.set(x,y,V.deep);
+ c.set(12,7,V.mid);
+ edges(c,ROCK);tex.ancient_conduit_stone=c;}
+
 const out=process.argv[2];fs.mkdirSync(out,{recursive:true});
 const es=Object.entries(tex);
 for(const[n,c]of es)fs.writeFileSync(path.join(out,n+'.png'),encodePNG(S,S,c.px));

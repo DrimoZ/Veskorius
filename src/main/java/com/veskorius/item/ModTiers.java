@@ -37,7 +37,11 @@ public final class ModTiers {
      * l'épée — voir la note de classe.
      */
     public static final Tier VESKORIAN_ALLOY = new SimpleTier(
-        BlockTags.INCORRECT_FOR_NETHERITE_TOOL,
+        // SON PROPRE TAG, et pas celui de la netherite. Un palier d'outil se définit par
+        // ce qu'il rate : tant qu'il partageait le tag de la netherite, l'alliage était
+        // son égal exact et ne pouvait rien miner qu'elle ne mine. Le dossier lui réserve
+        // pourtant une cible propre — l'ancient_conduit_stone, que rien d'autre n'extrait.
+        com.veskorius.tag.ModTags.Blocks.INCORRECT_FOR_VESKORIAN_TOOL,
         USES,
         8.0f,
         3.0f,

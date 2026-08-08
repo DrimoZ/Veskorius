@@ -506,6 +506,30 @@ public class ModBlocks {
                 .sound(SoundType.SAND));
 
     /**
+     * <b>Pierre à Conduits Ancienne</b> — le « tell » des ruines Architectes, ce que la
+     * Pierre Veinée est aux poches de cristal (04-Materials.md).
+     *
+     * <p><b>Elle ne se fabrique pas, et une seule chose la mine.</b> Ni le diamant ni la
+     * netherite n'en tirent quoi que ce soit : il faut la pioche en Alliage Veskorien,
+     * c'est-à-dire avoir traversé le T3. Le dossier lui réservait ce rôle depuis que la
+     * pioche existe, et la pioche l'attendait sans avoir de cible.
+     *
+     * <p><b>Ce que ça produit, c'est un souvenir de lieu.</b> Un joueur croise ces murs au
+     * palier 2, ne peut rien en faire, et repart. Il y revient bien plus tard avec l'outil
+     * qu'il fallait. Une ruine qui garde encore quelque chose à donner quand on la
+     * retrouve vaut mieux qu'une ruine vidée d'un coup — et ça ne coûte pas une ligne de
+     * progression, puisque rien n'en dépend.
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> ANCIENT_CONDUIT_STONE =
+        BLOCKS.registerSimpleBlock("ancient_conduit_stone",
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.DEEPSLATE)
+                .strength(4.0f, 12.0f)
+                .sound(SoundType.DEEPSLATE)
+                .requiresCorrectToolForDrops()
+                .lightLevel(state -> 3));
+
+    /**
      * <b>Verre Lumineux</b> — le Verre de Résonance teint à l'Extrait Lumineux.
      *
      * <p>Luminosité <b>15</b> contre 8 : c'est un bloc de lumière à part entière, aussi

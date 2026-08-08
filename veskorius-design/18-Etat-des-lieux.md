@@ -4,7 +4,7 @@ Généré à partir du code, pas du dossier de design. Une case cochée ici veut
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
 NeoForge 1.21.1 · Java 21 · **219 fichiers Java, ~30 700 lignes** · **49 blocs, 71 items**
-· **159 GameTest en deux processus** (`runFastGameTests` 138 en ~30 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
+· **160 GameTest en deux processus** (`runFastGameTests` 139 en ~27 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
 
@@ -112,7 +112,7 @@ d'alliage et coûte donc le bonus de panoplie).
 
 ## 8. Interface
 
-- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **72 entrées**, 9 catégories,
+- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **73 entrées**, 9 catégories,
   couvrant les cinq paliers, les entités et l'équipement. Affiche les **recettes**
   (établi et machine, lues du RecipeManager chargé), pagine le texte, cherche dans tout
   le livre, s'adapte à la taille de la fenêtre.
@@ -136,8 +136,8 @@ SERVER, surchargeables par modpack.
 
 ## Ce qui reste
 
-**Matériaux restants** — `ancient_conduit_stone` et `meteoric_resonance_shard`, les deux
-derniers du dossier. La branche décorative est complète : agriculture → extrait → verre teint. Aucun n'est sur le chemin critique, et c'est
+**Dernier matériau du dossier** — `meteoric_resonance_shard` (événement météo « Orage de
+Résonance »), le seul qui demande un système entier plutôt qu'un bloc. La branche décorative est complète : agriculture → extrait → verre teint. Aucun n'est sur le chemin critique, et c'est
 désormais le seul poste ouvert du dossier.
 
 Le Cœur de Faille n'est PAS de cette liste : c'est la `RiftFeature`, et elle fait déjà ce
