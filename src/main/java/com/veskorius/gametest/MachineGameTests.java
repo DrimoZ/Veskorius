@@ -1880,6 +1880,51 @@ public class MachineGameTests {
         return machine.getData().get(AbstractMachineBlockEntity.DATA_PROGRESS);
     }
 
+    /**
+     * <b>Chaque machine du mod a une recette réellement chargée.</b>
+     *
+     * <p>Ce test existe à cause d'un bug trouvé <i>en jeu</i>, jamais par la génération :
+     * la recette du Deep Crystal Driller comptait dix ingrédients (châssis + 6 Component +
+     * 2 lingots + blueprint) alors qu'une recette sans forme n'en tient que <b>neuf</b> —
+     * la taille de la grille. Le JSON se générait sans une plainte, {@code runData}
+     * réussissait, et c'est le chargement du monde qui écartait la recette avec un simple
+     * message dans le log. Résultat : une machine complète, posable, fonctionnelle, testée,
+     * <b>et fabricable par personne</b>.
+     *
+     * <p>C'est la pire forme d'erreur du projet — celle où tout est vert et où le joueur
+     * bute. Le contrôle se fait donc ici, sur le {@code RecipeManager} du serveur, c'est-à-dire
+     * sur ce qui a <b>survécu au chargement</b> et non sur ce qu'on a écrit sur le disque.
+     * Un ingrédient de trop, un tag vide, un JSON refusé : le test tombe.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
+    public static void everyMachineIsActuallyCraftable(GameTestHelper helper) {
+        var recipes = helper.getLevel().getRecipeManager().getRecipes();
+        for (net.minecraft.world.level.block.Block machine : CRAFTABLE_MACHINES) {
+            boolean found = recipes.stream().anyMatch(holder ->
+                holder.value().getResultItem(helper.getLevel().registryAccess())
+                    .is(machine.asItem()));
+            helper.assertTrue(found,
+                "Aucune recette chargée ne produit " + machine.getName().getString()
+                    + " — la machine est injouable. Cause la plus probable : plus de 9 "
+                    + "ingrédients dans une recette sans forme, écartée au chargement.");
+        }
+        helper.succeed();
+    }
+
+    /** Toutes les machines fabricables. Une machine ajoutée sans y figurer n'est pas gardée. */
+    private static final net.minecraft.world.level.block.Block[] CRAFTABLE_MACHINES = {
+        ModBlocks.RESONANCE_STABILIZER.get(), ModBlocks.COMPONENT_ASSEMBLER.get(),
+        ModBlocks.RESONANCE_WHETSTONE.get(), ModBlocks.CRYSTAL_CRUSHER.get(),
+        ModBlocks.FLUX_PURIFIER.get(), ModBlocks.FIELD_EMITTER.get(),
+        ModBlocks.TUNABLE_FIELD_EMITTER.get(), ModBlocks.CRYSTAL_ROOST.get(),
+        ModBlocks.DAMPING_ARRAY.get(), ModBlocks.VESKORIAN_ALLOY_FORGE.get(),
+        ModBlocks.RESONANCE_RELAY.get(), ModBlocks.FLUX_COMPRESSOR.get(),
+        ModBlocks.STRUCTURAL_SYNTHESIZER.get(), ModBlocks.DEEP_CRYSTAL_DRILLER.get(),
+        ModBlocks.SLAG_VENT.get(),
+        ModBlocks.FRACTURED_CHASSIS.get(), ModBlocks.ATTUNED_CHASSIS.get(),
+        ModBlocks.VESKORIAN_CHASSIS.get(),
+    };
+
     // =====================================================================
     // Flux Compressor (#23), Structural Synthesizer (#11),
     // Slag Vent (#13), Deep Crystal Driller (#12)

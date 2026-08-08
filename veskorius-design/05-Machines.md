@@ -107,7 +107,7 @@ passer à « châssis + distinctif » à leur codage.
 | 9 | Resonance Relay | T3 | craft: 4 Refined Crystal + 2 Veskorian Conductive Alloy Ingot + 1 Diamond | portée 20, chaînable | — | 1 Osc/tick (champ) |
 | 10 | Veskorian Alloy Forge | T3 | 2 Refined Crystal + 2 **Iron** Ingot **(ou 2 Gold Ingot, voir branche)** | 1 Alloy Ingot **(ou Conductive Alloy Ingot)** + 1 Flux Slag | 20s | 4 Osc/tick |
 | 11 | Structural Synthesizer | T3 | 4 Alloy Ingot + 8 Stone | 4 Veskorian Alloy Block + 1 Synthesis Residue | 60s | via champ (Osc/tick à fixer) — *révisé `16` §0 : plus « via Relay uniquement »* |
-| 12 | Deep Crystal Driller | T3 | craft: 6 Component + 2 Alloy Ingot | mine automatiquement une veine détectée (Y < -40) | continu | 6 Osc/tick |
+| 12 | Deep Crystal Driller | T3 | craft: **4** Component + 2 Alloy Ingot — *révisé* : 6 + 2 faisait DIX ingrédients avec le châssis et le blueprint, or une recette sans forme n'en tient que neuf ; le chiffre datait d'avant les châssis, qui absorbent le boîtier | mine automatiquement une veine détectée (Y < -40) | continu | 6 Osc/tick |
 | 13 | Slag Vent | T3 | craft (passif) | vente 1 Flux Slag / 10s par Forge dans un rayon de 8 blocs | continu | 1 Osc/tick |
 | 14 | Harmonic Amplifier | T4 | craft: Harmonic Lattice + 2 Refined Crystal | double la portée reçue (dérive, voir Calibration) | — | 2 Osc/tick prélevé |
 | 15 | Deep Synthesis Chamber | T4 | 2 Refined Crystal (catalyseur déjà installé au craft) | Hyper Refined Crystal | 90s (45s en surchauffe) | 8 Osc/tick (16 en surchauffe) |

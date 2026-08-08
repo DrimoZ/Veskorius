@@ -179,10 +179,26 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.SMOOTH_STONE)
                 .requires(blueprint(3)));
 
-        // Deep Crystal Driller (#12) : 6 Component + 2 lingots d'alliage (05-Machines.md).
+        // Deep Crystal Driller (#12). Le dossier annonce 6 Component + 2 lingots ; c'est
+        // 4 + 2 ici, et la raison n'est pas un arbitrage d'équilibrage.
+        //
+        // UNE RECETTE SANS FORME NE TIENT QUE NEUF INGRÉDIENTS — c'est la taille de la
+        // grille. Avec le châssis et le blueprint, 6 + 2 en faisait DIX : le JSON se
+        // générait sans broncher, et c'est le chargement du monde qui rejetait la recette
+        // (« Too many ingredients »). La machine existait, se posait, fonctionnait — et
+        // n'était fabricable par personne. Trouvé en jeu, pas par la génération.
+        //
+        // Le chiffre du dossier a été écrit avant l'existence des châssis, qui absorbent
+        // justement les quantités de « boîtier » (voir la note en tête des machines T1) :
+        // le Veskorien contient déjà 2 fers et 2 cristaux raffinés. Retirer deux Component
+        // rend donc la recette conforme à cette grammaire, en plus de la rendre chargeable.
+        //
+        // Un GameTest vérifie désormais que CHAQUE machine du mod a une recette réellement
+        // chargée (voir MachineGameTests#everyMachineIsActuallyCraftable) : cette classe
+        // d'erreur ne peut plus atteindre une partie.
         machine(recipeOutput, ModBlocks.DEEP_CRYSTAL_DRILLER.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
             ModItems.VESKORIAN_ALLOY_INGOT.get(), b -> b
-                .requires(ModItems.RESONANCE_COMPONENT.get(), 6)
+                .requires(ModItems.RESONANCE_COMPONENT.get(), 4)
                 .requires(ModItems.VESKORIAN_ALLOY_INGOT.get(), 2)
                 .requires(blueprint(3)));
 
