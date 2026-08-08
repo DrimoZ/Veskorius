@@ -468,6 +468,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("codex.category.machines", "Machines");
         add("codex.category.world", "World & Structures");
         add("codex.category.fauna", "Fauna");
+        add("codex.category.gear", "Gear");
         add("codex.category.lore", "Lore");
         add("codex.category.progression", "Progression");
 
@@ -551,6 +552,18 @@ public class ModLanguageProvider extends LanguageProvider {
         add("codex.veskorius.fauna.strider.title", "Crystal Strider");
         add("codex.veskorius.fauna.strider.text",
             "A harmless creature that grazes near crystal pockets. It never attacks, and it should not be killed for anything.\n\nRight-click to milk it: one Raw Crystal, with a five-minute cooldown. Feed a Resonance Spore to two adults to breed them — spores grow on Resonance Veined Stone in low light.\n\nA Crystal Roost will attract and keep them, which turns a chance encounter into a small standing supply.");
+        add("codex.veskorius.fauna.archiviste.title", "Archivist Custode");
+        add("codex.veskorius.fauna.archiviste.text",
+            "The elite that guards the Archive's deep room. 150 health, 12 damage, and it reacts from ten blocks away — well before you see it.\n\nIt marks the ground under your feet and detonates the mark one second later. That single attack decides the fight: you cannot trade blows standing still, and the reading room is full of shelving to trip over. Watch for the flame, step off it.\n\nFighting it is optional. Its room holds two more Hyper Refined Crystals, which is exactly what lets you build both the first Amplifier and the Synthesis Chamber instead of choosing between them.");
+        add("codex.veskorius.gear.tools.title", "Alloy Tools");
+        add("codex.veskorius.gear.tools.text",
+            "Sword and pickaxe forged from Veskorian Alloy. The pickaxe mines everything netherite does; the sword hits for diamond damage. 1873 uses — roughly one and a half times a diamond tool.\n\nThey repair with alloy ingots, and the Resonance Whetstone restores a quarter of their durability in eight seconds, consuming nothing but time and a field.\n\nThe alloy comes out of the Veskorian Alloy Forge, which also produces slag on every cycle. Plan a Slag Vent before you plan a tool set.");
+        add("codex.veskorius.gear.armor.title", "Alloy Armor");
+        add("codex.veskorius.gear.armor.text",
+            "Four pieces, diamond-level protection, 33 durability units per point — noticeably tougher than diamond, short of netherite.\n\nThe full set halves the phase damage a Rift Guardian deals. Not immunity: half. Three pieces give nothing, so the set is worth completing before you go down.\n\nRepairs with Veskorian Alloy ingots.");
+        add("codex.veskorius.gear.ward_plate.title", "Rift-Ward Plate");
+        add("codex.veskorius.gear.ward_plate.text",
+            "A chestplate built around Rift Essence, and the only thing in Veskorius that reduces phase damage to zero.\n\nPhase damage is what the Rift Guardian deals during its ECHO phase, and what a destabilised Rift Core radiates within eight blocks. Ordinary armor does not apply to it. Alloy armor halves it. This halves nothing — it removes it.\n\nIt replaces the alloy chestplate, so wearing it costs you the full-set bonus on the other three pieces. That trade is the point: total immunity to one damage type, or a general reduction across everything else.");
         add("codex.veskorius.fauna.custode.title", "Custode");
         add("codex.veskorius.fauna.custode.text",
             "A Veskorian guard, still at its post. It patrols a fixed point and only turns hostile within 6 blocks, or if you break a machine on its site — it guards places, not territory, and it can be walked around.\n\nKilling one drops 2 to 4 Custode Alloy Fragments, which substitute for iron ingots in every Veskorius recipe. Fighting is therefore a genuine alternative to mining, not a detour.");

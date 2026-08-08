@@ -20,6 +20,7 @@ public enum CodexCategory {
     MACHINES("machines", ModBlocks.RESONANCE_STABILIZER),
     WORLD("world", ModBlocks.RESONANCE_VEINED_STONE),
     FAUNA("fauna", ModItems.RESONANCE_SPORE),
+    GEAR("gear", ModItems.VESKORIAN_ALLOY_PICKAXE),
     LORE("lore", ModItems.CODEX_FRAGMENT),
     PROGRESSION("progression", ModItems.RESONANCE_BLUEPRINT);
 

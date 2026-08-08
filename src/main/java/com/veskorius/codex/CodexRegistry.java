@@ -79,7 +79,11 @@ public final class CodexRegistry {
         TIERS.put("world/rift", 5);
         TIERS.put("fauna/strider", 1);
         TIERS.put("fauna/custode", 2);
+        TIERS.put("fauna/archiviste", 4);
         TIERS.put("fauna/guardian", 5);
+        TIERS.put("gear/tools", 3);
+        TIERS.put("gear/armor", 3);
+        TIERS.put("gear/ward_plate", 5);
         TIERS.put("progression/tier1", 1);
         TIERS.put("progression/tier2", 2);
         TIERS.put("progression/tier3", 3);
@@ -150,6 +154,22 @@ public final class CodexRegistry {
             CodexUnlock.item(ModItems.RESONANCE_SPORE));
         add("fauna/custode", CodexCategory.FAUNA, ModItems.CUSTODE_SPAWN_EGG,
             CodexUnlock.item(ModItems.CUSTODE_ALLOY_FRAGMENT));
+        add("fauna/archiviste", CodexCategory.FAUNA, ModItems.HYPER_REFINED_CRYSTAL,
+            CodexUnlock.item(ModItems.HYPER_REFINED_CRYSTAL));
+
+        // --- Equipement ---
+        //
+        // Le Codex decrivait les vingt-trois machines et pas une seule piece
+        // d'equipement. Ca se voyait surtout sur la Ward Plate : elle est la SEULE
+        // chose du mod qui annule les degats de phase du Gardien, et rien en jeu ne le
+        // disait. Un joueur pouvait donc l'avoir dans un coffre sans savoir qu'elle
+        // etait la reponse au combat qu'il perdait.
+        add("gear/tools", CodexCategory.GEAR, ModItems.VESKORIAN_ALLOY_PICKAXE,
+            CodexUnlock.item(ModItems.VESKORIAN_ALLOY_INGOT));
+        add("gear/armor", CodexCategory.GEAR, ModItems.VESKORIAN_ALLOY_CHESTPLATE,
+            CodexUnlock.item(ModItems.VESKORIAN_ALLOY_INGOT));
+        add("gear/ward_plate", CodexCategory.GEAR, ModItems.RIFT_WARD_PLATE,
+            CodexUnlock.item(ModItems.RIFT_ESSENCE));
 
         // --- Lore (réutilise le texte des fragments, débloqué à la lecture) ---
         add(CodexEntries.DAILY_LIFE_LAMPS, CodexCategory.LORE, ModItems.CODEX_FRAGMENT,

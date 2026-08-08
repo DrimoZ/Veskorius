@@ -369,6 +369,7 @@ add("advancements.veskorius.tier2_field.title", "Réseau court");
         add("codex.category.machines", "Machines");
         add("codex.category.world", "Monde & Structures");
         add("codex.category.fauna", "Faune");
+        add("codex.category.gear", "Équipement");
         add("codex.category.lore", "Lore");
         add("codex.category.progression", "Progression");
 
@@ -427,6 +428,18 @@ add("advancements.veskorius.tier2_field.title", "Réseau court");
 
         add("codex.veskorius.fauna.strider.title", "Fileur de Cristal");
         add("codex.veskorius.fauna.strider.text", "Faune souterraine neutre. Clic droit à main nue pour traire un Cristal Brut (avec un délai), et reproduction au Spore de Résonance.");
+        add("codex.veskorius.fauna.archiviste.title", "Custode Archiviste");
+        add("codex.veskorius.fauna.archiviste.text",
+            "L'élite qui garde la salle profonde de l'Archive. 150 PV, 12 de dégâts, et il réagit à dix blocs — bien avant que vous ne le voyiez.\n\nIl marque le sol sous vos pieds et fait détoner la marque une seconde plus tard. Cette seule attaque décide du combat : impossible d'échanger des coups immobile, et la salle de lecture est encombrée de rayonnages. Guettez la flamme, écartez-vous.\n\nL'affronter est facultatif. Sa salle contient deux Cristaux Hyper-Raffinés de plus, ce qui permet exactement de bâtir le premier Amplificateur ET la Chambre de Synthèse, au lieu de choisir entre les deux.");
+        add("codex.veskorius.gear.tools.title", "Outils d'alliage");
+        add("codex.veskorius.gear.tools.text",
+            "Épée et pioche forgées dans l'Alliage Veskorien. La pioche mine tout ce que mine la netherite ; l'épée frappe au niveau du diamant. 1873 utilisations — environ une fois et demie un outil en diamant.\n\nIls se réparent au lingot d'alliage, et la Meule de Résonance leur rend un quart de leur durabilité en huit secondes, sans rien consommer d'autre que du temps et un champ.\n\nL'alliage sort de la Forge Veskorienne, qui produit de la scorie à chaque cycle. Prévoyez un Évent à Scorie avant de prévoir une panoplie.");
+        add("codex.veskorius.gear.armor.title", "Armure d'alliage");
+        add("codex.veskorius.gear.armor.text",
+            "Quatre pièces, protection au niveau du diamant, 33 unités de durabilité par point — sensiblement plus solide que le diamant, en deçà de la netherite.\n\nLa panoplie complète divise par deux les dégâts de phase d'un Gardien de Faille. Pas d'immunité : la moitié. Trois pièces ne donnent rien, donc la panoplie vaut d'être complétée avant de descendre.\n\nSe répare au lingot d'Alliage Veskorien.");
+        add("codex.veskorius.gear.ward_plate.title", "Plastron de Garde");
+        add("codex.veskorius.gear.ward_plate.text",
+            "Un plastron bâti autour de l'Essence de Faille, et la seule chose de Veskorius qui ramène les dégâts de phase à zéro.\n\nLes dégâts de phase sont ceux du Gardien de Faille en phase ÉCHO, et ceux qu'un Cœur de Faille déstabilisé irradie dans un rayon de huit blocs. L'armure ordinaire ne s'y applique pas. L'armure d'alliage les divise par deux. Celui-ci ne divise rien — il les supprime.\n\nIl remplace le plastron d'alliage, donc le porter vous coûte le bonus de panoplie sur les trois autres pièces. C'est tout l'arbitrage : immunité totale à un type de dégâts, ou réduction générale sur tout le reste.");
         add("codex.veskorius.fauna.custode.title", "Custode");
         add("codex.veskorius.fauna.custode.text", "Un gardien réactif posté aux Avant-postes. Il ne frappe qu'à quelques blocs, ou si vous cassez une machine de son site. Lâche des fragments d'alliage — substitut du fer.");
 
