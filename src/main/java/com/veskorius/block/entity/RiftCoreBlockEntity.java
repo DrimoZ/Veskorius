@@ -60,6 +60,21 @@ public class RiftCoreBlockEntity extends BlockEntity {
 
     private boolean anchored;
 
+    /**
+     * Vrai une fois le Gardien vaincu. Trois conséquences, toutes portées par ce seul
+     * booléen : la Faille cesse définitivement de blesser (même Ancre coupée), l'extraction
+     * s'ouvre, et le Gardien ne réapparaît jamais.
+     *
+     * <p>Il vit ici et non sur le boss : une marque portée par l'entité disparaîtrait avec
+     * elle, et la Faille resterait fermée pour toujours après le seul combat qui devait
+     * l'ouvrir. Le dossier a explicitement rejeté un boss répétable (09-Entities.md) — ce
+     * champ est ce qui l'empêche.
+     */
+    private boolean cleared;
+
+    /** Vrai si le Gardien a déjà été appelé, vaincu ou non : on n'en invoque pas deux. */
+    private boolean guardianSummoned;
+
     public RiftCoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.RIFT_CORE.get(), pos, state);
     }
@@ -142,6 +157,13 @@ public class RiftCoreBlockEntity extends BlockEntity {
     }
 
     private void tickHarm(ServerLevel level, BlockPos pos) {
+        // Faille purgée : plus aucun dégât, Ancre ou pas. C'est la récompense du boss, et
+        // elle doit survivre au démontage de l'installation — sinon « définitivement
+        // stable » (09-Entities.md) ne veut rien dire.
+        if (cleared) {
+            exposure.clear();
+            return;
+        }
         if (anchored) {
             exposure.clear();
             tickCorrosion(level, pos);
@@ -178,9 +200,35 @@ public class RiftCoreBlockEntity extends BlockEntity {
 
     private int extractions;
 
-    /** Vrai s'il reste quelque chose à extraire de cette Faille. */
+    /**
+     * Vrai s'il reste quelque chose à extraire. <b>Exige la Faille purgée</b> : avant le
+     * Gardien, un Extracteur posé ne rend rien (09-Entities.md, « le Rift Core Extractor
+     * devient utilisable » APRÈS la victoire). Sans cette condition, le boss serait
+     * facultatif et la fin de partie se contournerait en l'ignorant.
+     */
     public boolean canExtract() {
-        return extractions < MAX_EXTRACTIONS;
+        return cleared && extractions < MAX_EXTRACTIONS;
+    }
+
+    public boolean isCleared() {
+        return cleared;
+    }
+
+    public void setCleared(boolean cleared) {
+        if (this.cleared != cleared) {
+            this.cleared = cleared;
+            setChanged();
+        }
+    }
+
+    /** Marque le Gardien comme appelé. Vrai si c'est la première fois. */
+    public boolean claimGuardianSummon() {
+        if (guardianSummoned) {
+            return false;
+        }
+        guardianSummoned = true;
+        setChanged();
+        return true;
     }
 
     public int getExtractionsLeft() {
@@ -237,6 +285,8 @@ public class RiftCoreBlockEntity extends BlockEntity {
         super.saveAdditional(tag, registries);
         tag.putBoolean("anchored", anchored);
         tag.putInt("extractions", extractions);
+        tag.putBoolean("cleared", cleared);
+        tag.putBoolean("guardianSummoned", guardianSummoned);
     }
 
     @Override
@@ -244,6 +294,8 @@ public class RiftCoreBlockEntity extends BlockEntity {
         super.loadAdditional(tag, registries);
         anchored = tag.getBoolean("anchored");
         extractions = tag.getInt("extractions");
+        cleared = tag.getBoolean("cleared");
+        guardianSummoned = tag.getBoolean("guardianSummoned");
     }
 
     @Override

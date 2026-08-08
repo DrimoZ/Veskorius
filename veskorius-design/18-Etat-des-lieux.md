@@ -4,7 +4,7 @@ Généré à partir du code, pas du dossier de design. Une case cochée ici veut
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
 NeoForge 1.21.1 · Java 21 · **181 fichiers Java, ~23 800 lignes** · **38 blocs, 55 items**
-· **148 GameTest**, dont un qui vérifie que chaque machine a une recette réellement chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans que rien d'autre ne le signale.
+· **151 GameTest**, dont un qui vérifie que chaque machine a une recette réellement chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans que rien d'autre ne le signale.
 
 ---
 
@@ -85,7 +85,7 @@ Neuf types de recette **data-driven** — un datapack change les valeurs sans re
 
 ## 6. Entités
 
-Fileur de Cristal (passif, nourri au spore) · Custode (gardien, alerte de groupe,
+Gardien de Faille (boss final, 3 phases) · Fileur de Cristal (passif, nourri au spore) · Custode (gardien, alerte de groupe,
 lâche du fragment d'alliage — substitut de fer).
 
 ## 7. Interface

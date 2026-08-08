@@ -65,11 +65,15 @@ public class ClientModEvents {
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(ModModelLayers.CRYSTAL_STRIDER, CrystalStriderModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.CUSTODE, CustodeModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.RIFT_GUARDIAN,
+            com.veskorius.client.entity.RiftGuardianModel::createBodyLayer);
     }
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.CRYSTAL_STRIDER.get(), CrystalStriderRenderer::new);
         event.registerEntityRenderer(ModEntities.CUSTODE.get(), CustodeRenderer::new);
+        event.registerEntityRenderer(ModEntities.RIFT_GUARDIAN.get(),
+            com.veskorius.client.entity.RiftGuardianRenderer::new);
     }
 }

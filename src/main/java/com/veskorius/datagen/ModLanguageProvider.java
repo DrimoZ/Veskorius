@@ -38,6 +38,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("message.veskorius.ward_on", "Ward active — corrosion held back");
         add("message.veskorius.ward_off", "Ward idle — no field");
         add("item.veskorius.rift_essence.hint", "Six per rift, and the rift is spent. Nothing makes more.");
+        add("message.veskorius.rift_not_cleared", "The rift still has a guardian. Nothing can be drawn from it.");
         add("message.veskorius.anchor_idle", "Anchor idle — no rift in reach, or no field");
         add("item.veskorius.deformed_stone.hint", "Stone twisted by a rift. The bubble is close — and it is not safe.");
         add("message.veskorius.core_formed", "Core online — field range %s");
@@ -189,6 +190,7 @@ public class ModLanguageProvider extends LanguageProvider {
         // Entités (09-Entities.md).
         add("entity.veskorius.crystal_strider", "Crystal Strider");
         add("entity.veskorius.custode", "Custode");
+        add("entity.veskorius.rift_guardian", "Rift Guardian");
         add("gui.veskorius.strider.milk_cooldown", "The strider needs %s more seconds");
 
         // Progression : plans, fragments, ration (tâche 10).

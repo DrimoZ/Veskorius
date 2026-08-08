@@ -2412,6 +2412,9 @@ public class MachineGameTests {
     public static void aRiftYieldsSixAndThenIsSpent(GameTestHelper helper) {
         helper.setBlock(RIFT, ModBlocks.RIFT_CORE.get());
         com.veskorius.block.entity.RiftCoreBlockEntity core = helper.getBlockEntity(RIFT);
+        // La Faille doit d abord etre PURGEE : depuis que le Gardien existe, une Faille
+        // intacte ne rend rien du tout. Ce test verifie l epuisement, pas la garde.
+        core.setCleared(true);
         int max = com.veskorius.block.entity.RiftCoreBlockEntity.MAX_EXTRACTIONS;
 
         for (int i = 0; i < max; i++) {
@@ -2425,6 +2428,77 @@ public class MachineGameTests {
         helper.assertTrue(core.getExtractionsLeft() == 0,
             "Restant annoncé : 0, vaut " + core.getExtractionsLeft());
         helper.setBlock(RIFT, Blocks.AIR);
+        helper.succeed();
+    }
+
+    /**
+     * <b>Rien ne s'extrait d'une Faille dont le Gardien vit encore.</b>
+     *
+     * <p>C'est ce qui rend le boss obligatoire plutôt que décoratif. Sans cette condition,
+     * on ancre la Faille, on pose l'Extracteur, on s'en va — et le combat de fin du jeu
+     * devient un monstre qu'on contourne. Le dossier est explicite : l'Extractor « devient
+     * utilisable » <i>après</i> la victoire (09-Entities.md).
+     *
+     * <p>La marque de victoire vit sur le <b>noyau</b>, comme le compteur d'extractions, et
+     * pour la même raison : portée par le boss elle mourrait avec lui, et la Faille
+     * resterait fermée pour toujours après le seul combat qui devait l'ouvrir.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void nothingIsExtractedBeforeTheGuardianFalls(GameTestHelper helper) {
+        helper.setBlock(RIFT, ModBlocks.RIFT_CORE.get());
+        com.veskorius.block.entity.RiftCoreBlockEntity core = helper.getBlockEntity(RIFT);
+
+        helper.assertFalse(core.canExtract(),
+            "Faille non purgée : l'extraction doit être refusée, sinon le boss se contourne");
+        helper.assertFalse(core.isCleared(), "Une Faille neuve n'est pas purgée");
+
+        core.setCleared(true);
+        helper.assertTrue(core.canExtract(), "Gardien vaincu : l'extraction s'ouvre");
+
+        // Et le Gardien ne se rappelle pas : la Faille est finie, le combat aussi.
+        helper.assertTrue(core.claimGuardianSummon(),
+            "Premier appel : il doit passer");
+        helper.assertFalse(core.claimGuardianSummon(),
+            "Second appel refusé — sinon casser l'Ancre et la reposer relance le boss, "
+                + "et la Faille redevient une source infinie de lingots corrompus");
+        helper.setBlock(RIFT, Blocks.AIR);
+        helper.succeed();
+    }
+
+    /**
+     * <b>Une Faille purgée ne blesse plus, Ancre ou pas.</b> C'est la récompense du combat,
+     * et elle doit survivre au démontage de l'installation : sinon « définitivement stable »
+     * (09-Entities.md) ne veut rien dire, et le joueur paierait 20 Osc/tick pour toujours
+     * sur une Faille qu'il a déjà vaincue.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void aClearedRiftStaysSafeWithoutAnAnchor(GameTestHelper helper) {
+        helper.setBlock(RIFT, ModBlocks.RIFT_CORE.get());
+        com.veskorius.block.entity.RiftCoreBlockEntity core = helper.getBlockEntity(RIFT);
+        core.setCleared(true);
+        core.setAnchored(false);
+
+        helper.assertTrue(core.isCleared(),
+            "La purge survit à l'absence d'Ancre — c'est tout l'intérêt de la victoire");
+        helper.assertTrue(core.canExtract(),
+            "…et l'extraction reste ouverte sans Ancre alimentée");
+        helper.setBlock(RIFT, Blocks.AIR);
+        helper.succeed();
+    }
+
+    /**
+     * <b>Les seuils de phase du Gardien découpent réellement ses 300 PV en trois.</b> Un
+     * boss dont les phases ne changent que les chiffres n'a qu'une phase ; ici chacune a
+     * son comportement, et ce test verrouille au moins qu'aucune n'est vide.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 20)
+    public static void guardianHasThreeRealPhases(GameTestHelper helper) {
+        float max = com.veskorius.entity.RiftGuardianEntity.MAX_HEALTH;
+        float rupture = com.veskorius.entity.RiftGuardianEntity.PHASE_RUPTURE_AT;
+        float stab = com.veskorius.entity.RiftGuardianEntity.PHASE_STABILISATION_AT;
+        helper.assertTrue(max > rupture && rupture > stab && stab > 0,
+            "Trois tranches strictement décroissantes attendues, vaut "
+                + max + " / " + rupture + " / " + stab);
         helper.succeed();
     }
 

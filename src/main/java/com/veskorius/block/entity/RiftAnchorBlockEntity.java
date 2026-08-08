@@ -53,6 +53,13 @@ public class RiftAnchorBlockEntity extends BlockEntity {
 
         if (core != null) {
             core.setAnchored(fed);
+            // Le Gardien naît de la PREMIÈRE Ancre qui tient (09-Entities.md : « après la
+            // pose d'un Rift Anchor fonctionnel », jamais une rencontre aléatoire). Une
+            // fois appelé, il ne revient pas : la marque est sur le noyau, donc casser
+            // l'Ancre et la reposer ne le rappelle pas.
+            if (fed && !core.isCleared() && core.claimGuardianSummon()) {
+                summonGuardian(serverLevel, core.getBlockPos());
+            }
         }
         if (anchor.holding != fed) {
             anchor.holding = fed;
@@ -62,6 +69,20 @@ public class RiftAnchorBlockEntity extends BlockEntity {
                     Block.UPDATE_ALL);
             }
         }
+    }
+
+    private static void summonGuardian(ServerLevel level, BlockPos corePos) {
+        com.veskorius.entity.RiftGuardianEntity guardian =
+            com.veskorius.entity.ModEntities.RIFT_GUARDIAN.get().create(level);
+        if (guardian == null) {
+            return;
+        }
+        guardian.moveTo(corePos.getX() + 0.5, corePos.getY() + 1.0, corePos.getZ() + 0.5,
+            level.getRandom().nextFloat() * 360.0f, 0.0f);
+        guardian.bindTo(corePos);
+        level.addFreshEntity(guardian);
+        level.playSound(null, corePos, net.minecraft.sounds.SoundEvents.WARDEN_EMERGE,
+            net.minecraft.sounds.SoundSource.HOSTILE, 2.0f, 0.6f);
     }
 
     /** Vrai si l'Ancre tient effectivement une Faille en ce moment. */

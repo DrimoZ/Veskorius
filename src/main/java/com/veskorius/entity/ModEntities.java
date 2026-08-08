@@ -23,6 +23,15 @@ public class ModEntities {
                 .clientTrackingRange(10)
                 .build("crystal_strider"));
 
+    /** Boss final (09-Entities.md). Ne se déplace jamais loin : il garde SA Faille. */
+    public static final DeferredHolder<EntityType<?>, EntityType<RiftGuardianEntity>> RIFT_GUARDIAN =
+        ENTITIES.register("rift_guardian",
+            () -> EntityType.Builder.of(RiftGuardianEntity::new, MobCategory.MONSTER)
+                .sized(1.2f, 2.8f)
+                .fireImmune()
+                .clientTrackingRange(16)
+                .build("rift_guardian"));
+
     public static final DeferredHolder<EntityType<?>, EntityType<CustodeEntity>> CUSTODE =
         ENTITIES.register("custode",
             () -> EntityType.Builder.of(CustodeEntity::new, MobCategory.MONSTER)
