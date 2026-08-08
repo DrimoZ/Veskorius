@@ -22,7 +22,7 @@ explicite de combat obligatoire au Poste de Garde (`08-Structures.md`). Drop de 
 `custode_alloy_fragment` (voir `04-Materials.md` — substitut 1:1 de l'Iron Ingot dans toute
 recette Veskorius, récompense un style de jeu combat plutôt que minage pur).
 
-## Custode Lourd (variante d'élite)
+## Custode Lourd (variante d'élite) — ✅ codé
 
 Même comportement réactif que le Custode standard, mais rayon de détection plus large et
 capacité à alerter un second Custode Lourd à moins de 16 blocs (justifie la difficulté accrue du

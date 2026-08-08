@@ -162,10 +162,12 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addItem(ModItems.FOSSILIZED_RATION, "Ration Fossilisée");
         addItem(ModItems.CUSTODE_ALLOY_FRAGMENT, "Fragment d'Alliage de Custode");
         addItem(ModItems.CUSTODE_SPAWN_EGG, "Œuf d'apparition de Custode");
+        addItem(ModItems.CUSTODE_LOURD_SPAWN_EGG, "Œuf d'apparition de Custode Lourd");
 
         // Entités.
         add("entity.veskorius.crystal_strider", "Fileur de Cristal");
         add("entity.veskorius.custode", "Custode");
+        add("entity.veskorius.custode_lourd", "Custode Lourd");
         add("entity.veskorius.rift_guardian", "Gardien de Faille");
         add("entity.veskorius.custode_archiviste", "Custode Archiviste");
 
@@ -441,6 +443,9 @@ add("advancements.veskorius.tier2_field.title", "Réseau court");
         add("codex.veskorius.gear.ward_plate.title", "Plastron de Garde");
         add("codex.veskorius.gear.ward_plate.text",
             "Un plastron bâti autour de l'Essence de Faille, et la seule chose de Veskorius qui ramène les dégâts de phase à zéro.\n\nLes dégâts de phase sont ceux du Gardien de Faille en phase ÉCHO, et ceux qu'un Cœur de Faille déstabilisé irradie dans un rayon de huit blocs. L'armure ordinaire ne s'y applique pas. L'armure d'alliage les divise par deux. Celui-ci ne divise rien — il les supprime.\n\nIl remplace le plastron d'alliage, donc le porter vous coûte le bonus de panoplie sur les trois autres pièces. C'est tout l'arbitrage : immunité totale à un type de dégâts, ou réduction générale sur tout le reste.");
+        add("codex.veskorius.fauna.lourd.title", "Custode Lourd");
+        add("codex.veskorius.fauna.lourd.text",
+            "Le garde renforcé du Sigma Laboratory et de l'Archive Régionale. 60 PV, 9 de dégâts, réactif à huit blocs — deux de plus que le Custode ordinaire.\n\nTout le reste est le même garde : il patrouille un point, il ne vous poursuit pas hors de son site, et il n'attaque que si vous venez à lui ou si vous cassez une de ses machines. Ce qu'il ajoute, c'est qu'il en appelle un autre. Qu'il prenne une cible, et tous les Custodes Lourds à seize blocs prennent la même.\n\nIls sont postés par paires. C'est là toute la difficulté de ces deux ruines, et la réponse n'est pas d'avoir plus de PV — c'est de ne pas les affronter ensemble. Isolez-en un, ou contournez.\n\nLâche 4 à 7 fragments d'alliage, qui remplacent le lingot de fer dans toute recette Veskorius.");
         add("codex.veskorius.fauna.custode.title", "Custode");
         add("codex.veskorius.fauna.custode.text", "Un gardien réactif posté aux Avant-postes. Il ne frappe qu'à quelques blocs, ou si vous cassez une machine de son site. Lâche des fragments d'alliage — substitut du fer.");
 

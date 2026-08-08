@@ -79,6 +79,7 @@ public final class CodexRegistry {
         TIERS.put("world/rift", 5);
         TIERS.put("fauna/strider", 1);
         TIERS.put("fauna/custode", 2);
+        TIERS.put("fauna/lourd", 3);
         TIERS.put("fauna/archiviste", 4);
         TIERS.put("fauna/guardian", 5);
         TIERS.put("gear/tools", 3);
@@ -154,6 +155,8 @@ public final class CodexRegistry {
             CodexUnlock.item(ModItems.RESONANCE_SPORE));
         add("fauna/custode", CodexCategory.FAUNA, ModItems.CUSTODE_SPAWN_EGG,
             CodexUnlock.item(ModItems.CUSTODE_ALLOY_FRAGMENT));
+        add("fauna/lourd", CodexCategory.FAUNA, ModItems.CUSTODE_LOURD_SPAWN_EGG,
+            CodexUnlock.item(ModItems.VESKORIAN_ALLOY_INGOT));
         add("fauna/archiviste", CodexCategory.FAUNA, ModItems.HYPER_REFINED_CRYSTAL,
             CodexUnlock.item(ModItems.HYPER_REFINED_CRYSTAL));
 

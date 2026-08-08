@@ -809,7 +809,8 @@ public class ModStructurePieceProvider implements DataProvider {
         b.set(3, SIG_MID + 2, 15, GRATE);
         b.set(3, SIG_MID + 2, 23, GRATE);
         b.lootChest(8, SIG_MID, 13, ModWorldGen.OUTPOST_LOOT, Direction.SOUTH);
-        custode(b, 7.5, SIG_MID, 25.5);
+        custodeLourd(b, 7.5, SIG_MID, 25.5);
+        custodeLourd(b, 3.5, SIG_MID, 18.5);
         Masonry.chandelier(b, 6, SIG_MID + 7, 19, 2);
         Masonry.wallBreach(b, 1, SIG_MID, 20, 5, true, 1, 0x5EEF2);
     }
@@ -994,8 +995,8 @@ public class ModStructurePieceProvider implements DataProvider {
         Masonry.colonnade(b, 18, ARC_Y, 19, 24, ARC_Y + 6);
         b.fragmentChest(20, ARC_Y, 18, CodexEntries.ARCHIVE_LOG_2, Direction.WEST);
         b.lootChest(20, ARC_Y, 25, ModWorldGen.OUTPOST_LOOT, Direction.WEST);
-        custode(b, 17.5, ARC_Y, 19.5);
-        custode(b, 20.5, ARC_Y, 24.5);
+        custodeLourd(b, 17.5, ARC_Y, 19.5);
+        custodeLourd(b, 20.5, ARC_Y, 24.5);
         Masonry.chandelier(b, 18, ARC_Y + 7, 21, 2);
 
         // Le cabinet effondré : la cote 3 est sous les gravats. Il faut creuser.
@@ -1277,6 +1278,23 @@ public class ModStructurePieceProvider implements DataProvider {
         if (occupied) {
             custode(b, x + 0.5, y, z + 0.5);
         }
+    }
+
+    /**
+     * Un Custode <b>Lourd</b> en poste (09-Entities.md). Le garde du Sigma et de
+     * l'Archive : 60 PV, 9 de dégâts, et il en appelle un autre à 16 blocs.
+     *
+     * <p>Ils vont par PAIRES, et c'est la seule façon de rendre lisible ce qu'il ajoute.
+     * Un Lourd solitaire n'est qu'un Custode avec plus de points de vie ; deux à portée
+     * d'alerte enseignent la règle du site en un seul engagement — on ne les prend pas de
+     * front, on les isole. Poser le second hors des 16 blocs annulerait la capacité sans
+     * qu'aucun test ne s'en aperçoive.
+     */
+    private static void custodeLourd(TemplateBuilder b, double x, int y, double z) {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("id", "veskorius:custode_lourd");
+        tag.putBoolean("PersistenceRequired", true);
+        b.entity(x, y, z, (int) x, y, (int) z, tag);
     }
 
     /** Un Custode persistant en poste (ne despawn jamais, réactif seulement de près). */

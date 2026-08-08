@@ -106,6 +106,18 @@ public final class VeskoriusConfig {
         return MobsConfig.CUSTODE_ALERT_RANGE.getAsDouble();
     }
 
+    public static double custodeLourdHealth() {
+        return MobsConfig.CUSTODE_LOURD_HEALTH.getAsDouble();
+    }
+
+    public static double custodeLourdDamage() {
+        return MobsConfig.CUSTODE_LOURD_DAMAGE.getAsDouble();
+    }
+
+    public static double custodeLourdDetectionRange() {
+        return MobsConfig.CUSTODE_LOURD_DETECTION_RANGE.getAsDouble();
+    }
+
     public static int striderMilkCooldown() {
         return MobsConfig.STRIDER_MILK_COOLDOWN.getAsInt();
     }

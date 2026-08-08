@@ -30,11 +30,25 @@ public class ModEntityLootProvider extends EntityLootSubProvider {
                 .setRolls(UniformGenerator.between(2.0f, 4.0f))
                 .add(LootItem.lootTableItem(ModItems.CUSTODE_ALLOY_FRAGMENT.get())
                     .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 1.0f))))));
+
+        // Le Lourd lache la meme chose, en plus grande quantite : 4 a 7 fragments.
+        //
+        // Le fragment est un substitut 1:1 du lingot de fer dans les recettes Veskorius,
+        // donc son role est de recompenser un style de jeu combat. Un garde deux fois plus
+        // resistant qui rendrait autant qu un garde ordinaire ne recompenserait rien — il
+        // taxerait. La quantite est la seule variable qui compte ici : lui inventer un
+        // objet propre aurait ajoute une matiere au mod pour dire « celui-la etait plus dur ».
+        add(ModEntities.CUSTODE_LOURD.get(), LootTable.lootTable()
+            .withPool(LootPool.lootPool()
+                .setRolls(UniformGenerator.between(4.0f, 7.0f))
+                .add(LootItem.lootTableItem(ModItems.CUSTODE_ALLOY_FRAGMENT.get())
+                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 1.0f))))));
     }
 
     @Override
     protected Stream<EntityType<?>> getKnownEntityTypes() {
-        // Seul le Custode a une table ; le Fileur (sans drop) n'est pas listé.
-        return Stream.of(ModEntities.CUSTODE.get());
+        // Les deux Custodes ont une table ; le Fileur (sans drop) n'est pas listé, et
+        // l'Archiviste non plus : sa récompense est le coffre de sa salle, pas son corps.
+        return Stream.of(ModEntities.CUSTODE.get(), ModEntities.CUSTODE_LOURD.get());
     }
 }

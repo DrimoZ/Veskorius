@@ -231,6 +231,12 @@ public class ModItems {
             props -> new DeferredSpawnEggItem(ModEntities.CUSTODE, 0x3A3F4A, 0x8C6A2F, props),
             new Item.Properties());
 
+    /** Œuf d'apparition du Custode Lourd. Acier sombre, veine sourde. */
+    public static final DeferredItem<DeferredSpawnEggItem> CUSTODE_LOURD_SPAWN_EGG =
+        ITEMS.registerItem("custode_lourd_spawn_egg",
+            props -> new DeferredSpawnEggItem(ModEntities.CUSTODE_LOURD, 0x2E323C, 0x5C2C86, props),
+            new Item.Properties());
+
     // --- Progression : plans, fragments, loot de structure (tâche 10) --------
 
     /**

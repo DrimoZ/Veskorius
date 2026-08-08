@@ -4,7 +4,7 @@ Généré à partir du code, pas du dossier de design. Une case cochée ici veut
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
 NeoForge 1.21.1 · Java 21 · **219 fichiers Java, ~30 700 lignes** · **49 blocs, 71 items**
-· **156 GameTest**, dont un qui vérifie que chaque machine a une recette réellement
+· **158 GameTest**, dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
 
@@ -97,6 +97,7 @@ Neuf types de recette **data-driven** — un datapack change les valeurs sans re
 
 Gardien de Faille (boss final, 3 phases aux comportements réellement distincts) ·
 Custode Archiviste (élite de la salle profonde, marque le sol et détone) ·
+Custode Lourd (garde du Sigma et de l'Archive, posté par paires : il en alerte un autre à 16 blocs) ·
 Custode (gardien, alerte de groupe, lâche du fragment d'alliage — substitut de fer) ·
 Fileur de Cristal (passif, nourri au spore).
 
@@ -109,7 +110,7 @@ d'alliage et coûte donc le bonus de panoplie).
 
 ## 8. Interface
 
-- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **65 entrées**, 9 catégories,
+- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **66 entrées**, 9 catégories,
   couvrant les cinq paliers, les entités et l'équipement. Affiche les **recettes**
   (établi et machine, lues du RecipeManager chargé), pagine le texte, cherche dans tout
   le livre, s'adapte à la taille de la fenêtre.
@@ -131,9 +132,9 @@ SERVER, surchargeables par modpack.
 
 ## Ce qui reste
 
-1. **Matériaux de la phase 3** — `luminous_extract`, `resonance_glass`, `ancient_seed`,
-   `resonance_bloom`, `ancient_conduit_stone`. Aucun n'est sur le chemin critique.
-2. **Custode Lourd** — variante d'élite annoncée au dossier.
+**Matériaux de la phase 3** — `luminous_extract`, `resonance_glass`, `ancient_seed`,
+`resonance_bloom`, `ancient_conduit_stone`. Aucun n'est sur le chemin critique, et c'est
+désormais le seul poste ouvert du dossier.
 
 Le Cœur de Faille n'est PAS de cette liste : c'est la `RiftFeature`, et elle fait déjà ce
 que `08-Structures.md` décrit — bulle sphérique de 5 à 9 blocs, coquille de pierre

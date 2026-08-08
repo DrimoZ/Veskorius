@@ -46,4 +46,16 @@ public class ModEntities {
                 .sized(0.6f, 1.9f)
                 .clientTrackingRange(8)
                 .build("custode"));
+
+    /**
+     * Garde renforce du Sigma et de l'Archive (09-Entities.md). Plus large et plus
+     * haut que le Custode : la silhouette doit dire « pas celui de l'Avant-poste »
+     * avant le premier coup.
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<CustodeLourdEntity>> CUSTODE_LOURD =
+        ENTITIES.register("custode_lourd",
+            () -> EntityType.Builder.of(CustodeLourdEntity::new, MobCategory.MONSTER)
+                .sized(0.75f, 2.05f)
+                .clientTrackingRange(10)
+                .build("custode_lourd"));
 }

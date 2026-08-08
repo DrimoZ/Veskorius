@@ -22,6 +22,9 @@ public final class MobsConfig {
     public static final ModConfigSpec.DoubleValue CUSTODE_DAMAGE;
     public static final ModConfigSpec.DoubleValue CUSTODE_DETECTION_RANGE;
     public static final ModConfigSpec.DoubleValue CUSTODE_ALERT_RANGE;
+    public static final ModConfigSpec.DoubleValue CUSTODE_LOURD_HEALTH;
+    public static final ModConfigSpec.DoubleValue CUSTODE_LOURD_DAMAGE;
+    public static final ModConfigSpec.DoubleValue CUSTODE_LOURD_DETECTION_RANGE;
 
     // --- Faune (Fileur de Cristal) -------------------------------------------
 
@@ -48,6 +51,19 @@ public final class MobsConfig {
             .comment("Radius (blocks) within which breaking a Veskorius machine alerts Custodes",
                 "(site defense - wider than passive detection). Default: 16.")
             .defineInRange("custodeAlertRange", 16.0, 1.0, 128.0);
+
+        // Le Lourd partage le rayon d'ALERTE du Custode (16) : c'est la meme portee,
+        // pour le meme geste — un garde qui en previent un autre. Un second reglage
+        // n'aurait fait qu'offrir deux facons de decrire une seule regle.
+        CUSTODE_LOURD_HEALTH = b
+            .comment("Custode Lourd health points. Design default: 60.")
+            .defineInRange("custodeLourdHealth", 60.0, 1.0, 1024.0);
+        CUSTODE_LOURD_DAMAGE = b
+            .comment("Custode Lourd attack damage. Design default: 9.")
+            .defineInRange("custodeLourdDamage", 9.0, 0.0, 1024.0);
+        CUSTODE_LOURD_DETECTION_RANGE = b
+            .comment("Radius (blocks) within which a Custode Lourd targets a player. Default: 8.")
+            .defineInRange("custodeLourdDetectionRange", 8.0, 1.0, 128.0);
 
         b.pop();
 

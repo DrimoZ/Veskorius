@@ -23,6 +23,7 @@ import com.veskorius.energy.ResonanceFieldManager;
 import com.veskorius.event.CustodeAlertHandler;
 import com.veskorius.entity.CrystalStriderEntity;
 import com.veskorius.entity.CustodeEntity;
+import com.veskorius.entity.CustodeLourdEntity;
 import com.veskorius.entity.ModEntities;
 import com.veskorius.item.CodexEntries;
 import com.veskorius.item.CodexFragmentItem;
@@ -1803,6 +1804,58 @@ public class MachineGameTests {
 
         helper.assertTrue(custode.getTarget() == player,
             "Casser une machine à portée devrait faire cibler le joueur par le Custode");
+        helper.succeed();
+    }
+
+    /**
+     * <b>Un Custode Lourd qui prend une cible la fait prendre à ses voisins.</b>
+     *
+     * <p>C'est la seule chose que le Lourd ajoute au Custode ordinaire (09-Entities.md) :
+     * ni portée de poursuite, ni cadence, seulement « il en appelle un autre ». Tout le
+     * reste — patrouille, réactivité, persistance — est hérité, donc déjà couvert. Si
+     * cette chaîne se rompt, il ne reste qu'un Custode avec deux fois plus de points de
+     * vie, ce qui est exactement l'agressivité non motivée que le dossier refuse — et
+     * rien, en jeu, ne le signalerait.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void heavyCustodeAlertsItsPair(GameTestHelper helper) {
+        CustodeLourdEntity first = helper.spawn(ModEntities.CUSTODE_LOURD.get(), MACHINE);
+        CustodeLourdEntity second =
+            helper.spawn(ModEntities.CUSTODE_LOURD.get(), MACHINE.offset(4, 0, 0));
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+
+        first.setTarget(player);
+
+        helper.assertTrue(second.getTarget() == player,
+            "Le second Custode Lourd devrait avoir pris la même cible : c'est la seule "
+                + "capacité qui le distingue du Custode ordinaire");
+        helper.succeed();
+    }
+
+    /**
+     * <b>Et la chaîne s'arrête d'elle-même.</b>
+     *
+     * <p>Deux gardes qui s'alertent mutuellement sans condition d'arrêt se rappellent
+     * l'un l'autre à chaque tick — le piège de récursion exact du Resonance Relay, qui
+     * s'alimentait de sa propre sortie. Ici la terminaison tient à un seul point : on ne
+     * propage qu'aux Lourds <b>sans cible</b>. Ce test vérifie qu'un garde déjà occupé
+     * n'est pas retourné vers une nouvelle cible par un voisin — sans quoi deux gardes
+     * pourraient se repasser indéfiniment deux joueurs différents.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void heavyCustodeAlertDoesNotLoop(GameTestHelper helper) {
+        CustodeLourdEntity first = helper.spawn(ModEntities.CUSTODE_LOURD.get(), MACHINE);
+        CustodeLourdEntity second =
+            helper.spawn(ModEntities.CUSTODE_LOURD.get(), MACHINE.offset(4, 0, 0));
+        Player engaged = helper.makeMockPlayer(GameType.SURVIVAL);
+        Player newcomer = helper.makeMockPlayer(GameType.SURVIVAL);
+
+        second.setTarget(engaged);
+        first.setTarget(newcomer);
+
+        helper.assertTrue(second.getTarget() == engaged,
+            "Un Custode Lourd déjà engagé ne doit pas changer de cible parce qu'un voisin "
+                + "en a trouvé une autre — c'est cette condition qui borne la chaîne");
         helper.succeed();
     }
 

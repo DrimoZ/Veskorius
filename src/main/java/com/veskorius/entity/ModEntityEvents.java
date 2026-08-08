@@ -25,6 +25,7 @@ public class ModEntityEvents {
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.CRYSTAL_STRIDER.get(), CrystalStriderEntity.createAttributes().build());
         event.put(ModEntities.CUSTODE.get(), CustodeEntity.createAttributes().build());
+        event.put(ModEntities.CUSTODE_LOURD.get(), CustodeLourdEntity.createAttributes().build());
         event.put(ModEntities.RIFT_GUARDIAN.get(), RiftGuardianEntity.createAttributes().build());
         event.put(ModEntities.CUSTODE_ARCHIVISTE.get(),
             CustodeArchivisteEntity.createAttributes().build());

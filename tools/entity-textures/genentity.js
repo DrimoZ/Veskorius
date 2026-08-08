@@ -118,9 +118,49 @@ function archiviste() {
   return c;
 }
 
+/**
+ * Custode Lourd : le même garde, BLINDÉ. Ni laiton (c'est l'Archiviste, une élite d'un
+ * autre rang) ni le fer nu du Custode ordinaire — de l'acier sombre à plaques épaisses.
+ *
+ * La règle de lecture est la même que pour l'Archiviste : un garde renforcé se reconnaît
+ * à son équipement, jamais à sa forme. Le joueur qui entre au Sigma doit voir « c'est un
+ * Custode, mais pas celui de l'Avant-poste » avant d'avoir pris un coup — sinon il évalue
+ * un combat à 60 PV avec les réflexes d'un combat à 30.
+ */
+function lourd() {
+  const c = new Canvas(S, S);
+  const A = { line: '#1E2028', deep: '#2E323C', mid: '#454B58', lite: '#5E6674' };
+  const V = { deep: '#5C2C86', mid: '#8A47B8', hot: '#E4CCF7' };
+  const r = rng(0x9C2);
+  c.rect(0, 0, 64, 64, A.deep);
+  for (let y = 0; y < 64; y++) {
+    for (let x = 0; x < 64; x++) {
+      if (r() > 0.85) c.set(x, y, A.mid);
+      else if (r() > 0.95) c.set(x, y, A.lite);
+    }
+  }
+  // Plaques DEUX FOIS plus hautes que celles de l'Archiviste : moins de lignes, donc
+  // une silhouette plus massive à distance, là où le détail fin disparaît de toute façon.
+  for (let y = 3; y < 64; y += 10) c.rect(0, y, 64, 2, A.line);
+  // Rivets aux angles des plaques du torse.
+  for (const [x, y] of [[6, 6], [18, 6], [6, 16], [18, 16]]) c.rect(x, y, 2, 2, A.lite);
+  // Veine de résonance, plus courte et plus sourde que celle de l'Archiviste : il est
+  // renforcé, pas augmenté.
+  for (let y = 6; y < 12; y++) c.set(12, y, V.deep);
+  c.set(12, 9, V.mid);
+  // Le visage : une SEULE fente, large. Un heaume fermé, pas un masque à deux yeux.
+  c.rect(26, 2, 12, 7, A.line);
+  c.rect(28, 5, 8, 1, V.hot);
+  return c;
+}
+
 const out = process.argv[2];
 fs.mkdirSync(out, { recursive: true });
-const set = { rift_guardian: riftGuardian(), custode_archiviste: archiviste() };
+const set = {
+  rift_guardian: riftGuardian(),
+  custode_archiviste: archiviste(),
+  custode_lourd: lourd(),
+};
 for (const [n, c] of Object.entries(set)) {
   fs.writeFileSync(path.join(out, n + '.png'), encodePNG(S, S, c.px));
 }

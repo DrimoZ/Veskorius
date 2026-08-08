@@ -195,10 +195,12 @@ public class ModLanguageProvider extends LanguageProvider {
 
         addItem(ModItems.CUSTODE_ALLOY_FRAGMENT, "Custode Alloy Fragment");
         addItem(ModItems.CUSTODE_SPAWN_EGG, "Custode Spawn Egg");
+        addItem(ModItems.CUSTODE_LOURD_SPAWN_EGG, "Heavy Custode Spawn Egg");
 
         // Entités (09-Entities.md).
         add("entity.veskorius.crystal_strider", "Crystal Strider");
         add("entity.veskorius.custode", "Custode");
+        add("entity.veskorius.custode_lourd", "Heavy Custode");
         add("entity.veskorius.rift_guardian", "Rift Guardian");
         add("entity.veskorius.custode_archiviste", "Custode Archivist");
         add("gui.veskorius.strider.milk_cooldown", "The strider needs %s more seconds");
@@ -565,6 +567,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("codex.veskorius.gear.ward_plate.title", "Rift-Ward Plate");
         add("codex.veskorius.gear.ward_plate.text",
             "A chestplate built around Rift Essence, and the only thing in Veskorius that reduces phase damage to zero.\n\nPhase damage is what the Rift Guardian deals during its ECHO phase, and what a destabilised Rift Core radiates within eight blocks. Ordinary armor does not apply to it. Alloy armor halves it. This halves nothing — it removes it.\n\nIt replaces the alloy chestplate, so wearing it costs you the full-set bonus on the other three pieces. That trade is the point: total immunity to one damage type, or a general reduction across everything else.");
+        add("codex.veskorius.fauna.lourd.title", "Heavy Custode");
+        add("codex.veskorius.fauna.lourd.text",
+            "The reinforced guard of the Sigma Laboratory and the Regional Archive. 60 health, 9 damage, reactive from eight blocks — two more than the ordinary Custode.\n\nEverything else about it is the same guard: it patrols one spot, it will not chase you off its site, and it only attacks if you come to it or break one of its machines. What it adds is that it calls another. Take a target and every Heavy Custode within sixteen blocks takes the same one.\n\nThey are posted in pairs. That is the whole difficulty of these two ruins, and the answer is not more health — it is not fighting them together. Isolate one, or go around.\n\nDrops 4 to 7 alloy fragments, which substitute for iron ingots in any Veskorius recipe.");
         add("codex.veskorius.fauna.custode.title", "Custode");
         add("codex.veskorius.fauna.custode.text",
             "A Veskorian guard, still at its post. It patrols a fixed point and only turns hostile within 6 blocks, or if you break a machine on its site — it guards places, not territory, and it can be walked around.\n\nKilling one drops 2 to 4 Custode Alloy Fragments, which substitute for iron ingots in every Veskorius recipe. Fighting is therefore a genuine alternative to mining, not a detour.");

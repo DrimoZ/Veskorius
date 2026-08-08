@@ -91,18 +91,38 @@ public class CustodeEntity extends Monster {
         restrictTo(blockPosition(), GUARD_RADIUS);
         AttributeInstance health = getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
-            health.setBaseValue(VeskoriusConfig.custodeHealth());
+            health.setBaseValue(configHealth());
         }
         setHealth(getMaxHealth());
         AttributeInstance damage = getAttribute(Attributes.ATTACK_DAMAGE);
         if (damage != null) {
-            damage.setBaseValue(VeskoriusConfig.custodeDamage());
+            damage.setBaseValue(configDamage());
         }
         AttributeInstance range = getAttribute(Attributes.FOLLOW_RANGE);
         if (range != null) {
-            range.setBaseValue(VeskoriusConfig.custodeDetectionRange());
+            range.setBaseValue(configDetectionRange());
         }
         return super.finalizeSpawn(level, difficulty, reason, spawnData);
+    }
+
+    // --- Valeurs de config, redéfinissables par les variantes ------------------
+    //
+    // Trois accesseurs plutôt que trois appels directs à VeskoriusConfig : le Custode
+    // Lourd hérite de toute cette classe (IA, patrouille, persistance du point de garde,
+    // sons) et n'en change QUE ses chiffres. Sans ces crochets il lui faudrait réécrire
+    // finalizeSpawn en entier — donc dupliquer le restrictTo et le setHealth, et les
+    // laisser diverger le jour où l'un des deux change.
+
+    protected double configHealth() {
+        return VeskoriusConfig.custodeHealth();
+    }
+
+    protected double configDamage() {
+        return VeskoriusConfig.custodeDamage();
+    }
+
+    protected double configDetectionRange() {
+        return VeskoriusConfig.custodeDetectionRange();
     }
 
     @Override
