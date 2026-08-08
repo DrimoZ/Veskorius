@@ -201,6 +201,86 @@ public class ModLanguageProvider extends LanguageProvider {
         add("item.veskorius.resonance_blueprint.hint", "Kept when crafting. Restore machines of this tier.");
         add("item.veskorius.codex_fragment.hint", "Right-click to read");
 
+        // --- Codex : entrées T3, T4 et T5 -------------------------------
+        // Le Codex s'arrêtait au T2. Un texte utile répond à trois questions et pas
+        // une de plus : à quoi ça sert, ce qui ne se devine pas, et quoi faire ensuite.
+        // Les chiffres y sont explicites — « assez longtemps » envoie le joueur mesurer.
+        add("codex.veskorius.machines.forge.title", "Veskorian Alloy Forge");
+        add("codex.veskorius.machines.forge.text",
+            "Two Refined Crystals and two ingots become one alloy ingot in 20 seconds. The metal you feed it decides the branch: IRON gives structural alloy, GOLD gives the conductive kind — and only the conductive one goes into a Relay. They are not interchangeable.\n\nEvery cycle also drops one Flux Slag into its own slot, whatever you forged. When that slot fills, the Forge stops. Empty it by hand, or let a Slag Vent do it.");
+        add("codex.veskorius.machines.relay.title", "Resonance Relay");
+        add("codex.veskorius.machines.relay.text",
+            "Carries a field 20 blocks further, and relays chain into one another. It draws 1 Osc per tick whether anything uses it or not — range is never free.\n\nA relay holds no charge of its own worth speaking of: it fills from the field upstream and serves what it holds. It also carries the harmonic band of its source, so slipping one in front of a machine will not fix a detuned setup.");
+        add("codex.veskorius.machines.synthesizer.title", "Structural Synthesizer");
+        add("codex.veskorius.machines.synthesizer.text",
+            "Four alloy ingots and eight stone become four Veskorian Alloy Blocks in 60 seconds. This is what makes the tier buildable — without it the alloy stays a crafting material.\n\nLike the Forge, it leaves a by-product: one Synthesis Residue per cycle, in its own slot, and a full slot stops the machine. A Slag Vent will NOT clear it. That one is still your problem.");
+        add("codex.veskorius.machines.driller.title", "Deep Crystal Driller");
+        add("codex.veskorius.machines.driller.text",
+            "Harvests crystal clusters from the 5x5 column beneath it, one every 20 seconds, at 6 Osc per tick. It only reaches below Y -40 — placing one higher does nothing at all.\n\nIt takes the clusters and leaves the rock: the gallery stays intact and you can see exactly what was taken. It also exhausts its vein. When the column is empty it stops, and you move it.");
+        add("codex.veskorius.machines.slag_vent.title", "Slag Vent");
+        add("codex.veskorius.machines.slag_vent.text",
+            "Clears one Flux Slag every 10 seconds from every Forge within 8 blocks. It exists because a full slag slot stops a Forge dead.\n\nOne clear per pass per Forge: a battery of six will outrun a single Vent. It costs field continuously, so disposing of waste is a standing line in your energy budget, not a button you press once.");
+        add("codex.veskorius.machines.compressor.title", "Flux Compressor");
+        add("codex.veskorius.machines.compressor.text",
+            "Four Refined Crystals become one Concentrated Flux in 30 seconds. An apparent loss, and a deliberate one.\n\nConcentrated Flux has exactly one consumer in the whole mod: the Convergence Core. Build a Compressor when you have decided to build that, not before.");
+        add("codex.veskorius.crystals.alloy.title", "Veskorian Alloy");
+        add("codex.veskorius.crystals.alloy.text",
+            "The first material you MAKE rather than refine. The T1-T2 chain started from crystal and purified it; this one starts from metal and alloys it. That change of nature is what marks the tier, not the number of steps.\n\nThe conductive variant is the same forge with gold instead of iron. Keep them apart — the Relay and the Harmonic Lattice accept only the conductive one.");
+        add("codex.veskorius.crystals.slag.title", "Flux Slag");
+        add("codex.veskorius.crystals.slag.text",
+            "The Forge's waste, and not an inert one. Chemically it is the same substance that, at regional scale, drove the Collapse.\n\nYou are reproducing the cause in miniature, and it will stop your Forge if you ignore it. That is the intended lesson.");
+        add("codex.veskorius.machines.chamber.title", "Deep Synthesis Chamber");
+        add("codex.veskorius.machines.chamber.text",
+            "Two Refined Crystals become one Hyper Refined Crystal in 90 seconds, at 8 Osc per tick. Nothing else in the world makes them.\n\nBuilding it CONSUMES one Hyper Refined Crystal, which becomes its permanent catalyst and never appears as a cycle input again. The Regional Archive gives you exactly three: two go into your first Harmonic Lattice, the third goes here. You cannot do both at once — that choice is the tier.\n\nIt accepts overheat: half the time, double the Osc, and one cycle in five loses its input.");
+        add("codex.veskorius.machines.amplifier.title", "Harmonic Amplifier");
+        add("codex.veskorius.machines.amplifier.text",
+            "Doubles the range of the field it RECEIVES, for 2 Osc per tick. Behind a T2 emitter that is 16 blocks; behind a Relay it is 40. A Relay carries a fixed range, this multiplies one.\n\nThree links at most. Past the third, an amplifier still carries the field but stops doubling it.\n\nIt drifts: 1% efficiency lost per Minecraft day of running, down to a floor of -30%. Right-click it with a Resonance Tuner in Recalibrate mode and one Resonance Component to reset it. The drift only eats the GAIN, never the range it received — an amplifier is never worse than no amplifier.");
+        add("codex.veskorius.machines.hub.title", "Resonance Network Hub");
+        add("codex.veskorius.machines.hub.text",
+            "Decides who stops when a field runs short. Without one, machines are served in whatever order they happen to tick, and an underfed base stutters everywhere at once with nothing telling you what you lost.\n\nThe Hub sheds from the bottom: above half reserve everyone runs, between a fifth and a half the LOW priority machines go quiet, below that only HIGH is served. Set any machine's priority with the Tuner.\n\nIt is passive and costs nothing — taxing an arbiter at the exact moment there is no energy left would be absurd.");
+        add("codex.veskorius.machines.extraction_array.title", "Automated Extraction Array");
+        add("codex.veskorius.machines.extraction_array.text",
+            "Commands every Deep Crystal Driller within 12 blocks: it empties their output into its own chest, and the drillers it commands run TWICE as fast.\n\nIt answers the chore the Driller creates. With five drillers at the bottom of a mine, walking to each one is most of what the tier asks of you. 10 Osc per tick to stop doing that.");
+        add("codex.veskorius.machines.convergence_core.title", "Convergence Core");
+        add("codex.veskorius.machines.convergence_core.text",
+            "The only multi-block in the mod, and the only field source stronger than any other.\n\nPlaced alone it is inert. It needs EIGHT Resonance Relays or Harmonic Amplifiers (mixing is fine) at exactly 5 blocks — the four axes and the four corners of an 11-block ring — and each one must have a clear line of sight to the centre. You cannot box it in.\n\nOnce formed it emits range 40 at maximum intensity for 12 Osc per tick. It is checked every two seconds: wall off one sightline and it goes dark.\n\nIt exists mainly to feed a Rift Anchor without dedicating a whole base of relays to it.");
+        add("codex.veskorius.crystals.hyper.title", "Hyper Refined Crystal");
+        add("codex.veskorius.crystals.hyper.text",
+            "The fourth state of the crystal. It cannot be mined, found or crafted — the Deep Synthesis Chamber is its only source, and building that Chamber spends one.\n\nThe three from the Regional Archive are the tier's entire starting stock. Spend them knowing that.");
+        add("codex.veskorius.fields.lattice.title", "Harmonic Lattice");
+        add("codex.veskorius.fields.lattice.text",
+            "Four CONDUCTIVE alloy ingots and two Hyper Refined Crystals. The metal branch you picked at the Forge is charged for a second time, one tier later.\n\nOnly two things ever want a Lattice: the Harmonic Amplifier and the Convergence Core. It is the T4 network in one item.");
+        add("codex.veskorius.fields.calibration.title", "Calibration and drift");
+        add("codex.veskorius.fields.calibration.text",
+            "Amplifiers and Hubs lose 1% efficiency per Minecraft day of running, down to -30% and no further. A neglected amplifier carries less far than it did; a neglected Hub sheds earlier than it should.\n\nThe cure is the same gesture as everything else that drifts in this world: a Resonance Tuner in Recalibrate mode, at the cost of one Resonance Component.\n\nThe floor matters. Nothing here ever stops working outright — maintenance, never a wall.");
+        add("codex.veskorius.world.rift.title", "Reading a rift");
+        add("codex.veskorius.world.rift.text",
+            "A rift is a bubble of nothing, torn below Y -60, with a core floating at its centre. It is not built and it is not a structure — it is an accident of over-resonance.\n\nThe Resonance Locator cannot find one: a rift does not radiate a field, it phases one. The only sign is the stone around it, pulled and cracked. Learn that stone and you can find rifts. There is no instrument for this.\n\nUnanchored, a core hurts anything within 8 blocks after three seconds. Three seconds is enough to look and step back. It is not enough to stay.");
+        add("codex.veskorius.machines.rift_anchor.title", "Rift Anchor");
+        add("codex.veskorius.machines.rift_anchor.text",
+            "Placed within 12 blocks of a rift core, it stabilises the rift — and summons its Guardian, once, the first time it holds.\n\n20 Osc per tick, continuously: the heaviest appetite in the mod, and the reason the Convergence Core exists.\n\nIt holds only WHILE it is fed. Cut the field and the rift wakes. Break the anchor and it wakes immediately. There is no permanent switch here.");
+        add("codex.veskorius.machines.rift_extractor.title", "Rift Core Extractor");
+        add("codex.veskorius.machines.rift_extractor.text",
+            "One Rift Essence every 120 seconds, at 15 Osc per tick, from a rift that is anchored AND cleared of its Guardian. Roughly one extraction in seven also yields a Corrupted Alloy Ingot.\n\nSix extractions per rift. Then that rift is spent, forever. The count lives on the core, so replacing the Extractor changes nothing.\n\nRift Essence is the only finite resource in this mod. Nothing regenerates it.");
+        add("codex.veskorius.machines.rift_ward.title", "Rift Ward Emitter");
+        add("codex.veskorius.machines.rift_ward.text",
+            "Holds back the ambient corrosion of an anchored rift within 12 blocks, for 5 Osc per tick.\n\nAnchoring a rift stops the acute damage; it does not stop the rift. What remains eats your equipment — one point of wear on a worn piece every 5 seconds. Survivable, and unworkable: you can enter without a Ward, you cannot operate there.\n\nIt costs two Rift Essence out of the six a rift will ever give. That is the only item in the mod paid for out of what it unlocks.");
+        add("codex.veskorius.fauna.guardian.title", "Rift Guardian");
+        add("codex.veskorius.fauna.guardian.text",
+            "Never a random encounter: it rises from the first Rift Anchor that holds, once per rift, and never again.\n\nThree phases, and each one asks something different. In ECHO it backs away as you close — you have to chase it. In RUPTURE it opens the floor beneath you. In STABILISATION it walks to the core and heals if it reaches it, so you must hold the centre, where the rift is worst.\n\nBeating it stabilises the rift permanently — the phase damage stops even with the anchor switched off — and opens extraction. Guaranteed drop: three Corrupted Veskorian Alloy Ingots.");
+        add("codex.veskorius.crystals.essence.title", "Rift Essence");
+        add("codex.veskorius.crystals.essence.text",
+            "Six per rift, and the rift is finished. There is no machine that makes more, and there will not be one — that was decided and it is not an oversight.\n\nWhat you do with them is the last real choice the mod gives you.");
+        add("codex.veskorius.progression.tier3.title", "Tier 3 — Alloy");
+        add("codex.veskorius.progression.tier3.text",
+            "The tier where you stop refining and start MAKING. The Veskorian Alloy Forge is the door, and the Sigma Laboratory console holds its blueprint.\n\nTwo things are new and both are constraints. The metal you forge splits your materials into two families that do not substitute for each other. And every machine that makes the tier's material also makes waste that will stop it if you ignore it.");
+        add("codex.veskorius.progression.tier4.title", "Tier 4 — Deep synthesis");
+        add("codex.veskorius.progression.tier4.text",
+            "Opened by the Regional Archive, which gives its blueprint and exactly three Hyper Refined Crystals.\n\nThis is where the network stops being a set of machines and becomes something you administer: amplifiers that reach across a region, a Hub that decides who eats when there is not enough, and calibration that decays if you never come back.");
+        add("codex.veskorius.progression.tier5.title", "Tier 5 — The rift");
+        add("codex.veskorius.progression.tier5.text",
+            "Not unlocked by crafting anything. You unlock it by FINDING a rift, and you find one by recognising deformed stone.\n\nEverything here is finite. One Guardian per rift, six essences per rift, and no way to make more of either. The mod ends where the resource does.");
+
         // Entrées de Codex (lore). Clés : codex.<ns>.<path>.title/.text.
         add("codex.veskorius.daily_life.lamps.title", "Household note — the light");
         add("codex.veskorius.daily_life.lamps.text",
@@ -340,6 +420,13 @@ public class ModLanguageProvider extends LanguageProvider {
         // --- Codex de Résonance (15-Codex-Guidebook.md) ---
         addItem(ModItems.RESONANCE_CODEX, "Resonance Codex");
         add("item.veskorius.resonance_codex.hint", "Right-click to open. It writes itself as you progress.");
+        add("gui.veskorius.codex.search", "Search…");
+        add("gui.veskorius.codex.results", "%s result(s)");
+        add("gui.veskorius.codex.no_results", "Nothing here yet.");
+        add("gui.veskorius.codex.sealed", "Sealed entry");
+        add("gui.veskorius.codex.recipe", "Recipe");
+        add("gui.veskorius.codex.recipe_shaped", "Recipe (shaped)");
+        add("gui.veskorius.codex.machine_note", "%ss · %s Osc/tick");
         add("gui.veskorius.codex.title", "Resonance Codex");
         add("gui.veskorius.codex.discovered", "%s / %s discovered");
         add("gui.veskorius.codex.total", "%s / %s known");

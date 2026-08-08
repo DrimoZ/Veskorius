@@ -103,11 +103,71 @@ public final class CodexRegistry {
         add(CodexEntries.HINT_WORKSHOP, CodexCategory.LORE, ModItems.CODEX_FRAGMENT,
             CodexUnlock.fragment());
 
+        // --- T3 : l'alliage, le déchet, la portée -----------------------------
+        //
+        // Le Codex s'arrêtait ici, au T2. Le mod, lui, va jusqu'au T5 : un joueur qui
+        // finissait la partie n'avait jamais lu une ligne sur la Forge, la Faille ou le
+        // Gardien. Un manuel qui couvre le tiers du jeu n'aide qu'au premier tiers.
+        add("machines/forge", CodexCategory.MACHINES, ModBlocks.VESKORIAN_ALLOY_FORGE,
+            CodexUnlock.item(ModBlocks.VESKORIAN_ALLOY_FORGE));
+        add("machines/relay", CodexCategory.MACHINES, ModBlocks.RESONANCE_RELAY,
+            CodexUnlock.item(ModBlocks.RESONANCE_RELAY));
+        add("machines/synthesizer", CodexCategory.MACHINES, ModBlocks.STRUCTURAL_SYNTHESIZER,
+            CodexUnlock.item(ModBlocks.STRUCTURAL_SYNTHESIZER));
+        add("machines/driller", CodexCategory.MACHINES, ModBlocks.DEEP_CRYSTAL_DRILLER,
+            CodexUnlock.item(ModBlocks.DEEP_CRYSTAL_DRILLER));
+        add("machines/slag_vent", CodexCategory.MACHINES, ModBlocks.SLAG_VENT,
+            CodexUnlock.item(ModBlocks.SLAG_VENT));
+        add("machines/compressor", CodexCategory.MACHINES, ModBlocks.FLUX_COMPRESSOR,
+            CodexUnlock.item(ModBlocks.FLUX_COMPRESSOR));
+        add("crystals/alloy", CodexCategory.CRYSTALS, ModItems.VESKORIAN_ALLOY_INGOT,
+            CodexUnlock.item(ModItems.VESKORIAN_ALLOY_INGOT));
+        add("crystals/slag", CodexCategory.CRYSTALS, ModItems.FLUX_SLAG,
+            CodexUnlock.item(ModItems.FLUX_SLAG));
+
+        // --- T4 : le réseau régional ------------------------------------------
+        add("machines/chamber", CodexCategory.MACHINES, ModBlocks.DEEP_SYNTHESIS_CHAMBER,
+            CodexUnlock.item(ModBlocks.DEEP_SYNTHESIS_CHAMBER));
+        add("machines/amplifier", CodexCategory.MACHINES, ModBlocks.HARMONIC_AMPLIFIER,
+            CodexUnlock.item(ModBlocks.HARMONIC_AMPLIFIER));
+        add("machines/hub", CodexCategory.MACHINES, ModBlocks.RESONANCE_NETWORK_HUB,
+            CodexUnlock.item(ModBlocks.RESONANCE_NETWORK_HUB));
+        add("machines/extraction_array", CodexCategory.MACHINES, ModBlocks.AUTOMATED_EXTRACTION_ARRAY,
+            CodexUnlock.item(ModBlocks.AUTOMATED_EXTRACTION_ARRAY));
+        add("machines/convergence_core", CodexCategory.MACHINES, ModBlocks.CONVERGENCE_CORE,
+            CodexUnlock.item(ModBlocks.CONVERGENCE_CORE));
+        add("crystals/hyper", CodexCategory.CRYSTALS, ModItems.HYPER_REFINED_CRYSTAL,
+            CodexUnlock.item(ModItems.HYPER_REFINED_CRYSTAL));
+        add("fields/lattice", CodexCategory.FIELDS, ModItems.HARMONIC_LATTICE,
+            CodexUnlock.item(ModItems.HARMONIC_LATTICE));
+        add("fields/calibration", CodexCategory.FIELDS, ModItems.RESONANCE_TUNER,
+            CodexUnlock.item(ModBlocks.HARMONIC_AMPLIFIER));
+
+        // --- T5 : la Faille -----------------------------------------------------
+        add("world/rift", CodexCategory.WORLD, ModBlocks.DEFORMED_STONE,
+            CodexUnlock.item(ModBlocks.DEFORMED_STONE));
+        add("machines/rift_anchor", CodexCategory.MACHINES, ModBlocks.RIFT_ANCHOR,
+            CodexUnlock.item(ModBlocks.RIFT_ANCHOR));
+        add("machines/rift_extractor", CodexCategory.MACHINES, ModBlocks.RIFT_CORE_EXTRACTOR,
+            CodexUnlock.item(ModBlocks.RIFT_CORE_EXTRACTOR));
+        add("machines/rift_ward", CodexCategory.MACHINES, ModBlocks.RIFT_WARD_EMITTER,
+            CodexUnlock.item(ModBlocks.RIFT_WARD_EMITTER));
+        add("fauna/guardian", CodexCategory.FAUNA, ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT,
+            CodexUnlock.item(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT));
+        add("crystals/essence", CodexCategory.CRYSTALS, ModItems.RIFT_ESSENCE,
+            CodexUnlock.item(ModItems.RIFT_ESSENCE));
+
         // --- Progression (paliers) ---
         add("progression/tier1", CodexCategory.PROGRESSION, ModItems.RAW_RESONANCE_CRYSTAL,
             CodexUnlock.advancement(adv("tier1_awakening")));
         add("progression/tier2", CodexCategory.PROGRESSION, ModItems.RESONANCE_BLUEPRINT,
             CodexUnlock.advancement(adv("tier2_field")));
+        add("progression/tier3", CodexCategory.PROGRESSION, ModItems.VESKORIAN_ALLOY_INGOT,
+            CodexUnlock.item(ModBlocks.VESKORIAN_CHASSIS));
+        add("progression/tier4", CodexCategory.PROGRESSION, ModItems.HYPER_REFINED_CRYSTAL,
+            CodexUnlock.item(ModItems.HYPER_REFINED_CRYSTAL));
+        add("progression/tier5", CodexCategory.PROGRESSION, ModItems.RIFT_ESSENCE,
+            CodexUnlock.item(ModBlocks.DEFORMED_STONE));
     }
 
     private CodexRegistry() {

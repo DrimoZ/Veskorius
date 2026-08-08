@@ -34,6 +34,39 @@ public class CodexGameTests {
         return ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, path);
     }
 
+    /**
+     * <b>Chaque entrée du Codex a un texte, et il n'est pas vide.</b>
+     *
+     * <p>Sans texte, le manuel affiche sa <b>clé de traduction brute</b> —
+     * {@code codex.veskorius.machines.forge.text} en pleine page. Rien ne plante, rien
+     * n'avertit : on ajoute une entrée au registre, on oublie sa langue, et le joueur
+     * ouvre une page qui lui parle en code. C'est arrivé à l'échelle d'un palier entier —
+     * le Codex s'arrêtait au T2 pendant que le mod allait au T5.
+     *
+     * <p>On vérifie sur le <b>gestionnaire de langue chargé</b>, donc sur ce que le joueur
+     * verra, et pas sur un fichier de génération.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void everyCodexEntryHasRealText(GameTestHelper helper) {
+        for (com.veskorius.codex.CodexEntry entry : com.veskorius.codex.CodexRegistry.all()) {
+            for (String key : new String[] {entry.titleKey(), entry.textKey()}) {
+                String rendered = net.minecraft.network.chat.Component.translatable(key).getString();
+                helper.assertFalse(rendered.equals(key),
+                    "Entrée " + entry.id() + " : la clé « " + key + " » n'a aucune "
+                        + "traduction, la page afficherait la clé elle-même");
+            }
+            // La longueur minimale ne vaut que pour le CORPS. Le premier jet l'appliquait
+            // aussi aux titres et refusait « Custode » — sept caractères, et le bon titre.
+            // Un seuil qui rejette la réponse juste est un seuil mal placé.
+            String body = net.minecraft.network.chat.Component
+                .translatable(entry.textKey()).getString();
+            helper.assertTrue(body.length() > 40,
+                "Entrée " + entry.id() + " : le corps fait " + body.length()
+                    + " caractères — trop court pour apprendre quoi que ce soit");
+        }
+        helper.succeed();
+    }
+
     /** Un joueur neuf : les entrées ALWAYS comptent débloquées, les ITEM non. */
     @GameTest(template = EMPTY, timeoutTicks = 40)
     public static void freshPlayerUnlocksAlwaysOnly(GameTestHelper helper) {

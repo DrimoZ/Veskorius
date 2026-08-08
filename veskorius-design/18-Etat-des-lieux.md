@@ -4,7 +4,7 @@ Généré à partir du code, pas du dossier de design. Une case cochée ici veut
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
 NeoForge 1.21.1 · Java 21 · **181 fichiers Java, ~23 800 lignes** · **38 blocs, 55 items**
-· **151 GameTest**, dont un qui vérifie que chaque machine a une recette réellement chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans que rien d'autre ne le signale.
+· **152 GameTest**, dont un qui vérifie que chaque machine a une recette réellement chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans que rien d'autre ne le signale.
 
 ---
 
@@ -90,7 +90,7 @@ lâche du fragment d'alliage — substitut de fer).
 
 ## 7. Interface
 
-- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, 35 entrées, 8 catégories.
+- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **61 entrées** couvrant les cinq paliers, 8 catégories. Affiche les **recettes** (établi et machine, lues du RecipeManager chargé), pagine le texte, cherche dans tout le livre.
   L'état de déblocage vit sur le **joueur** et survit à la mort.
 - Resonance Tuner : outil à modes (Pivoter / On-Off / Surchauffe / Redstone).
 - 12 GUI dessinés par générateur, 61 textures de bloc, palettes indexées.
