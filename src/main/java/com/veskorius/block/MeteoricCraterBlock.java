@@ -77,6 +77,12 @@ public class MeteoricCraterBlock extends Block {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hit) {
         if (!level.isClientSide) {
+            if (player instanceof net.minecraft.server.level.ServerPlayer served) {
+                // Décerné à la CUEILLETTE, pas à la possession : l'orage dure dix minutes
+                // et efface ce qu'on n'a pas pris. Ce qui se fête, c'est d'être sorti à
+                // temps — pas d'avoir un fragment en poche.
+                com.veskorius.advancement.ModAdvancements.award(served, "storm_caught", "caught");
+            }
             popResource(level, pos, new ItemStack(ModItems.METEORIC_RESONANCE_SHARD.get()));
             level.removeBlock(pos, false);
             level.playSound(null, pos, SoundEvents.AMETHYST_CLUSTER_BREAK,

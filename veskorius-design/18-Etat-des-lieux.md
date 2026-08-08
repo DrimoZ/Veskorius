@@ -4,7 +4,7 @@ Généré à partir du code, pas du dossier de design. Une case cochée ici veut
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
 NeoForge 1.21.1 · Java 21 · **236 fichiers Java, ~33 000 lignes** · **58 blocs, 88 items**
-· **163 GameTest en deux processus** (`runFastGameTests` 142 en ~27 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
+· **164 GameTest en deux processus** (`runFastGameTests` 143 en ~27 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
 
@@ -86,7 +86,9 @@ Neuf types de recette **data-driven** — un datapack change les valeurs sans re
   l'Archive), **rendus au craft**. Le T5 n'a pas de plan : on y entre en trouvant une Faille.
 - Le palier est vérifié par data component — jusque-là le plan T2 ouvrait tout le mod.
 - Trois châssis (Fracturé / Accordé / Veskorien), chacun contenant le précédent.
-- **11 advancements** couvrant les cinq paliers, du premier cristal au Gardien vaincu.
+- **17 advancements** : la colonne des cinq paliers, PLUS six branches pour le facultatif
+  (le multi-bloc, le mini-boss de l'Archive, l'orage, l'agriculture, le verre lumineux, la
+  boucle des déchets). Un arbre qui ne montre qu'un chemin dit qu'il n'y en a qu'un.
   Le critère de palier lit lui aussi le data component : sans ça, les quatre plans
   décerneraient les quatre paliers d'un coup.
 

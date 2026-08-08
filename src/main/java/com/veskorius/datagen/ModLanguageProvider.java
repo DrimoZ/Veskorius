@@ -436,6 +436,24 @@ public class ModLanguageProvider extends LanguageProvider {
         add("advancements.veskorius.first_strider.title", "Something Still Grows");
         add("advancements.veskorius.first_strider.description",
             "Harvest a Resonance Spore. The Crystal Striders will follow it anywhere.");
+        add("advancements.veskorius.convergence_formed.title", "The Figure Closes");
+        add("advancements.veskorius.convergence_formed.description",
+            "Eight relays at five blocks, every one of them seeing the centre. The Core was inert until the last one went down.");
+        add("advancements.veskorius.archivist_slain.title", "The Reading Room Is Yours");
+        add("advancements.veskorius.archivist_slain.description",
+            "It guarded two crystals you did not strictly need. You went anyway.");
+        add("advancements.veskorius.storm_caught.title", "Out in the Storm");
+        add("advancements.veskorius.storm_caught.description",
+            "Ten minutes, and what you leave on the ground is gone. You went outside.");
+        add("advancements.veskorius.closed_loop.title", "Nothing Is Thrown Away");
+        add("advancements.veskorius.closed_loop.description",
+            "Slag becomes gravel, sludge becomes dust. The network stopped costing you material.");
+        add("advancements.veskorius.first_bloom.title", "It Grew");
+        add("advancements.veskorius.first_bloom.description",
+            "One seed in five Archives, and one plant is enough forever.");
+        add("advancements.veskorius.luminous_glass.title", "Light Made of Flowers");
+        add("advancements.veskorius.luminous_glass.description",
+            "Farmed, crushed, and fired into a wall that lights the room by itself.");
         add("advancements.veskorius.tier3_relay.title", "Alloy");
         add("advancements.veskorius.tier3_relay.description",
             "The Sigma Laboratory gave up its plan. Metal now takes resonance — and leaves slag behind.");

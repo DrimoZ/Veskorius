@@ -204,6 +204,109 @@ public class ModAdvancementProvider extends AdvancementProvider {
                 .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "rift_guardian_slain"),
                     existingFileHelper);
 
+            // --- LES BRANCHES FACULTATIVES ------------------------------------
+            //
+            // L'arbre était une SEULE colonne vertébrale : cinq paliers en file, plus
+            // trois brindilles de début de partie. Or l'essentiel de ce mod est
+            // facultatif — le multi-bloc, le mini-boss de l'Archive, l'orage,
+            // l'agriculture, la boucle des déchets — et c'est précisément le
+            // facultatif qui a besoin d'un panneau : rien n'y pousse le joueur.
+            //
+            // Un arbre qui ne montre qu'un chemin dit qu'il n'y en a qu'un.
+
+            // Le seul multi-bloc du mod. Décerné quand la FIGURE SE REFERME, pas quand
+            // on fabrique la pièce centrale — le Cœur seul est inerte, tout le travail
+            // est dans les huit relais et leurs lignes de vue.
+            Advancement.Builder.advancement()
+                .parent(tier4)
+                .display(
+                    ModBlocks.CONVERGENCE_CORE.get(),
+                    Component.translatable("advancements.veskorius.convergence_formed.title"),
+                    Component.translatable("advancements.veskorius.convergence_formed.description"),
+                    null,
+                    AdvancementType.GOAL,
+                    true, true, false)
+                .addCriterion("formed", impossible())
+                .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID,
+                    "convergence_formed"), existingFileHelper);
+
+            // Le mini-boss facultatif de l'Archive. CHALLENGE comme le Gardien : on ne
+            // le refait pas.
+            Advancement.Builder.advancement()
+                .parent(tier4)
+                .display(
+                    ModItems.HYPER_REFINED_CRYSTAL.get(),
+                    Component.translatable("advancements.veskorius.archivist_slain.title"),
+                    Component.translatable("advancements.veskorius.archivist_slain.description"),
+                    null,
+                    AdvancementType.CHALLENGE,
+                    true, true, false)
+                .addCriterion("slain", net.minecraft.advancements.critereon.KilledTrigger.TriggerInstance
+                    .playerKilledEntity(net.minecraft.advancements.critereon.EntityPredicate.Builder.entity()
+                        .of(com.veskorius.entity.ModEntities.CUSTODE_ARCHIVISTE.get())))
+                .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID,
+                    "archivist_slain"), existingFileHelper);
+
+            // L'orage : décerné à la CUEILLETTE d'un cratère, pas à la possession d'un
+            // fragment. Ce qui se fête, c'est d'être sorti pendant les dix minutes.
+            Advancement.Builder.advancement()
+                .parent(tier3)
+                .display(
+                    ModItems.METEORIC_RESONANCE_SHARD.get(),
+                    Component.translatable("advancements.veskorius.storm_caught.title"),
+                    Component.translatable("advancements.veskorius.storm_caught.description"),
+                    null,
+                    AdvancementType.GOAL,
+                    true, true, false)
+                .addCriterion("caught", impossible())
+                .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID,
+                    "storm_caught"), existingFileHelper);
+
+            // La boucle des déchets refermée : le Récupérateur rend de la matière.
+            Advancement.Builder.advancement()
+                .parent(tier3)
+                .display(
+                    ModBlocks.RECLAIMER.get(),
+                    Component.translatable("advancements.veskorius.closed_loop.title"),
+                    Component.translatable("advancements.veskorius.closed_loop.description"),
+                    null,
+                    AdvancementType.TASK,
+                    true, true, false)
+                .addCriterion("has_reclaimer",
+                    InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.RECLAIMER.get()))
+                .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID,
+                    "closed_loop"), existingFileHelper);
+
+            // L'agriculture, et sa suite décorative. Deux advancements plutôt qu'un :
+            // la graine se trouve une fois sur cinq, le verre lumineux se mérite après.
+            AdvancementHolder bloom = Advancement.Builder.advancement()
+                .parent(tier4)
+                .display(
+                    ModItems.RESONANCE_BLOOM.get(),
+                    Component.translatable("advancements.veskorius.first_bloom.title"),
+                    Component.translatable("advancements.veskorius.first_bloom.description"),
+                    null,
+                    AdvancementType.TASK,
+                    true, true, false)
+                .addCriterion("has_bloom",
+                    InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.RESONANCE_BLOOM.get()))
+                .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID,
+                    "first_bloom"), existingFileHelper);
+
+            Advancement.Builder.advancement()
+                .parent(bloom)
+                .display(
+                    ModBlocks.LUMINOUS_RESONANCE_GLASS.get(),
+                    Component.translatable("advancements.veskorius.luminous_glass.title"),
+                    Component.translatable("advancements.veskorius.luminous_glass.description"),
+                    null,
+                    AdvancementType.TASK,
+                    true, true, false)
+                .addCriterion("has_glass", InventoryChangeTrigger.TriggerInstance.hasItems(
+                    ModBlocks.LUMINOUS_RESONANCE_GLASS.get()))
+                .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID,
+                    "luminous_glass"), existingFileHelper);
+
             Advancement.Builder.advancement()
                 .parent(awakening)
                 .display(
@@ -226,6 +329,24 @@ public class ModAdvancementProvider extends AdvancementProvider {
          * exactement le piège qui rendait la garde des recettes décorative avant qu'on
          * la répare. Ici il aurait fait sonner les quatre paliers au premier plan ramassé.
          */
+        /**
+         * Critère <b>impossible</b> : rien ne le satisfait jamais tout seul.
+         *
+         * <p>C'est le motif standard pour un advancement décerné DEPUIS LE CODE — ici la
+         * figure du Cœur de Convergence qui se referme, et la cueillette d'un cratère
+         * pendant un orage. Aucun déclencheur vanilla ne sait décrire ces deux moments :
+         * « posséder le bloc » ne dit rien du multi-bloc, et « posséder un fragment » ne
+         * dit rien de l'avoir ramassé à temps.
+         *
+         * <p>Voir {@link com.veskorius.advancement.ModAdvancements} pour l'octroi.
+         */
+        private static net.minecraft.advancements.Criterion<
+                net.minecraft.advancements.critereon.ImpossibleTrigger.TriggerInstance> impossible() {
+            return new net.minecraft.advancements.Criterion<>(
+                net.minecraft.advancements.CriteriaTriggers.IMPOSSIBLE,
+                new net.minecraft.advancements.critereon.ImpossibleTrigger.TriggerInstance());
+        }
+
         private static net.minecraft.advancements.Criterion<InventoryChangeTrigger.TriggerInstance>
                 hasBlueprint(int tier) {
             return InventoryChangeTrigger.TriggerInstance.hasItems(

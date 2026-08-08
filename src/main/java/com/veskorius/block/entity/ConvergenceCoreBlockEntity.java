@@ -88,6 +88,15 @@ public class ConvergenceCoreBlockEntity extends BlockEntity implements IResonanc
             core.formed = isFormed(serverLevel, pos);
             if (core.formed != wasFormed) {
                 core.onFormChanged(serverLevel, pos, state);
+                if (core.formed) {
+                    // LE SEUL MOMENT DU MOD QU'AUCUN CRITÈRE VANILLA NE SAIT DÉCRIRE.
+                    // « Posséder le bloc » ne veut rien dire ici : le Cœur seul est inerte,
+                    // et tout le travail est dans les huit relais posés à cinq blocs avec
+                    // vue dégagée. C'est la figure qui se referme qu'on récompense, pas
+                    // l'objet qu'on a fabriqué.
+                    com.veskorius.advancement.ModAdvancements.awardNearby(
+                        serverLevel, pos, "convergence_formed", "formed");
+                }
             }
         }
         if (!core.formed) {

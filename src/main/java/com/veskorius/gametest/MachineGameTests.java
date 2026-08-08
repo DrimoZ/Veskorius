@@ -2020,6 +2020,32 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    /**
+     * <b>Les advancements décernés par le code existent réellement.</b>
+     *
+     * <p>Deux d'entre eux reposent sur un critère {@code impossible} : la figure du Cœur de
+     * Convergence qui se referme, et la cueillette d'un cratère pendant un orage. Aucun
+     * déclencheur vanilla ne sait décrire ces moments, donc le code les décerne à la main —
+     * en les cherchant <b>par identifiant</b>.
+     *
+     * <p>Une faute de frappe dans cet identifiant ne casse rien : {@code get()} rend
+     * {@code null}, l'octroi ne se produit pas, et le joueur ne décroche jamais un
+     * advancement dont rien n'indique qu'il aurait dû l'avoir. C'est une panne muette de
+     * bout en bout — et la seule façon de l'attraper est de vérifier que l'identifiant
+     * résout.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void codeGrantedAdvancementsResolve(GameTestHelper helper) {
+        for (String path : new String[] {"convergence_formed", "storm_caught"}) {
+            var id = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                com.veskorius.Veskorius.MOD_ID, path);
+            helper.assertTrue(helper.getLevel().getServer().getAdvancements().get(id) != null,
+                "L'advancement « " + path + " » est décerné depuis le code mais son "
+                    + "identifiant ne résout pas : il ne sera jamais obtenu, sans erreur");
+        }
+        helper.succeed();
+    }
+
     // --- Utilitaires ---------------------------------------------------------
 
     private static IItemHandler assemblerInventory(GameTestHelper helper) {

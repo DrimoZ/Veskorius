@@ -374,7 +374,25 @@ public class ModFrenchLangProvider extends LanguageProvider {
         add("advancements.veskorius.first_strider.title", "Quelque chose pousse encore");
         add("advancements.veskorius.first_strider.description",
             "Récolter un Resonance Spore. Les Fileurs de Cristal le suivront n'importe où.");
-                add("advancements.veskorius.tier3_relay.title", "Alliage");
+                add("advancements.veskorius.convergence_formed.title", "La figure se referme");
+        add("advancements.veskorius.convergence_formed.description",
+            "Huit relais à cinq blocs, chacun voyant le centre. Le Cœur est resté inerte jusqu'au dernier.");
+        add("advancements.veskorius.archivist_slain.title", "La salle de lecture est à vous");
+        add("advancements.veskorius.archivist_slain.description",
+            "Il gardait deux cristaux dont vous n'aviez pas strictement besoin. Vous y êtes allé quand même.");
+        add("advancements.veskorius.storm_caught.title", "Dehors, sous l'orage");
+        add("advancements.veskorius.storm_caught.description",
+            "Dix minutes, et ce qu'on laisse au sol disparaît. Vous êtes sorti.");
+        add("advancements.veskorius.closed_loop.title", "Plus rien ne se jette");
+        add("advancements.veskorius.closed_loop.description",
+            "La scorie devient gravier, la boue devient poussière. Le réseau a cessé de vous coûter de la matière.");
+        add("advancements.veskorius.first_bloom.title", "Ça a poussé");
+        add("advancements.veskorius.first_bloom.description",
+            "Une graine dans une Archive sur cinq, et un seul plant suffit pour toujours.");
+        add("advancements.veskorius.luminous_glass.title", "De la lumière faite de fleurs");
+        add("advancements.veskorius.luminous_glass.description",
+            "Cultivée, broyée, puis cuite en un mur qui éclaire la pièce tout seul.");
+        add("advancements.veskorius.tier3_relay.title", "Alliage");
         add("advancements.veskorius.tier3_relay.description",
             "Le Sigma Laboratory a rendu son plan. Le métal prend la Résonance — et laisse de la scorie.");
         add("advancements.veskorius.tier4_amplifier.title", "Synthèse profonde");
