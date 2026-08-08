@@ -110,6 +110,14 @@ public class Veskorius {
                 output.accept(ModItems.RIFT_WARD_EMITTER_ITEM.get());
                 output.accept(ModItems.RIFT_ESSENCE.get());
                 output.accept(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT.get());
+                // Outils et armure.
+                output.accept(ModItems.VESKORIAN_ALLOY_SWORD.get());
+                output.accept(ModItems.VESKORIAN_ALLOY_PICKAXE.get());
+                output.accept(ModItems.VESKORIAN_ALLOY_HELMET.get());
+                output.accept(ModItems.VESKORIAN_ALLOY_CHESTPLATE.get());
+                output.accept(ModItems.VESKORIAN_ALLOY_LEGGINGS.get());
+                output.accept(ModItems.VESKORIAN_ALLOY_BOOTS.get());
+                output.accept(ModItems.RIFT_WARD_PLATE.get());
                 output.accept(ModItems.DEFORMED_STONE_ITEM.get());
                 // Architecture de donjon (17-Dungeons.md) : groupée en fin d'onglet
                 // parce qu'on la cherche en construisant, pas en progressant.
@@ -139,6 +147,7 @@ public class Veskorius {
             com.veskorius.config.HarmonicsConfig.SPEC, "veskorius-harmonics.toml");
 
         ModItems.ITEMS.register(modEventBus);
+        com.veskorius.item.ModTiers.ARMOR_MATERIALS.register(modEventBus);
         ModDataComponents.COMPONENTS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);

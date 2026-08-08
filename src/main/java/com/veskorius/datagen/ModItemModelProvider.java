@@ -58,6 +58,14 @@ public class ModItemModelProvider extends ItemModelProvider {
                 withExistingParent(name, mcLoc("item/template_spawn_egg"));
                 continue;
             }
+            if (item instanceof net.minecraft.world.item.TieredItem) {
+                // handheld et non generated : c'est ce parent qui incline l'objet dans la
+                // main. Une épée en `generated` se tient à plat devant le personnage, ce
+                // qui ne saute aux yeux qu'une fois l'objet équipé.
+                singleTexture(name, mcLoc("item/handheld"), "layer0",
+                    modLoc("item/" + name));
+                continue;
+            }
             basicItem(item);
         }
     }

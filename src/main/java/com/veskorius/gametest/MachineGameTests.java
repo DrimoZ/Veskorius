@@ -2532,6 +2532,50 @@ public class MachineGameTests {
     }
 
     /**
+     * <b>L'armure d'alliage répond au déphasage, et le Rift-Ward Plate l'annule.</b>
+     *
+     * <p>C'est la seule raison d'être de cette armure : sa protection est celle du
+     * diamant, donc si elle ne faisait rien de plus, la fabriquer serait un détour coûteux
+     * vers un équipement qu'on a déjà. Et le déphasage est le seul dégât du mod qu'aucune
+     * armure vanilla n'atténue — il ne frappe pas, il désaccorde.
+     *
+     * <p>Le seuil est la panoplie <b>complète</b>, pas un quart par pièce : on ne sait pas
+     * qu'on a « 50 % » en portant deux pièces, on constate vaguement qu'on meurt moins
+     * vite. Un seuil franc se lit, et donne une raison de finir la panoplie.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
+    public static void alloyArmourBluntsPhaseDamage(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        helper.assertTrue(com.veskorius.item.VeskoriusArmor.phaseDamageFactor(player) == 1.0f,
+            "Sans armure : le déphasage frappe à plein");
+
+        for (var slot : new net.minecraft.world.entity.EquipmentSlot[] {
+            net.minecraft.world.entity.EquipmentSlot.HEAD,
+            net.minecraft.world.entity.EquipmentSlot.LEGS,
+            net.minecraft.world.entity.EquipmentSlot.FEET}) {
+            player.setItemSlot(slot, new ItemStack(switch (slot) {
+                case HEAD -> ModItems.VESKORIAN_ALLOY_HELMET.get();
+                case LEGS -> ModItems.VESKORIAN_ALLOY_LEGGINGS.get();
+                default -> ModItems.VESKORIAN_ALLOY_BOOTS.get();
+            }));
+        }
+        helper.assertTrue(com.veskorius.item.VeskoriusArmor.phaseDamageFactor(player) == 1.0f,
+            "Trois pièces sur quatre : pas encore d'atténuation, le seuil est la panoplie");
+
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+            new ItemStack(ModItems.VESKORIAN_ALLOY_CHESTPLATE.get()));
+        helper.assertTrue(com.veskorius.item.VeskoriusArmor.phaseDamageFactor(player) == 0.5f,
+            "Panoplie complète : le déphasage est divisé par deux");
+
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+            new ItemStack(ModItems.RIFT_WARD_PLATE.get()));
+        helper.assertTrue(com.veskorius.item.VeskoriusArmor.phaseDamageFactor(player) == 0.0f,
+            "Rift-Ward Plate : immunité totale, à lui seul. C'est ce qui justifie qu'il "
+                + "coûte le butin garanti d'une Faille entière.");
+        helper.succeed();
+    }
+
+    /**
      * <b>Le délai de grâce existe et il est court.</b> Sans lui, s'approcher tue sans
      * prévenir et la Faille est un piège ; trop long, on s'y installe et la contrainte
      * disparaît. Trois secondes : le temps de voir, de comprendre et de reculer.

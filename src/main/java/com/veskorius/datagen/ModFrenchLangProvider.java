@@ -136,6 +136,13 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addItem(ModItems.CONCENTRATED_FLUX, "Flux Concentré");
         addItem(ModItems.HYPER_REFINED_CRYSTAL, "Cristal Hyper-Raffiné");
         addItem(ModItems.HARMONIC_LATTICE, "Treillis Harmonique");
+        addItem(ModItems.VESKORIAN_ALLOY_SWORD, "Épée en Alliage Veskorien");
+        addItem(ModItems.VESKORIAN_ALLOY_PICKAXE, "Pioche en Alliage Veskorien");
+        addItem(ModItems.VESKORIAN_ALLOY_HELMET, "Casque en Alliage Veskorien");
+        addItem(ModItems.VESKORIAN_ALLOY_CHESTPLATE, "Plastron en Alliage Veskorien");
+        addItem(ModItems.VESKORIAN_ALLOY_LEGGINGS, "Jambières en Alliage Veskorien");
+        addItem(ModItems.VESKORIAN_ALLOY_BOOTS, "Bottes en Alliage Veskorien");
+        addItem(ModItems.RIFT_WARD_PLATE, "Plastron Anti-Faille");
         addItem(ModItems.RIFT_ESSENCE, "Essence de Faille");
         addItem(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT, "Lingot d'Alliage Corrompu");
         addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Bloc d'Alliage Veskorien");

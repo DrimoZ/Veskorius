@@ -308,6 +308,48 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.HARMONIC_LATTICE.get(), 2)
                 .requires(blueprint(4)));
 
+        // --- Outils et armure en alliage (04-Materials.md) ---------------------
+        //
+        // Formes vanilla, délibérément : une épée se craft comme une épée. Le mod a déjà
+        // sa grammaire propre pour les machines (châssis + pièce distinctive) ; l'imposer
+        // aussi à l'équipement obligerait à réapprendre ce que tout le monde sait déjà.
+        // Le blueprint T3 suffit à en faire un équipement de palier.
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.VESKORIAN_ALLOY_SWORD.get())
+            .pattern("A").pattern("A").pattern("S")
+            .define('A', ModItems.VESKORIAN_ALLOY_INGOT.get())
+            .define('S', Items.STICK)
+            .unlockedBy(getHasName(ModItems.VESKORIAN_ALLOY_INGOT.get()),
+                has(ModItems.VESKORIAN_ALLOY_INGOT.get()))
+            .save(recipeOutput);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.VESKORIAN_ALLOY_PICKAXE.get())
+            .pattern("AAA").pattern(" S ").pattern(" S ")
+            .define('A', ModItems.VESKORIAN_ALLOY_INGOT.get())
+            .define('S', Items.STICK)
+            .unlockedBy(getHasName(ModItems.VESKORIAN_ALLOY_INGOT.get()),
+                has(ModItems.VESKORIAN_ALLOY_INGOT.get()))
+            .save(recipeOutput);
+
+        armorPiece(recipeOutput, ModItems.VESKORIAN_ALLOY_HELMET.get(), "AAA", "A A", "   ");
+        armorPiece(recipeOutput, ModItems.VESKORIAN_ALLOY_CHESTPLATE.get(), "A A", "AAA", "AAA");
+        armorPiece(recipeOutput, ModItems.VESKORIAN_ALLOY_LEGGINGS.get(), "AAA", "A A", "A A");
+        armorPiece(recipeOutput, ModItems.VESKORIAN_ALLOY_BOOTS.get(), "   ", "A A", "A A");
+
+        // Rift-Ward Plate. Le dossier demande aussi 2 Meteoric Resonance Shard — un objet
+        // qui N'EXISTE PAS dans le mod, et qui aurait rendu la dernière pièce
+        // d'équipement du jeu infabricable. Son propre raisonnement dit pourtant que la
+        // pièce est « calibrée pour être atteignable avec le seul drop garanti d'une
+        // Faille », soit les 3 lingots corrompus du Gardien : l'éclat est l'intrus, et il
+        // est retiré. 04-Materials.md porte la révision.
+        net.minecraft.data.recipes.ShapelessRecipeBuilder
+            .shapeless(RecipeCategory.COMBAT, ModItems.RIFT_WARD_PLATE.get())
+            .requires(ModItems.VESKORIAN_ALLOY_CHESTPLATE.get())
+            .requires(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT.get(), 3)
+            .requires(ModItems.RIFT_ESSENCE.get())
+            .unlockedBy(getHasName(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT.get()),
+                has(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT.get()))
+            .save(recipeOutput);
+
         // --- Matériau T4 : le Treillis Harmonique -------------------------------
         //
         // 4 lingots CONDUCTEURS + 2 Hyper Refined (04-Materials.md). Première recette à
@@ -497,6 +539,17 @@ public class ModRecipeProvider extends RecipeProvider {
             .define('#', bricks)
             .define('d', ModItems.RESONANCE_DUST.get())
             .unlockedBy(getHasName(ModItems.RESONANCE_DUST.get()), has(ModItems.RESONANCE_DUST.get()))
+            .save(output);
+    }
+
+    /** Une pièce d'armure, forme vanilla. Trois lignes, l'alliage en 'A'. */
+    private void armorPiece(RecipeOutput output, net.minecraft.world.item.Item result,
+                            String top, String middle, String bottom) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, result)
+            .pattern(top).pattern(middle).pattern(bottom)
+            .define('A', ModItems.VESKORIAN_ALLOY_INGOT.get())
+            .unlockedBy(getHasName(ModItems.VESKORIAN_ALLOY_INGOT.get()),
+                has(ModItems.VESKORIAN_ALLOY_INGOT.get()))
             .save(output);
     }
 

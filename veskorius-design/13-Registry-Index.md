@@ -68,9 +68,9 @@ est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments 
 
 | Registry name proposé | Défini dans | Statut code |
 |---|---|---|
-| `veskorian_alloy_sword` / `_pickaxe` | 04 | À coder (Phase 2) |
-| `veskorian_alloy_helmet` / `_chestplate` / `_leggings` / `_boots` | 04 | À coder (Phase 2) |
-| `rift_ward_plate` (remplace le `veskorian_alloy_chestplate`, pas cumulatif) | 04 | À coder (Phase 4) |
+| `veskorian_alloy_sword` / `_pickaxe` | 04 | ✅ codés |
+| `veskorian_alloy_helmet` / `_chestplate` / `_leggings` / `_boots` | 04 | ✅ codés — panoplie complète = déphasage ÷ 2 |
+| `rift_ward_plate` (remplace le `veskorian_alloy_chestplate`, pas cumulatif) | 04 | ✅ codé — immunité totale au déphasage, −10 % de vitesse de minage |
 | `resonance_tuner` | 05, 12 | ✅ codé (outil à modes : Pivoter/On-Off/Surchauffe/Redstone) |
 | `resonance_locator` | 05, 07, 12 | ✅ codé (détecteur courte portée : poche de cristal ou signature de champ ; batterie interne ; modes Ressources/Structures). **Porté, il active le HUD de champ** — inventaire ou slot Curios |
 | `resonance_storage_cell` | 05 | ✅ codé (batterie portable 8000 Osc ; alimente le Locator) |

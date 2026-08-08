@@ -82,10 +82,10 @@ carburant premium au Field Emitter (registre de carburants data-driven, `14`).
 
 | Item | Tier | Stats de référence |
 |---|---|---|
-| Épée en Alliage Veskorien | T3 | Dégâts équivalents diamant, durabilité +20% |
-| Pioche en Alliage Veskorien | T3 | Tier netherite, requise pour miner `ancient_conduit_stone` sans le casser |
-| Armure en Alliage Veskorien | T3 | Protection diamant ; réduit de moitié les dégâts de déphasage près d'une Faille non ancrée |
-| **Rift-Ward Plate** (upgrade, pièce unique) | T5 | Craft : Plastron en Alliage Veskorien + 3 Corrupted Alloy Ingot + 2 Meteoric Resonance Shard. Protection plastron diamant + immunité totale au déphasage sur tout le corps ; contrepartie : -10% vitesse de minage tant qu'elle est portée |
+| Épée en Alliage Veskorien | T3 | ✅ codée — dégâts diamant, 1873 utilisations (+20 %) |
+| Pioche en Alliage Veskorien | T3 | ✅ codée — tier netherite. Son rôle sur `ancient_conduit_stone` attend ce bloc, qui n'existe pas encore |
+| Armure en Alliage Veskorien | T3 | ✅ codée — protection diamant ; la **panoplie complète** divise par deux le déphasage. Seuil franc plutôt qu'un quart par pièce : un quart par pièce ne se lit pas en jeu |
+| **Rift-Ward Plate** (upgrade, pièce unique) | T5 | Craft *révisé* : Plastron en Alliage Veskorien + 3 Corrupted Alloy Ingot + 1 Rift Essence. **Les 2 Meteoric Resonance Shard sont retirés** : cet objet n'existe pas dans le mod, et l'exiger rendait la dernière pièce d'équipement du jeu infabricable — le raisonnement de cette même ligne dit pourtant qu'elle est calibrée sur le seul butin garanti d'une Faille. Protection plastron diamant + immunité totale au déphasage sur tout le corps ; contrepartie : -10% vitesse de minage tant qu'elle est portée |
 
 ## Problèmes / Alternatives rejetées
 

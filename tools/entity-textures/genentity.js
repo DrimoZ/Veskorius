@@ -54,10 +54,57 @@ function riftGuardian() {
   return c;
 }
 
+/**
+ * Couches d'armure portée. Ce ne sont pas des textures d'objet : elles s'appliquent sur
+ * le MODELE du joueur, donc ce qui compte est la répartition des valeurs sur des bandes
+ * larges — un détail fin y disparaît complètement.
+ *
+ * Deux fichiers obligatoires : layer_1 porte casque, plastron et bottes, layer_2 les
+ * jambières. Il en manque un et le joueur s'affiche en damier violet — un défaut qu'on ne
+ * voit qu'en équipant, jamais en regardant l'objet.
+ */
+function armorLayer(second) {
+  const c = new Canvas(64, 32);
+  const A = { line: '#2A2833', deep: '#4A4658', mid: '#7C7890', lite: '#A8A4BA', hot: '#D2CEE0' };
+  const V = { deep: '#5C2C86', mid: '#8A47B8', hot: '#E4CCF7' };
+  const r = rng(second ? 0xB02 : 0xB01);
+  // Toute la planche en métal, grain léger : ce qui n'est pas utilisé par le modèle ne
+  // se voit pas, et remplir évite les bavures aux coutures.
+  c.rect(0, 0, 64, 32, A.mid);
+  for (let y = 0; y < 32; y++) {
+    for (let x = 0; x < 64; x++) {
+      if (r() > 0.86) c.set(x, y, A.deep);
+      else if (r() > 0.94) c.set(x, y, A.lite);
+    }
+  }
+  // Bandes horizontales : elles lisent comme des plaques rivetées une fois sur le corps.
+  for (let y = second ? 4 : 6; y < 32; y += 6) c.rect(0, y, 64, 1, A.line);
+  if (!second) {
+    // La veine de résonance sur le torse (zone du plastron du modèle vanilla).
+    for (let y = 21; y < 31; y++) c.set(22, y, V.mid);
+    c.set(22, 24, V.hot);
+    // Épaulières : deux carrés plus clairs aux zones de bras.
+    c.rect(44, 18, 8, 4, A.lite);
+    c.rect(52, 18, 8, 4, A.lite);
+  }
+  return c;
+}
+
 const out = process.argv[2];
 fs.mkdirSync(out, { recursive: true });
 const set = { rift_guardian: riftGuardian() };
 for (const [n, c] of Object.entries(set)) {
   fs.writeFileSync(path.join(out, n + '.png'), encodePNG(S, S, c.px));
+}
+// Les couches d'armure vont ailleurs : models/armor, pas entity.
+const armorOut = process.argv[3];
+if (armorOut) {
+  fs.mkdirSync(armorOut, { recursive: true });
+  for (const [suffix, second] of [['1', false], ['2', true]]) {
+    const c = armorLayer(second);
+    fs.writeFileSync(path.join(armorOut, 'veskorian_alloy_layer_' + suffix + '.png'),
+      encodePNG(64, 32, c.px));
+  }
+  console.log('2 couches d armure');
 }
 console.log(Object.keys(set).length + ' texture(s) d\'entité');

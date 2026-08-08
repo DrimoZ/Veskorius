@@ -356,6 +356,96 @@ const items = {
     for (const [x, y] of [[5, 10], [8, 10], [11, 9]]) c.set(x, y, RIFT.line);
   },
 
+  // --- Outils et armure ----------------------------------------------------
+  //
+  // Silhouettes vanilla, delibérément : une épée doit se lire comme une épée dans une
+  // barre d'action, à la découpe, avant toute couleur. Ce qui les rattache au mod est
+  // la MATIERE — l'acier pale de l'alliage et la veine de résonance, jamais la forme.
+
+  veskorian_alloy_sword: (c) => {
+    // Lame en diagonale, du coin bas-gauche au coin haut-droit.
+    for (let i = 0; i < 10; i++) {
+      c.set(4 + i, 11 - i, ALLOY.lite);
+      c.set(5 + i, 11 - i, ALLOY.mid);
+      c.set(4 + i, 12 - i, ALLOY.line);
+    }
+    c.set(13, 2, ALLOY.hot);
+    // Garde et poignée.
+    for (let i = 0; i < 4; i++) c.set(2 + i, 14 - i, WOOD.mid);
+    c.set(2, 14, WOOD.deep);
+    c.line(2, 11, 6, 15, BRASS.mid);
+    c.set(4, 13, V.mid);
+  },
+
+  veskorian_alloy_pickaxe: (c) => {
+    // Tête en arc, manche en diagonale.
+    for (let i = 0; i < 5; i++) { c.set(3 + i, 4 - Math.min(i, 2), ALLOY.mid); }
+    for (let i = 0; i < 5; i++) { c.set(8 + i, 2 + Math.min(i, 2), ALLOY.mid); }
+    c.rect(3, 5, 10, 1, ALLOY.line);
+    c.rect(6, 3, 4, 1, ALLOY.lite);
+    c.set(7, 3, V.mid);
+    for (let i = 0; i < 8; i++) { c.set(7 + i - i, 6 + i, WOOD.mid); c.set(6 - 0, 6 + i, WOOD.mid); }
+    for (let i = 0; i < 8; i++) c.set(6, 6 + i, WOOD.deep);
+    for (let i = 0; i < 8; i++) c.set(7, 6 + i, WOOD.lite);
+  },
+
+  veskorian_alloy_helmet: (c) => {
+    const dome = [[3, 4, 11], [4, 3, 12], [5, 2, 13], [6, 2, 13], [7, 2, 13]];
+    outline(c, dome, ALLOY.line);
+    fill(c, dome, ALLOY.mid);
+    fill(c, [[4, 4, 8], [5, 3, 7]], ALLOY.lite);
+    // Visière ouverte : la bande sombre qui fait lire « casque » et non « bol ».
+    c.rect(3, 8, 10, 3, ALLOY.deep);
+    c.rect(4, 9, 8, 1, IRON.line);
+    c.set(7, 6, V.mid);
+    c.set(8, 6, V.hot);
+    c.rect(2, 11, 12, 2, ALLOY.mid);
+    c.rect(2, 11, 12, 1, ALLOY.lite);
+  },
+
+  veskorian_alloy_chestplate: (c) => {
+    bar(c, ALLOY, 4, 4, 8, 9);
+    // Epaulieres, qui debordent : c'est ce qui separe un plastron d'une plaque.
+    c.rect(2, 3, 3, 4, ALLOY.mid); c.rect(2, 3, 3, 1, ALLOY.lite);
+    c.rect(11, 3, 3, 4, ALLOY.mid); c.rect(11, 3, 3, 1, ALLOY.lite);
+    c.rect(7, 5, 2, 6, ALLOY.line);
+    c.rect(7, 6, 2, 2, V.mid);
+    c.set(7, 6, V.hot);
+  },
+
+  veskorian_alloy_leggings: (c) => {
+    bar(c, ALLOY, 4, 2, 8, 5);
+    // Deux jambes separees par un vide : la silhouette la plus reconnaissable du lot.
+    c.rect(4, 7, 3, 7, ALLOY.mid); c.rect(4, 7, 1, 7, ALLOY.lite);
+    c.rect(9, 7, 3, 7, ALLOY.mid); c.rect(9, 7, 1, 7, ALLOY.lite);
+    c.rect(4, 13, 3, 1, ALLOY.deep);
+    c.rect(9, 13, 3, 1, ALLOY.deep);
+    c.set(7, 4, V.mid);
+  },
+
+  veskorian_alloy_boots: (c) => {
+    for (const x of [3, 9]) {
+      c.rect(x, 6, 4, 5, ALLOY.mid);
+      c.rect(x, 6, 4, 1, ALLOY.lite);
+      c.rect(x, 11, 4, 2, ALLOY.deep);
+      c.rect(x, 12, 4, 1, ALLOY.line);
+    }
+    c.set(4, 8, V.mid);
+    c.set(10, 8, V.mid);
+  },
+
+  // Le plastron anti-Faille : MEME silhouette que celui d'alliage, matiere de la Faille.
+  // On doit voir que c'est le meme objet, transforme — pas un objet de plus.
+  rift_ward_plate: (c) => {
+    bar(c, RIFT, 4, 4, 8, 9);
+    c.rect(2, 3, 3, 4, RIFT.mid); c.rect(2, 3, 3, 1, RIFT.lite);
+    c.rect(11, 3, 3, 4, RIFT.mid); c.rect(11, 3, 3, 1, RIFT.lite);
+    // Le coeur noir de la Faille, au centre de la poitrine.
+    c.rect(6, 6, 4, 4, RIFT.deep);
+    c.rect(7, 7, 2, 2, '#0A0410');
+    for (const [x, y] of [[5, 5], [10, 5], [5, 10], [10, 10]]) c.set(x, y, RIFT.hot);
+  },
+
   concentrated_flux: (c) => {
     const vial = [[3, 6, 9], [4, 5, 10], [5, 4, 11], [6, 4, 11], [7, 4, 11],
       [8, 4, 11], [9, 4, 11], [10, 5, 10], [11, 6, 9], [12, 7, 8]];

@@ -180,7 +180,13 @@ public class RiftCoreBlockEntity extends BlockEntity {
             present.add(target.getUUID());
             int ticks = exposure.merge(target.getUUID(), 1, Integer::sum);
             if (ticks > GRACE_TICKS && (ticks - GRACE_TICKS) % DAMAGE_INTERVAL == 0) {
-                target.hurt(com.veskorius.energy.ModDamageTypes.discharge(level), DAMAGE);
+                // L'armure d'alliage répond au déphasage — c'est sa seule vraie raison
+                // d'être, sa protection étant celle du diamant. Facteur nul avec le
+                // Rift-Ward Plate : la Faille cesse de mordre.
+                float damage = DAMAGE * com.veskorius.item.VeskoriusArmor.phaseDamageFactor(target);
+                if (damage > 0.0f) {
+                    target.hurt(com.veskorius.energy.ModDamageTypes.discharge(level), damage);
+                }
             }
         }
         // Sorti du rayon = compteur remis à zéro : le déphasage ne s'accumule pas d'une

@@ -149,6 +149,14 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.CONCENTRATED_FLUX, "Concentrated Flux");
         addItem(ModItems.HYPER_REFINED_CRYSTAL, "Hyper Refined Crystal");
         addItem(ModItems.HARMONIC_LATTICE, "Harmonic Lattice");
+        addItem(ModItems.VESKORIAN_ALLOY_SWORD, "Veskorian Alloy Sword");
+        addItem(ModItems.VESKORIAN_ALLOY_PICKAXE, "Veskorian Alloy Pickaxe");
+        addItem(ModItems.VESKORIAN_ALLOY_HELMET, "Veskorian Alloy Helmet");
+        addItem(ModItems.VESKORIAN_ALLOY_CHESTPLATE, "Veskorian Alloy Chestplate");
+        addItem(ModItems.VESKORIAN_ALLOY_LEGGINGS, "Veskorian Alloy Leggings");
+        addItem(ModItems.VESKORIAN_ALLOY_BOOTS, "Veskorian Alloy Boots");
+        addItem(ModItems.RIFT_WARD_PLATE, "Rift-Ward Plate");
+        add("item.veskorius.rift_ward_plate.hint", "Total phase immunity. Costs 10% mining speed while worn.");
         addItem(ModItems.RIFT_ESSENCE, "Rift Essence");
         addItem(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT, "Corrupted Veskorian Alloy Ingot");
         addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Block of Veskorian Alloy");

@@ -156,6 +156,61 @@ public class ModItems {
     public static final DeferredItem<Item> CORRUPTED_VESKORIAN_ALLOY_INGOT =
         ITEMS.registerSimpleItem("corrupted_veskorian_alloy_ingot", new Item.Properties().stacksTo(64));
 
+    // --- Outils et armure (04-Materials.md) ---------------------------------
+    //
+    // Le dossier ne nomme QUE l'épée et la pioche. Pas de hache, de pelle ni de houe :
+    // ce ne sont pas des oublis à combler ici, c'est ce que le dossier prévoit. Les
+    // ajouter serait décider à sa place.
+
+    /** Dégâts du diamant, durabilité +20 % (04-Materials.md). */
+    public static final DeferredItem<net.minecraft.world.item.SwordItem> VESKORIAN_ALLOY_SWORD =
+        ITEMS.registerItem("veskorian_alloy_sword",
+            props -> new net.minecraft.world.item.SwordItem(ModTiers.VESKORIAN_ALLOY,
+                props.attributes(net.minecraft.world.item.SwordItem.createAttributes(
+                    ModTiers.VESKORIAN_ALLOY, 3, -2.4f))),
+            new Item.Properties());
+
+    /**
+     * Niveau netherite. Le dossier lui réserve un rôle de plus — miner
+     * l'{@code ancient_conduit_stone} sans le détruire — mais ce bloc n'existe pas encore :
+     * la pioche est prête, sa cible viendra.
+     */
+    public static final DeferredItem<net.minecraft.world.item.PickaxeItem> VESKORIAN_ALLOY_PICKAXE =
+        ITEMS.registerItem("veskorian_alloy_pickaxe",
+            props -> new net.minecraft.world.item.PickaxeItem(ModTiers.VESKORIAN_ALLOY,
+                props.attributes(net.minecraft.world.item.PickaxeItem.createAttributes(
+                    ModTiers.VESKORIAN_ALLOY, 1, -2.8f))),
+            new Item.Properties());
+
+    public static final DeferredItem<net.minecraft.world.item.ArmorItem> VESKORIAN_ALLOY_HELMET =
+        armor("veskorian_alloy_helmet", net.minecraft.world.item.ArmorItem.Type.HELMET);
+    public static final DeferredItem<net.minecraft.world.item.ArmorItem> VESKORIAN_ALLOY_CHESTPLATE =
+        armor("veskorian_alloy_chestplate", net.minecraft.world.item.ArmorItem.Type.CHESTPLATE);
+    public static final DeferredItem<net.minecraft.world.item.ArmorItem> VESKORIAN_ALLOY_LEGGINGS =
+        armor("veskorian_alloy_leggings", net.minecraft.world.item.ArmorItem.Type.LEGGINGS);
+    public static final DeferredItem<net.minecraft.world.item.ArmorItem> VESKORIAN_ALLOY_BOOTS =
+        armor("veskorian_alloy_boots", net.minecraft.world.item.ArmorItem.Type.BOOTS);
+
+    /**
+     * <b>Rift-Ward Plate</b> — pièce UNIQUE, et le dossier explique pourquoi : une Faille
+     * ne rend qu'environ quatre lingots corrompus en tout, si bien qu'une panoplie de
+     * quatre pièces aurait exigé de vaincre trois ou quatre Gardiens pour un seul
+     * équipement. Le plastron seul est calibré sur le butin garanti d'UNE Faille.
+     *
+     * <p>Il remplace le plastron d'alliage, il ne s'y ajoute pas : immunité totale au
+     * déphasage, contre 10 % de vitesse de minage en moins tant qu'il est porté.
+     */
+    public static final DeferredItem<net.minecraft.world.item.ArmorItem> RIFT_WARD_PLATE =
+        armor("rift_ward_plate", net.minecraft.world.item.ArmorItem.Type.CHESTPLATE);
+
+    private static DeferredItem<net.minecraft.world.item.ArmorItem> armor(
+        String name, net.minecraft.world.item.ArmorItem.Type type) {
+        return ITEMS.registerItem(name,
+            props -> new net.minecraft.world.item.ArmorItem(ModTiers.ALLOY, type,
+                props.durability(type.getDurability(ModTiers.ARMOR_DURABILITY))),
+            new Item.Properties());
+    }
+
     /** Œuf d'apparition du Fileur de Cristal. */
     public static final DeferredItem<DeferredSpawnEggItem> CRYSTAL_STRIDER_SPAWN_EGG =
         ITEMS.registerItem("crystal_strider_spawn_egg",
