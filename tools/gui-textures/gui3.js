@@ -50,6 +50,7 @@ const ACCENT = {
   structural_synthesizer: { deep: '#4A4658', mid: '#7C7890', hi: '#A8A4BA' },
   deep_crystal_driller: { deep: '#5E3517', mid: '#A8632F', hi: '#C9834E' },
   deep_synthesis_chamber: { deep: '#5E7A8E', mid: '#8FB3C6', hi: '#DDEEF5' },
+  automated_extraction_array: { deep: '#8E5A15', mid: '#D8922A', hi: '#F0B863' },
 };
 
 /** Rectangle en relief : liseré clair en haut/gauche, sombre en bas/droite. */
@@ -81,6 +82,14 @@ function arrow(c, x, y, a, filled) {
 // Bandeaux d'atelier : le motif de la façade, transposé dans le GUI. C'est le
 // signe le plus rapide pour savoir quelle machine on a ouverte.
 const BANNER = {
+  automated_extraction_array: (c, a) => { // une file de chariots sur leur rail
+    c.rect(12, 58, 152, 2, P.brass);
+    for (let i = 0; i < 8; i++) {
+      const x = 18 + i * 18;
+      c.rect(x + 4, 60, 2, 3, a.deep);
+      raised(c, x, 63, 11, 8, a.mid, a.hi, a.deep);
+    }
+  },
   deep_synthesis_chamber: (c, a) => { // une file de hublots : la cuve fermee, repetee
     for (let i = 0; i < 7; i++) {
       const x = 16 + i * 21;

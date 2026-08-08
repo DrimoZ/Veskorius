@@ -140,8 +140,8 @@ ne sont pas comptés dans les 23 machines : ce sont des blocs de construction, p
 | 13 | `slag_vent` | T3 | ✅ codé — 1 scorie / 10 s par forge dans 8 blocs, coût prélevé d'un coup. N'évacue QUE la scorie |
 | 14 | `harmonic_amplifier` | T4 | ✅ codé — double la portée REÇUE (pas une portée fixe), 3 maillons max, 2 Osc/tick, dérive −1 %/jour plancher −30 %, recalibrage au Tuner contre 1 Component |
 | 15 | `deep_synthesis_chamber` | T4 | ✅ codé — 2 Refined → 1 Hyper Refined, 90 s, 8 Osc/tick, surchauffe. Seule source du matériau ; consomme 1 Hyper Refined à la CONSTRUCTION (catalyseur permanent) |
-| 16 | `automated_extraction_array` | T4 | À coder (Phase 3) |
-| 17 | `resonance_network_hub` | T4 | À coder (Phase 3) |
+| 16 | `automated_extraction_array` | T4 | ✅ codé — ramasse la sortie des Driller à 12 blocs ET les fait tourner DOUBLE. Le signal est poussé vers les foreuses, jamais cherché par elles |
+| 17 | `resonance_network_hub` | T4 | ✅ codé — plancher de priorité selon la réserve du champ (>50 % tout passe, 20-50 % les basses s'effacent, <20 % hautes seules). Passif. Priorité réglable au Tuner ; dérive comme l'Amplifier |
 | 18 | `convergence_core` | T4→T5 | À coder (Phase 4) |
 | 19 | `rift_anchor` | T5 | À coder (Phase 4) |
 | 20 | `rift_core_extractor` | T5 | À coder (Phase 4) |

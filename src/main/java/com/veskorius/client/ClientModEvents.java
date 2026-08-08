@@ -36,6 +36,8 @@ public class ClientModEvents {
         event.register(ModMenuTypes.DAMPING_ARRAY.get(), com.veskorius.client.screen.DampingArrayScreen::new);
         event.register(ModMenuTypes.VESKORIAN_ALLOY_FORGE.get(),
             com.veskorius.client.screen.VeskorianAlloyForgeScreen::new);
+        event.register(ModMenuTypes.AUTOMATED_EXTRACTION_ARRAY.get(),
+            com.veskorius.client.screen.AutomatedExtractionArrayScreen::new);
         event.register(ModMenuTypes.DEEP_SYNTHESIS_CHAMBER.get(),
             com.veskorius.client.screen.DeepSynthesisChamberScreen::new);
         event.register(ModMenuTypes.FLUX_COMPRESSOR.get(),

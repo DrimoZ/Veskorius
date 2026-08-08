@@ -120,8 +120,20 @@ public class ResonanceTunerItem extends Item {
                         : Component.translatable(band.labelKey())));
                 return true;
             }
+            case PRIORITY -> {
+                if (!(be instanceof AbstractMachineBlockEntity machine)) {
+                    actionBar(player, Component.translatable("item.veskorius.resonance_tuner.no_priority"));
+                    return false;
+                }
+                machine.cyclePriority();
+                actionBar(player, Component.translatable("message.veskorius.priority_set",
+                    machine.getPriority().label()));
+                return true;
+            }
             case CALIBRATE -> {
-                if (!(be instanceof com.veskorius.block.entity.HarmonicAmplifierBlockEntity amp)) {
+                boolean isAmp = be instanceof com.veskorius.block.entity.HarmonicAmplifierBlockEntity;
+                boolean isHub = be instanceof com.veskorius.block.entity.ResonanceNetworkHubBlockEntity;
+                if (!isAmp && !isHub) {
                     return false;
                 }
                 // Le Component se paie AVANT la remise à neuf, et seulement s'il y en a un :
@@ -132,7 +144,11 @@ public class ResonanceTunerItem extends Item {
                     actionBar(player, Component.translatable("item.veskorius.resonance_tuner.no_component"));
                     return false;
                 }
-                amp.recalibrate();
+                if (isAmp) {
+                    ((com.veskorius.block.entity.HarmonicAmplifierBlockEntity) be).recalibrate();
+                } else {
+                    ((com.veskorius.block.entity.ResonanceNetworkHubBlockEntity) be).recalibrate();
+                }
                 actionBar(player, Component.translatable("item.veskorius.resonance_tuner.recalibrated"));
                 return true;
             }

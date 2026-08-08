@@ -237,6 +237,22 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
                 .requires(blueprint(4)));
 
+        // Automated Extraction Array (#16) : 4 lingots d'alliage (05-Machines.md).
+        machine(recipeOutput, ModBlocks.AUTOMATED_EXTRACTION_ARRAY.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.VESKORIAN_ALLOY_INGOT.get(), b -> b
+                .requires(ModItems.VESKORIAN_ALLOY_INGOT.get(), 4)
+                .requires(ModItems.RESONANCE_COMPONENT.get(), 2)
+                .requires(blueprint(4)));
+
+        // Resonance Network Hub (#17) : 4 Component + 2 Treillis (05-Machines.md).
+        // Deux Treillis, c'est-à-dire quatre Hyper Refined : il coûte deux fois le premier
+        // Amplificateur. C'est voulu — on n'arbitre pas un réseau qu'on n'a pas encore.
+        machine(recipeOutput, ModBlocks.RESONANCE_NETWORK_HUB.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.HARMONIC_LATTICE.get(), b -> b
+                .requires(ModItems.RESONANCE_COMPONENT.get(), 4)
+                .requires(ModItems.HARMONIC_LATTICE.get(), 2)
+                .requires(blueprint(4)));
+
         // --- Matériau T4 : le Treillis Harmonique -------------------------------
         //
         // 4 lingots CONDUCTEURS + 2 Hyper Refined (04-Materials.md). Première recette à

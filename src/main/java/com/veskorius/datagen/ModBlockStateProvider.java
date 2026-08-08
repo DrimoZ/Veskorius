@@ -53,6 +53,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.VESKORIAN_ALLOY_FORGE.get(), "veskorian_alloy_forge", VESKORIAN, PRESS);
         machine(ModBlocks.FLUX_COMPRESSOR.get(), "flux_compressor", VESKORIAN, RAM);
         machine(ModBlocks.DEEP_SYNTHESIS_CHAMBER.get(), "deep_synthesis_chamber", VESKORIAN, TANK);
+        machine(ModBlocks.AUTOMATED_EXTRACTION_ARRAY.get(), "automated_extraction_array", VESKORIAN, GANTRY);
         machine(ModBlocks.STRUCTURAL_SYNTHESIZER.get(), "structural_synthesizer", VESKORIAN, MOLD);
         machine(ModBlocks.DEEP_CRYSTAL_DRILLER.get(), "deep_crystal_driller", VESKORIAN, DERRICK);
 
@@ -74,6 +75,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // L'amplificateur reprend le MÂT du relais : c'est la même famille d'appareil, et
         // le joueur doit lire « réseau » avant de lire « lequel ». Sa façade les sépare.
         relay(ModBlocks.HARMONIC_AMPLIFIER.get(), "harmonic_amplifier", VESKORIAN);
+        // Le Hub n'émet rien et ne transporte rien : il ARBITRE. Silhouette de borne
+        // trapue, ni tour ni mât — on ne doit pas le chercher des yeux comme une source.
+        vent(ModBlocks.RESONANCE_NETWORK_HUB.get(), "resonance_network_hub", VESKORIAN);
 
         // --- Châssis nus ------------------------------------------------------
         // Le bloc de base, posable tel quel. C'est littéralement le boîtier que
@@ -472,6 +476,19 @@ public class ModBlockStateProvider extends BlockStateProvider {
         p.cube(b, 4, 14, 11, 12, 16, 12, "#side", "#side", "#side", false);
         p.cube(b, 4, 14, 5, 5, 16, 11, "#side", "#side", "#side", false);
         p.cube(b, 11, 14, 5, 12, 16, 11, "#side", "#side", "#side", false);
+    };
+
+    /**
+     * Portique : deux pieds, une poutre en haut, et TOUT LE MILIEU OUVERT. C'est la seule
+     * silhouette du lot dont le vide traverse de part en part sur toute la hauteur — un
+     * appareil sous lequel on passe, pas un appareil dans lequel on met quelque chose. Il
+     * commande d'autres machines ; il ne doit pas ressembler à un four.
+     */
+    private static final Shape GANTRY = (p, b) -> {
+        p.cube(b, 0, 0, 0, 4, 16, 16, "#side", "#top", "#front", false);   // pied gauche
+        p.cube(b, 12, 0, 0, 16, 16, 16, "#side", "#top", "#front", false); // pied droit
+        p.cube(b, 4, 12, 0, 12, 16, 16, "#side", "#top", "#front", false); // poutre
+        p.bar(b, 4, 10, 7, 12, 12, 9);                                     // rail de translation
     };
 
     /** Assemble un modèle à partir d'une silhouette et d'un jeu de textures. */

@@ -1989,6 +1989,7 @@ public class MachineGameTests {
         ModBlocks.STRUCTURAL_SYNTHESIZER.get(), ModBlocks.DEEP_CRYSTAL_DRILLER.get(),
         ModBlocks.SLAG_VENT.get(),
         ModBlocks.DEEP_SYNTHESIS_CHAMBER.get(), ModBlocks.HARMONIC_AMPLIFIER.get(),
+        ModBlocks.AUTOMATED_EXTRACTION_ARRAY.get(), ModBlocks.RESONANCE_NETWORK_HUB.get(),
         ModBlocks.FRACTURED_CHASSIS.get(), ModBlocks.ATTUNED_CHASSIS.get(),
         ModBlocks.VESKORIAN_CHASSIS.get(),
     };
@@ -2223,6 +2224,126 @@ public class MachineGameTests {
                 + "vaut " + worst + " — sinon poser un amplificateur RÉDUIT la couverture");
         helper.assertTrue(worst < 40,
             "…mais elle doit être inférieure au gain plein, sinon la dérive n'a aucun effet");
+        helper.succeed();
+    }
+
+    /**
+     * <b>Le Hub déleste par le bas, et seulement quand la réserve baisse.</b>
+     *
+     * <p>C'est la seule règle du mod qui décide de l'<i>arrêt</i> d'une machine, et elle
+     * est invisible tant que la base n'est pas sous-dimensionnée — donc elle ne peut être
+     * vérifiée qu'ici. Les deux bornes comptent autant : si le plancher ne montait jamais,
+     * le Hub ne servirait à rien ; s'il montait tout de suite, poser un Hub arrêterait la
+     * moitié d'une base qui tournait très bien.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 20)
+    public static void hubShedsFromTheBottomOnlyUnderStrain(GameTestHelper helper) {
+        helper.assertTrue(
+            com.veskorius.block.entity.ResonanceNetworkHubBlockEntity.floorFor(
+                fakeField(1000, 1000), 1.0) == com.veskorius.energy.MachinePriority.LOW,
+            "Réserve pleine : personne ne doit être délesté");
+        helper.assertTrue(
+            com.veskorius.block.entity.ResonanceNetworkHubBlockEntity.floorFor(
+                fakeField(300, 1000), 1.0) == com.veskorius.energy.MachinePriority.NORMAL,
+            "Réserve à 30 % : les priorités basses s'effacent, les autres passent");
+        helper.assertTrue(
+            com.veskorius.block.entity.ResonanceNetworkHubBlockEntity.floorFor(
+                fakeField(50, 1000), 1.0) == com.veskorius.energy.MachinePriority.HIGH,
+            "Réserve à 5 % : seules les priorités hautes sont servies");
+        helper.assertTrue(
+            com.veskorius.block.entity.ResonanceNetworkHubBlockEntity.floorFor(null, 1.0)
+                == com.veskorius.energy.MachinePriority.LOW,
+            "Sans champ mesurable, le Hub n'a rien à arbitrer et laisse tout passer");
+
+        // Un Hub déréglé croit la réserve plus basse qu'elle n'est : il déleste plus tôt.
+        helper.assertTrue(
+            com.veskorius.block.entity.ResonanceNetworkHubBlockEntity.floorFor(
+                fakeField(520, 1000),
+                com.veskorius.block.entity.ResonanceNetworkHubBlockEntity.MIN_EFFICIENCY)
+                != com.veskorius.energy.MachinePriority.LOW,
+            "À 52 % de réserve, un Hub au plancher de calibration doit DÉJÀ délester — "
+                + "sinon la dérive n'a aucun effet observable");
+        helper.succeed();
+    }
+
+    /** Un champ factice de réserve/capacité donnée : la décision du Hub est pure. */
+    private static com.veskorius.energy.IResonanceField fakeField(int reserve, int capacity) {
+        return new com.veskorius.energy.IResonanceField() {
+            @Override
+            public int getFieldStrength() {
+                return 100;
+            }
+
+            @Override
+            public int getRange() {
+                return 8;
+            }
+
+            @Override
+            public boolean isActive() {
+                return reserve > 0;
+            }
+
+            @Override
+            public int extractOsc(int maxOsc) {
+                return 0;
+            }
+
+            @Override
+            public int getReserve() {
+                return reserve;
+            }
+
+            @Override
+            public int getCapacity() {
+                return capacity;
+            }
+        };
+    }
+
+    /** Une machine ne s'efface que sous un plancher plus haut que sa propre priorité. */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
+    public static void onlyLowerPriorityMachinesAreShed(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.CRYSTAL_CRUSHER.get());
+        AbstractMachineBlockEntity machine = helper.getBlockEntity(MACHINE);
+
+        helper.assertFalse(machine.isShed(null),
+            "Sans Hub posé, aucune machine ne doit jamais être délestée");
+        helper.assertFalse(machine.isShed(com.veskorius.energy.MachinePriority.LOW),
+            "Plancher au minimum : tout le monde passe");
+        helper.assertTrue(machine.isShed(com.veskorius.energy.MachinePriority.HIGH),
+            "Une machine NORMALE doit s'effacer sous un plancher HAUT");
+
+        // Trois niveaux, donc TROIS crans pour revenir au départ. Le premier jet n'en
+        // faisait que deux tout en affirmant le contraire — l'erreur était dans le test.
+        for (int i = 0; i < com.veskorius.energy.MachinePriority.values().length; i++) {
+            machine.cyclePriority();
+        }
+        helper.assertTrue(machine.getPriority() == com.veskorius.energy.MachinePriority.NORMAL,
+            "Un tour complet ramène au point de départ, vaut : " + machine.getPriority());
+        helper.succeed();
+    }
+
+    /**
+     * <b>La Matrice fait tourner les foreuses deux fois plus vite et ramasse leur sortie.</b>
+     *
+     * <p>Les deux moitiés sont la machine : sans le ramassage elle ne supprime pas la
+     * corvée qui l'a fait exister, sans la vitesse elle n'est qu'un coffre à distance.
+     * Rien dans les données ne les garantit — le signal est poussé de la Matrice vers la
+     * foreuse, donc une Matrice qui cesserait de le pousser laisserait tout fonctionner
+     * <i>presque</i> normalement, ce qui est le pire cas de figure à diagnostiquer.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 20)
+    public static void arraySynchronisesAndCollects(GameTestHelper helper) {
+        helper.setBlock(DRILL, ModBlocks.DEEP_CRYSTAL_DRILLER.get());
+        com.veskorius.block.entity.DeepCrystalDrillerBlockEntity driller =
+            helper.getBlockEntity(DRILL);
+
+        helper.assertFalse(driller.isSynchronised(),
+            "Une foreuse seule n'est pas synchronisée");
+        driller.markSynchronised(100);
+        helper.assertTrue(driller.isSynchronised(),
+            "La marque poussée par la Matrice doit prendre effet");
         helper.succeed();
     }
 

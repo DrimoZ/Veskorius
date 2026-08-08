@@ -448,6 +448,30 @@ public class ModBlocks {
                 .noOcclusion()
                 .lightLevel(EMITTER_GLOW));
 
+    /** Machine #16 : commande les foreuses — elle ramasse, et elle les fait tourner double. */
+    public static final DeferredBlock<AutomatedExtractionArrayBlock> AUTOMATED_EXTRACTION_ARRAY =
+        BLOCKS.registerBlock("automated_extraction_array",
+            AutomatedExtractionArrayBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_BROWN)
+                .strength(4.0f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(MACHINE_GLOW));
+
+    /** Machine #17 : passif. Décide qui s'arrête quand le champ ne suffit plus. */
+    public static final DeferredBlock<ResonanceNetworkHubBlock> RESONANCE_NETWORK_HUB =
+        BLOCKS.registerBlock("resonance_network_hub",
+            ResonanceNetworkHubBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_CYAN)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(EMITTER_GLOW));
+
     /** Machine #15 : la seule source de Hyper Refined Crystal, donc la clé du T4. */
     public static final DeferredBlock<DeepSynthesisChamberBlock> DEEP_SYNTHESIS_CHAMBER =
         BLOCKS.registerBlock("deep_synthesis_chamber",

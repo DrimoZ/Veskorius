@@ -6,8 +6,10 @@ const TIER_OF={resonance_stabilizer:'t1',component_assembler:'t1',resonance_whet
  crystal_crusher:'t1',flux_purifier:'t2',crystal_roost:'t2',field_emitter:'t2',
  tunable_field_emitter:'t2',damping_array:'t3',veskorian_alloy_forge:'t3',resonance_relay:'t3',
  flux_compressor:'t3',structural_synthesizer:'t3',deep_crystal_driller:'t3',slag_vent:'t3',
- deep_synthesis_chamber:'t3',harmonic_amplifier:'t3'};
-const ACCENT={damping_array:C,harmonic_amplifier:C,
+ deep_synthesis_chamber:'t3',harmonic_amplifier:'t3',
+ automated_extraction_array:'t3',resonance_network_hub:'t3'};
+const ACCENT={damping_array:C,harmonic_amplifier:C,resonance_network_hub:C,
+ automated_extraction_array:A,
  deep_synthesis_chamber:{deep:'#5E7A8E',mid:'#8FB3C6',lite:'#BBD9E6',hot:'#FFFFFF'},deep_crystal_driller:A,slag_vent:{deep:'#6B3A12',mid:'#A8641F',lite:'#D08A3A',hot:'#EFC58A'},veskorian_alloy_forge:{deep:'#8E5A15',mid:'#D8922A',lite:'#F0B863',hot:'#FBE0B0'}};
 const tex={};
 for(const k of ['t1','t2','t3']){

@@ -314,6 +314,38 @@ const faces = {
     c.rect(4, 7, 2, 2, on ? a.hot : m.tones[3]);
   },
 
+  // UN PORTIQUE VU DE FACE : deux montants, une poutre, et un CHARIOT suspendu au
+  // milieu. La foreuse montre son trépan (elle creuse) ; la matrice montre un chariot
+  // sur un rail (elle DÉPLACE, elle ne creuse pas). Deux machines de mine, deux gestes.
+  automated_extraction_array: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    slab(c, 0, 0, 16, 4, m.metal, m.metalHi, m.line);
+    slab(c, 0, 4, 4, 12, IRON.mid, IRON.lite, IRON.deep);
+    slab(c, 12, 4, 4, 12, IRON.mid, IRON.lite, IRON.deep);
+    c.rect(4, 5, 8, 1, IRON.lite);
+    // Le chariot, et ses deux câbles.
+    c.rect(7, 6, 1, 3, IRON.deep);
+    c.rect(8, 6, 1, 3, IRON.deep);
+    slab(c, 5, 9, 6, 4, on ? a.deep : m.tones[0], on ? a.mid : m.tones[2], m.line);
+    if (on) { c.rect(6, 10, 4, 2, a.hot); }
+  },
+
+  // TROIS BARRES DE HAUTEURS DÉCROISSANTES, comme un histogramme. Aucun cercle, aucune
+  // lentille : le Hub n'émet rien, sa façade ne doit rien promettre d'un émetteur. Ce
+  // qu'elle montre, c'est un CLASSEMENT — trois niveaux, du plus servi au premier délesté.
+  resonance_network_hub: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    slab(c, 0, 13, 16, 3, m.metal, m.metalHi, m.line);
+    const heights = [10, 7, 4];
+    for (let i = 0; i < 3; i++) {
+      const x = 2 + i * 4, h = heights[i];
+      const col = on ? [a.hot, a.mid, a.deep][i] : [m.tones[3], m.tones[2], m.tones[1]][i];
+      slab(c, x, 13 - h, 3, h, col, on ? a.lite : m.tones[3], m.line);
+    }
+    // La barre de rappel : le seuil au-dessus duquel personne n'est délesté.
+    c.rect(1, 3, 14, 1, on ? a.lite : m.line);
+  },
+
   // La même lentille, plus la réglette des trois bandes.
   tunable_field_emitter: (c, m, a, on) => {
     faces.field_emitter(c, m, a, on);

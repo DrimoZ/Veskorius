@@ -28,6 +28,13 @@ public class ModLanguageProvider extends LanguageProvider {
         add("item.veskorius.resonance_tuner.recalibrated", "Recalibrated (1 Resonance Component used)");
         add("item.veskorius.resonance_tuner.no_component", "Recalibration needs 1 Resonance Component");
         add("gui.veskorius.tuner_calibrate", "Recalibrate");
+        add("gui.veskorius.tuner_priority", "Set priority");
+        add("gui.veskorius.priority_low", "Low");
+        add("gui.veskorius.priority_normal", "Normal");
+        add("gui.veskorius.priority_high", "High");
+        add("message.veskorius.hub_status", "Hub: shedding below %s, calibration %s%%");
+        add("message.veskorius.priority_set", "Priority: %s");
+        add("item.veskorius.resonance_tuner.no_priority", "Only machines have a priority");
         add("gui.veskorius.machine_on", "Machine: On (click to turn off)");
         add("gui.veskorius.machine_off", "Machine: Off (click to turn on)");
         add("gui.veskorius.redstone_control", "Redstone control");
@@ -74,6 +81,8 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.ARCHIVE_CONSOLE, "Archive Console");
         addBlock(ModBlocks.DEEP_SYNTHESIS_CHAMBER, "Deep Synthesis Chamber");
         addBlock(ModBlocks.HARMONIC_AMPLIFIER, "Harmonic Amplifier");
+        addBlock(ModBlocks.AUTOMATED_EXTRACTION_ARRAY, "Automated Extraction Array");
+        addBlock(ModBlocks.RESONANCE_NETWORK_HUB, "Resonance Network Hub");
 
         // Châssis de palier : la base de craft et de texture des machines.
         addBlock(ModBlocks.FRACTURED_CHASSIS, "Fractured Chassis");

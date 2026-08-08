@@ -89,6 +89,16 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
     private static final int AUTO_INTERVAL = 8;
 
     private final SideMode[] sideModes = defaultSideModes();
+
+    /**
+     * Priorité face à la pénurie (06-Energy.md). Sans Resonance Network Hub posé, elle
+     * n'a strictement aucun effet — c'est le Hub qui la lit, et lui seul.
+     */
+    private com.veskorius.energy.MachinePriority priority =
+        com.veskorius.energy.MachinePriority.NORMAL;
+
+    /** Vrai quand un Hub a délesté cette machine au dernier tick. Transitoire. */
+    private transient boolean shed;
     private boolean autoInput = false;
     private boolean autoOutput = false;
 
@@ -403,11 +413,47 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
             cost = (int) Math.ceil(cost * HarmonicsConfig.detuneOscMultiplier());
         }
 
+        // Délestage (06-Energy.md, Resonance Network Hub). Un Hub qui couvre cette machine
+        // publie un plancher de priorité ; sous ce plancher, on ne puise PAS ce tick.
+        //
+        // Le contrôle est ici plutôt que dans le manager, et c'est délibéré : le manager
+        // sert aussi les sas, les lampes et les conduits, qui n'ont pas de priorité et ne
+        // doivent jamais s'éteindre parce qu'un four tourne à côté. Seules les machines à
+        // cycle se délestent — c'est ce que le joueur attend en voyant sa base ralentir.
+        shed = isShed(ResonanceNetworkHubBlockEntity.floorAt(serverLevel, worldPosition));
+        if (shed) {
+            return false;
+        }
+
         boolean powered = ResonanceFieldManager.supply(serverLevel, worldPosition, cost) >= cost;
         if (powered && detuned && source != null) {
             source.addDissonance(HarmonicsConfig.dissonancePerDetunedTick());
         }
         return powered;
+    }
+
+    /**
+     * Vrai si un Hub délestait cette machine au dernier tick. Sert au retour visuel : une
+     * machine délestée est arrêtée <b>pour une raison</b>, et la confondre avec une panne
+     * de champ enverrait le joueur ravitailler un émetteur qui va très bien.
+     */
+    public boolean isShed() {
+        return shed;
+    }
+
+    /** Vrai si {@code floor} exclut la priorité de cette machine. {@code null} = aucun Hub. */
+    public boolean isShed(@Nullable com.veskorius.energy.MachinePriority floor) {
+        return floor != null && priority.ordinal() < floor.ordinal();
+    }
+
+    public com.veskorius.energy.MachinePriority getPriority() {
+        return priority;
+    }
+
+    /** Fait défiler la priorité. Seul appelant : le Resonance Tuner. */
+    public void cyclePriority() {
+        priority = priority.next();
+        setChanged();
     }
 
     /**
@@ -881,6 +927,7 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         tag.putBoolean("autoOutput", autoOutput);
         // -1 = machine universelle (aucune bande).
         tag.putByte("harmonicBand", (byte) (harmonicBand == null ? -1 : harmonicBand.ordinal()));
+        tag.putByte("priority", (byte) priority.ordinal());
     }
 
     @Override
@@ -900,6 +947,7 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
         manualEnabled = !tag.contains("manualEnabled") || tag.getBoolean("manualEnabled");
         redstoneMode = RedstoneMode.byIndex(tag.getByte("redstoneMode"));
         overheatEnabled = tag.getBoolean("overheatEnabled");
+        priority = com.veskorius.energy.MachinePriority.byIndex(tag.getByte("priority"));
 
         byte[] modes = tag.getByteArray("sideModes");
         if (modes.length == sideModes.length) {

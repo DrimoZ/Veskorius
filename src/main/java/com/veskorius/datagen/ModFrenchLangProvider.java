@@ -71,6 +71,11 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.ARCHIVE_CONSOLE, "Console d'Archive");
         addBlock(ModBlocks.DEEP_SYNTHESIS_CHAMBER, "Chambre de Synthèse Profonde");
         addBlock(ModBlocks.HARMONIC_AMPLIFIER, "Amplificateur Harmonique");
+        addBlock(ModBlocks.AUTOMATED_EXTRACTION_ARRAY, "Matrice d'Extraction Automatisée");
+        addBlock(ModBlocks.RESONANCE_NETWORK_HUB, "Nœud de Réseau de Résonance");
+        add("gui.veskorius.priority_low", "Basse");
+        add("gui.veskorius.priority_normal", "Normale");
+        add("gui.veskorius.priority_high", "Haute");
 
         // Architecture de donjon (17-Dungeons.md §4)
         addBlock(ModBlocks.VEINED_STONE_BRICKS, "Briques de Pierre Veinée");

@@ -74,8 +74,34 @@ public class DeepCrystalDrillerBlockEntity extends AbstractMachineBlockEntity {
         super(ModBlockEntities.DEEP_CRYSTAL_DRILLER.get(), pos, state, SLOT_COUNT);
     }
 
+    /**
+     * Ticks restants pendant lesquels un Automated Extraction Array commande cette foreuse.
+     * <b>Poussé par l'Array</b>, jamais cherché ici : voir la note de cette machine sur le
+     * coût d'un balayage inverse. Transitoire — une marque perdue au rechargement se
+     * repose au premier passage de l'Array, cinq secondes plus tard.
+     */
+    private transient int synchronisedFor;
+
+    /** Appelé par l'Array à chaque passage. La marque expire seule s'il s'arrête. */
+    public void markSynchronised(int ticks) {
+        synchronisedFor = ticks;
+    }
+
+    public boolean isSynchronised() {
+        return synchronisedFor > 0;
+    }
+
+    /**
+     * Deux fois plus vite sous la commande d'un Array (05-Machines.md #16, « synchronise
+     * les Driller »). C'est le seul effet mécanique de la synchronisation ; le reste — le
+     * ramassage — est un confort, celui-ci est une raison de poser la machine.
+     */
     @Override
     protected int getBaseCycleTicks() {
+        if (synchronisedFor > 0) {
+            synchronisedFor--;
+            return CYCLE_TICKS / 2;
+        }
         return CYCLE_TICKS;
     }
 

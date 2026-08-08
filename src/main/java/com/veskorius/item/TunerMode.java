@@ -42,7 +42,18 @@ public enum TunerMode {
      * dessous : ça se dérègle à l'usage, on ré-accorde au Tuner. Le joueur n'apprend qu'un
      * concept pour tout le mod.
      */
-    CALIBRATE("tuner_calibrate");
+    CALIBRATE("tuner_calibrate"),
+
+    /**
+     * Fait défiler la <b>priorité</b> d'une machine face à la pénurie (06-Energy.md).
+     *
+     * <p>Sans Resonance Network Hub posé, ce réglage n'a aucun effet — et c'est bien ainsi :
+     * le joueur peut le découvrir et le régler avant d'avoir le Hub, sans que ça change
+     * quoi que ce soit, puis comprendre d'un coup à quoi il servait le jour où il en pose
+     * un. Un réglage qui n'apparaîtrait qu'avec sa machine serait un réglage qu'on ne
+     * trouve jamais.
+     */
+    PRIORITY("tuner_priority");
 
     private static final TunerMode[] VALUES = values();
 

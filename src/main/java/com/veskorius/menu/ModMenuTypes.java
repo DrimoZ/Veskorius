@@ -49,6 +49,10 @@ public class ModMenuTypes {
         DAMPING_ARRAY = MENUS.register("damping_array",
             () -> IMenuTypeExtension.create(DampingArrayMenu::new));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<AutomatedExtractionArrayMenu>>
+        AUTOMATED_EXTRACTION_ARRAY = MENUS.register("automated_extraction_array",
+            () -> IMenuTypeExtension.create(AutomatedExtractionArrayMenu::new));
+
     public static final DeferredHolder<MenuType<?>, MenuType<DeepSynthesisChamberMenu>>
         DEEP_SYNTHESIS_CHAMBER = MENUS.register("deep_synthesis_chamber",
             () -> IMenuTypeExtension.create(DeepSynthesisChamberMenu::new));

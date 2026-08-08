@@ -72,6 +72,18 @@ public class ModBlockEntities {
                 .of(ResonanceRelayBlockEntity::new, ModBlocks.RESONANCE_RELAY.get())
                 .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AutomatedExtractionArrayBlockEntity>>
+        AUTOMATED_EXTRACTION_ARRAY = BLOCK_ENTITIES.register("automated_extraction_array",
+            () -> BlockEntityType.Builder
+                .of(AutomatedExtractionArrayBlockEntity::new, ModBlocks.AUTOMATED_EXTRACTION_ARRAY.get())
+                .build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ResonanceNetworkHubBlockEntity>>
+        RESONANCE_NETWORK_HUB = BLOCK_ENTITIES.register("resonance_network_hub",
+            () -> BlockEntityType.Builder
+                .of(ResonanceNetworkHubBlockEntity::new, ModBlocks.RESONANCE_NETWORK_HUB.get())
+                .build(null));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DeepSynthesisChamberBlockEntity>>
         DEEP_SYNTHESIS_CHAMBER = BLOCK_ENTITIES.register("deep_synthesis_chamber",
             () -> BlockEntityType.Builder
