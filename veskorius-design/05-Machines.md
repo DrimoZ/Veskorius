@@ -159,7 +159,7 @@ Dissonance.
 | **Émetteur Accordable** (`tunable_field_emitter`) ✅ codé | T2+ | Field Emitter dont on **choisit la bande** harmonique (Tuner, mode Accorder). C'est lui qui introduit le choix de fréquence (le Field Emitter T2 de base reste mono-bande, sans décision). Craft : Field Emitter + 2 Refined Crystal (+ blueprint rendu) — un *upgrade*, pas une machine de plus. |
 | **Damping Array** (`damping_array`) | T3 | **Absorbe la dissonance** d'un champ. Se **sature** (container à purger) et consomme du **Concentrated Flux**. La gestion de dissonance est de l'infrastructure, pas un slot. |
 | **Reclaimer** (`reclaimer`) ✅ codé | T3 | **Re-stabilise les déchets** (`resonance_sludge`, `flux_slag`) en une fraction de matériaux ou en bloc de construction. Ferme la boucle économique. |
-| **Advanced Assembler** (`advanced_assembler`) | T3 | Compose le **`resonance_matrix`** (Component + alliage conductif), pièce intermédiaire requise par les machines T4. |
+| **Advanced Assembler** (`advanced_assembler`) ✅ codé | T3 | Compose le **`resonance_matrix`** (Component + alliage conductif), pièce intermédiaire requise par les machines T4. |
 
 ### Bandes harmoniques sur les machines
 

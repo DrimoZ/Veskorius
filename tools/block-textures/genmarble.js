@@ -5,7 +5,7 @@ const {Canvas,rng}=require('./draw');
 const TIER_OF={resonance_stabilizer:'t1',component_assembler:'t1',resonance_whetstone:'t1',
  crystal_crusher:'t1',flux_purifier:'t2',crystal_roost:'t2',field_emitter:'t2',
  tunable_field_emitter:'t2',damping_array:'t3',veskorian_alloy_forge:'t3',resonance_relay:'t3',
- flux_compressor:'t3',reclaimer:'t3',structural_synthesizer:'t3',deep_crystal_driller:'t3',slag_vent:'t3',
+ flux_compressor:'t3',reclaimer:'t3',advanced_assembler:'t3',structural_synthesizer:'t3',deep_crystal_driller:'t3',slag_vent:'t3',
  deep_synthesis_chamber:'t3',harmonic_amplifier:'t3',
  automated_extraction_array:'t3',resonance_network_hub:'t3',convergence_core:'t3',rift_anchor:'t3',
  rift_core_extractor:'t3',rift_ward_emitter:'t3'};

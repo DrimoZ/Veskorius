@@ -25,6 +25,7 @@ public class ModRecipeTypes {
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> FORGING = register("forging");
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> COMPRESSING = register("compressing");
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> RECLAIMING = register("reclaiming");
+    public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> ADVANCED_ASSEMBLING = register("advanced_assembling");
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> SYNTHESIS = register("synthesis");
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> SYNTHESIZING = register("synthesizing");
     public static final DeferredHolder<RecipeType<?>, RecipeType<WhetstoneRecipe>> SHARPENING = register("sharpening");

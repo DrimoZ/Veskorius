@@ -138,6 +138,12 @@ public class ModBlockEntities {
                 .of(ReclaimerBlockEntity::new, ModBlocks.RECLAIMER.get())
                 .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AdvancedAssemblerBlockEntity>>
+        ADVANCED_ASSEMBLER = BLOCK_ENTITIES.register("advanced_assembler",
+            () -> BlockEntityType.Builder
+                .of(AdvancedAssemblerBlockEntity::new, ModBlocks.ADVANCED_ASSEMBLER.get())
+                .build(null));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<StructuralSynthesizerBlockEntity>>
         STRUCTURAL_SYNTHESIZER = BLOCK_ENTITIES.register("structural_synthesizer",
             () -> BlockEntityType.Builder

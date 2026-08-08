@@ -37,6 +37,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.RESONANCE_RELAY.get());
         dropSelf(ModBlocks.FLUX_COMPRESSOR.get());
         dropSelf(ModBlocks.RECLAIMER.get());
+        dropSelf(ModBlocks.ADVANCED_ASSEMBLER.get());
         dropSelf(ModBlocks.DEEP_SYNTHESIS_CHAMBER.get());
         dropSelf(ModBlocks.AUTOMATED_EXTRACTION_ARRAY.get());
         dropSelf(ModBlocks.CONVERGENCE_CORE.get());

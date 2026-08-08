@@ -112,6 +112,22 @@ public class ModItems {
     public static final DeferredItem<Item> SYNTHESIS_RESIDUE =
         ITEMS.registerSimpleItem("synthesis_residue", new Item.Properties().stacksTo(64));
 
+    /**
+     * <b>Matrice de Résonance</b> — la pièce intermédiaire du T3, et la seule dont
+     * l'unique raison d'être soit d'ajouter une étape.
+     *
+     * <p>Le dossier la veut « requise par les machines T4 » (04-Materials.md,
+     * 05-Machines.md). Sans elle, on passait des Composants de Résonance — une pièce
+     * T1 — directement dans les machines du palier le plus haut : la chaîne sautait
+     * deux paliers d'un coup, et le T3 n'apportait rien à ce qu'on bâtissait ensuite.
+     *
+     * <p>Elle se compose à l'Advanced Assembler, de Composants et d'alliage
+     * <b>conducteur</b>. La branche de métal choisie à la Forge se paie donc une fois
+     * de plus — c'est la troisième, après le Relais et le Treillis Harmonique.
+     */
+    public static final DeferredItem<Item> RESONANCE_MATRIX =
+        ITEMS.registerSimpleItem("resonance_matrix", new Item.Properties().stacksTo(64));
+
     /** Flux concentré : carburant du Damping Array, et brique du Convergence Core (T5). */
     public static final DeferredItem<Item> CONCENTRATED_FLUX =
         ITEMS.registerSimpleItem("concentrated_flux", new Item.Properties().stacksTo(64));
@@ -408,6 +424,9 @@ public class ModItems {
         ITEMS.registerSimpleBlockItem(ModBlocks.FLUX_COMPRESSOR);
     public static final DeferredItem<BlockItem> RECLAIMER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RECLAIMER);
+
+    public static final DeferredItem<BlockItem> ADVANCED_ASSEMBLER_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.ADVANCED_ASSEMBLER);
 
     public static final DeferredItem<BlockItem> STRUCTURAL_SYNTHESIZER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.STRUCTURAL_SYNTHESIZER);

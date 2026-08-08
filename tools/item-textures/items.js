@@ -327,6 +327,22 @@ const items = {
     }
   },
 
+  // Matrice de Resonance : NEUF CASES PLEINES, cadrees. C'est l'inverse exact du
+  // Treillis Harmonique, qui est ajoure — et cette opposition est voulue, parce que
+  // les deux sont des pieces intermediaires du meme reseau et qu'on doit les separer
+  // d'un coup d'oeil dans un inventaire. Le Treillis LAISSE PASSER et repartit ; la
+  // Matrice CONTIENT et ordonne. Ajoure contre plein, c'est tout ce qu'il faut.
+  resonance_matrix: (c) => {
+    c.frameRect(2, 2, 12, 12, BRASS.line);
+    c.rect(3, 3, 10, 10, BRASS.deep);
+    for (const gx of [0, 1, 2]) for (const gy of [0, 1, 2]) {
+      const x = 4 + gx * 3, y = 4 + gy * 3;
+      const mid = gx === 1 && gy === 1;
+      c.rect(x, y, 2, 2, mid ? V.mid : BRASS.mid);
+      c.set(x, y, mid ? V.hot : BRASS.lite);
+    }
+  },
+
   // --- Matiere du T5 -------------------------------------------------------
   //
   // L'essence est le SEUL item du mod dont le centre soit noir. Toute la chaine du

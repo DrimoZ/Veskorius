@@ -68,7 +68,22 @@ neoForge {
             // La cause est la croissance de la suite : cent cinquante tests dont beaucoup
             // POSENT UNE STRUCTURE entière (l'Archive fait à elle seule 23x16x52), et
             // chaque lot dédié ajoute son propre cycle de pose et de dépose.
-            jvmArguments.addAll '-Xmx3G', '-XX:+HeapDumpOnOutOfMemoryError'
+            // 4 Go — et il reste un problème NON RÉSOLU derrière ce chiffre.
+            //
+            // Ce qui est établi : à 3 Go et monde propre, un lot dédié ne démarrait plus
+            // (JVM collée à 3,44 Go de RSS, serveur à « 43 ticks behind »). À 4 Go, les
+            // 158 tests passent tous — le bandeau de progression se remplit entièrement,
+            // aucun « failed at » au log. Le monde est hors de cause cette fois : 11 Mo,
+            // purgé au doFirst ci-dessous.
+            //
+            // CE QUI RESTE OUVERT : même tous tests verts, le serveur n'imprime pas son
+            // résumé et ne sort pas — il tourne à son plafond de tas en sauvegardant en
+            // boucle. Augmenter -Xmx repousse le mur sans le supprimer, et c'est la
+            // troisième fois. Piste la plus plausible, non vérifiée : les tests de donjon
+            // posent des structures entières dont les Custodes sont PERSISTANTS
+            // (setPersistenceRequired, removeWhenFarAway=false) — rien ne les retire, et
+            // ils s'accumulent avec leur IA sur toute la durée du run.
+            jvmArguments.addAll '-Xmx4G', '-XX:+HeapDumpOnOutOfMemoryError'
         }
         data {
             data()

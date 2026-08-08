@@ -2096,7 +2096,7 @@ public class MachineGameTests {
         ModBlocks.TUNABLE_FIELD_EMITTER.get(), ModBlocks.CRYSTAL_ROOST.get(),
         ModBlocks.DAMPING_ARRAY.get(), ModBlocks.VESKORIAN_ALLOY_FORGE.get(),
         ModBlocks.RESONANCE_RELAY.get(), ModBlocks.FLUX_COMPRESSOR.get(),
-        ModBlocks.RECLAIMER.get(),
+        ModBlocks.RECLAIMER.get(), ModBlocks.ADVANCED_ASSEMBLER.get(),
         ModBlocks.STRUCTURAL_SYNTHESIZER.get(), ModBlocks.DEEP_CRYSTAL_DRILLER.get(),
         ModBlocks.SLAG_VENT.get(),
         ModBlocks.DEEP_SYNTHESIS_CHAMBER.get(), ModBlocks.HARMONIC_AMPLIFIER.get(),

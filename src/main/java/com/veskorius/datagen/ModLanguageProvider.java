@@ -85,6 +85,14 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.RESONANCE_RELAY, "Resonance Relay");
         addBlock(ModBlocks.FLUX_COMPRESSOR, "Flux Compressor");
         addBlock(ModBlocks.RECLAIMER, "Reclaimer");
+        addBlock(ModBlocks.ADVANCED_ASSEMBLER, "Advanced Assembler");
+        addItem(ModItems.RESONANCE_MATRIX, "Resonance Matrix");
+        add("codex.veskorius.machines.advanced_assembler.title", "Advanced Assembler");
+        add("codex.veskorius.machines.advanced_assembler.text",
+            "Composes the Resonance Matrix: four Resonance Components and two CONDUCTIVE alloy ingots, 30 seconds, 5 Osc per tick.\n\nIts whole job is to add a step, and that is a real job. Without it, Tier 4 machines were built straight from Resonance Components — a Tier 1 part, the one you assemble in your first hour. The chain skipped two tiers at once: everything you forged in Tier 3 went into decorative blocks while Tier 4 kept asking for the same component as Tier 1.\n\nThe conductive ingot, not the structural one. The metal branch you chose at the Forge is charged a third time here, after the Relay and the Harmonic Lattice.");
+        add("codex.veskorius.crystals.matrix.title", "Resonance Matrix");
+        add("codex.veskorius.crystals.matrix.text",
+            "The intermediate part of Tier 3, and all four Tier 4 machines want one: the Amplifier, the Synthesis Chamber, the Extraction Array, the Network Hub.\n\nIt is the opposite of the Harmonic Lattice on purpose. The Lattice is open — it lets a field through and distributes it. The Matrix is solid: it holds and orders. Two intermediate parts of the same network, told apart at a glance in an inventory.");
         addBlock(ModBlocks.STRUCTURAL_SYNTHESIZER, "Structural Synthesizer");
         addBlock(ModBlocks.DEEP_CRYSTAL_DRILLER, "Deep Crystal Driller");
         addBlock(ModBlocks.SLAG_VENT, "Slag Vent");

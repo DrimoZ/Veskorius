@@ -48,6 +48,7 @@ const ACCENT = {
   veskorian_alloy_forge: { deep: '#8E5A15', mid: '#D8922A', hi: '#F0B863' },
   flux_compressor: { deep: '#5C2C86', mid: '#8A47B8', hi: '#B57CE0' },
   reclaimer: { deep: '#3E4A38', mid: '#6B7F5E', hi: '#9DB48C' },
+  advanced_assembler: { deep: '#8E5A15', mid: '#D8922A', hi: '#F0B863' },
   structural_synthesizer: { deep: '#4A4658', mid: '#7C7890', hi: '#A8A4BA' },
   deep_crystal_driller: { deep: '#5E3517', mid: '#A8632F', hi: '#C9834E' },
   deep_synthesis_chamber: { deep: '#5E7A8E', mid: '#8FB3C6', hi: '#DDEEF5' },
@@ -115,6 +116,16 @@ const BANNER = {
     raised(c, 12, 58, 152, 5, a.mid, a.hi, a.deep);
     raised(c, 12, 69, 152, 4, P.brass, a.hi, a.deep);
     for (let i = 0; i < 10; i++) c.rect(18 + i * 15, 63, 4, 6, a.deep);
+  },
+  advanced_assembler: (c, a) => { // une file de MATRICES : la grille, encore et encore
+    for (let i = 0; i < 8; i++) {
+      const x = 16 + i * 18;
+      sunken(c, x, 59, 14, 14, P.slot, P.hi, P.slotLo);
+      for (const gx of [0, 1, 2]) for (const gy of [0, 1, 2]) {
+        const mid = gx === 1 && gy === 1;
+        c.rect(x + 2 + gx * 4, 61 + gy * 4, 3, 3, mid ? a.hi : a.deep);
+      }
+    }
   },
   reclaimer: (c, a) => { // une file d'ENTONNOIRS qui se vident dans une rigole
     raised(c, 12, 69, 152, 4, P.brass, a.hi, a.deep);

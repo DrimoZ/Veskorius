@@ -69,6 +69,10 @@ public class ModMenuTypes {
         RECLAIMER = MENUS.register("reclaimer",
             () -> IMenuTypeExtension.create(ReclaimerMenu::new));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<AdvancedAssemblerMenu>>
+        ADVANCED_ASSEMBLER = MENUS.register("advanced_assembler",
+            () -> IMenuTypeExtension.create(AdvancedAssemblerMenu::new));
+
     public static final DeferredHolder<MenuType<?>, MenuType<StructuralSynthesizerMenu>>
         STRUCTURAL_SYNTHESIZER = MENUS.register("structural_synthesizer",
             () -> IMenuTypeExtension.create(StructuralSynthesizerMenu::new));

@@ -237,6 +237,22 @@ const faces = {
     for (const [x, y] of [[2, 2], [12, 2]]) { c.rect(x, y, 2, 2, m.metal); c.set(x, y, m.metalHi); }
   },
 
+  // UNE GRILLE 3x3, et son centre. La seule façade du mod qui montre une STRUCTURE
+  // plutôt qu'un geste : l'Assembleur Avancé ne presse rien, ne chauffe rien, ne trie
+  // rien — il ORDONNE. Éteint, neuf cases vides ; allumé, le centre prend et les huit
+  // autres s'orientent vers lui.
+  advanced_assembler: (c, m, a, on) => {
+    slab(c, 0, 0, 16, 16, m.tones[1], m.tones[3], m.line);
+    c.rect(2, 2, 12, 12, m.dark);
+    for (const gx of [0, 1, 2]) for (const gy of [0, 1, 2]) {
+      const x = 3 + gx * 4, y = 3 + gy * 4;
+      const mid = gx === 1 && gy === 1;
+      c.rect(x, y, 3, 3, on ? (mid ? a.hot : a.deep) : m.tones[0]);
+      if (on && !mid) c.set(x + 1, y + 1, a.mid);
+    }
+    for (const [x, y] of [[1, 1], [13, 1], [1, 13], [13, 13]]) { c.rect(x, y, 2, 2, m.metal); c.set(x, y, m.metalHi); }
+  },
+
   // UN ENTONNOIR, et rien d'autre. Large en haut, étroit en bas, avec un bac dessous.
   // C'est la seule façade du mod qui se lit de haut en bas plutôt que par symétrie : le
   // Reclaimer ne transforme pas, il TRIE — ce qui entre est informe, ce qui sort est

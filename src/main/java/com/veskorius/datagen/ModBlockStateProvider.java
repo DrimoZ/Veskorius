@@ -53,6 +53,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.VESKORIAN_ALLOY_FORGE.get(), "veskorian_alloy_forge", VESKORIAN, PRESS);
         machine(ModBlocks.FLUX_COMPRESSOR.get(), "flux_compressor", VESKORIAN, RAM);
         machine(ModBlocks.RECLAIMER.get(), "reclaimer", VESKORIAN, FUNNEL);
+        machine(ModBlocks.ADVANCED_ASSEMBLER.get(), "advanced_assembler", VESKORIAN, PRESS);
         machine(ModBlocks.DEEP_SYNTHESIS_CHAMBER.get(), "deep_synthesis_chamber", VESKORIAN, TANK);
         machine(ModBlocks.AUTOMATED_EXTRACTION_ARRAY.get(), "automated_extraction_array", VESKORIAN, GANTRY);
         machine(ModBlocks.STRUCTURAL_SYNTHESIZER.get(), "structural_synthesizer", VESKORIAN, MOLD);

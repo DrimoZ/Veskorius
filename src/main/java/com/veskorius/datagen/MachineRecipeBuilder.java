@@ -80,6 +80,11 @@ public class MachineRecipeBuilder {
             ModRecipeSerializers.RECLAIMING::get, new ItemStack(result, count));
     }
 
+    public static MachineRecipeBuilder advancedAssembling(ItemLike result, int count) {
+        return new MachineRecipeBuilder(ModRecipeTypes.ADVANCED_ASSEMBLING::get,
+            ModRecipeSerializers.ADVANCED_ASSEMBLING::get, new ItemStack(result, count));
+    }
+
     public static MachineRecipeBuilder synthesizing(ItemLike result, int count) {
         return new MachineRecipeBuilder(ModRecipeTypes.SYNTHESIZING::get,
             ModRecipeSerializers.SYNTHESIZING::get, new ItemStack(result, count));

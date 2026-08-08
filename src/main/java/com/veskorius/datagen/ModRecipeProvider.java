@@ -195,6 +195,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.VESKORIAN_ALLOY_INGOT.get(), 2)
                 .requires(blueprint(3)));
 
+        // Advanced Assembler (T3) : il compose la Matrice de Résonance. Il coûte de
+        // l'alliage CONDUCTEUR, comme ce qu'il fabriquera — la machine et sa production
+        // tirent sur la même branche de métal, donc le choix fait à la Forge se paie une
+        // fois de plus, dès l'achat de l'outil.
+        machine(recipeOutput, ModBlocks.ADVANCED_ASSEMBLER.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.VESKORIAN_CONDUCTIVE_ALLOY_INGOT.get(), b -> b
+                .requires(ModItems.VESKORIAN_CONDUCTIVE_ALLOY_INGOT.get(), 2)
+                .requires(ModItems.RESONANCE_COMPONENT.get(), 2)
+                .requires(blueprint(3)));
+
         // Reclaimer (T3) : il ferme la boucle économique. Il se fabrique en CUIVRE — le
         // métal des récupérateurs — plutôt qu'en alliage neuf : la machine qui rend les
         // déchets ne doit pas coûter cher dans le matériau qu'elle sert à ne plus gâcher.
@@ -260,6 +270,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.HYPER_REFINED_CRYSTAL.get())
                 .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
                 .requires(ModItems.VESKORIAN_ALLOY_INGOT.get(), 2)
+                .requires(ModItems.RESONANCE_MATRIX.get())
                 .requires(blueprint(4)));
 
         // Harmonic Amplifier (#14) : Treillis + 2 Refined Crystal (05-Machines.md).
@@ -267,6 +278,7 @@ public class ModRecipeProvider extends RecipeProvider {
             ModItems.HARMONIC_LATTICE.get(), b -> b
                 .requires(ModItems.HARMONIC_LATTICE.get())
                 .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
+                .requires(ModItems.RESONANCE_MATRIX.get())
                 .requires(blueprint(4)));
 
         // Rift Core Extractor (#20). Le dossier ne fixe pas sa recette (« placé dans une
@@ -328,7 +340,7 @@ public class ModRecipeProvider extends RecipeProvider {
         machine(recipeOutput, ModBlocks.AUTOMATED_EXTRACTION_ARRAY.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
             ModItems.VESKORIAN_ALLOY_INGOT.get(), b -> b
                 .requires(ModItems.VESKORIAN_ALLOY_INGOT.get(), 4)
-                .requires(ModItems.RESONANCE_COMPONENT.get(), 2)
+                .requires(ModItems.RESONANCE_MATRIX.get(), 2)
                 .requires(blueprint(4)));
 
         // Resonance Network Hub (#17) : 4 Component + 2 Treillis (05-Machines.md).
@@ -336,7 +348,7 @@ public class ModRecipeProvider extends RecipeProvider {
         // Amplificateur. C'est voulu — on n'arbitre pas un réseau qu'on n'a pas encore.
         machine(recipeOutput, ModBlocks.RESONANCE_NETWORK_HUB.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
             ModItems.HARMONIC_LATTICE.get(), b -> b
-                .requires(ModItems.RESONANCE_COMPONENT.get(), 4)
+                .requires(ModItems.RESONANCE_MATRIX.get(), 2)
                 .requires(ModItems.HARMONIC_LATTICE.get(), 2)
                 .requires(blueprint(4)));
 
@@ -683,6 +695,19 @@ public class ModRecipeProvider extends RecipeProvider {
             .input(ModItems.RESONANCE_SLUDGE.get(), 4)
             .time(20 * 20).osc(4)
             .save(recipeOutput, machineRecipe("reclaiming/dust_from_sludge"));
+
+        // Advanced Assembler (T3) : 4 Composants + 2 lingots CONDUCTEURS → 1 Matrice,
+        // 30 s, 5 Osc/tick.
+        //
+        // Le conducteur, pas le structurel. C'est la TROISIÈME fois que la branche de
+        // métal choisie à la Forge se fait payer — après le Relais et le Treillis
+        // Harmonique — et c'est ce qui transforme une décision de début de palier en
+        // vraie planification : elle continue de coûter jusqu'au T4.
+        MachineRecipeBuilder.advancedAssembling(ModItems.RESONANCE_MATRIX.get(), 1)
+            .input(ModItems.RESONANCE_COMPONENT.get(), 4)
+            .input(ModItems.VESKORIAN_CONDUCTIVE_ALLOY_INGOT.get(), 2)
+            .time(30 * 20).osc(5)
+            .save(recipeOutput, machineRecipe("advanced_assembling/resonance_matrix"));
 
         // Structural Synthesizer (#11) : 4 lingots + 8 pierres → 4 blocs, 60 s. Le RÉSIDU
         // n'est pas ici : comme la scorie de la Forge, il est une propriété de la machine

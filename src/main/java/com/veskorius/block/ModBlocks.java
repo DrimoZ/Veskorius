@@ -604,6 +604,17 @@ public class ModBlocks {
                 .noOcclusion()
                 .lightLevel(MACHINE_GLOW));
 
+    public static final DeferredBlock<AdvancedAssemblerBlock> ADVANCED_ASSEMBLER =
+        BLOCKS.registerBlock("advanced_assembler",
+            AdvancedAssemblerBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(MACHINE_GLOW));
+
     /** Machine #11 : ce qui rend le palier bâtissable — le lingot devient un bloc. */
     public static final DeferredBlock<StructuralSynthesizerBlock> STRUCTURAL_SYNTHESIZER =
         BLOCKS.registerBlock("structural_synthesizer",

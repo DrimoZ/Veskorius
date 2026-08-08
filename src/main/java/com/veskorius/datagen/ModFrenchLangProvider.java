@@ -66,6 +66,14 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.RESONANCE_RELAY, "Relais de Résonance");
         addBlock(ModBlocks.FLUX_COMPRESSOR, "Compresseur de Flux");
         addBlock(ModBlocks.RECLAIMER, "Récupérateur");
+        addBlock(ModBlocks.ADVANCED_ASSEMBLER, "Assembleur Avancé");
+        addItem(ModItems.RESONANCE_MATRIX, "Matrice de Résonance");
+        add("codex.veskorius.machines.advanced_assembler.title", "Assembleur Avancé");
+        add("codex.veskorius.machines.advanced_assembler.text",
+            "Compose la Matrice de Résonance : quatre Composants de Résonance et deux lingots d'alliage CONDUCTEUR, 30 secondes, 5 Osc par tick.\n\nTout son rôle est d'ajouter une étape, et c'en est un vrai. Sans lui, les machines du palier 4 se fabriquaient directement avec des Composants de Résonance — une pièce du palier 1, celle qu'on assemble dans la première heure. La chaîne sautait deux paliers d'un coup : tout ce qu'on forgeait au palier 3 partait dans des blocs décoratifs pendant que le palier 4 réclamait le même composant que le palier 1.\n\nLe lingot conducteur, pas le structurel. La branche de métal choisie à la Forge se fait payer ici une troisième fois, après le Relais et le Treillis Harmonique.");
+        add("codex.veskorius.crystals.matrix.title", "Matrice de Résonance");
+        add("codex.veskorius.crystals.matrix.text",
+            "La pièce intermédiaire du palier 3, et les quatre machines du palier 4 en réclament une : l'Amplificateur, la Chambre de Synthèse, le Réseau d'Extraction, le Concentrateur.\n\nElle est l'inverse du Treillis Harmonique, et c'est voulu. Le Treillis est ajouré — il laisse passer un champ et le répartit. La Matrice est pleine : elle contient et ordonne. Deux pièces intermédiaires du même réseau, qu'on sépare d'un coup d'œil dans un inventaire.");
         addBlock(ModBlocks.STRUCTURAL_SYNTHESIZER, "Synthétiseur Structurel");
         addBlock(ModBlocks.DEEP_CRYSTAL_DRILLER, "Foreuse à Cristaux Profonds");
         addBlock(ModBlocks.SLAG_VENT, "Évent à Scorie");

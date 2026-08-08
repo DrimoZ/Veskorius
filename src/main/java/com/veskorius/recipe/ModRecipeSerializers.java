@@ -46,6 +46,10 @@ public class ModRecipeSerializers {
         RECIPE_SERIALIZERS.register("reclaiming",
             () -> new MachineRecipeSerializer(ModRecipeTypes.RECLAIMING::get));
 
+    public static final DeferredHolder<RecipeSerializer<?>, MachineRecipeSerializer> ADVANCED_ASSEMBLING =
+        RECIPE_SERIALIZERS.register("advanced_assembling",
+            () -> new MachineRecipeSerializer(ModRecipeTypes.ADVANCED_ASSEMBLING::get));
+
     public static final DeferredHolder<RecipeSerializer<?>, MachineRecipeSerializer> SYNTHESIZING =
         RECIPE_SERIALIZERS.register("synthesizing",
             () -> new MachineRecipeSerializer(ModRecipeTypes.SYNTHESIZING::get));

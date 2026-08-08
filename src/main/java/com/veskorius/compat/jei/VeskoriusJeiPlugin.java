@@ -74,6 +74,7 @@ public class VeskoriusJeiPlugin implements IModPlugin {
         machine("forging", ModRecipeTypes.FORGING::get, ModBlocks.VESKORIAN_ALLOY_FORGE),
         machine("compressing", ModRecipeTypes.COMPRESSING::get, ModBlocks.FLUX_COMPRESSOR),
         machine("reclaiming", ModRecipeTypes.RECLAIMING::get, ModBlocks.RECLAIMER),
+        machine("advanced_assembling", ModRecipeTypes.ADVANCED_ASSEMBLING::get, ModBlocks.ADVANCED_ASSEMBLER),
         machine("synthesis", ModRecipeTypes.SYNTHESIS::get, ModBlocks.DEEP_SYNTHESIS_CHAMBER),
         machine("synthesizing", ModRecipeTypes.SYNTHESIZING::get, ModBlocks.STRUCTURAL_SYNTHESIZER));
 
