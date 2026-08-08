@@ -156,6 +156,10 @@ tex.ancient_emitter_front=front('t1',0x748,faces.field_emitter,false);
 // Sigma : la haute époque. Marbre sombre poli et ambre — on doit voir au premier
 // coup d'oeil qu'on a changé d'âge, pas seulement de salle.
 tex.sigma_console_front=front('t3',0x74C,faces.attunement_console,true);
+// Console de l'Archive : même pupitre, accent BLANC-BLEU. Le geste qui ouvre un
+// palier doit se reconnaître d'un coup d'œil aux trois consoles ; seule la couleur
+// dit à quel âge on est arrivé.
+tex.archive_console_front=front('t3',0x750,faces.attunement_console,true,{deep:'#5E7A8E',mid:'#8FB3C6',lite:'#BBD9E6',hot:'#FFFFFF'});
 tex.damaged_relay_front=front('t3',0x74D,faces.field_emitter,false);
 tex.damaged_relay_front_on=front('t3',0x74D,faces.field_emitter,true);
 tex.ancient_emitter_front_on=front('t1',0x748,faces.field_emitter,true);

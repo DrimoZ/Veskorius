@@ -99,6 +99,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // la reconnaître ne doit donc pas dépendre de l'angle sous lequel on l'aborde.
         simpleBlock(ModBlocks.ATTUNEMENT_CONSOLE.get(), consoleModel());
         simpleBlock(ModBlocks.SIGMA_CONSOLE.get(), sigmaConsoleModel());
+        simpleBlock(ModBlocks.ARCHIVE_CONSOLE.get(), consoleModel("archive_console", VESKORIAN));
         simpleBlock(ModBlocks.ARCHIVE_PEDESTAL.get(), pedestalModel());
         // Relais endommagé : la silhouette de l'émetteur, sur le châssis T3. Le joueur
         // doit reconnaître un appareil de réseau avant de savoir ce qu'il fait.

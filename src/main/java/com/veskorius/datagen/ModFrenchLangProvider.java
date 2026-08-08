@@ -68,6 +68,7 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.STRUCTURAL_SYNTHESIZER, "Synthétiseur Structurel");
         addBlock(ModBlocks.DEEP_CRYSTAL_DRILLER, "Foreuse à Cristaux Profonds");
         addBlock(ModBlocks.SLAG_VENT, "Évent à Scorie");
+        addBlock(ModBlocks.ARCHIVE_CONSOLE, "Console d'Archive");
 
         // Architecture de donjon (17-Dungeons.md §4)
         addBlock(ModBlocks.VEINED_STONE_BRICKS, "Briques de Pierre Veinée");
@@ -112,6 +113,8 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addItem(ModItems.FLUX_SLAG, "Scorie de Flux");
         addItem(ModItems.SYNTHESIS_RESIDUE, "Résidu de Synthèse");
         addItem(ModItems.CONCENTRATED_FLUX, "Flux Concentré");
+        addItem(ModItems.HYPER_REFINED_CRYSTAL, "Cristal Hyper-Raffiné");
+        addItem(ModItems.HARMONIC_LATTICE, "Treillis Harmonique");
         addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Bloc d'Alliage Veskorien");
         add("item.veskorius.veskorian_alloy_ingot.hint", "Métal structurel du Palier 3. Forgez de l'or au lieu du fer pour la variante conductrice.");
         add("item.veskorius.flux_slag.hint", "Déchet de forge. La substance même qui, à l'échelle d'une région, a causé l'Effondrement.");

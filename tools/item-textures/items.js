@@ -24,6 +24,9 @@ const C = { line: '#0E4449', deep: '#166B72', mid: '#27A3AC', lite: '#5FD6DC', h
 const A = { line: '#6E4A15', deep: '#8E5A15', mid: '#D8922A', lite: '#F0B863', hot: '#FBE0B0' };
 const M = { line: '#8E8E8E', deep: '#B8B8B8', mid: '#D3D3D3', lite: '#E0E0E0', hot: '#F2F2F2' };
 const IRON = { line: '#1E2228', deep: '#2E323A', mid: '#454B56', lite: '#5E6672', hot: '#828A96' };
+// Le T4 : presque blanc, a peine teinte. La chaine va du violet sourd au blanc
+// — plus on raffine, moins la matiere a de couleur propre.
+const HYPER = { line: '#5E7A8E', deep: '#8FB3C6', mid: '#BBD9E6', lite: '#DDEEF5', hot: '#FFFFFF' };
 const BRASS = { line: '#6E5420', deep: '#8A6A2A', mid: '#C9A24A', lite: '#E8CE8A', hot: '#F7EBC4' };
 const COPPER = { line: '#5E3517', deep: '#8A4E24', mid: '#A8632F', lite: '#C9834E', hot: '#E0A87A' };
 const WOOD = { line: '#33240F', deep: '#4A3520', mid: '#6E5436', lite: '#8F7048', hot: '#B08E5E' };
@@ -281,6 +284,48 @@ const items = {
     for (const [x, y] of [[5, 9], [8, 8], [10, 10]]) c.set(x, y, V.deep);
     c.rect(3, 6, 10, 1, M.hot);
   },
+  // --- Matiere du T4 -------------------------------------------------------
+  //
+  // Le quatrieme etat du cristal doit se lire comme le PLUS NOBLE de la chaine
+  // sans casser la famille : meme losange taille, mais DOUBLE — un coeur pris
+  // dans une gangue. Aucun autre item du mod n'a de forme imbriquee, donc la
+  // silhouette reste unique meme reduite a sa decoupe.
+  hyper_refined_crystal: (c) => {
+    crystal(c, HYPER, 2, 0, 12, 16);
+    // Le coeur : un second losange, plus petit, d'une autre matiere. C'est lui
+    // qui dit « synthetise » plutot que « taille ».
+    const core = [[6, 7, 8], [7, 6, 9], [8, 6, 9], [9, 7, 8]];
+    outline(c, core, V.line);
+    fill(c, core, V.mid);
+    c.set(7, 7, V.hot);
+    for (const [x, y] of [[4, 3], [11, 5], [5, 12], [10, 11]]) c.set(x, y, HYPER.hot);
+  },
+
+  // Treillis harmonique : une GRILLE OUVERTE. Ni un cristal (taille), ni un
+  // lingot (hexagone), ni une poudre (tas) — la seule silhouette ajouree du mod,
+  // et c'est ce qui la rend reconnaissable a la decoupe seule. Elle dit aussi ce
+  // que fait la piece : elle ne stocke rien, elle laisse passer et repartit.
+  harmonic_lattice: (c) => {
+    // Cadre : DEUX anneaux de 1 px, jamais un carre plein. Le vide central n'est
+    // pas efface apres coup — il n'est simplement jamais peint. La toile est
+    // transparente au depart, et c'est la seule facon d'obtenir un objet ajoure :
+    // `set` ecrit toujours en opaque, donc rien ne se « creuse » a posteriori.
+    c.frameRect(2, 2, 12, 12, BRASS.line);
+    c.frameRect(3, 3, 10, 10, BRASS.mid);
+    c.rect(3, 3, 10, 1, BRASS.lite);
+    c.rect(3, 12, 10, 1, BRASS.deep);
+    // Deux montants et deux traverses : le tissage.
+    c.rect(7, 3, 2, 10, BRASS.mid);
+    c.rect(3, 7, 10, 2, BRASS.mid);
+    c.rect(7, 3, 1, 10, BRASS.lite);
+    c.rect(3, 7, 10, 1, BRASS.lite);
+    // Noeuds de resonance aux croisements : c'est la ou l'energie se repartit.
+    for (const [x, y] of [[7, 7], [7, 3], [7, 11], [3, 7], [11, 7]]) {
+      c.rect(x, y, 2, 2, V.mid);
+      c.set(x, y, V.hot);
+    }
+  },
+
   concentrated_flux: (c) => {
     const vial = [[3, 6, 9], [4, 5, 10], [5, 4, 11], [6, 4, 11], [7, 4, 11],
       [8, 4, 11], [9, 4, 11], [10, 5, 10], [11, 6, 9], [12, 7, 8]];

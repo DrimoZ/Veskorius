@@ -116,6 +116,28 @@ public class ModItems {
     public static final DeferredItem<Item> CONCENTRATED_FLUX =
         ITEMS.registerSimpleItem("concentrated_flux", new Item.Properties().stacksTo(64));
 
+    // --- Materiaux T4 (04-Materials.md) -------------------------------------
+
+    /**
+     * Quatrieme etat du cristal. <b>Il n'est pas minable</b> : la Deep Synthesis Chamber
+     * est la seule source, et la Chambre elle-meme en consomme un a la construction. Les
+     * trois exemplaires de l'Archive Regionale sont donc le seul stock de depart du
+     * palier, et le choix « premier Amplificateur ou production perenne ? » se joue
+     * dessus (05-Machines.md, « Bootstrap du T4 »).
+     */
+    public static final DeferredItem<Item> HYPER_REFINED_CRYSTAL =
+        ITEMS.registerSimpleItem("hyper_refined_crystal", new Item.Properties().stacksTo(64));
+
+    /**
+     * <b>Treillis harmonique</b> : 4 lingots CONDUCTEURS + 2 Hyper Refined. C'est la piece
+     * qui fait exister le T4 en tant que palier de reseau — Harmonic Amplifier et
+     * Convergence Core en dependent tous les deux, et rien d'autre ne s'en sert. Le lingot
+     * conducteur, pas le structurel : la branche de metal choisie a la Forge se paie une
+     * seconde fois, un palier plus tard.
+     */
+    public static final DeferredItem<Item> HARMONIC_LATTICE =
+        ITEMS.registerSimpleItem("harmonic_lattice", new Item.Properties().stacksTo(64));
+
     /** Œuf d'apparition du Fileur de Cristal. */
     public static final DeferredItem<DeferredSpawnEggItem> CRYSTAL_STRIDER_SPAWN_EGG =
         ITEMS.registerItem("crystal_strider_spawn_egg",

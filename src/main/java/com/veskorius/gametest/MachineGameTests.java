@@ -1580,6 +1580,73 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    /**
+     * <b>Chaque palier a une porte, et elles sont toutes différentes.</b>
+     *
+     * <p>Ce test existe parce que le T4 n'en avait aucune. La salle de lecture de l'Archive
+     * posait la console du <b>Sigma</b> — celle qui rend le T3 — alors que son propre
+     * commentaire annonçait « la console rend le blueprint T4 ». Le donjon le plus profond
+     * du mod ne débloquait donc rien de plus que le précédent, et un palier entier décrit
+     * au dossier restait inatteignable. Rien ne pouvait le signaler : les deux blocs sont
+     * du même type, se posent, s'utilisent et donnent un blueprint parfaitement valide.
+     *
+     * <p>On vérifie donc le tier <b>que chaque bloc rend réellement</b>, et non sa présence.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void eachTierHasItsOwnDoor(GameTestHelper helper) {
+        assertConsoleTier(helper, ModBlocks.ATTUNEMENT_CONSOLE.get(), 2, "Avant-poste");
+        assertConsoleTier(helper, ModBlocks.SIGMA_CONSOLE.get(), 3, "Sigma");
+        assertConsoleTier(helper, ModBlocks.ARCHIVE_CONSOLE.get(), 4, "Archive Régionale");
+        helper.succeed();
+    }
+
+    private static void assertConsoleTier(GameTestHelper helper,
+                                          net.minecraft.world.level.block.Block block,
+                                          int expected, String where) {
+        int actual = ((AttunementConsoleBlock) block).getTier();
+        helper.assertTrue(actual == expected,
+            "La console de " + where + " doit rendre le blueprint T" + expected
+                + ", elle rend T" + actual);
+    }
+
+    /**
+     * <b>L'Archive garantit exactement trois Hyper Refined Crystal.</b>
+     *
+     * <p>Le chiffre est le pivot du palier : deux partent dans le Treillis du premier
+     * Amplificateur, le troisième dans la Deep Synthesis Chamber, qui rend ensuite la
+     * ressource renouvelable. Le joueur ne peut donc pas avoir les deux et doit choisir
+     * (05-Machines.md, « Bootstrap du T4 »). Deux de moins et il reste bloqué sans jamais
+     * pouvoir refaire d'Amplificateur ; deux de plus et il n'y a plus de choix du tout.
+     *
+     * <p>Le test tire la table cinquante fois : un pool mal placé donnerait « 3 cristaux OU
+     * de l'or » à pile ou face, et la moitié des Archives ne débloqueraient rien. Ce piège
+     * s'est déjà refermé deux fois sur le butin d'amorçage de l'Avant-poste.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void archiveAlwaysBootstrapsExactlyThreeCrystals(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        var table = level.getServer().reloadableRegistries()
+            .getLootTable(net.minecraft.resources.ResourceKey.create(
+                net.minecraft.core.registries.Registries.LOOT_TABLE,
+                com.veskorius.worldgen.ModWorldGen.ARCHIVE_LOOT));
+        var params = new net.minecraft.world.level.storage.loot.LootParams.Builder(level)
+            .create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.EMPTY);
+
+        for (int roll = 0; roll < 50; roll++) {
+            int crystals = 0;
+            for (ItemStack stack : table.getRandomItems(params)) {
+                if (stack.is(ModItems.HYPER_REFINED_CRYSTAL.get())) {
+                    crystals += stack.getCount();
+                }
+            }
+            helper.assertTrue(crystals == 3,
+                "Tirage " + roll + " : 3 Hyper Refined attendus, obtenu " + crystals
+                    + ". Sans eux le T4 est un cercle fermé — la Chambre en consomme un "
+                    + "et elle est la seule source.");
+        }
+        helper.succeed();
+    }
+
     /** Un fragment de Codex porte son entrée de lore (Data Component, round-trip). */
     @GameTest(template = EMPTY, timeoutTicks = 20)
     public static void codexFragmentCarriesEntry(GameTestHelper helper) {

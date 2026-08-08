@@ -50,6 +50,17 @@ public class AttunementConsoleBlock extends Block {
         this.tier = tier;
     }
 
+    /**
+     * Le palier que cette console rend. Exposé pour être vérifiable : trois consoles
+     * partagent cette classe et se distinguent par ce seul entier, donc poser la mauvaise
+     * dans une structure est indétectable à l'œil — le bloc se pose, s'utilise et donne un
+     * blueprint parfaitement valide, simplement du mauvais palier. C'est arrivé à l'Archive
+     * Régionale, qui portait la console du Sigma et ne débloquait donc rien de neuf.
+     */
+    public int getTier() {
+        return tier;
+    }
+
     @Override
     protected net.minecraft.world.phys.shapes.VoxelShape getShape(
             BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos,

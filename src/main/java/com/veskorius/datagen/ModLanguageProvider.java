@@ -67,6 +67,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.STRUCTURAL_SYNTHESIZER, "Structural Synthesizer");
         addBlock(ModBlocks.DEEP_CRYSTAL_DRILLER, "Deep Crystal Driller");
         addBlock(ModBlocks.SLAG_VENT, "Slag Vent");
+        addBlock(ModBlocks.ARCHIVE_CONSOLE, "Archive Console");
 
         // Châssis de palier : la base de craft et de texture des machines.
         addBlock(ModBlocks.FRACTURED_CHASSIS, "Fractured Chassis");
@@ -116,6 +117,8 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.FLUX_SLAG, "Flux Slag");
         addItem(ModItems.SYNTHESIS_RESIDUE, "Synthesis Residue");
         addItem(ModItems.CONCENTRATED_FLUX, "Concentrated Flux");
+        addItem(ModItems.HYPER_REFINED_CRYSTAL, "Hyper Refined Crystal");
+        addItem(ModItems.HARMONIC_LATTICE, "Harmonic Lattice");
         addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Block of Veskorian Alloy");
         add("item.veskorius.veskorian_alloy_ingot.hint", "Structural metal of Tier 3. Forge gold instead of iron for the conductive kind.");
         add("item.veskorius.flux_slag.hint", "Forge waste. The same residue that, region-wide, caused the Collapse.");

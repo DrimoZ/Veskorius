@@ -13,7 +13,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | `raw_resonance_crystal` | 04 | ✅ codé (item) |
 | `stable_resonance_crystal` | 04 | ✅ codé |
 | `refined_resonance_crystal` | 04 | ✅ codé |
-| `hyper_refined_crystal` | 04 | À coder (Phase 3) |
+| `hyper_refined_crystal` | 04 | ✅ codé — seule source : la Deep Synthesis Chamber, qui en consomme un à sa construction. Les 3 de l'Archive sont le seul stock de départ |
 | `rift_essence` | 04 | À coder (Phase 4) |
 
 ## Items — matériaux naturels
@@ -54,7 +54,7 @@ est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments 
 | `veskorian_alloy_ingot` | 04, 05 | ✅ codé (Veskorian Alloy Forge, branche FER) |
 | `veskorian_conductive_alloy_ingot` | 04, 05 | ✅ codé (même forge, branche OR — seul admis par le Resonance Relay) |
 | `veskorian_alloy_block` | 04 | ✅ codé (Structural Synthesizer ; décompactage à l'établi, compactage NON — il exige un champ) |
-| `harmonic_lattice` | 04, 05 | À coder (Phase 3) |
+| `harmonic_lattice` | 04, 05 | ✅ codé — 4 lingots CONDUCTEURS + 2 Hyper Refined + blueprint T4. Seuls consommateurs : Amplifier et Convergence Core |
 | `concentrated_flux` | 04, 05 | ✅ codé (Flux Compressor) |
 | `resonance_catalyst_core` | 04, 05 | ✅ codé (augment +15% ; craft 2 Component + 1 Refined Crystal + 1 Redstone) |
 | `flux_slag` | 04, 05 | ✅ codé (déchet de la Forge ; slot plein = forge arrêtée) |

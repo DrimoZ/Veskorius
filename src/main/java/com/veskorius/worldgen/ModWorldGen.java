@@ -85,6 +85,7 @@ public final class ModWorldGen {
     // chest loot provider and the baked structure pieces.
     public static final ResourceLocation MODEST_DWELLING_LOOT = id("chests/modest_dwelling");
     public static final ResourceLocation OUTPOST_LOOT = id("chests/outpost");
+    public static final ResourceLocation ARCHIVE_LOOT = id("chests/regional_archive");
 
     private ModWorldGen() {
     }

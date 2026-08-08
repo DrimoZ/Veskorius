@@ -1037,13 +1037,22 @@ public class ModStructurePieceProvider implements DataProvider {
     private static void archiveReadingRoom(TemplateBuilder b) {
         Masonry.chamber(b, 6, ARC_Y, 36, 16, ARC_Y + 8, 38, Masonry.Style.noble());
         Masonry.terrace(b, 9, ARC_Y, 37, 13, 37, PAVING);
-        b.set(11, ARC_Y + 1, 37, ModBlocks.SIGMA_CONSOLE.get().defaultBlockState());
+        // La console de l'ARCHIVE, pas celle du Sigma : celle-ci rend le blueprint T4.
+        // Le bloc posé ici était le T3 — l'Archive ne débloquait donc rien de plus que le
+        // donjon précédent, et le T4 n'avait aucune porte d'entrée dans tout le mod.
+        b.set(11, ARC_Y + 1, 37, ModBlocks.ARCHIVE_CONSOLE.get().defaultBlockState());
         Masonry.chandelier(b, 11, ARC_Y + 9, 37, 2);
         for (int x = 7; x <= 15; x += 4) {
             b.set(x, ARC_Y, 38, Blocks.BOOKSHELF.defaultBlockState());
             b.set(x, ARC_Y + 1, 38, Blocks.BOOKSHELF.defaultBlockState());
         }
-        b.lootChest(7, ARC_Y, 36, ModWorldGen.OUTPOST_LOOT, Direction.EAST);
+        // UN SEUL coffre porte l'amorçage T4, et c'est délibéré : sa table garantit
+        // exactement 3 Hyper Refined, or tout le raisonnement du palier tient à ce chiffre
+        // (05-Machines.md, « Bootstrap du T4 »). Deux coffres d'amorçage en donneraient
+        // six, c'est-à-dire de quoi construire l'Amplificateur ET la Chambre du premier
+        // coup — le choix structurant disparaîtrait sans que rien ne le signale. Le second
+        // reste sur le butin générique.
+        b.lootChest(7, ARC_Y, 36, ModWorldGen.ARCHIVE_LOOT, Direction.EAST);
         b.lootChest(15, ARC_Y, 36, ModWorldGen.OUTPOST_LOOT, Direction.WEST);
     }
 

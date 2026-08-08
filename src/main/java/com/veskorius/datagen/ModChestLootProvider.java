@@ -90,6 +90,38 @@ public class ModChestLootProvider implements LootTableSubProvider {
             .withPool(LootPool.lootPool()
                 .setRolls(ConstantValue.exactly(1.0f))
                 .add(fragment(CodexEntries.CUSTODE_WATCH))));
+
+        // Archive Régionale : l'amorçage du T4, et le chiffre 3 n'est pas décoratif.
+        //
+        // Le Hyper Refined Crystal ne sort que de la Deep Synthesis Chamber, qui est
+        // elle-même une machine T4 dont la construction en CONSOMME un (il devient son
+        // catalyseur permanent). Sans stock initial, le palier est un cercle fermé.
+        // L'Archive en donne exactement 3 : deux partent dans le Harmonic Lattice du
+        // premier Amplificateur, le troisième dans la Chambre. Le joueur ne peut donc pas
+        // avoir les deux tout de suite et doit choisir — « mon premier Amplificateur, ou
+        // ma production perenne ? ». Avec 2 il resterait bloqué sur un seul Amplificateur
+        // sans jamais pouvoir en refaire ; avec 4 il n'y aurait plus de choix du tout.
+        // Le raisonnement complet est dans 05-Machines.md, « Bootstrap du T4 » : ce
+        // commentaire existe pour qu'on ne « rééquilibre » pas ce 3 par inadvertance.
+        //
+        // POOL DÉDIÉ ET GARANTI, comme l'amorçage de l'Avant-poste : mélangé aux autres
+        // entrées, il serait tiré une fois sur N et la moitié des Archives ne débloqueraient
+        // rien. Ce piège s'est déjà refermé deux fois sur ce fichier.
+        output.accept(key(ModWorldGen.ARCHIVE_LOOT), LootTable.lootTable()
+            .withPool(LootPool.lootPool()
+                .setRolls(ConstantValue.exactly(1.0f))
+                .add(LootItem.lootTableItem(ModItems.HYPER_REFINED_CRYSTAL.get())
+                    .apply(SetItemCountFunction.setCount(ConstantValue.exactly(3.0f)))))
+            // De quoi tenir la suite : le Lattice réclame 4 lingots conducteurs, et on ne
+            // fond pas de l'or à l'endroit où on vient de résoudre une énigme.
+            .withPool(LootPool.lootPool()
+                .setRolls(UniformGenerator.between(2.0f, 3.0f))
+                .add(LootItem.lootTableItem(Items.GOLD_INGOT)
+                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0f, 4.0f))))
+                .add(LootItem.lootTableItem(ModItems.REFINED_RESONANCE_CRYSTAL.get())
+                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0f, 4.0f))))
+                .add(LootItem.lootTableItem(Items.DIAMOND)
+                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 2.0f))))));
     }
 
     /** Un {@code codex_fragment} portant l'entrée de lore donnée. */

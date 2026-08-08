@@ -211,6 +211,24 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.IRON_BARS)
                 .requires(blueprint(3)));
 
+        // --- Matériau T4 : le Treillis Harmonique -------------------------------
+        //
+        // 4 lingots CONDUCTEURS + 2 Hyper Refined (04-Materials.md). Première recette à
+        // exiger le blueprint T4, donc la première chose que l'Archive débloque.
+        //
+        // Ce n'est pas un objet parmi d'autres : Harmonic Amplifier et Convergence Core
+        // sont les deux seuls consommateurs du Treillis, et rien d'autre du mod n'en veut.
+        // Il EST le palier — et il coûte deux des trois Hyper Refined que l'Archive donne,
+        // ce qui rend le choix « Amplificateur ou Chambre » immédiatement concret.
+        net.minecraft.data.recipes.ShapelessRecipeBuilder
+            .shapeless(RecipeCategory.MISC, ModItems.HARMONIC_LATTICE.get())
+            .requires(ModItems.VESKORIAN_CONDUCTIVE_ALLOY_INGOT.get(), 4)
+            .requires(ModItems.HYPER_REFINED_CRYSTAL.get(), 2)
+            .requires(blueprint(4))
+            .unlockedBy(getHasName(ModItems.HYPER_REFINED_CRYSTAL.get()),
+                has(ModItems.HYPER_REFINED_CRYSTAL.get()))
+            .save(recipeOutput);
+
         // Émetteur Accordable : un Field Emitter + 2 Refined Crystal (l'accord demande
         // du cristal raffiné) + blueprint T2 rendu. Upgrade, pas une machine de plus.
         net.minecraft.data.recipes.ShapelessRecipeBuilder

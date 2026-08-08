@@ -515,6 +515,27 @@ public class ModBlocks {
                 .noOcclusion()
                 .lightLevel(state -> 2));
 
+    /**
+     * <b>Console de l'Archive Regionale</b> — elle rend le blueprint <b>T4</b>.
+     *
+     * <p>Elle manquait, et son absence etait un mur : la salle de lecture posait la console
+     * du Sigma, qui rend le T3. L'Archive ne debloquait donc rien de plus que le donjon
+     * precedent, et le T4 n'avait <b>aucune porte d'entree dans tout le mod</b> — un palier
+     * entier decrit au dossier et inatteignable en jeu. Le commentaire de la piece annoncait
+     * pourtant « la console rend le blueprint T4 » : la prose etait juste, le bloc pose ne
+     * l'etait pas.
+     */
+    public static final DeferredBlock<AttunementConsoleBlock> ARCHIVE_CONSOLE =
+        BLOCKS.registerBlock("archive_console",
+            props -> new AttunementConsoleBlock(props, 4),
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_LIGHT_BLUE)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .noOcclusion()
+                .noLootTable()
+                .lightLevel(state -> 4));
+
     public static final DeferredBlock<AttunementConsoleBlock> SIGMA_CONSOLE =
         BLOCKS.registerBlock("sigma_console",
             props -> new AttunementConsoleBlock(props, 3),
