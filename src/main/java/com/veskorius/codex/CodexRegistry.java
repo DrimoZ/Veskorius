@@ -72,6 +72,7 @@ public final class CodexRegistry {
         TIERS.put("world/bloom", 4);
         TIERS.put("crystals/extract", 4);
         TIERS.put("world/conduit_stone", 3);
+        TIERS.put("world/storm", 3);
         TIERS.put("machines/chamber", 4);
         TIERS.put("machines/amplifier", 4);
         TIERS.put("machines/hub", 4);
@@ -228,6 +229,8 @@ public final class CodexRegistry {
             CodexUnlock.item(ModItems.LUMINOUS_EXTRACT));
         add("world/conduit_stone", CodexCategory.WORLD, ModBlocks.ANCIENT_CONDUIT_STONE,
             CodexUnlock.item(ModItems.VESKORIAN_ALLOY_PICKAXE));
+        add("world/storm", CodexCategory.WORLD, ModItems.METEORIC_RESONANCE_SHARD,
+            CodexUnlock.item(ModItems.METEORIC_RESONANCE_SHARD));
         add("crystals/alloy", CodexCategory.CRYSTALS, ModItems.VESKORIAN_ALLOY_INGOT,
             CodexUnlock.item(ModItems.VESKORIAN_ALLOY_INGOT));
         add("crystals/slag", CodexCategory.CRYSTALS, ModItems.FLUX_SLAG,

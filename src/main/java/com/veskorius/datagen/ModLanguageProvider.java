@@ -176,6 +176,13 @@ public class ModLanguageProvider extends LanguageProvider {
         add("codex.veskorius.world.bloom.text",
             "One seed in five Regional Archives, and one plant is enough forever.\n\nThe bush is picked, not harvested: right-click it ripe and it gives two or three blooms, then drops back to half growth and regrows. It never has to be replanted, which is the whole point — the seed comes from a dig that may not yield one, so a plant that died on harvest would put the branch behind a dice roll.\n\nIt grows on dirt, farmland, and on Resonance Veined Stone — plant it on the veined rock and you have built a greenhouse without meaning to.\n\nBone meal grows it. So do Resonance Dust and Resonance Sludge, on this and on any vanilla crop: the sludge is a waste product, and feeding a field with what you purged from a sick network closes the loop from the bottom.\n\nEating a bloom gives Night Vision for a minute. The rest go to the Advanced Assembler's neighbour, ground into Luminous Extract.");
         addBlock(ModBlocks.LUMINOUS_RESONANCE_GLASS, "Luminous Resonance Glass");
+        addBlock(ModBlocks.METEORIC_CRATER, "Meteoric Crater");
+        addItem(ModItems.METEORIC_RESONANCE_SHARD, "Meteoric Resonance Shard");
+        add("message.veskorius.storm_begins", "The air hums. A Resonance Storm is breaking.");
+        add("message.veskorius.storm_ends", "The storm passes. What was left on the ground is gone.");
+        add("codex.veskorius.world.storm.title", "The Resonance Storm");
+        add("codex.veskorius.world.storm.text",
+            "It only happens once you have reached Tier 3 — the first signs of the Collapse mean nothing before the Sigma Laboratory. After that, roughly one Minecraft day in six carries the roll, so expect one every five to seven days.\n\nIt lasts ten minutes. While it runs, meteoric craters settle on exposed surface blocks around you; right-click one and the shard is yours.\n\nEVERYTHING STILL ON THE GROUND WHEN IT ENDS IS GONE. There is no stockpile to build here, only a window to catch. Go outside.\n\nThe shard is the best damping agent in the mod — six thousand, against five hundred for a Refined Crystal. It unlocks nothing: Refined Crystal and Concentrated Flux already cover every need. It is a souvenir you keep for a bad day, and something that falls out of the sky should not be something you plan around.");
         addBlock(ModBlocks.ANCIENT_CONDUIT_STONE, "Ancient Conduit Stone");
         add("codex.veskorius.world.conduit_stone.title", "Ancient Conduit Stone");
         add("codex.veskorius.world.conduit_stone.text",

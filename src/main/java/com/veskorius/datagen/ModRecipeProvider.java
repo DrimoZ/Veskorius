@@ -854,6 +854,20 @@ public class ModRecipeProvider extends RecipeProvider {
         // bien supérieure — un simple JSON de plus, aucune ligne de code.
         DampingAgentRecipeBuilder.agent(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 500)
             .save(recipeOutput, machineRecipe("damping/refined_crystal"));
+
+        // LE FLUX CONCENTRÉ, que le commentaire ci-dessus PROMETTAIT depuis le T3 et qui
+        // n'avait jamais été ajouté. Il n'avait donc qu'un seul consommateur — le Cœur de
+        // Convergence — là où le dossier lui en donne deux : compresser quatre cristaux
+        // pour un objet servant à une unique recette d'endgame était un investissement
+        // qu'on ne pouvait pas amortir.
+        DampingAgentRecipeBuilder.agent(ModItems.CONCENTRATED_FLUX.get(), 2500)
+            .save(recipeOutput, machineRecipe("damping/concentrated_flux"));
+
+        // Le fragment météorique : cinq fois le cristal raffiné. Il ne remplace rien — les
+        // deux agents au-dessus couvrent tous les besoins — il récompense d'avoir été
+        // dehors pendant l'orage.
+        DampingAgentRecipeBuilder.agent(ModItems.METEORIC_RESONANCE_SHARD.get(), 6000)
+            .save(recipeOutput, machineRecipe("damping/meteoric_shard"));
     }
 
     private static ResourceLocation machineRecipe(String path) {

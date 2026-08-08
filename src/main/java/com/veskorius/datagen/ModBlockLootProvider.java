@@ -92,6 +92,10 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.RESONANCE_GLASS.get());
         dropSelf(ModBlocks.LUMINOUS_RESONANCE_GLASS.get());
         dropSelf(ModBlocks.ANCIENT_CONDUIT_STONE.get());
+        // Le cratère rend son FRAGMENT, pas lui-même : il n'a pas d'objet, et le casser
+        // doit donner la même chose que le ramasser à la main.
+        add(ModBlocks.METEORIC_CRATER.get(),
+            block -> createSingleItemTable(ModItems.METEORIC_RESONANCE_SHARD.get()));
         dropSelf(ModBlocks.DISSONANCE_BLOOM.get());
         // Une dalle double rend DEUX dalles : sans cette table dédiée, la moitié du
         // bloc disparaît au minage.

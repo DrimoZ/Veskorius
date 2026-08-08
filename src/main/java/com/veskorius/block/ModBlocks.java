@@ -506,6 +506,30 @@ public class ModBlocks {
                 .sound(SoundType.SAND));
 
     /**
+     * <b>Cratère météorique</b> — ce qu'un Orage de Résonance laisse au sol, et ce qui
+     * disparaît quand il cesse.
+     *
+     * <p>Un bloc plutôt qu'un objet posé au sol, pour une raison de lisibilité : un objet
+     * dérive, se ramasse tout seul quand on passe à côté, et se noie dans le reste. Un
+     * cratère se VOIT à distance, se choisit, et se ramasse d'un geste. C'est ce qui fait
+     * de l'orage une chasse et non une collecte passive.
+     *
+     * <p>Plat et sans collision : on marche dessus, on ne trébuche pas. Il faut pouvoir
+     * courir sous l'orage.
+     */
+    public static final DeferredBlock<MeteoricCraterBlock> METEORIC_CRATER =
+        BLOCKS.registerBlock("meteoric_crater",
+            MeteoricCraterBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .instabreak()
+                .noCollission()
+                .noOcclusion()
+                .sound(SoundType.AMETHYST)
+                .lightLevel(state -> 7)
+                .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
+
+    /**
      * <b>Pierre à Conduits Ancienne</b> — le « tell » des ruines Architectes, ce que la
      * Pierre Veinée est aux poches de cristal (04-Materials.md).
      *

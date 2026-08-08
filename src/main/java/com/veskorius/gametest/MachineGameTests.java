@@ -1929,6 +1929,34 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    /**
+     * <b>L'orage démarre, et son compteur survit à lui-même.</b>
+     *
+     * <p>Ce test ne vérifie pas la météo — il vérifie que l'état de l'orage est bien un état
+     * et pas une variable perdue. Un orage déclenché doit se déclarer en cours ; sans ça, la
+     * boucle de semis ne tourne jamais et l'événement entier est décoratif.
+     *
+     * <p>C'est le genre de chose qui « marche » en jeu pendant une session et casse au
+     * rechargement : le compteur vit dans une {@code SavedData} précisément pour qu'un orage
+     * interrompu par un redémarrage finisse quand même — sinon ses cratères resteraient au
+     * sol pour toujours, et le « rien ne s'accumule » qui définit l'événement tomberait.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void resonanceStormHasPersistentState(GameTestHelper helper) {
+        var level = helper.getLevel();
+        helper.assertFalse(
+            com.veskorius.event.ResonanceStormHandler.isStorming(level),
+            "Aucun orage ne doit être en cours au départ");
+
+        com.veskorius.event.ResonanceStormHandler.forceStart(level);
+
+        helper.assertTrue(
+            com.veskorius.event.ResonanceStormHandler.isStorming(level),
+            "Un orage déclenché doit se déclarer en cours — sinon rien ne se sème et "
+                + "l'événement est purement décoratif");
+        helper.succeed();
+    }
+
     // --- Utilitaires ---------------------------------------------------------
 
     private static IItemHandler assemblerInventory(GameTestHelper helper) {

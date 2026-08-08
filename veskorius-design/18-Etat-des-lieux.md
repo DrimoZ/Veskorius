@@ -4,7 +4,7 @@ Généré à partir du code, pas du dossier de design. Une case cochée ici veut
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
 NeoForge 1.21.1 · Java 21 · **219 fichiers Java, ~30 700 lignes** · **49 blocs, 71 items**
-· **160 GameTest en deux processus** (`runFastGameTests` 139 en ~27 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
+· **161 GameTest en deux processus** (`runFastGameTests` 140 en ~30 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
 
@@ -68,6 +68,8 @@ Neuf types de recette **data-driven** — un datapack change les valeurs sans re
 
 - **Poches de cristal** (Y −20 à 0) : amas + coquille de pierre veinée.
 - **Dépôts de flux** brossables.
+- **Orage de Résonance** : un tirage par jour MC après le T3, 10 min, sème des cratères
+  météoriques ramassables — et efface au sol tout ce qui n'a pas été pris.
 - **Failles** sous Y −60 : bulle de vide sphérique (rayon 5–9), coquille de pierre
   déformée, cœur flottant. Posées en `UNDERGROUND_DECORATION` et non en `ORES` — elles
   creusent au lieu de déposer.
@@ -112,7 +114,7 @@ d'alliage et coûte donc le bonus de panoplie).
 
 ## 8. Interface
 
-- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **73 entrées**, 9 catégories,
+- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **74 entrées**, 9 catégories,
   couvrant les cinq paliers, les entités et l'équipement. Affiche les **recettes**
   (établi et machine, lues du RecipeManager chargé), pagine le texte, cherche dans tout
   le livre, s'adapte à la taille de la fenêtre.
@@ -136,8 +138,9 @@ SERVER, surchargeables par modpack.
 
 ## Ce qui reste
 
-**Dernier matériau du dossier** — `meteoric_resonance_shard` (événement météo « Orage de
-Résonance »), le seul qui demande un système entier plutôt qu'un bloc. La branche décorative est complète : agriculture → extrait → verre teint. Aucun n'est sur le chemin critique, et c'est
+Tous les matériaux du dossier sont codés. **Il ne reste aucun poste ouvert** — les
+questions marquées « Ouvert » dans le dossier sont des décisions de design, pas du travail
+en attente. La branche décorative est complète : agriculture → extrait → verre teint. Aucun n'est sur le chemin critique, et c'est
 désormais le seul poste ouvert du dossier.
 
 Le Cœur de Faille n'est PAS de cette liste : c'est la `RiftFeature`, et elle fait déjà ce

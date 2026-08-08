@@ -155,6 +155,12 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockWithItem(ModBlocks.RESONANCE_GLASS.get(),
             models().cubeAll("resonance_glass", modLoc("block/resonance_glass"))
                 .renderType("translucent"));
+        // Le cratère n'a PAS d'objet : il n'existe que pendant un orage et se ramasse
+        // en fragment. Lui donner un item le rendrait posable, donc stockable — et le
+        // « rien ne s'accumule » de l'événement tomberait.
+        simpleBlock(ModBlocks.METEORIC_CRATER.get(),
+            models().cubeAll("meteoric_crater", modLoc("block/meteoric_crater"))
+                .renderType("cutout"));
         simpleBlockWithItem(ModBlocks.ANCIENT_CONDUIT_STONE.get(),
             cubeAll(ModBlocks.ANCIENT_CONDUIT_STONE.get()));
         simpleBlockWithItem(ModBlocks.LUMINOUS_RESONANCE_GLASS.get(),

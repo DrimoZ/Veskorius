@@ -386,6 +386,18 @@ const items = {
     c.set(7, 3, V.hot);
   },
 
+  // Fragment meteorique : un ECLAT, anguleux et asymetrique. Tous les cristaux du mod
+  // sont taillés ou réguliers ; celui-ci est CASSE — il est tombe du ciel, il n'a ete
+  // faconne par personne. C'est la seule matiere du lot qui n'ait pas de symetrie.
+  meteoric_resonance_shard: (c) => {
+    const shard = [[4,7,9],[5,5,11],[6,4,12],[7,3,12],[8,3,11],[9,4,10],[10,5,9],[11,6,8]];
+    outline(c, shard, V.line);
+    fill(c, shard, V.mid);
+    fill(c, [[5,7,9],[6,6,10],[7,5,9]], V.lite);
+    c.set(7, 6, V.hot); c.set(8, 6, '#FFFFFF');
+    c.set(5, 10, V.deep); c.set(10, 6, V.deep);
+  },
+
   // --- Matiere du T5 -------------------------------------------------------
   //
   // L'essence est le SEUL item du mod dont le centre soit noir. Toute la chaine du

@@ -278,6 +278,18 @@ tex.ancient_emitter_front_on=front('t1',0x748,faces.field_emitter,true);
  c.set(12,7,V.mid);
  edges(c,ROCK);tex.ancient_conduit_stone=c;}
 
+// Cratère météorique : un IMPACT. Un anneau sombre projeté, et un éclat lumineux au
+// centre. Vu de dessus — c'est la seule façon dont on le verra jamais, puisqu'il est plat
+// au sol — le contraste anneau/centre doit porter à vingt blocs, sinon on lui court à
+// côté sans le voir pendant les dix minutes qu'on a.
+{const c=new Canvas(S,S);const r=rng(0x765);
+ const D={ring:'#2A2130',dust:'#4A3A5A'};
+ for(let n=0;n<70;n++){const a=r()*Math.PI*2,d=3+r()*4.5;
+  const x=Math.round(8+Math.cos(a)*d),y=Math.round(8+Math.sin(a)*d);
+  if(x>=0&&x<S&&y>=0&&y<S)c.set(x,y,r()>.4?D.ring:D.dust);}
+ c.rect(6,6,4,4,V.deep);c.rect(7,7,2,2,V.mid);c.set(7,7,V.hot);c.set(8,8,V.lite);
+ tex.meteoric_crater=c;}
+
 const out=process.argv[2];fs.mkdirSync(out,{recursive:true});
 const es=Object.entries(tex);
 for(const[n,c]of es)fs.writeFileSync(path.join(out,n+'.png'),encodePNG(S,S,c.px));

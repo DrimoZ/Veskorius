@@ -284,6 +284,25 @@ public class ModItems {
             new Item.Properties());
 
     /**
+     * <b>Fragment de Résonance Météorique</b> — ce que l'Orage laisse au sol, et le
+     * meilleur agent de damping du mod.
+     *
+     * <p><b>Il ne verrouille rien, et c'est la condition pour qu'il existe.</b> Le dossier
+     * lui destinait le Plastron de Garde, puis l'en a retiré — l'objet n'existait pas, et
+     * surtout le Plastron est calibré sur le seul butin GARANTI d'une Faille. Cette raison
+     * tient toujours : faire dépendre la dernière pièce d'équipement du jeu d'un événement
+     * météo aléatoire mettrait une progression derrière un tirage, ce que le mod refuse.
+     *
+     * <p>Alors il purge la dissonance, mieux que tout le reste. Le Cristal Raffiné et le
+     * Flux Concentré font déjà le travail : le fragment n'ouvre aucune porte, il récompense
+     * d'avoir couru sous l'orage. C'est un souvenir qu'on garde pour un mauvais jour, pas
+     * une ressource qu'on planifie — et une matière qui tombe du ciel ne DOIT pas se
+     * planifier.
+     */
+    public static final DeferredItem<Item> METEORIC_RESONANCE_SHARD =
+        ITEMS.registerSimpleItem("meteoric_resonance_shard", new Item.Properties().stacksTo(16));
+
+    /**
      * <b>Extrait Lumineux</b> — deux floraisons broyées au Crystal Crusher, et la seule
      * teinture du mod.
      *

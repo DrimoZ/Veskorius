@@ -162,6 +162,13 @@ public class ModFrenchLangProvider extends LanguageProvider {
         add("codex.veskorius.world.bloom.text",
             "Une graine dans une Archive Régionale sur cinq, et un seul plant suffit pour toujours.\n\nLe buisson se CUEILLE, il ne se moissonne pas : clic droit sur un plant mûr et il donne deux ou trois floraisons, puis retombe à mi-croissance et repousse. Il n'a jamais besoin d'être replanté, et c'est tout l'enjeu — la graine vient d'une fouille qui peut n'en donner aucune, donc un plant qui mourrait à la récolte mettrait la branche derrière un coup de dé.\n\nIl pousse sur la terre, sur la terre labourée, et sur la Pierre Veinée de Résonance — le planter sur le veiné, c'est bâtir une serre sans l'avoir voulu.\n\nL'os à moelle le fait pousser. La Poussière et la Boue de Résonance aussi, sur lui comme sur n'importe quelle culture vanilla : la boue est un déchet, et nourrir un champ avec ce qu'on a purgé d'un réseau malade referme la boucle par le bas.\n\nManger une floraison donne la Vision Nocturne une minute. Les autres partent au broyage, en Extrait Lumineux.");
         addBlock(ModBlocks.LUMINOUS_RESONANCE_GLASS, "Verre Lumineux");
+        addBlock(ModBlocks.METEORIC_CRATER, "Cratère Météorique");
+        addItem(ModItems.METEORIC_RESONANCE_SHARD, "Fragment de Résonance Météorique");
+        add("message.veskorius.storm_begins", "L'air vibre. Un Orage de Résonance se lève.");
+        add("message.veskorius.storm_ends", "L'orage passe. Ce qui restait au sol a disparu.");
+        add("codex.veskorius.world.storm.title", "L'Orage de Résonance");
+        add("codex.veskorius.world.storm.text",
+            "Il n'arrive qu'une fois le palier 3 atteint — les premiers signes de l'Effondrement ne veulent rien dire avant le Sigma Laboratory. Ensuite, environ un jour Minecraft sur six porte le tirage, soit un orage tous les cinq à sept jours.\n\nIl dure dix minutes. Pendant ce temps, des cratères météoriques se déposent sur les blocs de surface exposés autour de vous ; un clic droit et le fragment est à vous.\n\nTOUT CE QUI RESTE AU SOL À LA FIN DISPARAÎT. Il n'y a pas de stock à constituer ici, seulement une fenêtre à saisir. Sortez.\n\nLe fragment est le meilleur agent de damping du mod — six mille, contre cinq cents pour un Cristal Raffiné. Il ne débloque rien : le Cristal Raffiné et le Flux Concentré couvrent déjà tous les besoins. C'est un souvenir qu'on garde pour un mauvais jour, et une matière qui tombe du ciel ne doit pas être une matière qu'on planifie.");
         addBlock(ModBlocks.ANCIENT_CONDUIT_STONE, "Pierre à Conduits Ancienne");
         add("codex.veskorius.world.conduit_stone.title", "Pierre à Conduits Ancienne");
         add("codex.veskorius.world.conduit_stone.text",

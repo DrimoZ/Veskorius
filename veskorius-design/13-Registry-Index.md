@@ -23,7 +23,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | `resonance_veined_stone` | 04, 07 | À coder (Phase 1) |
 | `raw_flux_deposit` | 04, 07 | ✅ codé (item + bloc brossable ; dans le tag stabilizer_flux) |
 | `ancient_seed` | 04, 08 | ✅ codé (butin bonus de l'Archive, 1 sur 5 ; plantable) |
-| `meteoric_resonance_shard` | 04, 07 | À coder (Phase 3) |
+| `meteoric_resonance_shard` | 04, 07 | ✅ codé (Orage de Résonance ; meilleur agent de damping, 6000) |
 
 ## Items — action du joueur
 
