@@ -90,9 +90,37 @@ function armorLayer(second) {
   return c;
 }
 
+/**
+ * Custode Archiviste : le Custode ordinaire, en LAITON plutôt qu'en fer sombre. Un garde
+ * d'élite se lit à son équipement, pas à sa forme — et le laiton est déjà la matière des
+ * ferrures du T2 dans tout le mod, donc le lien de parenté reste évident.
+ */
+function archiviste() {
+  const c = new Canvas(S, S);
+  const B = { line: '#6E5420', deep: '#8A6A2A', mid: '#C9A24A', lite: '#E8CE8A' };
+  const V = { deep: '#5C2C86', mid: '#8A47B8', hot: '#E4CCF7' };
+  const r = rng(0x9C1);
+  c.rect(0, 0, 64, 64, B.deep);
+  for (let y = 0; y < 64; y++) {
+    for (let x = 0; x < 64; x++) {
+      if (r() > 0.85) c.set(x, y, B.mid);
+      else if (r() > 0.95) c.set(x, y, B.lite);
+    }
+  }
+  // Bandes de plaques, et la veine de résonance sur le torse.
+  for (let y = 2; y < 64; y += 5) c.rect(0, y, 64, 1, B.line);
+  for (let y = 4; y < 14; y++) c.set(12, y, V.mid);
+  c.set(12, 8, V.hot);
+  // Le visage : deux fentes lumineuses, plus étroites que celles du Custode.
+  c.rect(26, 2, 12, 6, B.line);
+  c.rect(28, 4, 3, 1, V.hot);
+  c.rect(33, 4, 3, 1, V.hot);
+  return c;
+}
+
 const out = process.argv[2];
 fs.mkdirSync(out, { recursive: true });
-const set = { rift_guardian: riftGuardian() };
+const set = { rift_guardian: riftGuardian(), custode_archiviste: archiviste() };
 for (const [n, c] of Object.entries(set)) {
   fs.writeFileSync(path.join(out, n + '.png'), encodePNG(S, S, c.px));
 }

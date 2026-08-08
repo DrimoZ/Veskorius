@@ -73,6 +73,8 @@ public class ClientModEvents {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.CRYSTAL_STRIDER.get(), CrystalStriderRenderer::new);
         event.registerEntityRenderer(ModEntities.CUSTODE.get(), CustodeRenderer::new);
+        event.registerEntityRenderer(ModEntities.CUSTODE_ARCHIVISTE.get(),
+            com.veskorius.client.entity.CustodeArchivisteRenderer::new);
         event.registerEntityRenderer(ModEntities.RIFT_GUARDIAN.get(),
             com.veskorius.client.entity.RiftGuardianRenderer::new);
     }

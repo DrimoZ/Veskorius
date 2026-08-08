@@ -166,6 +166,7 @@ public class ModFrenchLangProvider extends LanguageProvider {
         add("entity.veskorius.crystal_strider", "Fileur de Cristal");
         add("entity.veskorius.custode", "Custode");
         add("entity.veskorius.rift_guardian", "Gardien de Faille");
+        add("entity.veskorius.custode_archiviste", "Custode Archiviste");
 
         // Accordeur de Résonance.
         add("gui.veskorius.tuner_rotate", "Pivoter la machine");

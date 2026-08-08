@@ -58,6 +58,17 @@ neoForge {
         gameTestServer {
             type = 'gameTestServer'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            // TAS EXPLICITE. Sans lui, le serveur de test tournait sur le défaut de la
+            // JVM et finissait par mourir en OutOfMemoryError — ce qui ne se présentait
+            // PAS comme un échec de test : la suite se figeait entre deux lots, le
+            // processus continuait de sauvegarder à vide, et le run ne rendait jamais la
+            // main. J'ai mis ça deux fois sur le compte d'un serveur coincé avant de lire
+            // le rapport de crash.
+            //
+            // La cause est la croissance de la suite : cent cinquante tests dont beaucoup
+            // POSENT UNE STRUCTURE entière (l'Archive fait à elle seule 23x16x52), et
+            // chaque lot dédié ajoute son propre cycle de pose et de dépose.
+            jvmArguments.addAll '-Xmx3G', '-XX:+HeapDumpOnOutOfMemoryError'
         }
         data {
             data()

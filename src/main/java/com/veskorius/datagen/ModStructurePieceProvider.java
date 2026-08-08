@@ -914,7 +914,10 @@ public class ModStructurePieceProvider implements DataProvider {
 
     private static final int ARC_W = 23;
     private static final int ARC_H = 16;
-    private static final int ARC_D = 40;
+    // 52 et non 40 : la salle profonde PROLONGE l'enfilade au lieu de se glisser
+    // ailleurs. C'est la figure même du bâtiment — « une nef dont on ne voit pas le
+    // bout » — et la seule façon d'ajouter une salle sans en inventer une seconde.
+    private static final int ARC_D = 52;
     private static final int ARC_Y = 3;
 
     private static CompoundTag regionalArchive() {
@@ -924,6 +927,7 @@ public class ModStructurePieceProvider implements DataProvider {
         archiveCabinets(b);
         archiveDial(b);
         archiveReadingRoom(b);
+        archiveDeepRoom(b);
         return b.build();
     }
 
@@ -1054,6 +1058,56 @@ public class ModStructurePieceProvider implements DataProvider {
         // reste sur le butin générique.
         b.lootChest(7, ARC_Y, 36, ModWorldGen.ARCHIVE_LOOT, Direction.EAST);
         b.lootChest(15, ARC_Y, 36, ModWorldGen.OUTPOST_LOOT, Direction.WEST);
+    }
+
+    /**
+     * <b>La salle profonde</b> — au-delà de la salle de lecture, et facultative.
+     *
+     * <p>Elle est <b>ouverte</b> : pas de sas, pas d'énigme, rien à résoudre. Ce qui la
+     * garde est un Custode Archiviste, et c'est tout le propos — le seul contenu du mod
+     * dont l'accès se paie en combat plutôt qu'en compréhension. Un joueur qui n'aime pas
+     * se battre s'arrête à la salle de lecture et ne perd rien d'essentiel.
+     *
+     * <p>Elle est aussi <b>plus basse et plus sombre</b> que tout le reste du bâtiment.
+     * L'enfilade s'élève sur dix blocs ; ici le plafond descend à quatre. Après trente
+     * mètres de nef monumentale, ce resserrement dit « on n'est plus dans la partie qu'ils
+     * montraient aux visiteurs » sans une ligne de texte.
+     */
+    private static void archiveDeepRoom(TemplateBuilder b) {
+        Masonry.chamber(b, 6, ARC_Y, 40, 16, ARC_Y + 4, 50, Masonry.Style.plain());
+        // Le seuil. La portée part de L'INTÉRIEUR de la salle de lecture (z 37) et
+        // finit à L'INTÉRIEUR de la salle profonde (z 41) : gallery() ne perce que ses
+        // FLANCS, jamais ses extrémités. Partie de z 38 — sur la paroi — elle laissait le
+        // mur du fond intact et la salle profonde parfaitement murée. C'est le même piège
+        // que sur l'Avant-poste et le Sigma ; seul le test de traversabilité l'attrape.
+        Masonry.gallery(b, 11, ARC_Y, 37, 11, 41);
+
+        // Deux rangées de rayonnages effondrés : de quoi gêner le déplacement, ce que
+        // l'attaque de l'Archiviste rend coûteux. La salle est son avantage de terrain.
+        for (int z = 42; z <= 48; z += 3) {
+            for (int x : new int[] {8, 14}) {
+                b.set(x, ARC_Y, z, Blocks.BOOKSHELF.defaultBlockState());
+                b.set(x, ARC_Y + 1, z, CRACKED);
+                b.set(x, ARC_Y, z + 1, Blocks.BOOKSHELF.defaultBlockState());
+            }
+        }
+        Masonry.sconce(b, 7, ARC_Y + 3, 45, Direction.Axis.X);
+        Masonry.sconce(b, 15, ARC_Y + 3, 45, Direction.Axis.X);
+        // PAS d'éboulis ici. Un cône centré a muré un passage trois fois déjà dans ce
+        // fichier, et il l'a fait une quatrième dans cette salle — le test l'a vu, pas
+        // moi. Le plafond bas et les rayonnages effondrés caractérisent assez la pièce ;
+        // un tas de gravats de plus n'ajoutait rien qu'un risque.
+
+        custodeArchiviste(b, 11.5, ARC_Y, 47.5);
+        b.lootChest(11, ARC_Y, 49, ModWorldGen.ARCHIVE_DEEP_LOOT, Direction.NORTH);
+    }
+
+    /** Le gardien d'élite de la salle profonde (09-Entities.md). */
+    private static void custodeArchiviste(TemplateBuilder b, double x, int y, double z) {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("id", "veskorius:custode_archiviste");
+        tag.putBoolean("PersistenceRequired", true);
+        b.entity(x, y, z, (int) x, y, (int) z, tag);
     }
 
     // =========================================================================

@@ -160,7 +160,8 @@ déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter 
 | Custode Lourd | `heavy_custode` | 09 |
 | Fileur de Cristal | `crystal_strider` | 09 (✅ codé : faune neutre, traite, reproduction, spawn) |
 | Custode Archiviste | `custode_archivist` | 09 |
-| Gardien de Faille | `rift_guardian` | 09 |
+| Gardien de Faille | `custode_archiviste` | 09 | ✅ codé — 150 PV, réactif à 10 blocs, garde la salle profonde de l'Archive. Attaque signature : marque le sol sous la cible et détone après 1 s, ce qui interdit de camper |
+| `rift_guardian` | 09 |
 
 ## Structures — noms de registre proposés
 

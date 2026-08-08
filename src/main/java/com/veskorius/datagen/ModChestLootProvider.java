@@ -122,6 +122,31 @@ public class ModChestLootProvider implements LootTableSubProvider {
                     .apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0f, 4.0f))))
                 .add(LootItem.lootTableItem(Items.DIAMOND)
                     .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 2.0f))))));
+        archiveDeep(output);
+    }
+
+    private void archiveDeep(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
+        // La salle profonde : 2 Hyper Refined de plus, garantis.
+        //
+        // Ce chiffre n'est pas un bonus de confort, c'est le retrait d'un choix. L'Archive
+        // en donne trois, ce qui force à trancher entre le premier Amplificateur et la
+        // Chambre de Synthèse ; ces deux-là permettent d'avoir les deux. C'est la bonne
+        // forme pour une récompense OPTIONNELLE — elle n'accélère rien, elle adoucit une
+        // décision, et qui l'ignore ne perd rien d'essentiel.
+        //
+        // Deux et pas trois : à trois, la salle de lecture cesserait d'imposer quoi que ce
+        // soit et le « Bootstrap du T4 » de 05-Machines.md n'aurait plus d'objet.
+        output.accept(key(ModWorldGen.ARCHIVE_DEEP_LOOT), LootTable.lootTable()
+            .withPool(LootPool.lootPool()
+                .setRolls(ConstantValue.exactly(1.0f))
+                .add(LootItem.lootTableItem(ModItems.HYPER_REFINED_CRYSTAL.get())
+                    .apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0f)))))
+            .withPool(LootPool.lootPool()
+                .setRolls(ConstantValue.exactly(1.0f))
+                .add(LootItem.lootTableItem(ModItems.VESKORIAN_ALLOY_INGOT.get())
+                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(3.0f, 6.0f))))
+                .add(LootItem.lootTableItem(ModItems.REFINED_RESONANCE_CRYSTAL.get())
+                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(4.0f, 8.0f))))));
     }
 
     /** Un {@code codex_fragment} portant l'entrée de lore donnée. */

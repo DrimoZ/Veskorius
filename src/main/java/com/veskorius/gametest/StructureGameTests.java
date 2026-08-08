@@ -303,7 +303,25 @@ public class StructureGameTests {
     public static void archiveIsWalkableFromVestibuleToDial(GameTestHelper helper) {
         place(helper, "regional_archive");
         assertWalkable(helper, "regional_archive",
-            ANCHOR.offset(7, 3, 3), ANCHOR.offset(11, 3, 33), 23, 16, 40);
+            ANCHOR.offset(7, 3, 3), ANCHOR.offset(11, 3, 33), 23, 16, 52);
+    }
+
+    /**
+     * <b>La salle profonde est atteignable depuis la salle de lecture.</b>
+     *
+     * <p>C'est la quatrième fois qu'une pièce ajoutée à un bâtiment risquait de se
+     * retrouver murée : une galerie qui ne perce pas son mur produit une salle
+     * parfaitement construite et parfaitement inaccessible, sans qu'aucune erreur ne soit
+     * levée. Ici le risque est double, puisque le seuil traverse le mur du fond d'une
+     * salle qui, elle, était déjà terminée.
+     */
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 200)
+    public static void archiveDeepRoomIsReachable(GameTestHelper helper) {
+        place(helper, "regional_archive");
+        assertWalkable(helper, "regional_archive",
+            // On part de x=7 et non du centre : la terrasse de la salle de lecture
+            // occupe x 9-13 au niveau du sol, donc le centre n'est PAS praticable.
+            ANCHOR.offset(7, 3, 37), ANCHOR.offset(11, 3, 45), 23, 16, 52);
     }
 
     /**

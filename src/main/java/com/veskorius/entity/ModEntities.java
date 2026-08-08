@@ -23,6 +23,14 @@ public class ModEntities {
                 .clientTrackingRange(10)
                 .build("crystal_strider"));
 
+    /** Gardien d'élite de la salle profonde de l'Archive (09-Entities.md). */
+    public static final DeferredHolder<EntityType<?>, EntityType<CustodeArchivisteEntity>> CUSTODE_ARCHIVISTE =
+        ENTITIES.register("custode_archiviste",
+            () -> EntityType.Builder.of(CustodeArchivisteEntity::new, MobCategory.MONSTER)
+                .sized(0.7f, 2.2f)
+                .clientTrackingRange(12)
+                .build("custode_archiviste"));
+
     /** Boss final (09-Entities.md). Ne se déplace jamais loin : il garde SA Faille. */
     public static final DeferredHolder<EntityType<?>, EntityType<RiftGuardianEntity>> RIFT_GUARDIAN =
         ENTITIES.register("rift_guardian",

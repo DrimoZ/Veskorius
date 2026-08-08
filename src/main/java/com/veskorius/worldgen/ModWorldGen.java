@@ -99,6 +99,7 @@ public final class ModWorldGen {
     public static final ResourceLocation MODEST_DWELLING_LOOT = id("chests/modest_dwelling");
     public static final ResourceLocation OUTPOST_LOOT = id("chests/outpost");
     public static final ResourceLocation ARCHIVE_LOOT = id("chests/regional_archive");
+    public static final ResourceLocation ARCHIVE_DEEP_LOOT = id("chests/regional_archive_deep");
 
     private ModWorldGen() {
     }

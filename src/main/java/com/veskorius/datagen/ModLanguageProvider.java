@@ -199,6 +199,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("entity.veskorius.crystal_strider", "Crystal Strider");
         add("entity.veskorius.custode", "Custode");
         add("entity.veskorius.rift_guardian", "Rift Guardian");
+        add("entity.veskorius.custode_archiviste", "Custode Archivist");
         add("gui.veskorius.strider.milk_cooldown", "The strider needs %s more seconds");
 
         // Progression : plans, fragments, ration (tâche 10).
