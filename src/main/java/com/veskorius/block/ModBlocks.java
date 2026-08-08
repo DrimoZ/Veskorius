@@ -449,6 +449,47 @@ public class ModBlocks {
                 .lightLevel(EMITTER_GLOW));
 
     /**
+    /**
+     * <b>Pierre déformée</b> : la coquille d'une Faille, et son <b>seul signe
+     * avant-coureur</b>. Une Faille est invisible au Locator ; la reconnaître est une
+     * compétence du joueur, pas une capacité d'objet (07-World-Generation.md).
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> DEFORMED_STONE =
+        BLOCKS.registerSimpleBlock("deformed_stone",
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(2.0f, 8.0f)
+                .sound(SoundType.DEEPSLATE)
+                .requiresCorrectToolForDrops());
+
+    /**
+     * <b>Noyau de Faille</b>. Indestructible et sans objet : la ressource finale du mod
+     * dépend de lui, et c'est ce qui la rend finie.
+     */
+    public static final DeferredBlock<RiftCoreBlock> RIFT_CORE =
+        BLOCKS.registerBlock("rift_core",
+            RiftCoreBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(-1.0f, 3600000.0f)
+                .sound(SoundType.AMETHYST)
+                .noLootTable()
+                .noOcclusion()
+                .lightLevel(state -> 10));
+
+    /** Machine #19 : stabilise une Faille tant qu'elle est alimentée. 20 Osc/tick. */
+    public static final DeferredBlock<RiftAnchorBlock> RIFT_ANCHOR =
+        BLOCKS.registerBlock("rift_anchor",
+            RiftAnchorBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(5.0f, 12.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(EMITTER_GLOW));
+
+    /**
      * Machine #18 : le seul multi-bloc du mod. Posé seul, il est inerte — il lui faut huit
      * relais ou amplificateurs à 5 blocs, tous en vue directe.
      */

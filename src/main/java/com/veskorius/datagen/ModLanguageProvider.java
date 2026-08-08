@@ -34,6 +34,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.veskorius.priority_high", "High");
         add("message.veskorius.hub_status", "Hub: shedding below %s, calibration %s%%");
         add("message.veskorius.priority_set", "Priority: %s");
+        add("message.veskorius.anchor_holding", "Anchor holding — the rift is stable");
+        add("message.veskorius.anchor_idle", "Anchor idle — no rift in reach, or no field");
+        add("item.veskorius.deformed_stone.hint", "Stone twisted by a rift. The bubble is close — and it is not safe.");
         add("message.veskorius.core_formed", "Core online — field range %s");
         add("message.veskorius.core_incomplete", "Core idle — needs %s relays or amplifiers at %s blocks, each in direct view");
         add("item.veskorius.resonance_tuner.no_priority", "Only machines have a priority");
@@ -86,6 +89,9 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.AUTOMATED_EXTRACTION_ARRAY, "Automated Extraction Array");
         addBlock(ModBlocks.RESONANCE_NETWORK_HUB, "Resonance Network Hub");
         addBlock(ModBlocks.CONVERGENCE_CORE, "Convergence Core");
+        addBlock(ModBlocks.RIFT_ANCHOR, "Rift Anchor");
+        addBlock(ModBlocks.RIFT_CORE, "Rift Core");
+        addBlock(ModBlocks.DEFORMED_STONE, "Deformed Stone");
 
         // Châssis de palier : la base de craft et de texture des machines.
         addBlock(ModBlocks.FRACTURED_CHASSIS, "Fractured Chassis");

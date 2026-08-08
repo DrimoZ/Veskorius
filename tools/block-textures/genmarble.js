@@ -7,7 +7,7 @@ const TIER_OF={resonance_stabilizer:'t1',component_assembler:'t1',resonance_whet
  tunable_field_emitter:'t2',damping_array:'t3',veskorian_alloy_forge:'t3',resonance_relay:'t3',
  flux_compressor:'t3',structural_synthesizer:'t3',deep_crystal_driller:'t3',slag_vent:'t3',
  deep_synthesis_chamber:'t3',harmonic_amplifier:'t3',
- automated_extraction_array:'t3',resonance_network_hub:'t3',convergence_core:'t3'};
+ automated_extraction_array:'t3',resonance_network_hub:'t3',convergence_core:'t3',rift_anchor:'t3'};
 const ACCENT={damping_array:C,harmonic_amplifier:C,resonance_network_hub:C,
  automated_extraction_array:A,
  deep_synthesis_chamber:{deep:'#5E7A8E',mid:'#8FB3C6',lite:'#BBD9E6',hot:'#FFFFFF'},deep_crystal_driller:A,slag_vent:{deep:'#6B3A12',mid:'#A8641F',lite:'#D08A3A',hot:'#EFC58A'},veskorian_alloy_forge:{deep:'#8E5A15',mid:'#D8922A',lite:'#F0B863',hot:'#FBE0B0'}};
@@ -167,6 +167,27 @@ tex.archive_console_front=front('t3',0x750,faces.attunement_console,true,{deep:'
 tex.damaged_relay_front=front('t3',0x74D,faces.field_emitter,false);
 tex.damaged_relay_front_on=front('t3',0x74D,faces.field_emitter,true);
 tex.ancient_emitter_front_on=front('t1',0x748,faces.field_emitter,true);
+
+// --- La Faille : la seule matière du mod qui ne soit ni bâtie ni minée ------
+// La pierre déformée doit se lire « quelque chose a mal tourné ici » AVANT qu'on
+// sache ce qu'est une Faille : c'est le seul indice de repérage de l'endgame.
+{const RIFT={deep:'#3A1D57',mid:'#5C2C86',lite:'#8A47B8',hot:'#B57CE0'};
+ const d=marble(ROCK,0x760);const r=rng(0x760);
+ // Des fractures qui PARTENT DU BORD vers le centre : la pierre est tirée, pas fissurée.
+ for(let n=0;n<7;n++){let x=Math.floor(r()*S),y=r()>.5?0:S-1;
+  if(r()>.5){y=Math.floor(r()*S);x=r()>.5?0:S-1;}
+  for(let i=0;i<5+r()*5;i++){d.set(x,y,i<2?ROCK.dark:RIFT.deep);
+   x+=x<8?1:-1;y+=y<8?1:-1;}}
+ for(const[x,y]of[[7,7],[8,8],[5,10],[11,4]])d.set(x,y,RIFT.mid);
+ edges(d,ROCK);tex.deformed_stone=d;}
+// Le noyau : PAS un cristal. Un trou qui rayonne — le seul bloc du mod dont le
+// centre soit plus sombre que ses bords.
+{const c=marble(ROCK,0x761);const RIFT={deep:'#3A1D57',mid:'#5C2C86',lite:'#8A47B8',hot:'#B57CE0'};
+ slab(c,0,0,S,S,RIFT.deep,RIFT.mid,ROCK.dark);
+ outline(c,DISC12,RIFT.lite);fill(c,DISC12,RIFT.mid);
+ ring(c,DISC12,DISC8,RIFT.hot);fill(c,DISC8,RIFT.deep);
+ fill(c,DISC4,'#0A0410');
+ edges(c,ROCK);tex.rift_core=c;}
 
 const out=process.argv[2];fs.mkdirSync(out,{recursive:true});
 const es=Object.entries(tex);

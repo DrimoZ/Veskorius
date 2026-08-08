@@ -237,6 +237,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
                 .requires(blueprint(4)));
 
+        // Rift Anchor (#19) : 4 Hyper Refined + 4 Alloy Block (05-Machines.md). Neuf
+        // entrées pile avec le châssis et le blueprint — le maximum, et c'est cohérent :
+        // c'est la dernière machine du mod, elle doit coûter tout ce qu'une grille peut
+        // porter.
+        machine(recipeOutput, ModBlocks.RIFT_ANCHOR.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.HYPER_REFINED_CRYSTAL.get(), b -> b
+                .requires(ModItems.HYPER_REFINED_CRYSTAL.get(), 4)
+                .requires(ModBlocks.VESKORIAN_ALLOY_BLOCK.get(), 3)
+                .requires(blueprint(4)));
+
         // Convergence Core (#18). Le dossier annonce 12 Alloy Block + 6 Treillis +
         // 4 Hyper Refined + 4 Flux Concentré — VINGT-SIX objets, soit près de trois fois ce
         // qu'une grille peut tenir. C'est la même impossibilité que la Foreuse, en plus

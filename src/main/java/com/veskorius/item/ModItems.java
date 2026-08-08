@@ -294,6 +294,12 @@ public class ModItems {
     public static final DeferredItem<BlockItem> RESONANCE_RELAY_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_RELAY);
 
+    public static final DeferredItem<BlockItem> DEFORMED_STONE_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.DEFORMED_STONE);
+
+    public static final DeferredItem<BlockItem> RIFT_ANCHOR_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.RIFT_ANCHOR);
+
     public static final DeferredItem<BlockItem> CONVERGENCE_CORE_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.CONVERGENCE_CORE);
 

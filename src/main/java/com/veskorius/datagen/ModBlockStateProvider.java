@@ -82,6 +82,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // massif, couronne. Il doit se voir de loin au milieu de son anneau — c'est la
         // pièce autour de laquelle on bâtit, pas une machine qu'on range contre un mur.
         core(ModBlocks.CONVERGENCE_CORE.get(), "convergence_core", VESKORIAN);
+        // L'Ancre : silhouette de PIEU, la seule du mod. On la plante en bordure, elle
+        // doit se lire comme quelque chose qu'on enfonce, pas qu'on pose.
+        vent(ModBlocks.RIFT_ANCHOR.get(), "rift_anchor", VESKORIAN);
 
         // --- Châssis nus ------------------------------------------------------
         // Le bloc de base, posable tel quel. C'est littéralement le boîtier que
@@ -130,6 +133,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
      * comme le joueur s'y attend, sinon on ne bâtit pas avec.
      */
     private void architecture() {
+        simpleBlockWithItem(ModBlocks.DEFORMED_STONE.get(),
+            cubeAll(ModBlocks.DEFORMED_STONE.get()));
+        simpleBlock(ModBlocks.RIFT_CORE.get(), cubeAll(ModBlocks.RIFT_CORE.get()));
         simpleBlockWithItem(ModBlocks.VESKORIAN_ALLOY_BLOCK.get(),
             cubeAll(ModBlocks.VESKORIAN_ALLOY_BLOCK.get()));
         simpleBlockWithItem(ModBlocks.VEINED_STONE_BRICKS.get(),

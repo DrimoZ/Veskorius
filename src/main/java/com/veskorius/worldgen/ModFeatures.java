@@ -14,6 +14,10 @@ public class ModFeatures {
     public static final DeferredHolder<Feature<?>, ResonanceCrystalPocketFeature> CRYSTAL_POCKET =
         FEATURES.register("crystal_pocket", ResonanceCrystalPocketFeature::new);
 
+    /** La Faille : une bulle de vide, pas une structure (07-World-Generation.md). */
+    public static final DeferredHolder<Feature<?>, RiftFeature> RIFT =
+        FEATURES.register("rift", RiftFeature::new);
+
     // Ruins used to be a Feature ({@code RuinFeature}); they are now real jigsaw
     // Structures (see ModStructures, A7). No ruin feature remains.
 }

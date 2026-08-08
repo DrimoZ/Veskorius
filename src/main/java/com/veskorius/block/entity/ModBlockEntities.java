@@ -72,6 +72,18 @@ public class ModBlockEntities {
                 .of(ResonanceRelayBlockEntity::new, ModBlocks.RESONANCE_RELAY.get())
                 .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RiftCoreBlockEntity>>
+        RIFT_CORE = BLOCK_ENTITIES.register("rift_core",
+            () -> BlockEntityType.Builder
+                .of(RiftCoreBlockEntity::new, ModBlocks.RIFT_CORE.get())
+                .build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RiftAnchorBlockEntity>>
+        RIFT_ANCHOR = BLOCK_ENTITIES.register("rift_anchor",
+            () -> BlockEntityType.Builder
+                .of(RiftAnchorBlockEntity::new, ModBlocks.RIFT_ANCHOR.get())
+                .build(null));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ConvergenceCoreBlockEntity>>
         CONVERGENCE_CORE = BLOCK_ENTITIES.register("convergence_core",
             () -> BlockEntityType.Builder

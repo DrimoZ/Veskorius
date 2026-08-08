@@ -74,6 +74,12 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.AUTOMATED_EXTRACTION_ARRAY, "Matrice d'Extraction Automatisée");
         addBlock(ModBlocks.RESONANCE_NETWORK_HUB, "Nœud de Réseau de Résonance");
         addBlock(ModBlocks.CONVERGENCE_CORE, "Cœur de Convergence");
+        addBlock(ModBlocks.RIFT_ANCHOR, "Ancre de Faille");
+        addBlock(ModBlocks.RIFT_CORE, "Noyau de Faille");
+        addBlock(ModBlocks.DEFORMED_STONE, "Pierre Déformée");
+        add("message.veskorius.anchor_holding", "Ancre active — la Faille est stable");
+        add("message.veskorius.anchor_idle", "Ancre inerte — aucune Faille à portée, ou pas de champ");
+        add("item.veskorius.deformed_stone.hint", "Pierre tordue par une Faille. La bulle est proche — et elle n'est pas sûre.");
         add("message.veskorius.core_formed", "Cœur en ligne — portée %s");
         add("message.veskorius.core_incomplete", "Cœur inerte — il lui faut %s relais ou amplificateurs à %s blocs, chacun en vue directe");
         add("gui.veskorius.priority_low", "Basse");

@@ -1992,7 +1992,7 @@ public class MachineGameTests {
         ModBlocks.SLAG_VENT.get(),
         ModBlocks.DEEP_SYNTHESIS_CHAMBER.get(), ModBlocks.HARMONIC_AMPLIFIER.get(),
         ModBlocks.AUTOMATED_EXTRACTION_ARRAY.get(), ModBlocks.RESONANCE_NETWORK_HUB.get(),
-        ModBlocks.CONVERGENCE_CORE.get(),
+        ModBlocks.CONVERGENCE_CORE.get(), ModBlocks.RIFT_ANCHOR.get(),
         ModBlocks.FRACTURED_CHASSIS.get(), ModBlocks.ATTUNED_CHASSIS.get(),
         ModBlocks.VESKORIAN_CHASSIS.get(),
     };
@@ -2347,6 +2347,67 @@ public class MachineGameTests {
         driller.markSynchronised(100);
         helper.assertTrue(driller.isSynchronised(),
             "La marque poussée par la Matrice doit prendre effet");
+        helper.succeed();
+    }
+
+    // =====================================================================
+    // La Faille (#19) — la seule chose du mod qui blesse par sa seule présence
+    // =====================================================================
+
+    private static final BlockPos RIFT = new BlockPos(10, 1, 12);
+    private static final BlockPos ANCHOR = new BlockPos(6, 1, 12);
+
+    /**
+     * <b>Une Faille non ancrée blesse, une Faille ancrée se tait, et casser l'Ancre la
+     * réveille.</b>
+     *
+     * <p>Les trois moments sont le palier entier. Sans le premier, la Faille n'est qu'une
+     * grotte ronde et l'Ancre n'a aucune raison d'exister. Sans le deuxième, la ressource
+     * finale est inatteignable. Sans le troisième — le plus facile à oublier — le joueur
+     * poserait une Ancre, démonterait tout, et la Faille resterait inoffensive pour
+     * toujours : la machine la plus chère du mod à faire tourner deviendrait un
+     * interrupteur à usage unique.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 300, batch = "rift")
+    public static void anchorSilencesTheRiftOnlyWhileItRuns(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper, 16);
+                helper.setBlock(RIFT, ModBlocks.RIFT_CORE.get());
+                helper.setBlock(ANCHOR, ModBlocks.RIFT_ANCHOR.get());
+            })
+            .thenExecuteAfter(40, () -> {
+                com.veskorius.block.entity.RiftCoreBlockEntity core = helper.getBlockEntity(RIFT);
+                com.veskorius.block.entity.RiftAnchorBlockEntity anchor = helper.getBlockEntity(ANCHOR);
+                helper.assertTrue(anchor.isHolding(),
+                    "L'Ancre alimentée et à portée doit tenir la Faille");
+                helper.assertTrue(core.isAnchored(),
+                    "…et la Faille doit se savoir ancrée");
+            })
+            // On casse l'Ancre : la Faille doit redevenir dangereuse immédiatement.
+            .thenExecute(() -> helper.setBlock(ANCHOR, Blocks.AIR))
+            .thenExecuteAfter(40, () -> {
+                com.veskorius.block.entity.RiftCoreBlockEntity core = helper.getBlockEntity(RIFT);
+                helper.assertFalse(core.isAnchored(),
+                    "Ancre retirée : la Faille se réveille. Sinon un coup de pioche rendrait "
+                        + "inoffensive la zone la plus dangereuse du monde, définitivement.");
+            })
+            .thenExecute(() -> helper.setBlock(RIFT, Blocks.AIR))
+            .thenSucceed();
+    }
+
+    /**
+     * <b>Le délai de grâce existe et il est court.</b> Sans lui, s'approcher tue sans
+     * prévenir et la Faille est un piège ; trop long, on s'y installe et la contrainte
+     * disparaît. Trois secondes : le temps de voir, de comprendre et de reculer.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 20)
+    public static void riftGivesTimeToStepBack(GameTestHelper helper) {
+        int grace = com.veskorius.block.entity.RiftCoreBlockEntity.GRACE_TICKS;
+        helper.assertTrue(grace >= 20 && grace <= 20 * 5,
+            "Le délai de grâce doit tenir entre une et cinq secondes, vaut " + grace + " ticks");
+        helper.assertTrue(com.veskorius.block.entity.RiftCoreBlockEntity.HARM_RADIUS == 8,
+            "06-Energy.md annonce 8 blocs");
         helper.succeed();
     }
 

@@ -77,6 +77,19 @@ public final class ModWorldGen {
         ResourceKey.create(Registries.PLACED_FEATURE, id("resonance_crystal_pocket"));
     public static final ResourceKey<BiomeModifier> ADD_RESONANCE_CRYSTAL =
         ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, id("add_resonance_crystal"));
+    // --- La Faille (07-World-Generation.md) ---------------------------------
+    // Rare au point qu'on n'en croise pas par hasard : c'est l'endgame, il doit se chercher.
+    public static final int RIFT_RARITY = 900;
+    public static final int RIFT_MIN_Y = -64;
+    public static final int RIFT_MAX_Y = -60;
+
+    public static final ResourceKey<ConfiguredFeature<?, ?>> RIFT_CF =
+        ResourceKey.create(Registries.CONFIGURED_FEATURE, id("rift"));
+    public static final ResourceKey<PlacedFeature> RIFT_PF =
+        ResourceKey.create(Registries.PLACED_FEATURE, id("rift"));
+    public static final ResourceKey<BiomeModifier> ADD_RIFT =
+        ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, id("add_rift"));
+
     public static final ResourceKey<BiomeModifier> ADD_CRYSTAL_STRIDER =
         ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, id("add_crystal_strider"));
 
@@ -96,6 +109,9 @@ public final class ModWorldGen {
         context.register(RESONANCE_CRYSTAL_POCKET_CF,
             new ConfiguredFeature<>(ModFeatures.CRYSTAL_POCKET.get(),
                 new CrystalPocketConfiguration(CRYSTAL_TRIES, SHELL_THICKNESS, FLUX_CHANCE, STRIDER_CHANCE)));
+
+        context.register(RIFT_CF, new ConfiguredFeature<>(ModFeatures.RIFT.get(),
+            net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration.INSTANCE));
     }
 
     public static void bootstrapPlacedFeatures(BootstrapContext<PlacedFeature> context) {
@@ -107,6 +123,16 @@ public final class ModWorldGen {
             InSquarePlacement.spread(),
             HeightRangePlacement.uniform(VerticalAnchor.absolute(MIN_Y), VerticalAnchor.absolute(MAX_Y)),
             BiomeFilter.biome())));
+
+        // La Faille se place en UNDERGROUND_DECORATION plutot qu'en ORES : elle ne depose
+        // rien, elle CREUSE. Avec les minerais, les passes suivantes l'auraient remplie et
+        // la bulle serait revenue pleine de pierre.
+        context.register(RIFT_PF, new PlacedFeature(
+            configured.getOrThrow(RIFT_CF), List.of(
+            RarityFilter.onAverageOnceEvery(RIFT_RARITY),
+            InSquarePlacement.spread(),
+            HeightRangePlacement.uniform(VerticalAnchor.absolute(RIFT_MIN_Y), VerticalAnchor.absolute(RIFT_MAX_Y)),
+            BiomeFilter.biome())));
     }
 
     public static void bootstrapBiomeModifiers(BootstrapContext<BiomeModifier> context) {
@@ -117,6 +143,11 @@ public final class ModWorldGen {
             biomes.getOrThrow(BiomeTags.IS_OVERWORLD),
             HolderSet.direct(placed.getOrThrow(RESONANCE_CRYSTAL_POCKET_PF)),
             GenerationStep.Decoration.UNDERGROUND_ORES));
+
+        context.register(ADD_RIFT, new BiomeModifiers.AddFeaturesBiomeModifier(
+            biomes.getOrThrow(BiomeTags.IS_OVERWORLD),
+            HolderSet.direct(placed.getOrThrow(RIFT_PF)),
+            GenerationStep.Decoration.UNDERGROUND_DECORATION));
 
         // Fauna of the pockets: the Crystal Strider (09-Entities.md).
         //

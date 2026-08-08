@@ -143,7 +143,7 @@ ne sont pas comptés dans les 23 machines : ce sont des blocs de construction, p
 | 16 | `automated_extraction_array` | T4 | ✅ codé — ramasse la sortie des Driller à 12 blocs ET les fait tourner DOUBLE. Le signal est poussé vers les foreuses, jamais cherché par elles |
 | 17 | `resonance_network_hub` | T4 | ✅ codé — plancher de priorité selon la réserve du champ (>50 % tout passe, 20-50 % les basses s'effacent, <20 % hautes seules). Passif. Priorité réglable au Tuner ; dérive comme l'Amplifier |
 | 18 | `convergence_core` | T4→T5 | ✅ codé — multi-bloc : 8 relais/amplificateurs à Chebyshev 5, chacun en vue directe, revalidé toutes les 2 s. Champ portée 40, intensité 1000 (exception assumée à l'anti-stacking) |
-| 19 | `rift_anchor` | T5 | À coder (Phase 4) |
+| 19 | `rift_anchor` | T5 | ✅ codé — stabilise la Faille TANT QU'ELLE EST ALIMENTÉE (20 Osc/tick), pas « pose unique ». Cassée, la Faille se réveille |
 | 20 | `rift_core_extractor` | T5 | À coder (Phase 4) |
 | 21 | `rift_ward_emitter` | T5 | À coder (Phase 4) |
 | 22 | `crystal_crusher` | T1 | ✅ codé (cycle 10s autonome, 1 Raw Crystal → 3 Resonance Dust) |

@@ -363,6 +363,22 @@ const faces = {
     fill(c, DISC4, on ? a.hot : m.tones[1]);
   },
 
+  // UN PIEU ENFONCÉ : une tête large, un fût qui s'affine, et la roche qui se referme
+  // dessus. Toutes les autres machines du mod sont POSÉES ; celle-ci se plante, et sa
+  // façade doit le dire — c'est aussi la seule qu'on installe au bord d'un danger.
+  rift_anchor: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    slab(c, 1, 1, 14, 3, m.metal, m.metalHi, m.line);
+    for (let y = 4; y < 14; y++) {
+      const w = Math.max(2, 8 - Math.floor((y - 4) / 2));
+      slab(c, 8 - Math.floor(w / 2), y, w, 1, IRON.mid, IRON.lite, IRON.deep);
+    }
+    // La lueur du déphasage, prise dans le fût : violet quand l'Ancre tient.
+    c.rect(7, 5, 2, 6, on ? a.mid : m.tones[0]);
+    if (on) { c.set(7, 5, a.hot); c.set(8, 8, a.hot); }
+    for (const [x, y] of [[2, 2], [13, 2]]) { c.rect(x, y, 2, 2, m.metalHi); c.set(x, y, m.metal); }
+  },
+
   // La même lentille, plus la réglette des trois bandes.
   tunable_field_emitter: (c, m, a, on) => {
     faces.field_emitter(c, m, a, on);
