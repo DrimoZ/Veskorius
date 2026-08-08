@@ -131,11 +131,15 @@ SERVER, surchargeables par modpack.
 
 ## Ce qui reste
 
-1. **Matériaux de la phase 3** — , , ,
-   , . Aucun n'est sur le chemin critique.
+1. **Matériaux de la phase 3** — `luminous_extract`, `resonance_glass`, `ancient_seed`,
+   `resonance_bloom`, `ancient_conduit_stone`. Aucun n'est sur le chemin critique.
 2. **Custode Lourd** — variante d'élite annoncée au dossier.
 
-Le Cœur de Faille n'est PAS de cette liste : c'est la , et elle fait déjà
-ce que  décrit — bulle sphérique de 5 à 9 blocs, coquille de pierre
+Le Cœur de Faille n'est PAS de cette liste : c'est la `RiftFeature`, et elle fait déjà ce
+que `08-Structures.md` décrit — bulle sphérique de 5 à 9 blocs, coquille de pierre
 déformée, noyau flottant. Aucune « Station Relais » n'existe non plus dans le dossier ;
 elle ne figurait que dans une version antérieure de ce document.
+
+Et les déchets ont tous leur sortie : la scorie par le Slag Vent qui la détruit, le
+résidu par compression en bloc de construction. Le test `everyByproductHasAnOutlet`
+garde la seconde ; la première en est exclue exprès, sa corvée EST la contrainte.
