@@ -22,7 +22,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 |---|---|---|
 | `resonance_veined_stone` | 04, 07 | À coder (Phase 1) |
 | `raw_flux_deposit` | 04, 07 | ✅ codé (item + bloc brossable ; dans le tag stabilizer_flux) |
-| `ancient_seed` | 04, 08 | À coder (Phase 3) |
+| `ancient_seed` | 04, 08 | ✅ codé (butin bonus de l'Archive, 1 sur 5 ; plantable) |
 | `meteoric_resonance_shard` | 04, 07 | À coder (Phase 3) |
 
 ## Items — action du joueur
@@ -31,7 +31,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 |---|---|---|
 | `custode_alloy_fragment` | 04, 09 | ✅ codé (drop du Custode ; substitut du fer via tag `iron_substitutes`) |
 | `resonance_spore` | 04, 09 | ✅ codé — item (nourriture du Fileur) + récolte : la Resonance Veined Stone pousse un spore (état `spored`) en faible luminosité sur une face exposée, récolté au clic droit, repousse ensuite |
-| `resonance_bloom` | 04 | À coder (Phase 3) |
+| `resonance_bloom` | 04 | ✅ codé (buisson à 4 stades, cueillette répétée ; Vision Nocturne 60 s) |
 
 ## Items — progression (plans, fragments, loot de structure)
 

@@ -98,6 +98,8 @@ public class Veskorius {
                 output.accept(ModItems.FLUX_SLAG.get());
                 output.accept(ModItems.SYNTHESIS_RESIDUE.get());
                 output.accept(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get());
+                output.accept(ModItems.ANCIENT_SEED.get());
+                output.accept(ModItems.RESONANCE_BLOOM.get());
                 output.accept(ModItems.RESONANCE_SAND_ITEM.get());
                 output.accept(ModItems.RESONANCE_GLASS_ITEM.get());
                 output.accept(ModItems.CONCENTRATED_FLUX.get());

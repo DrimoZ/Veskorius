@@ -463,6 +463,26 @@ public class ModBlocks {
                 .requiresCorrectToolForDrops());
 
     /**
+     * <b>Buisson de Floraison</b> — la seule culture du mod. Voir
+     * {@link ResonanceBloomBushBlock} : il se cueille et repousse, il ne se moissonne pas.
+     *
+     * <p>Sans collision ni occlusion : on traverse un buisson, on ne bute pas dedans. Le
+     * buisson de baies vanilla, lui, ralentit et blesse — pas celui-ci, qui n'a rien d'une
+     * ronce et que le joueur posera dans sa base.
+     */
+    public static final DeferredBlock<ResonanceBloomBushBlock> RESONANCE_BLOOM_BUSH =
+        BLOCKS.registerBlock("resonance_bloom_bush",
+            ResonanceBloomBushBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .randomTicks()
+                .noCollission()
+                .noOcclusion()
+                .instabreak()
+                .sound(SoundType.SWEET_BERRY_BUSH)
+                .pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
+
+    /**
      * <b>Sable de Résonance</b> — l'étape intermédiaire du verre, et elle existe pour une
      * raison précise.
      *

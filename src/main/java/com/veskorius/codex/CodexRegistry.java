@@ -69,6 +69,7 @@ public final class CodexRegistry {
         TIERS.put("machines/advanced_assembler", 3);
         TIERS.put("crystals/matrix", 3);
         TIERS.put("crystals/glass", 3);
+        TIERS.put("world/bloom", 4);
         TIERS.put("machines/chamber", 4);
         TIERS.put("machines/amplifier", 4);
         TIERS.put("machines/hub", 4);
@@ -219,6 +220,8 @@ public final class CodexRegistry {
             CodexUnlock.item(ModItems.RESONANCE_MATRIX));
         add("crystals/glass", CodexCategory.CRYSTALS, ModBlocks.RESONANCE_GLASS,
             CodexUnlock.item(ModBlocks.RESONANCE_GLASS));
+        add("world/bloom", CodexCategory.WORLD, ModItems.RESONANCE_BLOOM,
+            CodexUnlock.item(ModItems.ANCIENT_SEED));
         add("crystals/alloy", CodexCategory.CRYSTALS, ModItems.VESKORIAN_ALLOY_INGOT,
             CodexUnlock.item(ModItems.VESKORIAN_ALLOY_INGOT));
         add("crystals/slag", CodexCategory.CRYSTALS, ModItems.FLUX_SLAG,

@@ -343,6 +343,33 @@ const items = {
     }
   },
 
+  // Graine Ancienne : une graine, PAS un cristal. Le joueur doit penser à la planter
+  // sans lire son infobulle — donc la silhouette est celle d'une amande, et la seule
+  // marque veskorienne est une veine qui la traverse.
+  ancient_seed: (c) => {
+    const SEED = { line: '#4A3A22', deep: '#6E5836', mid: '#8F7648', lite: '#B39A66' };
+    const grain = [[5,6,10],[6,5,11],[7,4,12],[8,4,12],[9,5,11],[10,6,10]];
+    outline(c, grain, SEED.line);
+    fill(c, grain, SEED.mid);
+    fill(c, [[6,6,9],[7,5,10],[8,5,10]], SEED.lite);
+    for (let y = 5; y < 11; y++) c.set(8, y, V.deep);
+    c.set(8, 7, V.mid);
+  },
+
+  // Floraison : quatre pétales autour d'un coeur clair. Elle se mange et elle éclaire —
+  // le coeur est donc la partie la plus lumineuse de tout le lot d'items.
+  resonance_bloom: (c) => {
+    const LEAF = { deep: '#2E4A38', mid: '#3F6B4E' };
+    for (let y = 10; y < 15; y++) c.set(8, y, LEAF.mid);
+    c.set(7, 12, LEAF.deep); c.set(9, 13, LEAF.deep);
+    for (const [x, y] of [[7,3],[7,7],[4,5],[10,5]]) {
+      c.rect(x, y, 3, 3, V.mid);
+      c.set(x + 1, y + 1, V.lite);
+    }
+    c.rect(7, 5, 3, 3, V.hot);
+    c.set(8, 6, '#FFFFFF');
+  },
+
   // --- Matiere du T5 -------------------------------------------------------
   //
   // L'essence est le SEUL item du mod dont le centre soit noir. Toute la chaine du

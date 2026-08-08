@@ -79,6 +79,11 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.VESKORIAN_ALLOY_BLOCK.get());
         dropSelf(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get());
         dropSelf(ModBlocks.RESONANCE_SAND.get());
+        // Casser le buisson rend la GRAINE, jamais le buisson. On ne déplace pas une
+        // plante, on la resème — et surtout la graine ne doit pas pouvoir se perdre :
+        // elle ne s'obtient qu'en fouillant une Archive, et pas à tous les coups.
+        add(ModBlocks.RESONANCE_BLOOM_BUSH.get(),
+            block -> createSingleItemTable(ModItems.ANCIENT_SEED.get()));
         // Le verre se récupère SANS Toucher de Soie, contrairement au verre vanilla.
         // La doctrine de ce fichier — « tout se récupère : ce qu'on trouve en ruine
         // doit pouvoir être rebâti » — vaut d'autant plus pour le seul matériau du mod

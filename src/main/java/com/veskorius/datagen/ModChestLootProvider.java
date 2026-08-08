@@ -114,6 +114,21 @@ public class ModChestLootProvider implements LootTableSubProvider {
                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(3.0f)))))
             // De quoi tenir la suite : le Lattice réclame 4 lingots conducteurs, et on ne
             // fond pas de l'or à l'endroit où on vient de résoudre une énigme.
+            // LA GRAINE ANCIENNE, une fois sur cinq (04-Materials.md : « loot bonus,
+            // non garanti, ~20% »). C'est le seul endroit du mod où un tirage décide de
+            // quelque chose, et il le peut PARCE QUE la branche qu'elle ouvre est
+            // entièrement facultative : agriculture, teinture, décoration. Aucune
+            // machine, aucun palier n'en dépend. Le pilier « la progression ne dépend
+            // jamais d'un tirage » reste intact.
+            //
+            // Un plant suffit pour toujours : le buisson se cueille et repousse, donc
+            // une seule graine trouvée ouvre la branche définitivement.
+            .withPool(LootPool.lootPool()
+                .setRolls(ConstantValue.exactly(1.0f))
+                .add(LootItem.lootTableItem(ModItems.ANCIENT_SEED.get())
+                    .setWeight(1))
+                .add(net.minecraft.world.level.storage.loot.entries.EmptyLootItem.emptyItem()
+                    .setWeight(4)))
             .withPool(LootPool.lootPool()
                 .setRolls(UniformGenerator.between(2.0f, 3.0f))
                 .add(LootItem.lootTableItem(Items.GOLD_INGOT)

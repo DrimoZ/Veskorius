@@ -155,6 +155,12 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addItem(ModItems.RIFT_ESSENCE, "Essence de Faille");
         addItem(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT, "Lingot d'Alliage Corrompu");
         addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Bloc d'Alliage Veskorien");
+        addBlock(ModBlocks.RESONANCE_BLOOM_BUSH, "Buisson de Floraison");
+        addItem(ModItems.ANCIENT_SEED, "Graine Ancienne");
+        addItem(ModItems.RESONANCE_BLOOM, "Floraison de Résonance");
+        add("codex.veskorius.world.bloom.title", "Graine Ancienne et Floraison de Résonance");
+        add("codex.veskorius.world.bloom.text",
+            "Une graine dans une Archive Régionale sur cinq, et un seul plant suffit pour toujours.\n\nLe buisson se CUEILLE, il ne se moissonne pas : clic droit sur un plant mûr et il donne deux ou trois floraisons, puis retombe à mi-croissance et repousse. Il n'a jamais besoin d'être replanté, et c'est tout l'enjeu — la graine vient d'une fouille qui peut n'en donner aucune, donc un plant qui mourrait à la récolte mettrait la branche derrière un coup de dé.\n\nIl pousse sur la terre, sur la terre labourée, et sur la Pierre Veinée de Résonance — le planter sur le veiné, c'est bâtir une serre sans l'avoir voulu.\n\nL'os à moelle le fait pousser. La Poussière et la Boue de Résonance aussi, sur lui comme sur n'importe quelle culture vanilla : la boue est un déchet, et nourrir un champ avec ce qu'on a purgé d'un réseau malade referme la boucle par le bas.\n\nManger une floraison donne la Vision Nocturne une minute. Les autres partent au broyage, en Extrait Lumineux.");
         addBlock(ModBlocks.RESONANCE_SAND, "Sable de Résonance");
         addBlock(ModBlocks.RESONANCE_GLASS, "Verre de Résonance");
         add("codex.veskorius.crystals.glass.title", "Verre de Résonance");

@@ -269,6 +269,35 @@ public class ModItems {
             CodexFragmentItem::new, new Item.Properties().stacksTo(16));
 
     /** Nourriture ancienne « fossilisée » (flavor, Habitation Modeste). */
+    /**
+     * <b>Graine Ancienne</b> — butin bonus de l'Archive Régionale, une fois sur cinq.
+     *
+     * <p>Un {@code ItemNameBlockItem} et non un item ordinaire : c'est ce qui la rend
+     * PLANTABLE tout en gardant son propre nom, exactement comme les graines de blé. Sans
+     * ça il aurait fallu un objet nommé « buisson de floraison » qu'on sème, ce qui dirait
+     * au joueur qu'il pose un bloc au lieu de semer une graine.
+     */
+    public static final DeferredItem<net.minecraft.world.item.ItemNameBlockItem> ANCIENT_SEED =
+        ITEMS.registerItem("ancient_seed",
+            props -> new net.minecraft.world.item.ItemNameBlockItem(
+                ModBlocks.RESONANCE_BLOOM_BUSH.get(), props),
+            new Item.Properties());
+
+    /**
+     * <b>Floraison de Résonance</b> — se mange, ou se broie en {@code luminous_extract}.
+     *
+     * <p>Elle donne la VISION NOCTURNE une minute, et pas l'effet Lueur. Le dossier écrit
+     * « effet Lueur ~ Vision Nocturne faible » : Lueur, dans Minecraft, dessine un contour
+     * autour des entités et n'aide en rien à voir dans le noir. C'est l'intention qui a
+     * été suivie — une plante qui éclaire celui qui la mange — plutôt que le nom.
+     */
+    public static final DeferredItem<Item> RESONANCE_BLOOM =
+        ITEMS.registerSimpleItem("resonance_bloom", new Item.Properties()
+            .food(new FoodProperties.Builder().nutrition(2).saturationModifier(0.1f)
+                .effect(() -> new net.minecraft.world.effect.MobEffectInstance(
+                    net.minecraft.world.effect.MobEffects.NIGHT_VISION, 1200), 1.0f)
+                .alwaysEdible().build()));
+
     public static final DeferredItem<Item> FOSSILIZED_RATION =
         ITEMS.registerSimpleItem("fossilized_ration", new Item.Properties()
             .food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.2f).build()));

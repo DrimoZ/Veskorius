@@ -1859,6 +1859,41 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    /**
+     * <b>Le buisson de floraison se cueille et repousse — il ne meurt pas.</b>
+     *
+     * <p>C'est la seule propriété de cette plante qui compte, et le dossier l'écrit en
+     * toutes lettres : « récolte répétée façon buisson de baies, <b>pas à usage unique</b> ».
+     *
+     * <p>Si la cueillette le détruisait, la branche entière retomberait derrière un tirage :
+     * la Graine Ancienne ne sort que d'une Archive Régionale sur cinq, et il faudrait en
+     * retrouver une à chaque récolte. Le mod interdit explicitement qu'une progression
+     * dépende d'un dé — la branche est facultative, mais elle ne doit pas non plus se
+     * refermer sur un joueur qui l'a ouverte. Un buisson qui repart de l'âge 1 transforme
+     * une trouvaille rare en ressource entretenue ; un buisson qui meurt la reprend.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void bloomBushSurvivesItsOwnHarvest(GameTestHelper helper) {
+        BlockPos soil = MACHINE;
+        BlockPos bush = soil.above();
+        helper.setBlock(soil, net.minecraft.world.level.block.Blocks.DIRT);
+        helper.setBlock(bush, ModBlocks.RESONANCE_BLOOM_BUSH.get().defaultBlockState()
+            .setValue(com.veskorius.block.ResonanceBloomBushBlock.AGE,
+                com.veskorius.block.ResonanceBloomBushBlock.RIPE));
+
+        com.veskorius.block.ResonanceBloomBushBlock.harvest(
+            helper.getBlockState(bush), helper.getLevel(), helper.absolutePos(bush),
+            helper.makeMockPlayer(GameType.SURVIVAL));
+
+        helper.assertBlockPresent(ModBlocks.RESONANCE_BLOOM_BUSH.get(), bush);
+        int age = helper.getBlockState(bush)
+            .getValue(com.veskorius.block.ResonanceBloomBushBlock.AGE);
+        helper.assertTrue(age > 0 && age < com.veskorius.block.ResonanceBloomBushBlock.RIPE,
+            "Après cueillette le buisson doit retomber ENTRE zéro et mûr — ni détruit, ni "
+                + "encore récoltable. Âge obtenu : " + age);
+        helper.succeed();
+    }
+
     // --- Utilitaires ---------------------------------------------------------
 
     private static IItemHandler assemblerInventory(GameTestHelper helper) {

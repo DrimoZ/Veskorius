@@ -227,6 +227,29 @@ tex.ancient_emitter_front_on=front('t1',0x748,faces.field_emitter,true);
  for(let i=9;i<13;i++)c.set(i,i-6,G.lite);
  tex.resonance_glass=c;}
 
+// Buisson de Floraison : QUATRE stades, et le passage du stade 2 au stade 3 doit se voir
+// de loin — c'est le seul moment où le joueur a quelque chose à faire. La plante grandit
+// aux stades 0-2 ; au stade 3 elle FLEURIT, et les fleurs sont la seule chose qui change
+// de couleur. Un joueur qui traverse son champ doit repérer les plants mûrs sans
+// s'arrêter devant chacun.
+{const LEAF={deep:'#2E4A38',mid:'#3F6B4E',lite:'#54886A'};
+ for(let age=0;age<4;age++){
+  const c=new Canvas(S,S);const r=rng(0x770+age);
+  const h=[5,9,13,14][age];
+  // La tige, décentrée : une plante parfaitement symétrique lit comme un objet.
+  for(let y=S-1;y>S-1-h;y--){c.set(7,y,LEAF.deep);c.set(8,y,LEAF.mid);}
+  // Les feuilles, de plus en plus larges avec l'âge.
+  const spread=[2,3,5,6][age];
+  for(let n=0;n<8+age*6;n++){
+   const y=S-2-Math.floor(r()*h);
+   const x=7+Math.round((r()*2-1)*spread);
+   if(x>0&&x<S)c.set(x,y,r()>.5?LEAF.mid:LEAF.lite);}
+  // Les fleurs : seulement au dernier stade, et lumineuses.
+  if(age===3){for(const[x,y]of[[4,4],[10,3],[6,7],[11,8],[3,9]]){
+   c.rect(x,y,2,2,V.mid);c.set(x,y,V.hot);}}
+  else if(age===2){for(const[x,y]of[[5,6],[10,7]])c.set(x,y,V.deep);}
+  tex['resonance_bloom_bush_stage'+age]=c;}}
+
 const out=process.argv[2];fs.mkdirSync(out,{recursive:true});
 const es=Object.entries(tex);
 for(const[n,c]of es)fs.writeFileSync(path.join(out,n+'.png'),encodePNG(S,S,c.px));

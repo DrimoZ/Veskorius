@@ -146,6 +146,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
             cubeAll(ModBlocks.VESKORIAN_ALLOY_BLOCK.get()));
         simpleBlockWithItem(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get(),
             cubeAll(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get()));
+        bloomBush();
         simpleBlockWithItem(ModBlocks.RESONANCE_SAND.get(),
             cubeAll(ModBlocks.RESONANCE_SAND.get()));
         // TRANSLUCENT et non cutout : la texture a des pixels semi-transparents sur ses
@@ -263,6 +264,25 @@ public class ModBlockStateProvider extends BlockStateProvider {
     private static final String FRACTURED = "fractured_chassis";
     private static final String ATTUNED = "attuned_chassis";
     private static final String VESKORIAN = "veskorian_chassis";
+
+    /**
+     * Le buisson de floraison : une CROIX par stade de croissance.
+     *
+     * <p>La croix plutôt qu'un cube, parce que c'est la forme que Minecraft a apprise à
+     * ses joueurs pour « ceci est une plante, ça se traverse ». En cutout, sinon le
+     * fond transparent de la texture s'affiche en noir.
+     */
+    private void bloomBush() {
+        var block = ModBlocks.RESONANCE_BLOOM_BUSH.get();
+        getVariantBuilder(block).forAllStates(state -> {
+            int age = state.getValue(
+                com.veskorius.block.ResonanceBloomBushBlock.AGE);
+            return ConfiguredModel.builder()
+                .modelFile(models().cross("resonance_bloom_bush_stage" + age,
+                    modLoc("block/resonance_bloom_bush_stage" + age)).renderType("cutout"))
+                .build();
+        });
+    }
 
     private void chassis(Block block, String chassisName) {
         simpleBlockWithItem(block, models().cubeBottomTop(chassisName,
