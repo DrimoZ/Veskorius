@@ -222,13 +222,13 @@ public class ModLanguageProvider extends LanguageProvider {
             "Clears one Flux Slag every 10 seconds from every Forge within 8 blocks. It exists because a full slag slot stops a Forge dead.\n\nOne clear per pass per Forge: a battery of six will outrun a single Vent. It costs field continuously, so disposing of waste is a standing line in your energy budget, not a button you press once.");
         add("codex.veskorius.machines.compressor.title", "Flux Compressor");
         add("codex.veskorius.machines.compressor.text",
-            "Four Refined Crystals become one Concentrated Flux in 30 seconds. An apparent loss, and a deliberate one.\n\nConcentrated Flux has exactly one consumer in the whole mod: the Convergence Core. Build a Compressor when you have decided to build that, not before.");
+            "Four Refined Crystals become one Concentrated Flux in 30 seconds, at 6 Osc per tick. An apparent loss, and a deliberate one.\n\nConcentrated Flux has exactly ONE consumer in the whole mod: the Convergence Core. Build a Compressor when you have decided to build that, and not before — there is nothing else to spend the output on.");
         add("codex.veskorius.crystals.alloy.title", "Veskorian Alloy");
         add("codex.veskorius.crystals.alloy.text",
             "The first material you MAKE rather than refine. The T1-T2 chain started from crystal and purified it; this one starts from metal and alloys it. That change of nature is what marks the tier, not the number of steps.\n\nThe conductive variant is the same forge with gold instead of iron. Keep them apart — the Relay and the Harmonic Lattice accept only the conductive one.");
         add("codex.veskorius.crystals.slag.title", "Flux Slag");
         add("codex.veskorius.crystals.slag.text",
-            "The Forge's waste, and not an inert one. Chemically it is the same substance that, at regional scale, drove the Collapse.\n\nYou are reproducing the cause in miniature, and it will stop your Forge if you ignore it. That is the intended lesson.");
+            "The Forge's waste, and not an inert one. Chemically it is the same substance that, at regional scale, drove the Collapse.\n\nOne comes out of every forging cycle, into its own slot, and a full slot STOPS the Forge. Empty it by hand, or build a Slag Vent to clear it for you. You are reproducing the cause of the Collapse in miniature, and it will stop your production if you ignore it. That is the intended lesson.");
         add("codex.veskorius.machines.chamber.title", "Deep Synthesis Chamber");
         add("codex.veskorius.machines.chamber.text",
             "Two Refined Crystals become one Hyper Refined Crystal in 90 seconds, at 8 Osc per tick. Nothing else in the world makes them.\n\nBuilding it CONSUMES one Hyper Refined Crystal, which becomes its permanent catalyst and never appears as a cycle input again. The Regional Archive gives you exactly three: two go into your first Harmonic Lattice, the third goes here. You cannot do both at once — that choice is the tier.\n\nIt accepts overheat: half the time, double the Osc, and one cycle in five loses its input.");
@@ -246,7 +246,7 @@ public class ModLanguageProvider extends LanguageProvider {
             "The only multi-block in the mod, and the only field source stronger than any other.\n\nPlaced alone it is inert. It needs EIGHT Resonance Relays or Harmonic Amplifiers (mixing is fine) at exactly 5 blocks — the four axes and the four corners of an 11-block ring — and each one must have a clear line of sight to the centre. You cannot box it in.\n\nOnce formed it emits range 40 at maximum intensity for 12 Osc per tick. It is checked every two seconds: wall off one sightline and it goes dark.\n\nIt exists mainly to feed a Rift Anchor without dedicating a whole base of relays to it.");
         add("codex.veskorius.crystals.hyper.title", "Hyper Refined Crystal");
         add("codex.veskorius.crystals.hyper.text",
-            "The fourth state of the crystal. It cannot be mined, found or crafted — the Deep Synthesis Chamber is its only source, and building that Chamber spends one.\n\nThe three from the Regional Archive are the tier's entire starting stock. Spend them knowing that.");
+            "The fourth state of the crystal. It cannot be mined, found or crafted — the Deep Synthesis Chamber is its only source, and building that Chamber spends one.\n\nThe three from the Regional Archive are the tier's entire starting stock: two go into your first Harmonic Lattice, the third into the Chamber. You cannot do both at once, and that choice IS Tier 4. Once the Chamber stands, the resource becomes renewable and the pressure lifts.");
         add("codex.veskorius.fields.lattice.title", "Harmonic Lattice");
         add("codex.veskorius.fields.lattice.text",
             "Four CONDUCTIVE alloy ingots and two Hyper Refined Crystals. The metal branch you picked at the Forge is charged for a second time, one tier later.\n\nOnly two things ever want a Lattice: the Harmonic Amplifier and the Convergence Core. It is the T4 network in one item.");
@@ -270,7 +270,7 @@ public class ModLanguageProvider extends LanguageProvider {
             "Never a random encounter: it rises from the first Rift Anchor that holds, once per rift, and never again.\n\nThree phases, and each one asks something different. In ECHO it backs away as you close — you have to chase it. In RUPTURE it opens the floor beneath you. In STABILISATION it walks to the core and heals if it reaches it, so you must hold the centre, where the rift is worst.\n\nBeating it stabilises the rift permanently — the phase damage stops even with the anchor switched off — and opens extraction. Guaranteed drop: three Corrupted Veskorian Alloy Ingots.");
         add("codex.veskorius.crystals.essence.title", "Rift Essence");
         add("codex.veskorius.crystals.essence.text",
-            "Six per rift, and the rift is finished. There is no machine that makes more, and there will not be one — that was decided and it is not an oversight.\n\nWhat you do with them is the last real choice the mod gives you.");
+            "Six per rift, and the rift is finished. There is no machine that makes more, and there will not be one — that was decided, and it is not an oversight.\n\nTwo of the six go into the Rift Ward Emitter that makes the site workable at all, so the first rift you clear will really give you four. What you do with them is the last real choice the mod offers.");
         add("codex.veskorius.progression.tier3.title", "Tier 3 — Alloy");
         add("codex.veskorius.progression.tier3.text",
             "The tier where you stop refining and start MAKING. The Veskorian Alloy Forge is the door, and the Sigma Laboratory console holds its blueprint.\n\nTwo things are new and both are constraints. The metal you forge splits your materials into two families that do not substitute for each other. And every machine that makes the tier's material also makes waste that will stop it if you ignore it.");
@@ -451,66 +451,94 @@ public class ModLanguageProvider extends LanguageProvider {
         add("codex.category.progression", "Progression");
 
         add("codex.veskorius.intro.welcome.title", "The Resonance Codex");
-        add("codex.veskorius.intro.welcome.text", "Your own restored knowledge. It writes itself as you rebuild what the Collapse undid — new pages appear as you discover crystals, machines, places and creatures.");
+        add("codex.veskorius.intro.welcome.text",
+            "This book writes itself. Every page about a machine, a material or a mechanic is readable from the very first minute — you are meant to read ahead and decide what to build next. Only the lore fragments stay sealed until you find them in the world.\n\nA page turns dimmer in the list when you have not yet met the thing it describes. That is a progress marker, not a lock.");
         add("codex.veskorius.intro.using_codex.title", "Reading the Codex");
-        add("codex.veskorius.intro.using_codex.text", "Pick a category on the left, then an entry. Locked pages show as ??? — open one anyway to learn how to unlock it. The Codex is yours: it fills in even when it sits in a chest.");
+        add("codex.veskorius.intro.using_codex.text",
+            "Left edge: one tab per section, plus a ◆ tab for the progression map. The map lays out every entry by tier, so you can see what a tier contains before you reach it.\n\nSearch covers titles and body text across every section. Arrow keys turn pages, Escape steps back one level instead of closing the book. At the bottom of a page, a link takes you to the next entry in the same section.\n\nWhen a page has a recipe, it is drawn from the recipes your world actually loaded — never from a wiki that has gone stale.");
         add("codex.veskorius.intro.getting_started.title", "Getting Started");
-        add("codex.veskorius.intro.getting_started.text", "1) Mine a Raw Resonance Crystal underground. 2) Build a Resonance Stabilizer and turn it into Stable Crystal with quartz. 3) Build a Component Assembler. 4) Find an Outpost, wake its console for the Field blueprint, and raise your first Field Emitter.");
+        add("codex.veskorius.intro.getting_started.text",
+            "Dig. Resonance crystal grows in pockets between Y -20 and Y 0, and those pockets are wrapped in Resonance Veined Stone — that shell is how you spot one before you break anything.\n\nRaw crystal is unstable and useless as it comes. Your first machine is a Resonance Stabilizer, which needs only cobblestone, copper and one raw crystal. It runs on nothing — no field, no fuel — and that is deliberate: the first loop must close without infrastructure.\n\nAfter that, the Attunement Console in a Veskorian Outpost opens Tier 2.");
 
         add("codex.veskorius.crystals.raw.title", "Raw Resonance Crystal");
-        add("codex.veskorius.crystals.raw.text", "Mined from crystal pockets underground. Unstable alone — stabilize it with quartz in a Resonance Stabilizer, or crush it into dust.");
+        add("codex.veskorius.crystals.raw.text",
+            "What you mine. It is unstable: it does nothing on its own and no recipe accepts it directly except the two machines that process it.\n\nTwo ways forward, and they are not the same. A Resonance Stabilizer turns it into a Stable Crystal in 30 seconds — slow, and the backbone of everything. A Crystal Crusher turns it into 3 Resonance Dust in 10 seconds — fast, but dust is not a crystal and cannot fuel anything.\n\nCarrying raw crystal for more than two minutes without processing it starts to hurt.");
         add("codex.veskorius.crystals.stable.title", "Stable Resonance Crystal");
-        add("codex.veskorius.crystals.stable.text", "The workhorse of the early game: fuel for Field Emitters, input for Components, and the crystal you refine further.");
+        add("codex.veskorius.crystals.stable.text",
+            "Raw crystal held steady. It is the first thing in the mod that stores energy: one Stable Crystal is 4000 Osc of fuel in a Field Emitter, which is exactly one full reserve.\n\nIt is also the input of the Flux Purifier, which refines it further. Early on you will want both, and there is never quite enough — that tension is the Tier 2 loop.");
         add("codex.veskorius.crystals.refined.title", "Refined Resonance Crystal");
-        add("codex.veskorius.crystals.refined.text", "Purified in a Flux Purifier. A denser, cleaner charge used by higher-tier recipes and the Catalyst Core.");
+        add("codex.veskorius.crystals.refined.text",
+            "Stable crystal purified: 45 seconds in a Flux Purifier with one redstone, or 22 seconds if you accept overheat and its one-in-five chance of losing the batch.\n\nIt is the gate material of Tier 3. The Veskorian Chassis needs two, the Alloy Forge consumes two per cycle, and the Flux Compressor eats four at a time. Refining is the bottleneck of the mid game, and building a second Purifier is usually the right call before building anything clever.");
         add("codex.veskorius.crystals.dust.title", "Resonance Dust");
-        add("codex.veskorius.crystals.dust.text", "A quick crush of raw crystal — faster than stabilizing, but yields no Stable Crystal. Feeds the Assembler's alternative recipe.");
+        add("codex.veskorius.crystals.dust.text",
+            "Three dust from one raw crystal, in 10 seconds. Faster than stabilising, and worth understanding before you commit: dust is NOT a cheaper stable crystal. It cannot fuel a Field Emitter and cannot be refined.\n\nWhat it does is feed the Component Assembler through its alternative branch, and make Resonance Conduits. It is the shortcut for someone who needs components now and infrastructure later.");
         add("codex.veskorius.crystals.pockets.title", "Crystal Pockets");
-        add("codex.veskorius.crystals.pockets.text", "Crystals grow in small pockets deep underground, wrapped in a shell of Resonance Veined Stone. Spot the veined stone and a pocket is close. Some pocket walls carry a brushable flux crust.");
+        add("codex.veskorius.crystals.pockets.text",
+            "Crystal grows in small pockets between Y -20 and Y 0, wrapped in a shell of Resonance Veined Stone. Learn the shell and you stop digging blindly — that is the whole point of it existing.\n\nSome pockets carry a Raw Flux Deposit on their walls: brush it, do not mine it. Mining destroys the crust and gives nothing.\n\nCrystal Striders live near pockets. They are harmless, and they are a slow renewable source of raw crystal if you keep some.");
 
         add("codex.veskorius.fields.osc.title", "Osc & Fields");
-        add("codex.veskorius.fields.osc.text", "Osc is resonance energy. There are no cables: an Emitter fills a field around it, and any machine standing inside draws what it needs. A running machine glows; one that stays dark inside a field has no power to draw.");
+        add("codex.veskorius.fields.osc.text",
+            "Osc is the unit of Resonance energy, and it never travels through a pipe. A Field Emitter covers a SPHERE, and any machine inside that sphere draws from it — there is nothing to connect, and nothing to route.\n\nFields do not add up. When two overlap, the STRONGEST source serves; between equals, the one placed first. So doubling your emitters doubles your reserve, never your throughput.\n\nA machine that cannot draw its cost simply pauses, and resumes when the field comes back. Nothing is ever lost to a brownout.");
         add("codex.veskorius.fields.emitter.title", "Field Emitter");
-        add("codex.veskorius.fields.emitter.text", "Projects a resonance field (range 8) by burning Stable Crystals. Machines inside it draw power — no cables. Its dome of particles shows the reach.");
+        add("codex.veskorius.fields.emitter.text",
+            "The first source of field: 8 blocks of radius, a 4000 Osc reserve, and one Stable Crystal refills it completely.\n\nIt is not a machine with a cycle — it burns fuel and covers ground. The fuels are data-driven, so a modpack can add its own without touching code.\n\nIts lit face tells you at a glance whether it still has reserve. Running dry is the most ordinary failure in this mod, and it is the one you should be able to see while walking past.");
         add("codex.veskorius.fields.storage_cell.title", "Resonance Storage Cell");
-        add("codex.veskorius.fields.storage_cell.text", "A portable battery. Charges inside a field, up to 8000 Osc, and powers the Locator away from home.");
+        add("codex.veskorius.fields.storage_cell.text",
+            "A portable 8000 Osc battery — twice an emitter's reserve, in your pocket.\n\nIt does not power machines. It powers the Resonance Locator, which would otherwise be useless away from a field, and that is exactly when you need a Locator: out exploring, far from any base.");
         add("codex.veskorius.fields.locator.title", "Resonance Locator");
-        add("codex.veskorius.fields.locator.text", "Points to the nearest resonance — a crystal pocket or an active field. Short range, on a small charge topped up in a field or from a Storage Cell.");
+        add("codex.veskorius.fields.locator.text",
+            "A short-range detector with two modes; shift-right-click switches. RESOURCES points at nearby crystal pockets. STRUCTURES points at ruins you have not entered.\n\nIt costs 5 Osc per use, drawn from a Resonance Storage Cell in your inventory.\n\nCarrying one also switches on the field HUD, which shows the reserve and harmonic band of whatever field you are standing in. Once you have a base, that readout is worth more than the pinging.");
 
         add("codex.veskorius.machines.stabilizer.title", "Resonance Stabilizer");
-        add("codex.veskorius.machines.stabilizer.text", "Turns Raw Crystal + quartz into Stable Crystal. Self-powered, no field needed — the first machine you build.");
+        add("codex.veskorius.machines.stabilizer.text",
+            "Raw Resonance Crystal plus a flux (quartz, or Raw Flux Deposit — the tag accepts both) becomes one Stable Crystal in 30 seconds.\n\nIt runs on NOTHING. No field, no fuel, no redstone. That is deliberate and it matters: the first machine of the mod has to work before you have any infrastructure at all, or the chain could never start.\n\nIts recipe is a Fractured Chassis and one raw crystal. Cobblestone and copper — nothing you have to go looking for.");
         add("codex.veskorius.machines.assembler.title", "Component Assembler");
-        add("codex.veskorius.machines.assembler.text", "Combines a Stable Crystal (or dust) with iron into Resonance Components. The first machine that draws on a field.");
+        add("codex.veskorius.machines.assembler.text",
+            "One Stable Crystal and two iron become two Resonance Components in 5 seconds, at 3 Osc per tick. Your first machine that needs a field.\n\nIron here means the tag, not the ingot: a Custode Alloy Fragment works just as well, so fighting the guards of a ruin is a real alternative to mining.\n\nThere is a second branch that takes Resonance Dust instead of a stable crystal — faster to feed, if you went the Crusher route.");
         add("codex.veskorius.machines.whetstone.title", "Resonance Whetstone");
-        add("codex.veskorius.machines.whetstone.text", "Repairs a damaged tool by a quarter of its durability, spending one Stable Crystal. Self-powered.");
+        add("codex.veskorius.machines.whetstone.text",
+            "A damaged tool and a Stable Crystal restore 25% of its durability in 8 seconds. Autonomous, like the Stabilizer — no field needed.\n\nIt does not consume enchantments and has no anvil cost that climbs. It is not meant to replace an anvil; it is meant to keep your pickaxe alive during the long early dig, when you have crystal but no experience to spare.");
         add("codex.veskorius.machines.purifier.title", "Flux Purifier");
-        add("codex.veskorius.machines.purifier.text", "Refines Stable into Refined Crystal. Optional overheat: twice the speed for twice the Osc, and a 20% chance to lose the input.");
+        add("codex.veskorius.machines.purifier.text",
+            "One Stable Crystal and one redstone become a Refined Crystal in 45 seconds, at 2 Osc per tick.\n\nIt is the first machine that accepts OVERHEAT: 22 seconds instead of 45, double the Osc, and one cycle in five destroys the input without producing anything. Switch it with a Resonance Tuner. It is a bet, not an upgrade — nobody should leave it on by default.\n\nIt is also the first machine that can be tuned to a harmonic band, which is where the Tier 2 energy game actually begins.");
         add("codex.veskorius.machines.crusher.title", "Crystal Crusher");
-        add("codex.veskorius.machines.crusher.text", "Grinds one Raw Crystal into three Resonance Dust in ten seconds. Self-powered — a fast T1 branch.");
+        add("codex.veskorius.machines.crusher.text",
+            "One Raw Crystal becomes 3 Resonance Dust in 10 seconds. Autonomous.\n\nIt is the alternative to the Stabilizer, not a supplement: three times the output in a third of the time, but dust cannot fuel an emitter and cannot be refined. Choose it when you need Components fast, and keep a Stabilizer for everything else.");
         add("codex.veskorius.machines.roost.title", "Crystal Roost");
-        add("codex.veskorius.machines.roost.text", "Passive production: fed quartz, it yields Raw Crystal over time — but only while a Crystal Strider stays nearby.");
+        add("codex.veskorius.machines.roost.text",
+            "A nest, not a factory. Feed it quartz — four per Minecraft day — and it attracts and keeps Crystal Striders. If a Strider is nearby, it yields one Raw Crystal every 600 seconds.\n\nIt costs no energy at all. It is slower than mining on purpose: it is a floor under your supply, not a replacement for going out.");
         add("codex.veskorius.machines.tuner.title", "Resonance Tuner");
-        add("codex.veskorius.machines.tuner.text", "A mode tool: rotate, toggle power, overheat, or cycle redstone on a machine. Shift + right-click dismantles any block entity, keeping its contents.");
+        add("codex.veskorius.machines.tuner.text",
+            "One tool for every machine setting. It carries a current mode; right-click a machine to apply it, shift-right-click in the air to cycle modes.\n\nROTATE turns the face. POWER is the on/off switch. OVERHEAT toggles the risky mode where it exists. REDSTONE cycles the control mode. ATTUNE changes a harmonic band. PRIORITY sets who gets shed first when a Network Hub runs short. RECALIBRATE repairs the drift of an Amplifier or a Hub, at the cost of one Resonance Component.\n\nShift-right-click a block entity to DISMANTLE it: the block and everything in it go straight to your inventory. That works on other mods' blocks too.");
         add("codex.veskorius.machines.catalyst_core.title", "Resonance Catalyst Core");
-        add("codex.veskorius.machines.catalyst_core.text", "Slots into any active machine's augment slot for a permanent +15% speed. One per machine, never consumed.");
+        add("codex.veskorius.machines.catalyst_core.text",
+            "Slots into the augment slot of any active machine: +15% cycle speed, permanently, and it is never consumed.\n\nIt does not drift and needs no maintenance — unlike an Amplifier or a Hub, it is a one-off investment rather than an upkeep. Take it back out with a Resonance Tuner rather than breaking the machine.\n\nThe number of augment slots is configurable, so a modpack can loosen or tighten this.");
         add("codex.veskorius.machines.control.title", "Controlling Machines");
-        add("codex.veskorius.machines.control.text", "Every active machine has three buttons in its GUI: a manual switch, a redstone mode (ignored / needs signal / needs no signal), and — where supported — overheat. Cutting power or redstone pauses a machine and keeps its progress; only a missing ingredient resets it. The Resonance Tuner applies these same toggles in the world.");
+        add("codex.veskorius.machines.control.text",
+            "Every active machine shares the same controls, and they are worth knowing once.\n\nA manual on/off switch. A redstone mode: ignored, requires a signal, or requires no signal. Per-face item configuration — input, output or disabled — plus auto-pull and auto-push toggles, so hoppers and pipes work the way you expect.\n\nEnergy never uses any of that. It comes from the field, and the field has no sides.");
 
         add("codex.veskorius.world.veined_stone.title", "Resonance Veined Stone");
-        add("codex.veskorius.world.veined_stone.text", "The shell around crystal pockets — see it, and a pocket is near. In dim light it can grow a Resonance Spore on an exposed face, harvested by hand.");
+        add("codex.veskorius.world.veined_stone.text",
+            "The shell around a crystal pocket, and the single most useful thing to recognise underground: seeing it means crystal is within a few blocks.\n\nIt also grows Resonance Spores on exposed faces in low light — right-click to harvest, and it regrows. Spores are what you breed Crystal Striders with.\n\nIt is a fine building block, and it is the base of the whole Veined Stone Brick family.");
         add("codex.veskorius.world.flux_deposit.title", "Raw Flux Deposit");
-        add("codex.veskorius.world.flux_deposit.text", "A brushable crust on pocket walls. Brush it to collect the flux; mining destroys it. An alternative to quartz for the Stabilizer.");
+        add("codex.veskorius.world.flux_deposit.text",
+            "A brittle crust on the walls of some crystal pockets. BRUSH it — mining destroys the crust and yields nothing at all.\n\nWhat it gives, Raw Flux Deposit, substitutes for quartz in the Resonance Stabilizer one for one. On a world where quartz means a trip to the Nether, that substitution is the difference between starting today and starting next session.");
         add("codex.veskorius.world.outpost.title", "The Outpost");
-        add("codex.veskorius.world.outpost.text", "A buried ruin marked by a stub of veined stone at the surface. Its Attunement Console, once woken, restores the Tier 2 blueprint — and a Custode guards the site.");
+        add("codex.veskorius.world.outpost.text",
+            "A Veskorian ruin, and your gate into Tier 2. Its Attunement Console gives the Tier 2 blueprint, which every Tier 2 recipe requires and returns.\n\nIts chest guarantees 4 Resonance Components and 2 gold — exactly enough for one Field Emitter. That is not generosity: the Emitter recipe needs Components, Components need an Assembler, and the Assembler needs a field. The outpost breaks that circle, once.\n\nA Custode guards the site. It only reacts within 6 blocks, or if you break its machines.");
 
         add("codex.veskorius.fauna.strider.title", "Crystal Strider");
-        add("codex.veskorius.fauna.strider.text", "Neutral underground fauna. Right-click bare-handed to milk a Raw Crystal (with a cooldown), and breed them with Resonance Spore.");
+        add("codex.veskorius.fauna.strider.text",
+            "A harmless creature that grazes near crystal pockets. It never attacks, and it should not be killed for anything.\n\nRight-click to milk it: one Raw Crystal, with a five-minute cooldown. Feed a Resonance Spore to two adults to breed them — spores grow on Resonance Veined Stone in low light.\n\nA Crystal Roost will attract and keep them, which turns a chance encounter into a small standing supply.");
         add("codex.veskorius.fauna.custode.title", "Custode");
-        add("codex.veskorius.fauna.custode.text", "A reactive guardian posted at Outposts. It strikes only within a few blocks, or if you break a machine on its site. Drops alloy fragments — an iron substitute.");
+        add("codex.veskorius.fauna.custode.text",
+            "A Veskorian guard, still at its post. It patrols a fixed point and only turns hostile within 6 blocks, or if you break a machine on its site — it guards places, not territory, and it can be walked around.\n\nKilling one drops 2 to 4 Custode Alloy Fragments, which substitute for iron ingots in every Veskorius recipe. Fighting is therefore a genuine alternative to mining, not a detour.");
 
         add("codex.veskorius.progression.tier1.title", "Tier 1 — Awakening");
-        add("codex.veskorius.progression.tier1.text", "Mine a crystal, stabilize it, assemble components. Everything here is self-powered or hand-made. The Codex opens with your first crystal.");
+        add("codex.veskorius.progression.tier1.text",
+            "Dig, stabilise, assemble. Everything here runs without a field, on cobblestone and copper, and that is the point: the first loop has to close before you own any infrastructure.\n\nWhat opens the next tier is not a craft but a place — the Attunement Console of a Veskorian Outpost.");
         add("codex.veskorius.progression.tier2.title", "Tier 2 — The Field");
-        add("codex.veskorius.progression.tier2.text", "Wake an Outpost console for the Field blueprint, then build the Field Emitter and all it powers: Purifier, Storage Cell, Locator, Roost.");
+        add("codex.veskorius.progression.tier2.text",
+            "The tier of the FIELD. Energy stops being something a machine has and becomes something a place has: a Field Emitter covers a sphere, and everything inside it draws from that sphere.\n\nIt also brings the first real decisions — overheat on the Purifier, harmonic bands, and the fact that overlapping fields never add up.\n\nTier 3 opens at the Sigma Laboratory, and getting in means solving something rather than crafting something.");
     }
 }

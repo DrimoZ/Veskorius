@@ -50,7 +50,20 @@ public class CodexScreen extends Screen {
 
     // --- Zones ----------------------------------------------------------------
 
-    private enum View { LIST, ENTRY, TREE }
+    /**
+     * Mode de <b>parcours</b> — et il n'inclut délibérément PAS la lecture.
+     *
+     * <p>Il l'incluait, et c'était un crash : « je lis une entrée » vivait à la fois dans
+     * cette énumération et dans le champ {@code entry}, deux valeurs devant rester
+     * d'accord sans que rien ne l'impose. Vider la barre de recherche pendant la lecture
+     * mettait {@code entry} à null en laissant le mode sur ENTRY, et le rendu suivant
+     * déréférençait null.
+     *
+     * <p>La lecture est donc <b>déduite</b> : on lit si et seulement si {@code entry} n'est
+     * pas null. L'état incohérent n'existe plus, au lieu d'être rattrapé par un test de
+     * nullité au moment de dessiner.
+     */
+    private enum View { LIST, TREE }
 
     private static final int TAB_W = CodexLayout.TAB_W;
     private static final int GUTTER = CodexLayout.GUTTER;
@@ -84,7 +97,7 @@ public class CodexScreen extends Screen {
     private CodexLayout.Rect pageR = new CodexLayout.Rect(0, 0, 0, 0);
     private CodexLayout.Rect body = new CodexLayout.Rect(0, 0, 0, 0);
 
-    private View view = View.LIST;
+    private View browse = View.LIST;
     private CodexCategory category = CodexCategory.INTRO;
     @Nullable
     private CodexEntry entry;
@@ -128,7 +141,7 @@ public class CodexScreen extends Screen {
             listScroll = 0;
             entry = null;
             if (!str.isEmpty()) {
-                view = View.LIST;
+                browse = View.LIST;
             }
         });
         addWidget(search);
@@ -141,7 +154,7 @@ public class CodexScreen extends Screen {
             recipe = null;
             return;
         }
-        boolean unlocked = ClientCodexData.isUnlocked(entry);
+        boolean unlocked = readable(entry);
         Component text = unlocked
             ? Component.translatable(entry.textKey())
             : lockedHint(entry);
@@ -199,20 +212,26 @@ public class CodexScreen extends Screen {
             header.y() + 8, COLOR_DIM, false);
 
         renderTabs(graphics, mouseX, mouseY);
-        if (search != null) {
+        // Pas de champ de recherche pendant la lecture : il partageait le coin gauche de
+        // la barre avec le lien de retour, donc les deux se dessinaient l'un sur l'autre.
+        // Et chercher depuis une page ouverte n'a de toute façon aucun sens — on remonte
+        // d'abord.
+        if (search != null && entry == null) {
             search.render(graphics, mouseX, mouseY, partialTick);
         }
 
         // Le dos, entre les deux pages. Dessiné avant le contenu : il appartient au livre.
-        if (view != View.TREE) {
+        if (browse != View.TREE || entry != null) {
             int spine = pageL.right() + GUTTER / 2;
             graphics.vLine(spine, body.y() - 4, body.bottom(), COLOR_FRAME);
         }
 
-        switch (view) {
-            case ENTRY -> renderEntry(graphics, mouseX, mouseY);
-            case TREE -> renderTree(graphics, mouseX, mouseY);
-            default -> renderList(graphics, mouseX, mouseY);
+        if (entry != null) {
+            renderEntry(graphics, mouseX, mouseY);
+        } else if (browse == View.TREE) {
+            renderTree(graphics, mouseX, mouseY);
+        } else {
+            renderList(graphics, mouseX, mouseY);
         }
     }
 
@@ -222,8 +241,8 @@ public class CodexScreen extends Screen {
         for (int i = 0; i <= cats.length; i++) {
             CodexLayout.Rect tab = tabRect(i);
             boolean isTree = i == cats.length;
-            boolean active = isTree ? view == View.TREE
-                : (view != View.TREE && category == cats[i]);
+            boolean active = isTree ? browse == View.TREE
+                : (browse != View.TREE && category == cats[i]);
             graphics.fill(tab.x(), tab.y(), tab.right(), tab.bottom(),
                 active ? COLOR_PAGE : COLOR_PAGE_ALT);
             graphics.renderOutline(tab.x(), tab.y(), tab.w(), tab.h(),
@@ -283,15 +302,19 @@ public class CodexScreen extends Screen {
             }
             CodexLayout.Rect row = listRow(i, rows);
             CodexEntry e = entries.get(index);
-            boolean unlocked = ClientCodexData.isUnlocked(e);
+            boolean unlocked = readable(e);
             if (row.has(mouseX, mouseY)) {
                 graphics.fill(row.x(), row.y(), row.right(), row.bottom(), COLOR_HOVER);
             }
+            // Le TITRE s'affiche toujours pour ce qui est lisible ; la couleur dit
+            // seulement si on l'a déjà rencontré. Masquer le nom d'une page qu'on a le
+            // droit de lire n'aurait servi qu'à empêcher de la trouver.
+            boolean found = ClientCodexData.isUnlocked(e);
             if (unlocked) {
                 graphics.renderFakeItem(e.icon(), row.x() + 1, row.y() + 1);
                 graphics.drawString(font, font.plainSubstrByWidth(
                         Component.translatable(e.titleKey()).getString(), row.w() - 22),
-                    row.x() + 21, row.y() + 5, COLOR_TEXT, false);
+                    row.x() + 21, row.y() + 5, found ? COLOR_TEXT : COLOR_DIM, false);
             } else {
                 graphics.drawString(font, "▪", row.x() + 7, row.y() + 5, COLOR_LOCKED, false);
                 graphics.drawString(font, Component.translatable("gui.veskorius.codex.sealed"),
@@ -321,7 +344,7 @@ public class CodexScreen extends Screen {
 
     private void renderEntry(GuiGraphics graphics, int mouseX, int mouseY) {
         CodexEntry e = entry;
-        boolean unlocked = ClientCodexData.isUnlocked(e);
+        boolean unlocked = readable(e);
 
         // EN-TÊTE DE L'ENTRÉE, sur sa propre bande. C'est ici que trois éléments se
         // marchaient dessus ; ils ont maintenant chacun leur place réservée.
@@ -428,7 +451,7 @@ public class CodexScreen extends Screen {
                 int nx = cx + (i % 3) * NODE;
                 int ny = cy + (i / 3) * NODE;
                 CodexEntry e = column.get(i);
-                boolean unlocked = ClientCodexData.isUnlocked(e);
+                boolean unlocked = readable(e);
                 boolean over = mouseX >= nx && mouseX < nx + 18
                     && mouseY >= ny && mouseY < ny + 18
                     && body.has(mouseX, mouseY);
@@ -447,7 +470,7 @@ public class CodexScreen extends Screen {
         graphics.disableScissor();
 
         if (hovered != null) {
-            graphics.renderTooltip(font, ClientCodexData.isUnlocked(hovered)
+            graphics.renderTooltip(font, readable(hovered)
                 ? Component.translatable(hovered.titleKey())
                 : Component.translatable("gui.veskorius.codex.sealed"), mouseX, mouseY);
         }
@@ -525,7 +548,7 @@ public class CodexScreen extends Screen {
         }
         List<CodexEntry> hits = new ArrayList<>();
         for (CodexEntry e : CodexRegistry.all()) {
-            if (!ClientCodexData.isUnlocked(e)) {
+            if (!readable(e)) {
                 continue;
             }
             String title = Component.translatable(e.titleKey()).getString().toLowerCase(Locale.ROOT);
@@ -537,10 +560,21 @@ public class CodexScreen extends Screen {
         return hits;
     }
 
+    /**
+     * Le texte de cette entrée est-il lisible maintenant ?
+     *
+     * <p>Presque toujours oui : seul le lore attend d'être trouvé. À ne pas confondre avec
+     * « découverte », qui reste le compteur de progression — on peut parfaitement lire la
+     * page de la Forge avant d'en posséder une, et c'est précisément l'intérêt.
+     */
+    private static boolean readable(CodexEntry e) {
+        return !e.hidesTextUntilFound() || ClientCodexData.isUnlocked(e);
+    }
+
     @Nullable
     private static CodexEntry nextReadable(CodexEntry e) {
         CodexEntry follow = CodexRegistry.next(e);
-        return follow != null && ClientCodexData.isUnlocked(follow) ? follow : null;
+        return follow != null && readable(follow) ? follow : null;
     }
 
     private static Component lockedHint(CodexEntry e) {
@@ -560,8 +594,11 @@ public class CodexScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button) || button != 0) {
-            return button == 0;
+        if (entry == null && super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+        if (button != 0) {
+            return false;
         }
 
         CodexCategory[] cats = CodexCategory.values();
@@ -572,9 +609,9 @@ public class CodexScreen extends Screen {
             entry = null;
             listScroll = 0;
             if (i == cats.length) {
-                view = View.TREE;
+                browse = View.TREE;
             } else {
-                view = View.LIST;
+                browse = View.LIST;
                 category = cats[i];
             }
             if (search != null) {
@@ -584,11 +621,10 @@ public class CodexScreen extends Screen {
             return true;
         }
 
-        return switch (view) {
-            case TREE -> clickTree(mouseX, mouseY);
-            case ENTRY -> clickEntry(mouseX, mouseY);
-            default -> clickList(mouseX, mouseY);
-        };
+        if (entry != null) {
+            return clickEntry(mouseX, mouseY);
+        }
+        return browse == View.TREE ? clickTree(mouseX, mouseY) : clickList(mouseX, mouseY);
     }
 
     private boolean clickList(double mouseX, double mouseY) {
@@ -660,9 +696,8 @@ public class CodexScreen extends Screen {
     }
 
     private void open(CodexEntry e) {
-        cameFromTree = view == View.TREE;
+        cameFromTree = browse == View.TREE;
         entry = e;
-        view = View.ENTRY;
         page = 0;
         reflow();
     }
@@ -673,7 +708,7 @@ public class CodexScreen extends Screen {
     /** Retour : vers l'arbre si on en venait, vers la liste sinon. */
     private void back() {
         entry = null;
-        view = cameFromTree ? View.TREE : View.LIST;
+        browse = cameFromTree ? View.TREE : View.LIST;
         reflow();
     }
 
@@ -683,15 +718,15 @@ public class CodexScreen extends Screen {
             return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
         }
         int step = (int) Math.signum(scrollY);
-        switch (view) {
-            case ENTRY -> page = Math.clamp(page - step, 0, pageCount() - 1);
-            case TREE -> treeScrollY = Math.clamp(treeScrollY - step * NODE, 0,
+        if (entry != null) {
+            page = Math.clamp(page - step, 0, pageCount() - 1);
+        } else if (browse == View.TREE) {
+            treeScrollY = Math.clamp(treeScrollY - step * NODE, 0,
                 Math.max(0, treeHeight() - body.h()));
-            default -> {
-                int rows = Math.max(1, body.h() / ROW_H);
-                listScroll = Math.clamp(listScroll - step * rows, 0,
-                    Math.max(0, visibleEntries().size() - rows * 2));
-            }
+        } else {
+            int rows = Math.max(1, body.h() / ROW_H);
+            listScroll = Math.clamp(listScroll - step * rows, 0,
+                Math.max(0, visibleEntries().size() - rows * 2));
         }
         return true;
     }
@@ -700,7 +735,7 @@ public class CodexScreen extends Screen {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dx, double dy) {
         // L'arbre se déplace à la souris : plus large que la page, il serait sinon
         // inatteignable au-delà du troisième palier.
-        if (view == View.TREE && button == 0 && body.has(mouseX, mouseY)) {
+        if (entry == null && browse == View.TREE && button == 0 && body.has(mouseX, mouseY)) {
             treeScrollX = Math.clamp(treeScrollX - (int) dx, 0,
                 Math.max(0, treeWidth() - body.w()));
             treeScrollY = Math.clamp(treeScrollY - (int) dy, 0,
@@ -712,14 +747,14 @@ public class CodexScreen extends Screen {
 
     @Override
     public boolean keyPressed(int key, int scanCode, int modifiers) {
-        if (key == 256 && view != View.LIST) {
+        if (key == 256 && (entry != null || browse == View.TREE)) {
             back();
             return true;
         }
         if (search != null && search.isFocused()) {
             return super.keyPressed(key, scanCode, modifiers);
         }
-        if (view == View.ENTRY) {
+        if (entry != null) {
             if (key == 263 || key == 266) {
                 page = Math.max(0, page - 1);
                 return true;
@@ -735,11 +770,11 @@ public class CodexScreen extends Screen {
     @Override
     public void resize(net.minecraft.client.Minecraft minecraft, int newWidth, int newHeight) {
         CodexEntry keep = entry;
-        View keepView = view;
+        View keepBrowse = browse;
         String query = search == null ? "" : search.getValue();
         super.resize(minecraft, newWidth, newHeight);
         entry = keep;
-        view = keepView;
+        browse = keepBrowse;
         if (search != null) {
             search.setValue(query);
         }

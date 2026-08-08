@@ -43,6 +43,26 @@ public final class CodexEntry {
         return tier;
     }
 
+    /**
+     * <b>Le texte est-il caché tant que l'entrée n'est pas découverte ?</b> Seul le lore
+     * l'est. Tout le reste — machines, matériaux, mécaniques — se lit <b>dès le départ</b>.
+     *
+     * <p>C'était l'inverse, et c'était une erreur de conception, pas un réglage : un manuel
+     * qui n'explique une machine <i>qu'une fois qu'on l'a fabriquée</i> n'apprend rien à
+     * personne. On ne peut pas deviner qu'il faut de l'or plutôt que du fer à la Forge si
+     * la page qui le dit n'apparaît qu'après avoir forgé. Le Codex sert à décider quoi
+     * faire ensuite ; le verrouiller derrière le fait de l'avoir déjà fait le vide de sa
+     * fonction.
+     *
+     * <p>Les fragments de lore, eux, restent scellés — ce sont des objets à trouver, et
+     * leur intérêt EST d'être trouvés. La condition de déblocage garde donc tout son rôle
+     * ailleurs : elle marque ce que le joueur a <b>rencontré</b> (compteur de progression,
+     * bulle de notification), sans jamais barrer la lecture.
+     */
+    public boolean hidesTextUntilFound() {
+        return unlock.type() == CodexUnlock.Type.FRAGMENT;
+    }
+
     public ResourceLocation id() {
         return id;
     }

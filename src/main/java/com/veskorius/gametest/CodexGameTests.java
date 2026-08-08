@@ -101,9 +101,18 @@ public class CodexGameTests {
             // Un seuil qui rejette la réponse juste est un seuil mal placé.
             String body = net.minecraft.network.chat.Component
                 .translatable(entry.textKey()).getString();
-            helper.assertTrue(body.length() > 40,
+
+            // DEUX SEUILS, parce que les entrées n'ont pas le même métier. Un fragment de
+            // lore est un billet trouvé dans une ruine : trois lignes, et c'est très bien.
+            // Une entrée de machine doit permettre de décider quoi construire SANS avoir
+            // l'objet — donc dire ce qu'elle fait, ce qui ne se devine pas, et quoi faire
+            // ensuite. Trente et une d'entre elles tenaient en une phrase de cent
+            // caractères ; on ne pouvait pas progresser en les lisant.
+            int floor = entry.hidesTextUntilFound() ? 40 : 200;
+            helper.assertTrue(body.length() >= floor,
                 "Entrée " + entry.id() + " : le corps fait " + body.length()
-                    + " caractères — trop court pour apprendre quoi que ce soit");
+                    + " caractères, minimum " + floor + " — trop court pour apprendre "
+                    + "quoi que ce soit");
         }
         helper.succeed();
     }
