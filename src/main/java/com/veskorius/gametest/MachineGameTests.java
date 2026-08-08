@@ -1988,6 +1988,7 @@ public class MachineGameTests {
         ModBlocks.RESONANCE_RELAY.get(), ModBlocks.FLUX_COMPRESSOR.get(),
         ModBlocks.STRUCTURAL_SYNTHESIZER.get(), ModBlocks.DEEP_CRYSTAL_DRILLER.get(),
         ModBlocks.SLAG_VENT.get(),
+        ModBlocks.DEEP_SYNTHESIS_CHAMBER.get(), ModBlocks.HARMONIC_AMPLIFIER.get(),
         ModBlocks.FRACTURED_CHASSIS.get(), ModBlocks.ATTUNED_CHASSIS.get(),
         ModBlocks.VESKORIAN_CHASSIS.get(),
     };
@@ -2135,6 +2136,93 @@ public class MachineGameTests {
                 < com.veskorius.block.entity.DeepCrystalDrillerBlockEntity.MAX_Y,
             "L'arene doit etre SOUS la limite, sinon le test de recolte ne prouve rien. Y = "
                 + helper.absolutePos(DRILL).getY());
+        helper.succeed();
+    }
+
+    // =====================================================================
+    // T4 — Deep Synthesis Chamber (#15) et Harmonic Amplifier (#14)
+    // =====================================================================
+
+    private static final BlockPos CHAMBER = new BlockPos(12, 1, 10);
+
+    /**
+     * <b>La Chambre rend le Hyper Refined renouvelable.</b> C'est la seule source du
+     * matériau dans tout le jeu ; sans ce cycle, le T4 s'arrête aux trois cristaux de
+     * l'Archive et le palier n'a plus de suite.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 90 * 20 + 300)
+    public static void chamberMakesHyperRefinedRenewable(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                // 90 s à 8 Osc/tick = 14 400 Osc : quatre cristaux de carburant au moins.
+                chargedEmitter(helper, 8);
+                helper.setBlock(CHAMBER, ModBlocks.DEEP_SYNTHESIS_CHAMBER.get());
+                machineInventory(helper, CHAMBER).insertItem(
+                    com.veskorius.block.entity.DeepSynthesisChamberBlockEntity.SLOT_INPUT,
+                    new ItemStack(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2), false);
+            })
+            .thenExecuteAfter(90 * 20 + 60, () -> helper.assertTrue(
+                machineInventory(helper, CHAMBER).getStackInSlot(
+                    com.veskorius.block.entity.DeepSynthesisChamberBlockEntity.SLOT_OUTPUT)
+                    .is(ModItems.HYPER_REFINED_CRYSTAL.get()),
+                "La Chambre est la SEULE source de Hyper Refined : sans ce cycle, le T4 "
+                    + "s'arrête aux trois cristaux de l'Archive"))
+            .thenSucceed();
+    }
+
+    /**
+     * <b>L'amplificateur double, et il s'arrête de doubler au troisième maillon.</b>
+     *
+     * <p>Les deux moitiés comptent autant l'une que l'autre. Sans le gain il ne sert à
+     * rien ; sans le plafond, dix appareils en file donnent une portée de plusieurs
+     * milliers de blocs pour deux Osc par tick, et le réseau cesse d'être la contrainte de
+     * terrain que tout le mod demande de résoudre. Le plafond est exactement le genre de
+     * règle qu'on n'observe jamais en jouant normalement — on ne construit pas dix
+     * amplificateurs pour vérifier — donc il ne peut être tenu que par un test.
+     *
+     * <p>Décision pure, testée sans monde : c'est pour ça qu'elle est isolée dans
+     * {@code amplify}.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 20)
+    public static void amplifierDoublesUntilTheChainIsFull(GameTestHelper helper) {
+        int max = com.veskorius.block.entity.HarmonicAmplifierBlockEntity.MAX_CHAIN;
+
+        for (int depth = 0; depth < max; depth++) {
+            int range = com.veskorius.block.entity.HarmonicAmplifierBlockEntity
+                .amplify(20, depth, 1.0);
+            helper.assertTrue(range == 40,
+                "Maillon " + depth + " : la portée reçue doit doubler (40), vaut " + range);
+        }
+        int saturated = com.veskorius.block.entity.HarmonicAmplifierBlockEntity
+            .amplify(20, max, 1.0);
+        helper.assertTrue(saturated == 20,
+            "Au-delà de " + max + " maillons, l'appareil REPORTE la portée sans la doubler ; "
+                + "vaut " + saturated + ". Sans ce plafond, une file d'amplificateurs "
+                + "couvre la carte pour deux Osc par tick.");
+
+        // Sans source, aucune portée à multiplier — et surtout pas une portée par défaut.
+        helper.assertTrue(com.veskorius.block.entity.HarmonicAmplifierBlockEntity
+            .amplify(0, 0, 1.0) == 0, "Sans champ amont, la portée est nulle");
+        helper.succeed();
+    }
+
+    /**
+     * <b>Un amplificateur déréglé reste au moins aussi bon qu'un fil.</b>
+     *
+     * <p>La dérive n'atténue que le <i>gain</i>, jamais la portée reçue. Si elle rognait le
+     * tout, un appareil à −30 % couvrirait moins que le champ qu'il relaie : en poser un
+     * réduirait la couverture. Le joueur verrait sa base s'éteindre en <i>ajoutant</i> du
+     * matériel, sans qu'aucun message ne l'explique.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 20)
+    public static void driftedAmplifierIsNeverWorseThanNoAmplifier(GameTestHelper helper) {
+        double floor = com.veskorius.block.entity.HarmonicAmplifierBlockEntity.MIN_EFFICIENCY;
+        int worst = com.veskorius.block.entity.HarmonicAmplifierBlockEntity.amplify(20, 0, floor);
+        helper.assertTrue(worst >= 20,
+            "Même au plancher de calibration, la portée doit rester ≥ celle reçue (20), "
+                + "vaut " + worst + " — sinon poser un amplificateur RÉDUIT la couverture");
+        helper.assertTrue(worst < 40,
+            "…mais elle doit être inférieure au gain plein, sinon la dérive n'a aucun effet");
         helper.succeed();
     }
 

@@ -283,6 +283,37 @@ const faces = {
     for (const x of [1, 14]) for (let y = 2; y < 14; y++) c.set(x, y, m.metal);
   },
 
+  // UNE CUVE SCELLÉE, hublot rond au centre et rivets aux quatre coins. Le Purifier
+  // montre son NIVEAU (une cuve ouverte), la Chambre montre qu'elle est FERMÉE : on ne
+  // regarde pas dedans, on regarde par un hublot. Deux cuves, deux lectures.
+  deep_synthesis_chamber: (c, m, a, on) => {
+    slab(c, 0, 0, 16, 16, m.tones[1], m.tones[3], m.line);
+    slab(c, 2, 2, 12, 12, IRON.mid, IRON.lite, IRON.deep);
+    outline(c, DISC8, m.line);
+    fill(c, DISC8, on ? a.mid : m.dark);
+    if (on) { fill(c, DISC4, a.hot); }
+    for (const [x, y] of [[1, 1], [13, 1], [1, 13], [13, 13]]) {
+      c.rect(x, y, 2, 2, m.metal); c.set(x, y, m.metalHi);
+    }
+    // Deux brides horizontales : la cuve est boulonnée, pas soudée.
+    for (const y of [4, 11]) c.rect(2, y, 12, 1, IRON.deep);
+  },
+
+  // TROIS ARCS CONCENTRIQUES OUVERTS, tous du même côté. Le relais renvoie de part et
+  // d'autre (symétrique) ; l'amplificateur POUSSE — l'asymétrie est toute la lecture.
+  harmonic_amplifier: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    slab(c, 1, 5, 4, 6, m.metal, m.metalHi, m.line);
+    for (let i = 0; i < 3; i++) {
+      const x = 6 + i * 3, h = 6 + i * 3, y = 8 - Math.floor(h / 2);
+      const col = on ? [a.hot, a.lite, a.mid][i] : [m.tones[3], m.tones[2], m.tones[1]][i];
+      c.rect(x, y, 1, h, col);
+      c.set(x - 1, y, col);
+      c.set(x - 1, y + h - 1, col);
+    }
+    c.rect(4, 7, 2, 2, on ? a.hot : m.tones[3]);
+  },
+
   // La même lentille, plus la réglette des trois bandes.
   tunable_field_emitter: (c, m, a, on) => {
     faces.field_emitter(c, m, a, on);

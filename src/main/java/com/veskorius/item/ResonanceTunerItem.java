@@ -120,6 +120,22 @@ public class ResonanceTunerItem extends Item {
                         : Component.translatable(band.labelKey())));
                 return true;
             }
+            case CALIBRATE -> {
+                if (!(be instanceof com.veskorius.block.entity.HarmonicAmplifierBlockEntity amp)) {
+                    return false;
+                }
+                // Le Component se paie AVANT la remise à neuf, et seulement s'il y en a un :
+                // recalibrer gratuitement viderait la dérive de tout enjeu, et prélever sans
+                // recalibrer serait un vol pur. En créatif, on ne prélève rien.
+                if (player != null && !player.getAbilities().instabuild
+                    && !consumeComponent(player)) {
+                    actionBar(player, Component.translatable("item.veskorius.resonance_tuner.no_component"));
+                    return false;
+                }
+                amp.recalibrate();
+                actionBar(player, Component.translatable("item.veskorius.resonance_tuner.recalibrated"));
+                return true;
+            }
             case REDSTONE -> {
                 if (!(be instanceof AbstractMachineBlockEntity machine)) {
                     return false;
@@ -127,6 +143,23 @@ public class ResonanceTunerItem extends Item {
                 machine.cycleRedstoneMode();
                 actionBar(player, Component.translatable("gui.veskorius.redstone_control")
                     .append(": ").append(machine.getRedstoneMode().label()));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Retire un Resonance Component de l'inventaire du joueur. Vrai s'il en avait un.
+     * Ne cherche pas ailleurs que dans l'inventaire principal — c'est là que le joueur
+     * regarde quand on lui dit qu'il lui en manque un.
+     */
+    private static boolean consumeComponent(Player player) {
+        var inv = player.getInventory();
+        for (int slot = 0; slot < inv.getContainerSize(); slot++) {
+            ItemStack stack = inv.getItem(slot);
+            if (stack.is(com.veskorius.item.ModItems.RESONANCE_COMPONENT.get())) {
+                stack.shrink(1);
                 return true;
             }
         }

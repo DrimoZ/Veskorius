@@ -73,6 +73,7 @@ public class VeskoriusJeiPlugin implements IModPlugin {
         machine("roosting", ModRecipeTypes.ROOSTING::get, ModBlocks.CRYSTAL_ROOST),
         machine("forging", ModRecipeTypes.FORGING::get, ModBlocks.VESKORIAN_ALLOY_FORGE),
         machine("compressing", ModRecipeTypes.COMPRESSING::get, ModBlocks.FLUX_COMPRESSOR),
+        machine("synthesis", ModRecipeTypes.SYNTHESIS::get, ModBlocks.DEEP_SYNTHESIS_CHAMBER),
         machine("synthesizing", ModRecipeTypes.SYNTHESIZING::get, ModBlocks.STRUCTURAL_SYNTHESIZER));
 
     // Les trois catégories qui ne portent pas de MachineRecipe : elles ont chacune leur

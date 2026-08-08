@@ -72,6 +72,18 @@ public class ModBlockEntities {
                 .of(ResonanceRelayBlockEntity::new, ModBlocks.RESONANCE_RELAY.get())
                 .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DeepSynthesisChamberBlockEntity>>
+        DEEP_SYNTHESIS_CHAMBER = BLOCK_ENTITIES.register("deep_synthesis_chamber",
+            () -> BlockEntityType.Builder
+                .of(DeepSynthesisChamberBlockEntity::new, ModBlocks.DEEP_SYNTHESIS_CHAMBER.get())
+                .build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HarmonicAmplifierBlockEntity>>
+        HARMONIC_AMPLIFIER = BLOCK_ENTITIES.register("harmonic_amplifier",
+            () -> BlockEntityType.Builder
+                .of(HarmonicAmplifierBlockEntity::new, ModBlocks.HARMONIC_AMPLIFIER.get())
+                .build(null));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FluxCompressorBlockEntity>>
         FLUX_COMPRESSOR = BLOCK_ENTITIES.register("flux_compressor",
             () -> BlockEntityType.Builder

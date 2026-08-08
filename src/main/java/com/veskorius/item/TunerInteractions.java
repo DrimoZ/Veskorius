@@ -92,7 +92,11 @@ public final class TunerInteractions {
         }
         return dismantling
             || be instanceof AbstractMachineBlockEntity
-            || be instanceof FieldEmitterBlockEntity;
+            || be instanceof FieldEmitterBlockEntity
+            // L'amplificateur n'est ni une machine à cycle ni un émetteur à carburant,
+            // mais c'est le SEUL bloc que le mode Recalibrer sache soigner : sans lui
+            // ici, le Tuner ne prendrait jamais la main dessus et le mode serait mort.
+            || be instanceof com.veskorius.block.entity.HarmonicAmplifierBlockEntity;
     }
 
     // --- Démontage -----------------------------------------------------------

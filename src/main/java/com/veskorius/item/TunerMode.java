@@ -29,7 +29,20 @@ public enum TunerMode {
      * Fait défiler la <b>bande harmonique</b> de la machine (06-Energy.md). Sans effet
      * sur les machines universelles (tout le T1) : elles n'ont pas de bande.
      */
-    ATTUNE("tuner_attune");
+    ATTUNE("tuner_attune"),
+
+    /**
+     * Remet à neuf la <b>calibration</b> d'un Harmonic Amplifier, contre 1 Resonance
+     * Component (05-Machines.md, « Calibration »).
+     *
+     * <p>Ce mode n'est pas un confort : sans lui, la dérive de l'amplificateur serait une
+     * dégradation à sens unique, ce qui est pire que pas de dérive du tout — une mécanique
+     * qui ne fait que retirer, sans geste pour y répondre, n'est pas un système, c'est une
+     * pénalité. C'est aussi le <b>même geste</b> que pour la dissonance d'un cran en
+     * dessous : ça se dérègle à l'usage, on ré-accorde au Tuner. Le joueur n'apprend qu'un
+     * concept pour tout le mod.
+     */
+    CALIBRATE("tuner_calibrate");
 
     private static final TunerMode[] VALUES = values();
 

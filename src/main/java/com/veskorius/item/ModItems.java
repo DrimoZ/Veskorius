@@ -294,6 +294,12 @@ public class ModItems {
     public static final DeferredItem<BlockItem> RESONANCE_RELAY_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_RELAY);
 
+    public static final DeferredItem<BlockItem> DEEP_SYNTHESIS_CHAMBER_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.DEEP_SYNTHESIS_CHAMBER);
+
+    public static final DeferredItem<BlockItem> HARMONIC_AMPLIFIER_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.HARMONIC_AMPLIFIER);
+
     public static final DeferredItem<BlockItem> FLUX_COMPRESSOR_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.FLUX_COMPRESSOR);
 

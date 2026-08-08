@@ -448,6 +448,30 @@ public class ModBlocks {
                 .noOcclusion()
                 .lightLevel(EMITTER_GLOW));
 
+    /** Machine #15 : la seule source de Hyper Refined Crystal, donc la clé du T4. */
+    public static final DeferredBlock<DeepSynthesisChamberBlock> DEEP_SYNTHESIS_CHAMBER =
+        BLOCKS.registerBlock("deep_synthesis_chamber",
+            DeepSynthesisChamberBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_LIGHT_BLUE)
+                .strength(4.0f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(MACHINE_GLOW));
+
+    /** Machine #14 : double la portée reçue, trois au maximum en chaîne. */
+    public static final DeferredBlock<HarmonicAmplifierBlock> HARMONIC_AMPLIFIER =
+        BLOCKS.registerBlock("harmonic_amplifier",
+            HarmonicAmplifierBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_CYAN)
+                .strength(4.0f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(EMITTER_GLOW));
+
     /** Machine #23 : condense quatre cristaux raffinés en un Flux Concentré. */
     public static final DeferredBlock<FluxCompressorBlock> FLUX_COMPRESSOR =
         BLOCKS.registerBlock("flux_compressor",

@@ -100,6 +100,8 @@ public class Veskorius {
                 // Materiaux T4.
                 output.accept(ModItems.HYPER_REFINED_CRYSTAL.get());
                 output.accept(ModItems.HARMONIC_LATTICE.get());
+                output.accept(ModItems.DEEP_SYNTHESIS_CHAMBER_ITEM.get());
+                output.accept(ModItems.HARMONIC_AMPLIFIER_ITEM.get());
                 // Architecture de donjon (17-Dungeons.md) : groupée en fin d'onglet
                 // parce qu'on la cherche en construisant, pas en progressant.
                 output.accept(ModItems.VEINED_STONE_BRICKS_ITEM.get());

@@ -211,6 +211,32 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.IRON_BARS)
                 .requires(blueprint(3)));
 
+        // --- Machines T4 : châssis Veskorien + blueprint T4 ---------------------
+        //
+        // Pas de quatrième châssis : le dossier n'en prévoit que trois, et le T4 n'est pas
+        // un changement de matière, c'est un changement d'ÉCHELLE — mêmes boîtiers, pièces
+        // maîtresses en Treillis et en Hyper Refined.
+
+        // Deep Synthesis Chamber (#15). Le Hyper Refined de la recette n'est pas un
+        // ingrédient comme un autre : c'est le CATALYSEUR PERMANENT de la Chambre
+        // (05-Machines.md, « Bootstrap du T4 »). Il ne reparaît jamais comme entrée de
+        // cycle — la machine, une fois posée, tourne sur du cristal raffiné. C'est ce
+        // troisième cristal qui rend le choix du palier réel : les deux autres partent
+        // dans le Treillis du premier Amplificateur, et on ne peut pas faire les deux.
+        machine(recipeOutput, ModBlocks.DEEP_SYNTHESIS_CHAMBER.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.HYPER_REFINED_CRYSTAL.get(), b -> b
+                .requires(ModItems.HYPER_REFINED_CRYSTAL.get())
+                .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
+                .requires(ModItems.VESKORIAN_ALLOY_INGOT.get(), 2)
+                .requires(blueprint(4)));
+
+        // Harmonic Amplifier (#14) : Treillis + 2 Refined Crystal (05-Machines.md).
+        machine(recipeOutput, ModBlocks.HARMONIC_AMPLIFIER.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.HARMONIC_LATTICE.get(), b -> b
+                .requires(ModItems.HARMONIC_LATTICE.get())
+                .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
+                .requires(blueprint(4)));
+
         // --- Matériau T4 : le Treillis Harmonique -------------------------------
         //
         // 4 lingots CONDUCTEURS + 2 Hyper Refined (04-Materials.md). Première recette à
@@ -468,7 +494,14 @@ public class ModRecipeProvider extends RecipeProvider {
             .input(net.minecraft.world.item.Items.GOLD_INGOT, 2)
             .time(400).osc(4)
             .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "forging/veskorian_conductive_alloy_ingot"));
-        // Flux Compressor (#23) : 4 Refined Crystal → 1 Concentrated Flux, 30 s, 6 Osc/tick.
+        // Deep Synthesis Chamber (#15) : 2 Refined → 1 Hyper Refined, 90 s, 8 Osc/tick.
+        // Le catalyseur a été payé à la construction, il n'apparaît donc pas ici.
+        MachineRecipeBuilder.synthesis(ModItems.HYPER_REFINED_CRYSTAL.get(), 1)
+            .input(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
+            .time(90 * 20).osc(8)
+            .save(recipeOutput, machineRecipe("synthesis/hyper_refined_crystal"));
+
+        // Flux Compressor (#23) : 4 Refined → 1 Flux Concentré, 30 s, 6 Osc/tick.
         MachineRecipeBuilder.compressing(ModItems.CONCENTRATED_FLUX.get(), 1)
             .input(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 4)
             .time(30 * 20).osc(6)

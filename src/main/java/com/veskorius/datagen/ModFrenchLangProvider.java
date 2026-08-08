@@ -69,6 +69,8 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.DEEP_CRYSTAL_DRILLER, "Foreuse à Cristaux Profonds");
         addBlock(ModBlocks.SLAG_VENT, "Évent à Scorie");
         addBlock(ModBlocks.ARCHIVE_CONSOLE, "Console d'Archive");
+        addBlock(ModBlocks.DEEP_SYNTHESIS_CHAMBER, "Chambre de Synthèse Profonde");
+        addBlock(ModBlocks.HARMONIC_AMPLIFIER, "Amplificateur Harmonique");
 
         // Architecture de donjon (17-Dungeons.md §4)
         addBlock(ModBlocks.VEINED_STONE_BRICKS, "Briques de Pierre Veinée");

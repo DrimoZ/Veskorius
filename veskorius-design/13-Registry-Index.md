@@ -138,8 +138,8 @@ ne sont pas comptés dans les 23 machines : ce sont des blocs de construction, p
 | 11 | `structural_synthesizer` | T3 | ✅ codé — 4 lingots + 8 pierres → 4 blocs + 1 résidu, 60 s. Le résidu est une propriété de la machine, comme la scorie |
 | 12 | `deep_crystal_driller` | T3 | ✅ codé — récolte les amas sous Y −40 dans une colonne 5×5, 20 s/amas, 6 Osc/tick. Seule machine qui modifie le monde ; elle ne creuse pas la roche et épuise sa veine. Craft ramené à 4 Component (9 ingrédients max par recette sans forme) |
 | 13 | `slag_vent` | T3 | ✅ codé — 1 scorie / 10 s par forge dans 8 blocs, coût prélevé d'un coup. N'évacue QUE la scorie |
-| 14 | `harmonic_amplifier` | T4 | À coder (Phase 3) |
-| 15 | `deep_synthesis_chamber` | T4 | À coder (Phase 3) |
+| 14 | `harmonic_amplifier` | T4 | ✅ codé — double la portée REÇUE (pas une portée fixe), 3 maillons max, 2 Osc/tick, dérive −1 %/jour plancher −30 %, recalibrage au Tuner contre 1 Component |
+| 15 | `deep_synthesis_chamber` | T4 | ✅ codé — 2 Refined → 1 Hyper Refined, 90 s, 8 Osc/tick, surchauffe. Seule source du matériau ; consomme 1 Hyper Refined à la CONSTRUCTION (catalyseur permanent) |
 | 16 | `automated_extraction_array` | T4 | À coder (Phase 3) |
 | 17 | `resonance_network_hub` | T4 | À coder (Phase 3) |
 | 18 | `convergence_core` | T4→T5 | À coder (Phase 4) |

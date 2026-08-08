@@ -36,6 +36,8 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.VESKORIAN_ALLOY_FORGE.get());
         dropSelf(ModBlocks.RESONANCE_RELAY.get());
         dropSelf(ModBlocks.FLUX_COMPRESSOR.get());
+        dropSelf(ModBlocks.DEEP_SYNTHESIS_CHAMBER.get());
+        dropSelf(ModBlocks.HARMONIC_AMPLIFIER.get());
         dropSelf(ModBlocks.STRUCTURAL_SYNTHESIZER.get());
         dropSelf(ModBlocks.DEEP_CRYSTAL_DRILLER.get());
         dropSelf(ModBlocks.SLAG_VENT.get());

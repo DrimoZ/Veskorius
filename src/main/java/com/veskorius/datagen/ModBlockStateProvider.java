@@ -52,6 +52,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.DAMPING_ARRAY.get(), "damping_array", VESKORIAN, SLATS);
         machine(ModBlocks.VESKORIAN_ALLOY_FORGE.get(), "veskorian_alloy_forge", VESKORIAN, PRESS);
         machine(ModBlocks.FLUX_COMPRESSOR.get(), "flux_compressor", VESKORIAN, RAM);
+        machine(ModBlocks.DEEP_SYNTHESIS_CHAMBER.get(), "deep_synthesis_chamber", VESKORIAN, TANK);
         machine(ModBlocks.STRUCTURAL_SYNTHESIZER.get(), "structural_synthesizer", VESKORIAN, MOLD);
         machine(ModBlocks.DEEP_CRYSTAL_DRILLER.get(), "deep_crystal_driller", VESKORIAN, DERRICK);
 
@@ -70,6 +71,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // L'évent n'est pas une machine à cycle : même famille de propriétés, silhouette
         // de CHEMINÉE — on doit lire « ça évacue » et non « ça fabrique ».
         vent(ModBlocks.SLAG_VENT.get(), "slag_vent", VESKORIAN);
+        // L'amplificateur reprend le MÂT du relais : c'est la même famille d'appareil, et
+        // le joueur doit lire « réseau » avant de lire « lequel ». Sa façade les sépare.
+        relay(ModBlocks.HARMONIC_AMPLIFIER.get(), "harmonic_amplifier", VESKORIAN);
 
         // --- Châssis nus ------------------------------------------------------
         // Le bloc de base, posable tel quel. C'est littéralement le boîtier que

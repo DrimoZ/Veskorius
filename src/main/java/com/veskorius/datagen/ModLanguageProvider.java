@@ -24,6 +24,10 @@ public class ModLanguageProvider extends LanguageProvider {
         // Boutons de contrôle des machines (voir MachineControlButton).
         add("message.veskorius.relay_charge", "Relay: %s/%s Osc");
         add("message.veskorius.slag_vent_status", "Vent: %s forge(s) cleared last pass");
+        add("message.veskorius.amplifier_status", "Amplifier: range %s, link %s/%s, calibration %s%%");
+        add("item.veskorius.resonance_tuner.recalibrated", "Recalibrated (1 Resonance Component used)");
+        add("item.veskorius.resonance_tuner.no_component", "Recalibration needs 1 Resonance Component");
+        add("gui.veskorius.tuner_calibrate", "Recalibrate");
         add("gui.veskorius.machine_on", "Machine: On (click to turn off)");
         add("gui.veskorius.machine_off", "Machine: Off (click to turn on)");
         add("gui.veskorius.redstone_control", "Redstone control");
@@ -68,6 +72,8 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.DEEP_CRYSTAL_DRILLER, "Deep Crystal Driller");
         addBlock(ModBlocks.SLAG_VENT, "Slag Vent");
         addBlock(ModBlocks.ARCHIVE_CONSOLE, "Archive Console");
+        addBlock(ModBlocks.DEEP_SYNTHESIS_CHAMBER, "Deep Synthesis Chamber");
+        addBlock(ModBlocks.HARMONIC_AMPLIFIER, "Harmonic Amplifier");
 
         // Châssis de palier : la base de craft et de texture des machines.
         addBlock(ModBlocks.FRACTURED_CHASSIS, "Fractured Chassis");
