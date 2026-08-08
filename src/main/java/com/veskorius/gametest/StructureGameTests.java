@@ -28,10 +28,28 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
  * codecs au datagen et par le chargement du serveur de test, qui échouerait si un
  * registre datapack était invalide.
  */
-@GameTestHolder(Veskorius.MOD_ID)
+/**
+ * <b>Namespace séparé, et c'est le point.</b> Le runner headless ne sait filtrer que par
+ * NAMESPACE — pas par test, pas par classe. Ces vingt-deux tests posent des donjons
+ * entiers (l'Avant-poste fait 39×31×39, l'Archive 23×16×52) : ce sont eux qui coûtent
+ * la mémoire et l'essentiel du temps. Les isoler ici permet de lancer les cent trente-six
+ * autres seuls, en quelques secondes, et de ne payer le prix fort qu'avant un commit.
+ */
+@GameTestHolder(WorldGenTests.NAMESPACE)
 @PrefixGameTestTemplate(false)
 public class StructureGameTests {
 
+    // LES ARÈNES SONT GÉNÉRÉES SOUS LES DEUX NAMESPACES, et il faut savoir pourquoi.
+    //
+    // @PrefixGameTestTemplate(false) désactive un préfixe de NOM, pas le namespace : le
+    // gabarit est TOUJOURS cherché sous celui du @GameTestHolder. Cette classe ayant changé
+    // de namespace pour devenir filtrable, le serveur a réclamé « veskorius_world:piece_arena »
+    // et s'est écrasé avant le premier tick — pas un test rouge, un crash du serveur.
+    //
+    // Qualifier le nom à la main ne marche pas non plus : NeoForge concatène, ce qui donne
+    // « veskorius_world:veskorius:piece_arena » et une ResourceLocation invalide. La seule
+    // issue est d'écrire les arènes sous les deux namespaces — voir
+    // ModStructureTemplateProvider, qui les duplique pour cette unique raison.
     private static final String FIELD_ARENA = "field_arena";
     /** Arène élargie : l'Avant-poste fait 39×31×39 et ne tient dans aucune arène standard. */
     private static final String PIECE_ARENA = "piece_arena";

@@ -52,37 +52,40 @@ neoForge {
             programArgument '--nogui'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
-        // Lance les GameTest sans interface et rend la main : le build echoue si
-        // un test echoue. ModDevGradle n'a pas de raccourci gameTestServer() —
-        // le type est declare par le userdev de NeoForge, on le pose a la main.
-        gameTestServer {
+        // LA SUITE TOURNE EN DEUX PROCESSUS, ET C'EST LA SEULE FAÇON QU'ELLE FINISSE.
+        //
+        // Il n'y a plus de run « tout en un ». Il a existé, il a été mesuré, et il ne rend
+        // jamais la main : les 158 tests passent — le bandeau se remplit, aucun « failed
+        // at » — puis le serveur reste collé à 4,4 Go sans imprimer son résumé,
+        // indéfiniment. Séparés, les MÊMES tests finissent proprement : 137 en 32 s dans
+        // 2 Go, 21 en 17 s dans 4 Go. Ce qui sature n'est donc aucun test en particulier,
+        // c'est ce qu'un processus ACCUMULE — et la seule borne est de ne pas tout mettre
+        // dans le même. Le run unique a été SUPPRIMÉ plutôt que documenté comme fragile :
+        // laisser en place une commande qui se bloque, c'est garantir qu'on la relance.
+        //
+        // Le filtrage passe par le NAMESPACE, seule prise offerte par GameTestServer — ni
+        // par test, ni par classe, ni par motif. Les tests de structure ont donc le leur
+        // (WorldGenTests.NAMESPACE), et leurs arènes sont générées sous les deux.
+        //
+        //   runFastGameTests   137 tests, 2 Go, ~30 s de tests. Le run de travail.
+        //   runWorldGameTests   21 donjons, 4 Go, ~17 s. Dès qu'on touche aux structures.
+        //   runAllGameTests    les deux, en deux JVM. Avant un commit.
+        //
+        // Reste incompressible : ~75 s de démarrage par processus (JVM, transformation de
+        // classes NeoForge, monde). Aucune optimisation de test n'y touchera — la seule
+        // réponse est de ne lancer que le sous-ensemble concerné.
+        fastGameTests {
             type = 'gameTestServer'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-            // TAS EXPLICITE. Sans lui, le serveur de test tournait sur le défaut de la
-            // JVM et finissait par mourir en OutOfMemoryError — ce qui ne se présentait
-            // PAS comme un échec de test : la suite se figeait entre deux lots, le
-            // processus continuait de sauvegarder à vide, et le run ne rendait jamais la
-            // main. J'ai mis ça deux fois sur le compte d'un serveur coincé avant de lire
-            // le rapport de crash.
-            //
-            // La cause est la croissance de la suite : cent cinquante tests dont beaucoup
-            // POSENT UNE STRUCTURE entière (l'Archive fait à elle seule 23x16x52), et
-            // chaque lot dédié ajoute son propre cycle de pose et de dépose.
-            // 4 Go — et il reste un problème NON RÉSOLU derrière ce chiffre.
-            //
-            // Ce qui est établi : à 3 Go et monde propre, un lot dédié ne démarrait plus
-            // (JVM collée à 3,44 Go de RSS, serveur à « 43 ticks behind »). À 4 Go, les
-            // 158 tests passent tous — le bandeau de progression se remplit entièrement,
-            // aucun « failed at » au log. Le monde est hors de cause cette fois : 11 Mo,
-            // purgé au doFirst ci-dessous.
-            //
-            // CE QUI RESTE OUVERT : même tous tests verts, le serveur n'imprime pas son
-            // résumé et ne sort pas — il tourne à son plafond de tas en sauvegardant en
-            // boucle. Augmenter -Xmx repousse le mur sans le supprimer, et c'est la
-            // troisième fois. Piste la plus plausible, non vérifiée : les tests de donjon
-            // posent des structures entières dont les Custodes sont PERSISTANTS
-            // (setPersistenceRequired, removeWhenFarAway=false) — rien ne les retire, et
-            // ils s'accumulent avec leur IA sur toute la durée du run.
+            // 2 Go suffisent parce que la pose de donjons, qui faisait le pic, est partie
+            // dans l'autre run.
+            jvmArguments.addAll '-Xmx2G', '-XX:+HeapDumpOnOutOfMemoryError'
+        }
+        // Les donjons seuls. À lancer dès qu'on touche à ModStructurePieceProvider ou à
+        // Masonry — c'est là que se cache la salle murée, et aucun autre test ne la voit.
+        worldGameTests {
+            type = 'gameTestServer'
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'veskorius_world'
             jvmArguments.addAll '-Xmx4G', '-XX:+HeapDumpOnOutOfMemoryError'
         }
         data {
@@ -93,9 +96,15 @@ neoForge {
                 file('src/generated/resources/').getAbsolutePath(), '--existing',
                 file('src/main/resources/').getAbsolutePath()
         }
-        configureEach {
-            systemProperty 'forge.logging.markers', 'REGISTRIES'
-            logLevel = org.slf4j.event.Level.DEBUG
+        // DEBUG sur les runs INTERACTIFS seulement. Les trois runs de test s'en passent :
+        // ils tournent sans personne devant, et le marqueur REGISTRIES à lui seul déroule
+        // chaque entrée de registre au démarrage. Quand un test tombe, c'est son message
+        // d'assertion qu'on lit, jamais le journal de chargement.
+        ['client', 'server', 'data'].each { name ->
+            getByName(name) {
+                systemProperty 'forge.logging.markers', 'REGISTRIES'
+                logLevel = org.slf4j.event.Level.DEBUG
+            }
         }
     }
 
@@ -131,7 +140,27 @@ tasks.matching { it.name == 'runData' }.configureEach {
 //
 // Un run de test doit partir d'un monde vide, sans quoi il mesure l'historique de la
 // machine autant que le code.
-tasks.matching { it.name == 'runGameTestServer' }.configureEach {
+// LA SUITE COMPLÈTE TOURNE EN DEUX JVM, PAS EN UNE.
+//
+// Mesuré : 137 tests passent en 32 s dans 2 Go, 21 tests de donjon en 17 s dans 4 Go, les
+// deux processus sortant proprement. Les MÊMES 158 tests réunis dans une seule JVM collent
+// à 4,4 Go et ne rendent jamais la main — tous les tests passent, le bandeau se remplit,
+// mais le serveur n'imprime plus son résumé et tourne indéfiniment. Ce qui sature n'est
+// donc pas un test en particulier : c'est ce qu'un run ACCUMULE, et la seule façon de le
+// borner est de ne pas tout mettre dans le même processus.
+//
+// D'où cette tâche plutôt que runGameTestServer, qui reste disponible mais retombe dans
+// le piège dès qu'on lui donne les deux namespaces.
+tasks.register('runAllGameTests') {
+    group = 'verification'
+    description = 'Toute la suite, en deux processus : les tests rapides puis les donjons.'
+    dependsOn 'runFastGameTests', 'runWorldGameTests'
+}
+tasks.matching { it.name == 'runWorldGameTests' }.configureEach {
+    mustRunAfter 'runFastGameTests'
+}
+
+tasks.matching { it.name in ['runFastGameTests', 'runWorldGameTests'] }.configureEach {
     doFirst {
         delete "${projectDir}/run/world"
         // Les dumps de tas laissés par -XX:+HeapDumpOnOutOfMemoryError : 5 Go pièce,
@@ -140,20 +169,21 @@ tasks.matching { it.name == 'runGameTestServer' }.configureEach {
     }
 }
 
-configurations {
-    runtimeClasspath.extendsFrom localRuntime
-}
-
+// JEI ET JADE NE SONT PLUS SUR LE CLASSPATH DES TESTS.
+//
+// Ils étaient en `localRuntime`, donc dans le runtimeClasspath de TOUS les runs — y
+// compris le serveur de test, qui les chargeait à chaque lancement sans qu'aucun test ne
+// les touche. Sur les cent trente-trois secondes d'un run rapide, soixante-sept étaient
+// du chargement de mods.
+//
+// ModDevGradle donne à chaque run une configuration `<run>AdditionalRuntimeClasspath` :
+// on les y met, pour le CLIENT seulement. L'API de JEI reste en compileOnly, donc le
+// plugin compile et se vérifie toujours en jeu — mais les tests headless ne paient plus
+// deux mods dont ils n'ouvrent jamais une classe.
 dependencies {
-    // JEI — visualisation des recettes en jeu. L'API en compileOnly (pour écrire
-    // le plugin), le mod complet en localRuntime (chargé dans runClient mais pas
-    // exporté dans le jar publié).
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
-
-    // Jade — HUD d'informations de bloc au survol (dev). Chargé dans runClient,
-    // pas d'intégration de code requise pour l'affichage de base.
-    localRuntime "maven.modrinth:jade:${jade_version}"
+    clientAdditionalRuntimeClasspath "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    clientAdditionalRuntimeClasspath "maven.modrinth:jade:${jade_version}"
 }
 
 // Génère neoforge.mods.toml à partir de src/main/templates/META-INF/neoforge.mods.toml

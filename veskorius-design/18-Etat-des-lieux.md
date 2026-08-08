@@ -4,7 +4,7 @@ Généré à partir du code, pas du dossier de design. Une case cochée ici veut
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
 NeoForge 1.21.1 · Java 21 · **219 fichiers Java, ~30 700 lignes** · **49 blocs, 71 items**
-· **158 GameTest**, dont un qui vérifie que chaque machine a une recette réellement
+· **158 GameTest en deux processus** (`runFastGameTests` 137 en ~30 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
 

@@ -76,7 +76,18 @@ public class ModStructureTemplateProvider implements DataProvider {
         return CompletableFuture.allOf(
             write(cache, EMPTY_TEMPLATE, emptyTemplate(EMPTY_SIZE)),
             write(cache, FIELD_ARENA_TEMPLATE, emptyTemplate(ARENA_SIZE)),
-            write(cache, PIECE_ARENA_TEMPLATE, emptyTemplate(PIECE_ARENA_SIZE)));
+            write(cache, PIECE_ARENA_TEMPLATE, emptyTemplate(PIECE_ARENA_SIZE)),
+            // LES MÊMES ARÈNES, SOUS LE NAMESPACE DES TESTS DE STRUCTURE.
+            //
+            // GameTest cherche toujours un gabarit sous le namespace du @GameTestHolder de
+            // la classe de test, et StructureGameTests en a un à part pour être filtrable
+            // (voir WorldGenTests.NAMESPACE). Sans ces deux copies, le serveur de test
+            // s'écrase au démarrage sur « Missing test structure » — avant le premier tick,
+            // donc sans qu'aucun test ne rougisse.
+            write(cache, com.veskorius.gametest.WorldGenTests.NAMESPACE,
+                FIELD_ARENA_TEMPLATE, emptyTemplate(ARENA_SIZE)),
+            write(cache, com.veskorius.gametest.WorldGenTests.NAMESPACE,
+                PIECE_ARENA_TEMPLATE, emptyTemplate(PIECE_ARENA_SIZE)));
     }
 
     /**
@@ -102,8 +113,13 @@ public class ModStructureTemplateProvider implements DataProvider {
     }
 
     private CompletableFuture<?> write(CachedOutput cache, String name, CompoundTag tag) {
+        return write(cache, Veskorius.MOD_ID, name, tag);
+    }
+
+    private CompletableFuture<?> write(CachedOutput cache, String namespace, String name,
+                                       CompoundTag tag) {
         Path target = pathProvider.file(
-            ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, name), "nbt");
+            ResourceLocation.fromNamespaceAndPath(namespace, name), "nbt");
 
         return CompletableFuture.runAsync(() -> {
             try {
