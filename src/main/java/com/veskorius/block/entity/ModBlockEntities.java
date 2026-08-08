@@ -72,6 +72,18 @@ public class ModBlockEntities {
                 .of(ResonanceRelayBlockEntity::new, ModBlocks.RESONANCE_RELAY.get())
                 .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RiftCoreExtractorBlockEntity>>
+        RIFT_CORE_EXTRACTOR = BLOCK_ENTITIES.register("rift_core_extractor",
+            () -> BlockEntityType.Builder
+                .of(RiftCoreExtractorBlockEntity::new, ModBlocks.RIFT_CORE_EXTRACTOR.get())
+                .build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RiftWardEmitterBlockEntity>>
+        RIFT_WARD_EMITTER = BLOCK_ENTITIES.register("rift_ward_emitter",
+            () -> BlockEntityType.Builder
+                .of(RiftWardEmitterBlockEntity::new, ModBlocks.RIFT_WARD_EMITTER.get())
+                .build(null));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RiftCoreBlockEntity>>
         RIFT_CORE = BLOCK_ENTITIES.register("rift_core",
             () -> BlockEntityType.Builder

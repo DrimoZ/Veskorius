@@ -85,6 +85,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // L'Ancre : silhouette de PIEU, la seule du mod. On la plante en bordure, elle
         // doit se lire comme quelque chose qu'on enfonce, pas qu'on pose.
         vent(ModBlocks.RIFT_ANCHOR.get(), "rift_anchor", VESKORIAN);
+        machine(ModBlocks.RIFT_CORE_EXTRACTOR.get(), "rift_core_extractor", VESKORIAN, DERRICK);
+        // Le Ward est une TOUR d'émission : il rayonne une protection, exactement comme un
+        // émetteur rayonne un champ. Même geste, même silhouette.
+        emitter(ModBlocks.RIFT_WARD_EMITTER.get(), "rift_ward_emitter", VESKORIAN);
 
         // --- Châssis nus ------------------------------------------------------
         // Le bloc de base, posable tel quel. C'est littéralement le boîtier que

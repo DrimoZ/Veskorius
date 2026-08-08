@@ -106,6 +106,10 @@ public class Veskorius {
                 output.accept(ModItems.RESONANCE_NETWORK_HUB_ITEM.get());
                 output.accept(ModItems.CONVERGENCE_CORE_ITEM.get());
                 output.accept(ModItems.RIFT_ANCHOR_ITEM.get());
+                output.accept(ModItems.RIFT_CORE_EXTRACTOR_ITEM.get());
+                output.accept(ModItems.RIFT_WARD_EMITTER_ITEM.get());
+                output.accept(ModItems.RIFT_ESSENCE.get());
+                output.accept(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT.get());
                 output.accept(ModItems.DEFORMED_STONE_ITEM.get());
                 // Architecture de donjon (17-Dungeons.md) : groupée en fin d'onglet
                 // parce qu'on la cherche en construisant, pas en progressant.

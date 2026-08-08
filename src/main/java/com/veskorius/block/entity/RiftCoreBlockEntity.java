@@ -86,9 +86,65 @@ public class RiftCoreBlockEntity extends BlockEntity {
         }
     }
 
+    /**
+     * <b>Corrosion ambiante</b> : ce qui reste d'une Faille une fois ancrée.
+     *
+     * <p>L'Ancre supprime les dégâts aigus, pas la Faille. Elle continue de ronger
+     * l'équipement porté à {@link #CORROSION_RADIUS} blocs — un point d'usure toutes les
+     * {@link #CORROSION_INTERVAL} ticks. Non létal, et c'est le but : on peut y <b>entrer</b>,
+     * on ne peut pas y <b>exploiter</b> sans Rift Ward Emitter.
+     *
+     * <p>Le terme figurait dans 05-Machines.md sans définition nulle part : le Ward
+     * annulait donc une mécanique inexistante. La définir était la seule façon de lui
+     * donner un métier — une machine dont l'effet est « rien » est pire qu'une machine
+     * absente, parce qu'on la fabrique et qu'on ne comprend pas pourquoi.
+     */
+    public static final int CORROSION_RADIUS = 12;
+    private static final int CORROSION_INTERVAL = 20 * 5;
+
+    private void tickCorrosion(ServerLevel level, BlockPos pos) {
+        if (level.getGameTime() % CORROSION_INTERVAL != 0) {
+            return;
+        }
+        var box = new net.minecraft.world.phys.AABB(pos).inflate(CORROSION_RADIUS);
+        long radiusSqr = (long) CORROSION_RADIUS * CORROSION_RADIUS;
+        for (net.minecraft.world.entity.player.Player player
+            : level.getEntitiesOfClass(net.minecraft.world.entity.player.Player.class, box)) {
+            if (player.blockPosition().distSqr(pos) > radiusSqr
+                || RiftWardEmitterBlockEntity.isWarded(level, player.blockPosition())) {
+                continue;
+            }
+            corrode(player);
+        }
+    }
+
+    /**
+     * Ronge une pièce d'équipement au hasard parmi celles qui s'usent. On tire une seule
+     * pièce par passage plutôt que toutes : corroder l'armure entière d'un coup viderait
+     * une panoplie en quelques minutes, et le joueur fuirait la Faille au lieu de
+     * construire le Ward qui existe pour ça.
+     */
+    private static void corrode(net.minecraft.world.entity.player.Player player) {
+        java.util.List<net.minecraft.world.item.ItemStack> wearable = new java.util.ArrayList<>();
+        for (net.minecraft.world.entity.EquipmentSlot slot
+            : net.minecraft.world.entity.EquipmentSlot.values()) {
+            net.minecraft.world.item.ItemStack stack = player.getItemBySlot(slot);
+            if (!stack.isEmpty() && stack.isDamageableItem()) {
+                wearable.add(stack);
+            }
+        }
+        if (wearable.isEmpty()) {
+            return;
+        }
+        net.minecraft.world.item.ItemStack victim =
+            wearable.get(player.getRandom().nextInt(wearable.size()));
+        victim.setDamageValue(Math.min(victim.getMaxDamage() - 1, victim.getDamageValue() + 1));
+    }
+
     private void tickHarm(ServerLevel level, BlockPos pos) {
         if (anchored) {
             exposure.clear();
+            tickCorrosion(level, pos);
             return;
         }
         var box = new net.minecraft.world.phys.AABB(pos).inflate(HARM_RADIUS);
@@ -108,6 +164,37 @@ public class RiftCoreBlockEntity extends BlockEntity {
         // Sorti du rayon = compteur remis à zéro : le déphasage ne s'accumule pas d'une
         // visite à l'autre, sinon la deuxième approche serait mortelle sans raison lisible.
         exposure.keySet().retainAll(present);
+    }
+
+    // --- Épuisement (05-Machines.md #20) -------------------------------------
+
+    /**
+     * Extractions maximales par Faille. <b>Le compteur vit ici, sur le noyau</b>, et pas
+     * sur l'Extractor — sinon casser l'Extractor et en reposer un remettrait le compteur à
+     * zéro, et la « seule ressource volontairement finie du mod » (04-Materials.md)
+     * deviendrait infinie au prix d'un aller-retour à l'établi.
+     */
+    public static final int MAX_EXTRACTIONS = 6;
+
+    private int extractions;
+
+    /** Vrai s'il reste quelque chose à extraire de cette Faille. */
+    public boolean canExtract() {
+        return extractions < MAX_EXTRACTIONS;
+    }
+
+    public int getExtractionsLeft() {
+        return Math.max(0, MAX_EXTRACTIONS - extractions);
+    }
+
+    /** Consomme une extraction. Vrai si elle a eu lieu. */
+    public boolean consumeExtraction() {
+        if (!canExtract()) {
+            return false;
+        }
+        extractions++;
+        setChanged();
+        return true;
     }
 
     /** Vrai si un Rift Anchor tient cette Faille. Écrit par l'Ancre, jamais deviné ici. */
@@ -149,12 +236,14 @@ public class RiftCoreBlockEntity extends BlockEntity {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.putBoolean("anchored", anchored);
+        tag.putInt("extractions", extractions);
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         anchored = tag.getBoolean("anchored");
+        extractions = tag.getInt("extractions");
     }
 
     @Override

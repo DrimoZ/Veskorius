@@ -35,6 +35,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("message.veskorius.hub_status", "Hub: shedding below %s, calibration %s%%");
         add("message.veskorius.priority_set", "Priority: %s");
         add("message.veskorius.anchor_holding", "Anchor holding — the rift is stable");
+        add("message.veskorius.ward_on", "Ward active — corrosion held back");
+        add("message.veskorius.ward_off", "Ward idle — no field");
+        add("item.veskorius.rift_essence.hint", "Six per rift, and the rift is spent. Nothing makes more.");
         add("message.veskorius.anchor_idle", "Anchor idle — no rift in reach, or no field");
         add("item.veskorius.deformed_stone.hint", "Stone twisted by a rift. The bubble is close — and it is not safe.");
         add("message.veskorius.core_formed", "Core online — field range %s");
@@ -90,6 +93,8 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.RESONANCE_NETWORK_HUB, "Resonance Network Hub");
         addBlock(ModBlocks.CONVERGENCE_CORE, "Convergence Core");
         addBlock(ModBlocks.RIFT_ANCHOR, "Rift Anchor");
+        addBlock(ModBlocks.RIFT_CORE_EXTRACTOR, "Rift Core Extractor");
+        addBlock(ModBlocks.RIFT_WARD_EMITTER, "Rift Ward Emitter");
         addBlock(ModBlocks.RIFT_CORE, "Rift Core");
         addBlock(ModBlocks.DEFORMED_STONE, "Deformed Stone");
 
@@ -143,6 +148,8 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.CONCENTRATED_FLUX, "Concentrated Flux");
         addItem(ModItems.HYPER_REFINED_CRYSTAL, "Hyper Refined Crystal");
         addItem(ModItems.HARMONIC_LATTICE, "Harmonic Lattice");
+        addItem(ModItems.RIFT_ESSENCE, "Rift Essence");
+        addItem(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT, "Corrupted Veskorian Alloy Ingot");
         addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Block of Veskorian Alloy");
         add("item.veskorius.veskorian_alloy_ingot.hint", "Structural metal of Tier 3. Forge gold instead of iron for the conductive kind.");
         add("item.veskorius.flux_slag.hint", "Forge waste. The same residue that, region-wide, caused the Collapse.");

@@ -237,6 +237,25 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
                 .requires(blueprint(4)));
 
+        // Rift Core Extractor (#20). Le dossier ne fixe pas sa recette (« placé dans une
+        // Faille ancrée ») : proposé au niveau de l'Ancre, dont il est le compagnon direct.
+        machine(recipeOutput, ModBlocks.RIFT_CORE_EXTRACTOR.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.HYPER_REFINED_CRYSTAL.get(), b -> b
+                .requires(ModItems.HYPER_REFINED_CRYSTAL.get(), 2)
+                .requires(ModItems.HARMONIC_LATTICE.get())
+                .requires(ModBlocks.VESKORIAN_ALLOY_BLOCK.get(), 2)
+                .requires(blueprint(4)));
+
+        // Rift Ward Emitter (#21) : 2 Rift Essence + 4 Alloy Block (05-Machines.md).
+        // Il se paie donc EN ESSENCE — un tiers du butin d'une Faille part à rendre cette
+        // Faille exploitable. C'est le seul objet du mod dont le coût est prélevé sur ce
+        // qu'il permet d'obtenir, et c'est ce qui fait de la première Faille un pari.
+        machine(recipeOutput, ModBlocks.RIFT_WARD_EMITTER.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.RIFT_ESSENCE.get(), b -> b
+                .requires(ModItems.RIFT_ESSENCE.get(), 2)
+                .requires(ModBlocks.VESKORIAN_ALLOY_BLOCK.get(), 4)
+                .requires(blueprint(4)));
+
         // Rift Anchor (#19) : 4 Hyper Refined + 4 Alloy Block (05-Machines.md). Neuf
         // entrées pile avec le châssis et le blueprint — le maximum, et c'est cohérent :
         // c'est la dernière machine du mod, elle doit coûter tout ce qu'une grille peut

@@ -117,6 +117,14 @@ passer à « châssis + distinctif » à leur codage.
 | 19 | Rift Anchor | T5 | 4 Hyper Refined Crystal + 4 Alloy Block, posé en bordure de Faille | stabilise la Faille | pose unique | 20 Osc/tick en continu |
 | 20 | Rift Core Extractor | T5 | placé dans une Faille ancrée | 1 Rift Essence (+ 15% chance de 1 Corrupted Alloy Ingot) | 120s / extraction, 6 max par Faille | 15 Osc/tick |
 | 21 | Rift Ward Emitter | T5 | craft: 2 Rift Essence + 4 Alloy Block | annule la corrosion ambiante, rayon 12 blocs | — | 5 Osc/tick |
+
+> **La « corrosion ambiante », définie.** Le terme n'apparaissait qu'ici, sans définition nulle
+> part — le Ward annulait donc une mécanique inexistante, c'est-à-dire rien. Elle est désormais
+> ce qui reste d'une Faille **une fois ancrée** : l'Ancre supprime les dégâts aigus de déphasage,
+> mais la Faille continue de **ronger l'équipement** dans un rayon de 12 blocs (1 point d'usure
+> sur une pièce portée toutes les 5 s). Non létal, et c'est le but : on peut y entrer, on ne peut
+> pas y **exploiter** sans Ward. C'est ce qui donne au Ward son métier et au T5 sa texture — on
+> vit à côté de quelque chose qui ne va toujours pas.
 | 22 | Crystal Crusher | T1 | Raw Crystal | 3 Resonance Dust | 10s | autonome |
 | 23 | Flux Compressor | T3 | 4 Refined Crystal | 1 Concentrated Flux | 30s | 6 Osc/tick |
 

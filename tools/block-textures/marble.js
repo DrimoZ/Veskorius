@@ -379,6 +379,38 @@ const faces = {
     for (const [x, y] of [[2, 2], [13, 2]]) { c.rect(x, y, 2, 2, m.metalHi); c.set(x, y, m.metal); }
   },
 
+  // UNE PINCE REFERMEE SUR UN VIDE : deux mors qui descendent vers un point noir.
+  // La Foreuse mord la roche, celle-ci mord le RIEN — et le point noir au centre est
+  // le meme que celui du noyau, pour qu'on relie les deux d'un coup d'oeil.
+  rift_core_extractor: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    slab(c, 0, 0, 16, 4, m.metal, m.metalHi, m.line);
+    for (const x of [3, 11]) {
+      slab(c, x, 4, 2, 6, IRON.mid, IRON.lite, IRON.deep);
+    }
+    c.rect(5, 9, 2, 2, IRON.lite);
+    c.rect(9, 9, 2, 2, IRON.lite);
+    outline(c, DISC8, on ? a.mid : m.line);
+    fill(c, DISC8, on ? a.deep : m.tones[0]);
+    fill(c, DISC4, '#0A0410');
+    if (on) { c.set(6, 6, a.hot); c.set(9, 10, a.hot); }
+  },
+
+  // UN DOME, et rien dessous. Le Ward ne fabrique pas, ne transporte pas, ne mord
+  // pas : il COUVRE. Un arc plein sur toute la largeur, c'est la seule facade du mod
+  // qui montre un abri.
+  rift_ward_emitter: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    slab(c, 0, 12, 16, 4, m.metal, m.metalHi, m.line);
+    const dome = [[3, 6, 9], [4, 4, 11], [5, 3, 12], [6, 2, 13], [7, 1, 14],
+      [8, 1, 14], [9, 1, 14], [10, 1, 14], [11, 1, 14]];
+    outline(c, dome, on ? a.lite : m.tones[3]);
+    fill(c, dome, on ? a.deep : m.tones[0]);
+    // Le vide protege, sous l'arc.
+    fill(c, [[6, 4, 11], [7, 3, 12], [8, 3, 12], [9, 3, 12], [10, 3, 12], [11, 3, 12]], m.dark);
+    if (on) { c.set(8, 3, a.hot); c.set(7, 4, a.hot); }
+  },
+
   // La même lentille, plus la réglette des trois bandes.
   tunable_field_emitter: (c, m, a, on) => {
     faces.field_emitter(c, m, a, on);

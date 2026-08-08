@@ -1993,6 +1993,7 @@ public class MachineGameTests {
         ModBlocks.DEEP_SYNTHESIS_CHAMBER.get(), ModBlocks.HARMONIC_AMPLIFIER.get(),
         ModBlocks.AUTOMATED_EXTRACTION_ARRAY.get(), ModBlocks.RESONANCE_NETWORK_HUB.get(),
         ModBlocks.CONVERGENCE_CORE.get(), ModBlocks.RIFT_ANCHOR.get(),
+        ModBlocks.RIFT_CORE_EXTRACTOR.get(), ModBlocks.RIFT_WARD_EMITTER.get(),
         ModBlocks.FRACTURED_CHASSIS.get(), ModBlocks.ATTUNED_CHASSIS.get(),
         ModBlocks.VESKORIAN_CHASSIS.get(),
     };
@@ -2368,7 +2369,7 @@ public class MachineGameTests {
      * toujours : la machine la plus chère du mod à faire tourner deviendrait un
      * interrupteur à usage unique.
      */
-    @GameTest(template = FIELD_ARENA, timeoutTicks = 300, batch = "rift")
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 300)
     public static void anchorSilencesTheRiftOnlyWhileItRuns(GameTestHelper helper) {
         helper.startSequence()
             .thenExecute(() -> {
@@ -2393,6 +2394,66 @@ public class MachineGameTests {
                         + "inoffensive la zone la plus dangereuse du monde, définitivement.");
             })
             .thenExecute(() -> helper.setBlock(RIFT, Blocks.AIR))
+            .thenSucceed();
+    }
+
+    /**
+     * <b>Une Faille rend six essences, et pas une de plus.</b>
+     *
+     * <p>C'est la seule ressource volontairement finie du mod (04-Materials.md), et toute
+     * la fin de partie repose dessus. Le compteur vit sur le <b>noyau</b> et non sur
+     * l'Extractor : sur l'Extractor, casser la machine et en reposer une remettrait le
+     * compteur à zéro, et la ressource finie deviendrait infinie au prix d'un aller-retour
+     * à l'établi — sans qu'une seule ligne de code ait l'air fausse.
+     *
+     * <p>Ce test épuise la Faille à la main, puis vérifie qu'elle refuse la septième.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60)
+    public static void aRiftYieldsSixAndThenIsSpent(GameTestHelper helper) {
+        helper.setBlock(RIFT, ModBlocks.RIFT_CORE.get());
+        com.veskorius.block.entity.RiftCoreBlockEntity core = helper.getBlockEntity(RIFT);
+        int max = com.veskorius.block.entity.RiftCoreBlockEntity.MAX_EXTRACTIONS;
+
+        for (int i = 0; i < max; i++) {
+            helper.assertTrue(core.consumeExtraction(),
+                "Extraction " + (i + 1) + "/" + max + " : elle doit passer");
+        }
+        helper.assertFalse(core.canExtract(),
+            "Après " + max + " extractions la Faille est morte");
+        helper.assertFalse(core.consumeExtraction(),
+            "…et elle refuse la suivante. Sinon la seule ressource finie du mod ne l'est pas.");
+        helper.assertTrue(core.getExtractionsLeft() == 0,
+            "Restant annoncé : 0, vaut " + core.getExtractionsLeft());
+        helper.setBlock(RIFT, Blocks.AIR);
+        helper.succeed();
+    }
+
+    /**
+     * <b>Le Ward tient la corrosion, et seulement s'il est alimenté.</b> Un Ward inerte qui
+     * protégerait quand même ferait de l'Ancre et du Core des dépenses sans objet — on
+     * poserait le bloc et on couperait le courant.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 200)
+    public static void wardProtectsOnlyWhilePowered(GameTestHelper helper) {
+        BlockPos ward = new BlockPos(8, 1, 8);
+        ServerLevel level = helper.getLevel();
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper, 4);
+                helper.setBlock(ward, ModBlocks.RIFT_WARD_EMITTER.get());
+            })
+            .thenExecuteAfter(20, () -> helper.assertTrue(
+                com.veskorius.block.entity.RiftWardEmitterBlockEntity.isWarded(
+                    level, helper.absolutePos(ward)),
+                "Ward alimenté : la position doit être protégée"))
+            // On coupe le champ en retirant l'émetteur.
+            .thenExecute(() -> helper.setBlock(EMITTER, Blocks.AIR))
+            .thenExecuteAfter(20, () -> helper.assertFalse(
+                com.veskorius.block.entity.RiftWardEmitterBlockEntity.isWarded(
+                    level, helper.absolutePos(ward)),
+                "Champ coupé : la protection tombe. Sinon on pose le bloc et on coupe le "
+                    + "courant, et tout le coût du site disparaît."))
+            .thenExecute(() -> helper.setBlock(ward, Blocks.AIR))
             .thenSucceed();
     }
 
@@ -2427,7 +2488,7 @@ public class MachineGameTests {
      * le dossier, et le pilier « bases ouvertes, pas de boîtes fermées » redevient une
      * recommandation esthétique au lieu d'une condition de fonctionnement.
      */
-    @GameTest(template = PIECE_ARENA, timeoutTicks = 200, batch = "core_form")
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 200)
     public static void coreNeedsItsWholeRingInDirectView(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         var ring = com.veskorius.block.entity.ConvergenceCoreBlockEntity.ringOffsets();
@@ -2631,7 +2692,7 @@ public class MachineGameTests {
      * suffirait à réaccorder une machine désaccordée — le relais laverait les harmoniques,
      * et toute la mécanique de 06-Energy.md se contournerait avec un bloc à 20 blocs.
      */
-    @GameTest(template = FIELD_ARENA, timeoutTicks = 200, batch = "relay_band")
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 200)
     public static void relayCarriesTheBandItReceives(GameTestHelper helper) {
         helper.startSequence()
             .thenExecute(() -> {

@@ -477,6 +477,30 @@ public class ModBlocks {
                 .noOcclusion()
                 .lightLevel(state -> 10));
 
+    /** Machine #20 : six extractions par Faille, et la Faille est morte. 15 Osc/tick. */
+    public static final DeferredBlock<RiftCoreExtractorBlock> RIFT_CORE_EXTRACTOR =
+        BLOCKS.registerBlock("rift_core_extractor",
+            RiftCoreExtractorBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(5.0f, 12.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(MACHINE_GLOW));
+
+    /** Machine #21 : annule la corrosion ambiante d'une Faille ancrée. 5 Osc/tick. */
+    public static final DeferredBlock<RiftWardEmitterBlock> RIFT_WARD_EMITTER =
+        BLOCKS.registerBlock("rift_ward_emitter",
+            RiftWardEmitterBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_LIGHT_BLUE)
+                .strength(4.0f, 12.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(EMITTER_GLOW));
+
     /** Machine #19 : stabilise une Faille tant qu'elle est alimentée. 20 Osc/tick. */
     public static final DeferredBlock<RiftAnchorBlock> RIFT_ANCHOR =
         BLOCKS.registerBlock("rift_anchor",

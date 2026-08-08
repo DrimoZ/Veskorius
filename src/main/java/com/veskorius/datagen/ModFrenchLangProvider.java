@@ -75,6 +75,11 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.RESONANCE_NETWORK_HUB, "Nœud de Réseau de Résonance");
         addBlock(ModBlocks.CONVERGENCE_CORE, "Cœur de Convergence");
         addBlock(ModBlocks.RIFT_ANCHOR, "Ancre de Faille");
+        addBlock(ModBlocks.RIFT_CORE_EXTRACTOR, "Extracteur de Noyau");
+        addBlock(ModBlocks.RIFT_WARD_EMITTER, "Émetteur de Garde");
+        add("message.veskorius.ward_on", "Garde active — la corrosion est contenue");
+        add("message.veskorius.ward_off", "Garde inerte — pas de champ");
+        add("item.veskorius.rift_essence.hint", "Six par Faille, et la Faille est morte. Rien n'en refait.");
         addBlock(ModBlocks.RIFT_CORE, "Noyau de Faille");
         addBlock(ModBlocks.DEFORMED_STONE, "Pierre Déformée");
         add("message.veskorius.anchor_holding", "Ancre active — la Faille est stable");
@@ -131,6 +136,8 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addItem(ModItems.CONCENTRATED_FLUX, "Flux Concentré");
         addItem(ModItems.HYPER_REFINED_CRYSTAL, "Cristal Hyper-Raffiné");
         addItem(ModItems.HARMONIC_LATTICE, "Treillis Harmonique");
+        addItem(ModItems.RIFT_ESSENCE, "Essence de Faille");
+        addItem(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT, "Lingot d'Alliage Corrompu");
         addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Bloc d'Alliage Veskorien");
         add("item.veskorius.veskorian_alloy_ingot.hint", "Métal structurel du Palier 3. Forgez de l'or au lieu du fer pour la variante conductrice.");
         add("item.veskorius.flux_slag.hint", "Déchet de forge. La substance même qui, à l'échelle d'une région, a causé l'Effondrement.");

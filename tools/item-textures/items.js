@@ -23,6 +23,7 @@ const V = { line: '#3A1D57', deep: '#5C2C86', mid: '#8A47B8', lite: '#B57CE0', h
 const C = { line: '#0E4449', deep: '#166B72', mid: '#27A3AC', lite: '#5FD6DC', hot: '#CFF6F8' };
 const A = { line: '#6E4A15', deep: '#8E5A15', mid: '#D8922A', lite: '#F0B863', hot: '#FBE0B0' };
 const M = { line: '#8E8E8E', deep: '#B8B8B8', mid: '#D3D3D3', lite: '#E0E0E0', hot: '#F2F2F2' };
+const RIFT = { line: '#1E0F2E', deep: '#3A1D57', mid: '#5C2C86', lite: '#8A47B8', hot: '#B57CE0' };
 const IRON = { line: '#1E2228', deep: '#2E323A', mid: '#454B56', lite: '#5E6672', hot: '#828A96' };
 // Le T4 : presque blanc, a peine teinte. La chaine va du violet sourd au blanc
 // — plus on raffine, moins la matiere a de couleur propre.
@@ -324,6 +325,35 @@ const items = {
       c.rect(x, y, 2, 2, V.mid);
       c.set(x, y, V.hot);
     }
+  },
+
+  // --- Matiere du T5 -------------------------------------------------------
+  //
+  // L'essence est le SEUL item du mod dont le centre soit noir. Toute la chaine du
+  // cristal va vers la lumiere ; celle-ci va vers le trou. C'est ce qui la separe
+  // d'un cristal de plus, et ce qui dit « ceci vient d'ailleurs ».
+  rift_essence: (c) => {
+    const orb = [[4, 5, 10], [5, 4, 11], [6, 3, 12], [7, 3, 12], [8, 3, 12],
+      [9, 4, 11], [10, 5, 10]];
+    outline(c, orb, RIFT.line);
+    fill(c, orb, RIFT.mid);
+    fill(c, [[5, 5, 10], [6, 4, 11], [7, 4, 11], [8, 4, 11], [9, 5, 10]], RIFT.lite);
+    fill(c, [[6, 6, 9], [7, 6, 9], [8, 6, 9]], RIFT.deep);
+    fill(c, [[7, 7, 8]], '#0A0410');
+    // Deux echardes qui s'echappent : rien dans ce mod ne fuit, sauf ca.
+    c.set(2, 3, RIFT.lite); c.set(3, 4, RIFT.mid);
+    c.set(13, 12, RIFT.lite); c.set(12, 11, RIFT.mid);
+  },
+
+  // Meme lingot hexagonal que les autres alliages — c'est le meme metal — mais RONGE :
+  // l'arete basse est mangee et la veine est noire au lieu d'etre lumineuse.
+  corrupted_veskorian_alloy_ingot: (c) => {
+    ingot(c, RIFT, null);
+    for (let x = 4; x <= 11; x++) c.set(x, 8, '#0A0410');
+    c.set(5, 8, RIFT.lite);
+    c.set(10, 8, RIFT.lite);
+    // Morsures : trois pixels retires de la silhouette, en bas.
+    for (const [x, y] of [[5, 10], [8, 10], [11, 9]]) c.set(x, y, RIFT.line);
   },
 
   concentrated_flux: (c) => {

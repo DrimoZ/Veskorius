@@ -14,7 +14,7 @@ en français partout ailleurs (voir `01-Vision-Pillars.md`).
 | `stable_resonance_crystal` | 04 | ✅ codé |
 | `refined_resonance_crystal` | 04 | ✅ codé |
 | `hyper_refined_crystal` | 04 | ✅ codé — seule source : la Deep Synthesis Chamber, qui en consomme un à sa construction. Les 3 de l'Archive sont le seul stock de départ |
-| `rift_essence` | 04 | À coder (Phase 4) |
+| `rift_essence` | 04 | ✅ codé — seule ressource volontairement finie du mod |
 
 ## Items — matériaux naturels
 
@@ -61,7 +61,7 @@ est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments 
 | `synthesis_residue` | 04, 05 | ✅ codé (déchet du Synthesizer ; le Slag Vent ne l'évacue PAS) |
 | `luminous_extract` | 04 | À coder (Phase 3) |
 | `resonance_glass` | 04 | À coder (Phase 3) |
-| `corrupted_veskorian_alloy_ingot` | 04, 08, 09 | À coder (Phase 4) |
+| `corrupted_veskorian_alloy_ingot` | 04, 08, 09 | ✅ codé — prime de 15 % à l'extraction (le drop du Gardien reste à faire) |
 | `ancient_conduit_stone` | 04 | À coder (Phase 2, trouvé tel quel) |
 
 ## Outils, armure, augment (items sans bloc associé)
@@ -144,8 +144,8 @@ ne sont pas comptés dans les 23 machines : ce sont des blocs de construction, p
 | 17 | `resonance_network_hub` | T4 | ✅ codé — plancher de priorité selon la réserve du champ (>50 % tout passe, 20-50 % les basses s'effacent, <20 % hautes seules). Passif. Priorité réglable au Tuner ; dérive comme l'Amplifier |
 | 18 | `convergence_core` | T4→T5 | ✅ codé — multi-bloc : 8 relais/amplificateurs à Chebyshev 5, chacun en vue directe, revalidé toutes les 2 s. Champ portée 40, intensité 1000 (exception assumée à l'anti-stacking) |
 | 19 | `rift_anchor` | T5 | ✅ codé — stabilise la Faille TANT QU'ELLE EST ALIMENTÉE (20 Osc/tick), pas « pose unique ». Cassée, la Faille se réveille |
-| 20 | `rift_core_extractor` | T5 | À coder (Phase 4) |
-| 21 | `rift_ward_emitter` | T5 | À coder (Phase 4) |
+| 20 | `rift_core_extractor` | T5 | ✅ codé — 1 Essence / 120 s, 15 Osc/tick, **6 max par Faille**. Le compteur vit sur le NOYAU, pas sur la machine. Exige une Faille ancrée |
+| 21 | `rift_ward_emitter` | T5 | ✅ codé — annule la corrosion ambiante (rayon 12), 5 Osc/tick. La corrosion elle-même a dû être DÉFINIE : le terme n'existait nulle part ailleurs |
 | 22 | `crystal_crusher` | T1 | ✅ codé (cycle 10s autonome, 1 Raw Crystal → 3 Resonance Dust) |
 | 23 | `flux_compressor` | T3 | ✅ codé — 4 Refined → 1 Flux Concentré, 30 s, 6 Osc/tick |
 

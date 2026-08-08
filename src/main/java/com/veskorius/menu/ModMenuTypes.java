@@ -49,6 +49,10 @@ public class ModMenuTypes {
         DAMPING_ARRAY = MENUS.register("damping_array",
             () -> IMenuTypeExtension.create(DampingArrayMenu::new));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<RiftCoreExtractorMenu>>
+        RIFT_CORE_EXTRACTOR = MENUS.register("rift_core_extractor",
+            () -> IMenuTypeExtension.create(RiftCoreExtractorMenu::new));
+
     public static final DeferredHolder<MenuType<?>, MenuType<AutomatedExtractionArrayMenu>>
         AUTOMATED_EXTRACTION_ARRAY = MENUS.register("automated_extraction_array",
             () -> IMenuTypeExtension.create(AutomatedExtractionArrayMenu::new));

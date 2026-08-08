@@ -138,6 +138,24 @@ public class ModItems {
     public static final DeferredItem<Item> HARMONIC_LATTICE =
         ITEMS.registerSimpleItem("harmonic_lattice", new Item.Properties().stacksTo(64));
 
+    // --- Materiaux T5 (04-Materials.md) -------------------------------------
+
+    /**
+     * <b>Essence de Faille</b> — la <b>seule ressource volontairement finie du mod</b>.
+     * Six par Faille, et la Faille est morte. Le dossier a explicitement rejete toute
+     * machine de regeneration : ce qui rend la fin satisfaisante n'est pas qu'elle soit
+     * riche, c'est qu'elle soit COMPTEE.
+     */
+    public static final DeferredItem<Item> RIFT_ESSENCE =
+        ITEMS.registerSimpleItem("rift_essence", new Item.Properties().stacksTo(16));
+
+    /**
+     * <b>Alliage corrompu</b> : ce que la Faille rend d'un metal veskorien. Prime d'une
+     * extraction sur sept, ou butin garanti du Gardien. Materiau du Rift-Ward Plate.
+     */
+    public static final DeferredItem<Item> CORRUPTED_VESKORIAN_ALLOY_INGOT =
+        ITEMS.registerSimpleItem("corrupted_veskorian_alloy_ingot", new Item.Properties().stacksTo(64));
+
     /** Œuf d'apparition du Fileur de Cristal. */
     public static final DeferredItem<DeferredSpawnEggItem> CRYSTAL_STRIDER_SPAWN_EGG =
         ITEMS.registerItem("crystal_strider_spawn_egg",
@@ -293,6 +311,12 @@ public class ModItems {
 
     public static final DeferredItem<BlockItem> RESONANCE_RELAY_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_RELAY);
+
+    public static final DeferredItem<BlockItem> RIFT_CORE_EXTRACTOR_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.RIFT_CORE_EXTRACTOR);
+
+    public static final DeferredItem<BlockItem> RIFT_WARD_EMITTER_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.RIFT_WARD_EMITTER);
 
     public static final DeferredItem<BlockItem> DEFORMED_STONE_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.DEFORMED_STONE);
