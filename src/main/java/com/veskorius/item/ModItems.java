@@ -296,6 +296,10 @@ public class ModItems {
     public static final DeferredItem<BlockItem> VESKORIAN_CHASSIS_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.VESKORIAN_CHASSIS);
 
+    /** Résidu compressé — le seul exutoire du déchet du Synthesizer. */
+    public static final DeferredItem<BlockItem> SYNTHESIS_RESIDUE_BLOCK_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.SYNTHESIS_RESIDUE_BLOCK);
+
     // BlockItems des machines (voir ModBlocks.java)
     public static final DeferredItem<BlockItem> RESONANCE_STABILIZER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_STABILIZER);

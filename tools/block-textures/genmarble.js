@@ -189,6 +189,20 @@ tex.ancient_emitter_front_on=front('t1',0x748,faces.field_emitter,true);
  ring(c,DISC12,DISC8,RIFT.hot);fill(c,DISC8,RIFT.deep);
  fill(c,DISC4,'#0A0410');
  edges(c,ROCK);tex.rift_core=c;}
+// Résidu compressé : le bloc le plus TERNE du mod, et c'est le propos. Le dossier en
+// fait la contre-preuve de la scorie — tous les sous-produits ne sont pas des
+// nuisances — mais « utile » ne veut pas dire « précieux ». Pas de veine, pas d'éclat,
+// pas une seule touche de violet : de la matière tassée, grise, qui a servi. Un joueur
+// doit pouvoir en faire un mur entier sans que le mur réclame l'attention.
+{const DULL={tones:['#4A4A4E','#54545A','#5E5E64','#68686E'],w:[3,4,3,2],
+  line:'#3C3C40',dark:'#323236',metal:'#76767C',metalHi:'#8A8A90',crack:null};
+ const c=marble(DULL,0x762);const r=rng(0x762);
+ // Trois strates de compression, décalées : on voit que ça a été pressé en couches,
+ // pas coulé. C'est le seul relief du bloc.
+ for(const y of[4,8,12]){for(let x=0;x<S;x++)c.set(x,y,DULL.line);}
+ for(let n=0;n<26;n++){const x=Math.floor(r()*S),y=Math.floor(r()*S);
+  c.set(x,y,r()>.6?DULL.metal:DULL.dark);}
+ edges(c,DULL);tex.synthesis_residue_block=c;}
 
 const out=process.argv[2];fs.mkdirSync(out,{recursive:true});
 const es=Object.entries(tex);

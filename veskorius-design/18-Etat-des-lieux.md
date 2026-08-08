@@ -4,7 +4,7 @@ Généré à partir du code, pas du dossier de design. Une case cochée ici veut
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
 NeoForge 1.21.1 · Java 21 · **219 fichiers Java, ~30 700 lignes** · **49 blocs, 71 items**
-· **155 GameTest**, dont un qui vérifie que chaque machine a une recette réellement
+· **156 GameTest**, dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
 
@@ -131,9 +131,11 @@ SERVER, surchargeables par modpack.
 
 ## Ce qui reste
 
-1. **Structures** — Cœur de Faille (T5) et Station Relais (T3) : les deux seules pièces
-   du dossier qui n'ont pas leur bâtiment. Les machines existent, pas le lieu.
-2. **Matériaux de la phase 3** — `luminous_extract`, `resonance_glass`, `ancient_seed`,
-   `resonance_bloom`, `ancient_conduit_stone`. Aucun n'est sur le chemin critique.
-3. **Custode Lourd** — variante d'élite annoncée au dossier.
-4. **Débouchés des déchets** — le résidu de synthèse n'a toujours aucun exutoire.
+1. **Matériaux de la phase 3** — , , ,
+   , . Aucun n'est sur le chemin critique.
+2. **Custode Lourd** — variante d'élite annoncée au dossier.
+
+Le Cœur de Faille n'est PAS de cette liste : c'est la , et elle fait déjà
+ce que  décrit — bulle sphérique de 5 à 9 blocs, coquille de pierre
+déformée, noyau flottant. Aucune « Station Relais » n'existe non plus dans le dossier ;
+elle ne figurait que dans une version antérieure de ce document.

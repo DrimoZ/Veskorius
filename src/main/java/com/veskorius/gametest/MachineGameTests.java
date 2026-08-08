@@ -1980,6 +1980,53 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    /**
+     * <b>Aucun déchet ne reste sans exutoire.</b>
+     *
+     * <p>Les machines produisent trois sous-produits, et le dossier leur assigne des rôles
+     * opposés : la scorie de la Forge <b>doit</b> être évacuée sous peine de bloquer la
+     * machine — c'est une contrainte voulue — tandis que le résidu du Synthesizer est
+     * présenté comme sa contre-preuve, « tous les sous-produits ne sont pas des nuisances »
+     * (04-Materials.md). Sauf que pendant tout le T3, le résidu n'était consommé par
+     * <b>rien</b>. Il s'accumulait, et la contre-preuve annoncée par trois documents
+     * n'existait pas en jeu : le mod n'enseignait qu'une chose, qu'il faut jeter.
+     *
+     * <p>Un déchet sans exutoire ne casse rien et ne lève rien — il encombre, ce qui est
+     * indiscernable d'un choix de design tant que personne ne relit le dossier. D'où ce
+     * test, sur le {@code RecipeManager} chargé : chaque sous-produit doit apparaître
+     * comme <b>ingrédient</b> d'au moins une recette qui a survécu au chargement.
+     *
+     * <p><b>La scorie n'y figure pas, et c'est le fond du sujet.</b> Le premier jet la
+     * gardait dans la liste et le test tombait — à juste titre : aucune recette ne la
+     * consomme. Mais son exutoire n'a jamais été une recette. C'est le Slag Vent, une
+     * machine qui la <b>détruit</b>, et la corvée d'en poser un est précisément la
+     * contrainte que la Forge impose. Exiger d'elle une recette aurait effacé la seule
+     * différence que ce test doit protéger.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
+    public static void everyByproductHasAnOutlet(GameTestHelper helper) {
+        var recipes = helper.getLevel().getRecipeManager().getRecipes();
+        for (net.minecraft.world.item.Item waste : BYPRODUCTS) {
+            boolean consumed = recipes.stream().anyMatch(holder ->
+                holder.value().getIngredients().stream()
+                    .anyMatch(ingredient -> ingredient.test(new net.minecraft.world.item.ItemStack(waste))));
+            helper.assertTrue(consumed,
+                "Aucune recette chargée ne consomme " + waste.getDescription().getString()
+                    + " — le déchet s'accumule sans exutoire. Il ne lèvera jamais d'erreur : "
+                    + "un sous-produit qui encombre est indiscernable d'un sous-produit voulu.");
+        }
+        helper.succeed();
+    }
+
+    /**
+     * Les sous-produits qui doivent <b>servir</b> à quelque chose. La scorie en est
+     * exclue volontairement — voir la note du test. Un déchet utile ajouté sans y
+     * figurer n'est pas gardé.
+     */
+    private static final net.minecraft.world.item.Item[] BYPRODUCTS = {
+        ModItems.SYNTHESIS_RESIDUE.get(),
+    };
+
     /** Toutes les machines fabricables. Une machine ajoutée sans y figurer n'est pas gardée. */
     private static final net.minecraft.world.level.block.Block[] CRAFTABLE_MACHINES = {
         ModBlocks.RESONANCE_STABILIZER.get(), ModBlocks.COMPONENT_ASSEMBLER.get(),

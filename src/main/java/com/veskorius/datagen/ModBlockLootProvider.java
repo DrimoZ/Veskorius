@@ -75,6 +75,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.CONDUIT_LINE.get());
         dropSelf(ModBlocks.VEINED_STONE_COLUMN.get());
         dropSelf(ModBlocks.VESKORIAN_ALLOY_BLOCK.get());
+        dropSelf(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get());
         dropSelf(ModBlocks.DISSONANCE_BLOOM.get());
         // Une dalle double rend DEUX dalles : sans cette table dédiée, la moitié du
         // bloc disparaît au minage.

@@ -102,6 +102,29 @@ tasks.matching { it.name == 'runData' }.configureEach {
     }
 }
 
+// LE MONDE DE TEST EST JETABLE, ET IL FAUT LE JETER.
+//
+// GameTestServer réutilise run/world d'un run à l'autre et y pose ses structures un peu
+// plus loin à chaque fois. Rien ne les enlève : le monde avait atteint 1,4 Go et 1013
+// fichiers de région. La suite ne devenait pas plus lourde — le monde, si.
+//
+// Le mode de panne est trompeur au point d'avoir fait accuser trois coupables successifs.
+// Ce n'est pas un test qui échoue : le serveur passe des minutes AVANT le premier test,
+// à charger et sauvegarder des régions, en crachant des barres de progression pleines,
+// puis meurt en OutOfMemory. On voit un test lent, ou un serveur coincé, ou un tas trop
+// petit — et on augmente -Xmx, ce qui repousse l'échéance et masque la cause. Deux fois.
+//
+// Un run de test doit partir d'un monde vide, sans quoi il mesure l'historique de la
+// machine autant que le code.
+tasks.matching { it.name == 'runGameTestServer' }.configureEach {
+    doFirst {
+        delete "${projectDir}/run/world"
+        // Les dumps de tas laissés par -XX:+HeapDumpOnOutOfMemoryError : 5 Go pièce,
+        // et il y en avait deux. Utiles le temps d'un diagnostic, jamais après.
+        delete fileTree("${projectDir}/run") { include '*.hprof' }
+    }
+}
+
 configurations {
     runtimeClasspath.extendsFrom localRuntime
 }

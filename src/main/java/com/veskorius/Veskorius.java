@@ -96,6 +96,7 @@ public class Veskorius {
                 output.accept(ModItems.VESKORIAN_ALLOY_BLOCK_ITEM.get());
                 output.accept(ModItems.FLUX_SLAG.get());
                 output.accept(ModItems.SYNTHESIS_RESIDUE.get());
+                output.accept(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get());
                 output.accept(ModItems.CONCENTRATED_FLUX.get());
                 // Materiaux T4.
                 output.accept(ModItems.HYPER_REFINED_CRYSTAL.get());

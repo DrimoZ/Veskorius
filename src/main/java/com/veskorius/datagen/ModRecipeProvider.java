@@ -41,6 +41,29 @@ public class ModRecipeProvider extends RecipeProvider {
             .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(
                 Veskorius.MOD_ID, "veskorian_alloy_ingot_from_block"));
 
+        // Le residu, dans les deux sens, et A L'ETABLI cette fois.
+        //
+        // La regle qui interdit le 9-en-1 du bloc d'alliage ne s'applique pas ici : la
+        // compresser a l'etabli court-circuiterait le Structural Synthesizer, alors que
+        // le residu SORT du Synthesizer. Il n'y a aucune machine a contourner — c'est le
+        // dechet de la machine, pas son produit.
+        net.minecraft.data.recipes.ShapedRecipeBuilder
+            .shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get())
+            .pattern("RRR").pattern("RRR").pattern("RRR")
+            .define('R', ModItems.SYNTHESIS_RESIDUE.get())
+            .unlockedBy(getHasName(ModItems.SYNTHESIS_RESIDUE.get()),
+                has(ModItems.SYNTHESIS_RESIDUE.get()))
+            .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(
+                Veskorius.MOD_ID, "synthesis_residue_block"));
+
+        net.minecraft.data.recipes.ShapelessRecipeBuilder
+            .shapeless(RecipeCategory.MISC, ModItems.SYNTHESIS_RESIDUE.get(), 9)
+            .requires(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get())
+            .unlockedBy(getHasName(ModItems.SYNTHESIS_RESIDUE.get()),
+                has(ModItems.SYNTHESIS_RESIDUE.get()))
+            .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(
+                Veskorius.MOD_ID, "synthesis_residue_from_block"));
+
         // --- Machines T1 : châssis Fracturé + ce qui les distingue -------------
         //
         // La grammaire de fabrication est désormais « le boîtier de mon palier, plus

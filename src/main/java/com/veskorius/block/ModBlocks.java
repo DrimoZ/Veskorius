@@ -632,6 +632,32 @@ public class ModBlocks {
                 .sound(SoundType.METAL)
                 .requiresCorrectToolForDrops());
 
+    /**
+     * <b>Residu compresse</b> — le seul exutoire du dechet du Structural Synthesizer,
+     * et le seul dechet du mod qui ne soit pas une nuisance.
+     *
+     * <p>La scorie de la Forge DOIT etre evacuee, sous peine de bloquer la machine : elle
+     * impose une contrainte. Le residu, lui, s'entasse sans rien casser, et le dossier en
+     * fait explicitement la contre-preuve — « tous les sous-produits ne sont pas des
+     * nuisances » (04-Materials.md). Un mod ou chaque byproduct est une corvee finit par
+     * enseigner qu'il faut jeter ; celui-ci enseigne qu'il faut regarder lequel.
+     *
+     * <p><b>Terne, et volontairement.</b> Utile ne veut pas dire precieux : ni veine, ni
+     * eclat, ni une touche de violet. On doit pouvoir en batir un mur entier sans que le
+     * mur reclame l'attention.
+     *
+     * <p>Se compresse et se decompresse a l'etabli, 9 pour 1 dans les deux sens. Aucune
+     * machine ne s'intercale : contrairement au bloc d'alliage, le compacter ne
+     * court-circuite aucun palier — il n'y a rien a court-circuiter, c'est un dechet.
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> SYNTHESIS_RESIDUE_BLOCK =
+        BLOCKS.registerSimpleBlock("synthesis_residue_block",
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_GRAY)
+                .strength(2.0f, 6.0f)
+                .sound(SoundType.STONE)
+                .requiresCorrectToolForDrops());
+
     public static final DeferredBlock<ArchivePedestalBlock> ARCHIVE_PEDESTAL =
         BLOCKS.registerBlock("archive_pedestal",
             ArchivePedestalBlock::new,

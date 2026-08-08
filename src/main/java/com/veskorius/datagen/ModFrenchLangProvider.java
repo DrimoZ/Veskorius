@@ -146,6 +146,7 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addItem(ModItems.RIFT_ESSENCE, "Essence de Faille");
         addItem(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT, "Lingot d'Alliage Corrompu");
         addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Bloc d'Alliage Veskorien");
+        addBlock(ModBlocks.SYNTHESIS_RESIDUE_BLOCK, "Résidu de Synthèse Compressé");
         add("item.veskorius.veskorian_alloy_ingot.hint", "Métal structurel du Palier 3. Forgez de l'or au lieu du fer pour la variante conductrice.");
         add("item.veskorius.flux_slag.hint", "Déchet de forge. La substance même qui, à l'échelle d'une région, a causé l'Effondrement.");
         addItem(ModItems.RAW_FLUX_DEPOSIT, "Dépôt de Flux Brut");

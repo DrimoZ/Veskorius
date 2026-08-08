@@ -142,6 +142,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlock(ModBlocks.RIFT_CORE.get(), cubeAll(ModBlocks.RIFT_CORE.get()));
         simpleBlockWithItem(ModBlocks.VESKORIAN_ALLOY_BLOCK.get(),
             cubeAll(ModBlocks.VESKORIAN_ALLOY_BLOCK.get()));
+        simpleBlockWithItem(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get(),
+            cubeAll(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get()));
         simpleBlockWithItem(ModBlocks.VEINED_STONE_BRICKS.get(),
             cubeAll(ModBlocks.VEINED_STONE_BRICKS.get()));
         simpleBlockWithItem(ModBlocks.CRACKED_VEINED_STONE_BRICKS.get(),

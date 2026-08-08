@@ -58,7 +58,7 @@ est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments 
 | `concentrated_flux` | 04, 05 | ✅ codé (Flux Compressor) |
 | `resonance_catalyst_core` | 04, 05 | ✅ codé (augment +15% ; craft 2 Component + 1 Refined Crystal + 1 Redstone) |
 | `flux_slag` | 04, 05 | ✅ codé (déchet de la Forge ; slot plein = forge arrêtée) |
-| `synthesis_residue` | 04, 05 | ✅ codé (déchet du Synthesizer ; le Slag Vent ne l'évacue PAS) |
+| `synthesis_residue` | 04, 05 | ✅ codé (déchet du Synthesizer ; le Slag Vent ne l'évacue PAS — il se compresse en `synthesis_residue_block`, 9↔1 à l'établi) |
 | `luminous_extract` | 04 | À coder (Phase 3) |
 | `resonance_glass` | 04 | À coder (Phase 3) |
 | `corrupted_veskorian_alloy_ingot` | 04, 08, 09 | ✅ codé — prime de 15 % à l'extraction (le drop du Gardien reste à faire) |

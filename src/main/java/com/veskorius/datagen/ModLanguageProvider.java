@@ -160,6 +160,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.RIFT_ESSENCE, "Rift Essence");
         addItem(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT, "Corrupted Veskorian Alloy Ingot");
         addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Block of Veskorian Alloy");
+        addBlock(ModBlocks.SYNTHESIS_RESIDUE_BLOCK, "Compressed Synthesis Residue");
         add("item.veskorius.veskorian_alloy_ingot.hint", "Structural metal of Tier 3. Forge gold instead of iron for the conductive kind.");
         add("item.veskorius.flux_slag.hint", "Forge waste. The same residue that, region-wide, caused the Collapse.");
         addItem(ModItems.RAW_FLUX_DEPOSIT, "Raw Flux Deposit");
