@@ -23,6 +23,70 @@ public final class CodexRegistry {
 
     private static final List<CodexEntry> ENTRIES = new ArrayList<>();
 
+    /**
+     * Palier de chaque entrée, par chemin. Une table plutôt qu'un argument de plus sur
+     * chaque ligne d'{@code add} : les soixante appels resteraient lisibles, mais on
+     * relirait soixante fois le même chiffre au lieu de voir la progression d'un bloc.
+     * Le lore n'y figure pas — il n'appartient à aucun palier, et c'est voulu.
+     */
+    private static final java.util.Map<String, Integer> TIERS = new java.util.HashMap<>();
+
+    static {
+        TIERS.put("intro/welcome", 0);
+        TIERS.put("intro/using_codex", 0);
+        TIERS.put("intro/getting_started", 0);
+        TIERS.put("crystals/raw", 1);
+        TIERS.put("crystals/stable", 1);
+        TIERS.put("crystals/dust", 1);
+        TIERS.put("crystals/pockets", 1);
+        TIERS.put("crystals/refined", 2);
+        TIERS.put("crystals/alloy", 3);
+        TIERS.put("crystals/slag", 3);
+        TIERS.put("crystals/hyper", 4);
+        TIERS.put("crystals/essence", 5);
+        TIERS.put("fields/osc", 2);
+        TIERS.put("fields/emitter", 2);
+        TIERS.put("fields/storage_cell", 2);
+        TIERS.put("fields/locator", 2);
+        TIERS.put("fields/lattice", 4);
+        TIERS.put("fields/calibration", 4);
+        TIERS.put("machines/stabilizer", 1);
+        TIERS.put("machines/assembler", 1);
+        TIERS.put("machines/whetstone", 1);
+        TIERS.put("machines/crusher", 1);
+        TIERS.put("machines/control", 1);
+        TIERS.put("machines/purifier", 2);
+        TIERS.put("machines/roost", 2);
+        TIERS.put("machines/tuner", 2);
+        TIERS.put("machines/catalyst_core", 2);
+        TIERS.put("machines/forge", 3);
+        TIERS.put("machines/relay", 3);
+        TIERS.put("machines/synthesizer", 3);
+        TIERS.put("machines/driller", 3);
+        TIERS.put("machines/slag_vent", 3);
+        TIERS.put("machines/compressor", 3);
+        TIERS.put("machines/chamber", 4);
+        TIERS.put("machines/amplifier", 4);
+        TIERS.put("machines/hub", 4);
+        TIERS.put("machines/extraction_array", 4);
+        TIERS.put("machines/convergence_core", 4);
+        TIERS.put("machines/rift_anchor", 5);
+        TIERS.put("machines/rift_extractor", 5);
+        TIERS.put("machines/rift_ward", 5);
+        TIERS.put("world/veined_stone", 1);
+        TIERS.put("world/flux_deposit", 1);
+        TIERS.put("world/outpost", 2);
+        TIERS.put("world/rift", 5);
+        TIERS.put("fauna/strider", 1);
+        TIERS.put("fauna/custode", 2);
+        TIERS.put("fauna/guardian", 5);
+        TIERS.put("progression/tier1", 1);
+        TIERS.put("progression/tier2", 2);
+        TIERS.put("progression/tier3", 3);
+        TIERS.put("progression/tier4", 4);
+        TIERS.put("progression/tier5", 5);
+    }
+
     static {
         // --- Introduction (toujours débloquées) ---
         add("intro/welcome", CodexCategory.INTRO, ModItems.RESONANCE_CODEX, CodexUnlock.always());
@@ -222,7 +286,7 @@ public final class CodexRegistry {
     private static void add(ResourceLocation id, CodexCategory category,
                             java.util.function.Supplier<? extends net.minecraft.world.level.ItemLike> icon,
                             CodexUnlock unlock) {
-        ENTRIES.add(new CodexEntry(id, category, icon, unlock));
+        ENTRIES.add(new CodexEntry(id, category, icon, unlock, TIERS.getOrDefault(id.getPath(), -1)));
     }
 
     private static ResourceLocation id(String path) {
