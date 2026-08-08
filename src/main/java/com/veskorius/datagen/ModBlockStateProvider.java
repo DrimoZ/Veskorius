@@ -146,6 +146,14 @@ public class ModBlockStateProvider extends BlockStateProvider {
             cubeAll(ModBlocks.VESKORIAN_ALLOY_BLOCK.get()));
         simpleBlockWithItem(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get(),
             cubeAll(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get()));
+        simpleBlockWithItem(ModBlocks.RESONANCE_SAND.get(),
+            cubeAll(ModBlocks.RESONANCE_SAND.get()));
+        // TRANSLUCENT et non cutout : la texture a des pixels semi-transparents sur ses
+        // reflets. En cutout ils seraient arrondis à « opaque ou rien », et la vitre
+        // perdrait exactement ce qui la fait lire comme une vitre.
+        simpleBlockWithItem(ModBlocks.RESONANCE_GLASS.get(),
+            models().cubeAll("resonance_glass", modLoc("block/resonance_glass"))
+                .renderType("translucent"));
         simpleBlockWithItem(ModBlocks.VEINED_STONE_BRICKS.get(),
             cubeAll(ModBlocks.VEINED_STONE_BRICKS.get()));
         simpleBlockWithItem(ModBlocks.CRACKED_VEINED_STONE_BRICKS.get(),

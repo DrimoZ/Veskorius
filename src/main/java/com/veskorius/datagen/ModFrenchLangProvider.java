@@ -155,6 +155,11 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addItem(ModItems.RIFT_ESSENCE, "Essence de Faille");
         addItem(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT, "Lingot d'Alliage Corrompu");
         addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Bloc d'Alliage Veskorien");
+        addBlock(ModBlocks.RESONANCE_SAND, "Sable de Résonance");
+        addBlock(ModBlocks.RESONANCE_GLASS, "Verre de Résonance");
+        add("codex.veskorius.crystals.glass.title", "Verre de Résonance");
+        add("codex.veskorius.crystals.glass.text",
+            "Quatre sables et un Cristal Stable donnent quatre Sables de Résonance ; chacun se cuit en verre dans un four ordinaire. Le geste du verre vanilla, parce que c'est exactement ça.\n\nIl rayonne à la luminosité 8 — de quoi éclairer une pièce sans y poser de lampe.\n\nC'est le seul bloc de Veskorius fait uniquement pour être regardé : aucune recette en aval ne le réclame, aucune machine ne s'en sert. Ça vaut d'être dit, parce que tout le reste ici se justifie par une mécanique. Un jeu de construction a besoin de matières qui ne sont que belles.");
         addBlock(ModBlocks.SYNTHESIS_RESIDUE_BLOCK, "Résidu de Synthèse Compressé");
         add("item.veskorius.veskorian_alloy_ingot.hint", "Métal structurel du Palier 3. Forgez de l'or au lieu du fer pour la variante conductrice.");
         add("item.veskorius.flux_slag.hint", "Déchet de forge. La substance même qui, à l'échelle d'une région, a causé l'Effondrement.");

@@ -204,6 +204,29 @@ tex.ancient_emitter_front_on=front('t1',0x748,faces.field_emitter,true);
   c.set(x,y,r()>.6?DULL.metal:DULL.dark);}
  edges(c,DULL);tex.synthesis_residue_block=c;}
 
+// Sable de Résonance : du GRAIN, pas des cristaux. Un joueur doit le reconnaître comme
+// du sable avant de le reconnaître comme veskorien — sinon il ne pensera jamais à le
+// mettre au four. La teinte violette suffit à dire lequel.
+{const SAND={tones:['#6E5A80','#7C6890','#8A76A0','#9884AE'],w:[3,4,3,2],
+  line:'#5C4A6E',dark:'#4A3A5A',metal:'#A896BE',metalHi:'#C4B4D6',crack:null};
+ const c=marble(SAND,0x763);const r=rng(0x763);
+ // Grain fin et DENSE : c'est la densité qui lit « meuble » plutôt que « taillé ».
+ for(let n=0;n<90;n++){const x=Math.floor(r()*S),y=Math.floor(r()*S);
+  c.set(x,y,r()>.5?SAND.tones[0]:SAND.metal);}
+ for(let n=0;n<12;n++){const x=Math.floor(r()*S),y=Math.floor(r()*S);c.set(x,y,V.deep);}
+ tex.resonance_sand=c;}
+// Verre de Résonance : un CADRE et presque rien dedans. Tout le travail est sur les
+// bords — c'est ce qui fait lire « vitre » à travers la transparence, exactement comme
+// le verre vanilla. Le centre reste vide, sinon on obtient un bloc teinté, pas une vitre.
+{const c=new Canvas(S,S);
+ const G={line:'#B79BD8',lite:'#D9C6EE',hot:'#F2E9FB'};
+ for(let i=0;i<S;i++){c.set(i,0,G.line);c.set(i,S-1,G.line);c.set(0,i,G.line);c.set(S-1,i,G.line);}
+ c.set(1,1,G.hot);c.set(S-2,1,G.lite);c.set(1,S-2,G.lite);
+ // Deux éclats obliques : le reflet. Sans eux la vitre a l'air d'un trou.
+ for(let i=2;i<7;i++)c.set(i,i,G.lite);
+ for(let i=9;i<13;i++)c.set(i,i-6,G.lite);
+ tex.resonance_glass=c;}
+
 const out=process.argv[2];fs.mkdirSync(out,{recursive:true});
 const es=Object.entries(tex);
 for(const[n,c]of es)fs.writeFileSync(path.join(out,n+'.png'),encodePNG(S,S,c.px));

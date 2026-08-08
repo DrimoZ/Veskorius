@@ -318,6 +318,14 @@ public class ModItems {
     public static final DeferredItem<BlockItem> VESKORIAN_CHASSIS_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.VESKORIAN_CHASSIS);
 
+    /** Sable de Résonance : l'étape intermédiaire du verre (voir ModBlocks). */
+    public static final DeferredItem<BlockItem> RESONANCE_SAND_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_SAND);
+
+    /** Verre de Résonance : le seul bloc purement décoratif du mod. */
+    public static final DeferredItem<BlockItem> RESONANCE_GLASS_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_GLASS);
+
     /** Résidu compressé — le seul exutoire du déchet du Synthesizer. */
     public static final DeferredItem<BlockItem> SYNTHESIS_RESIDUE_BLOCK_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.SYNTHESIS_RESIDUE_BLOCK);

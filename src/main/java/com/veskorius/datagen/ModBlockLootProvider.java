@@ -78,6 +78,13 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.VEINED_STONE_COLUMN.get());
         dropSelf(ModBlocks.VESKORIAN_ALLOY_BLOCK.get());
         dropSelf(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get());
+        dropSelf(ModBlocks.RESONANCE_SAND.get());
+        // Le verre se récupère SANS Toucher de Soie, contrairement au verre vanilla.
+        // La doctrine de ce fichier — « tout se récupère : ce qu'on trouve en ruine
+        // doit pouvoir être rebâti » — vaut d'autant plus pour le seul matériau du mod
+        // qui n'existe que pour bâtir. Le casser par erreur ne doit pas coûter un
+        // Cristal Stable.
+        dropSelf(ModBlocks.RESONANCE_GLASS.get());
         dropSelf(ModBlocks.DISSONANCE_BLOOM.get());
         // Une dalle double rend DEUX dalles : sans cette table dédiée, la moitié du
         // bloc disparaît au minage.

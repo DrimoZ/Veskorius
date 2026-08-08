@@ -463,6 +463,55 @@ public class ModBlocks {
                 .requiresCorrectToolForDrops());
 
     /**
+     * <b>Sable de Résonance</b> — l'étape intermédiaire du verre, et elle existe pour une
+     * raison précise.
+     *
+     * <p>Le dossier veut le {@code resonance_glass} « fondu au four vanilla » à partir de
+     * 4 sable + 1 Cristal Stable (04-Materials.md). Un four ne prend qu'une entrée : sans
+     * ce sable, il aurait fallu soit inventer un procédé, soit abandonner le four et faire
+     * le verre à l'établi. La seconde option effacerait la seule chose que la ligne du
+     * dossier précise sur ce matériau.
+     *
+     * <p>Alors on fait comme le sable vanilla, parce que c'est exactement ce que c'est :
+     * il TOMBE, et il se cuit en verre. Un joueur qui a déjà fait du verre une fois n'a
+     * rien de nouveau à apprendre.
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.ColoredFallingBlock> RESONANCE_SAND =
+        BLOCKS.registerBlock("resonance_sand",
+            props -> new net.minecraft.world.level.block.ColoredFallingBlock(
+                new net.minecraft.util.ColorRGBA(0x8A47B8), props),
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(0.5f)
+                .sound(SoundType.SAND));
+
+    /**
+     * <b>Verre de Résonance</b> — le <b>seul</b> bloc du mod pensé uniquement pour la
+     * construction (04-Materials.md, en toutes lettres : « pas de fonction de craft en
+     * aval »).
+     *
+     * <p>Ça vaut d'être dit, parce que tout le reste du mod justifie son existence par une
+     * mécanique. Un jeu de construction a besoin de matières qui ne servent qu'à être
+     * belles, sans quoi il n'offre que des outils. Celui-ci rayonne un peu (luminosité 8) :
+     * de quoi éclairer une pièce sans y poser de lampe, ce qui est déjà un usage.
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> RESONANCE_GLASS =
+        BLOCKS.registerSimpleBlock("resonance_glass",
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(0.4f)
+                .sound(SoundType.GLASS)
+                .lightLevel(state -> 8)
+                .noOcclusion()
+                // Un bloc translucide ne doit pas étouffer la lumière ni bloquer le rendu
+                // de ses voisins : sans ces trois lignes, un mur de verre s'affiche noir
+                // de l'intérieur et le joueur croit à une texture ratée.
+                .isValidSpawn((state, level, pos, type) -> false)
+                .isRedstoneConductor((state, level, pos) -> false)
+                .isSuffocating((state, level, pos) -> false)
+                .isViewBlocking((state, level, pos) -> false));
+
+    /**
      * <b>Noyau de Faille</b>. Indestructible et sans objet : la ressource finale du mod
      * dépend de lui, et c'est ce qui la rend finie.
      */

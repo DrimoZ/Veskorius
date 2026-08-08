@@ -60,7 +60,7 @@ est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments 
 | `flux_slag` | 04, 05 | ✅ codé (déchet de la Forge ; slot plein = forge arrêtée) |
 | `synthesis_residue` | 04, 05 | ✅ codé (déchet du Synthesizer ; le Slag Vent ne l'évacue PAS — il se compresse en `synthesis_residue_block`, 9↔1 à l'établi) |
 | `luminous_extract` | 04 | À coder (Phase 3) |
-| `resonance_glass` | 04 | À coder (Phase 3) |
+| `resonance_glass` | 04 | ✅ codé (4 sable + 1 Cristal Stable → sable de Résonance, fondu au four) |
 | `corrupted_veskorian_alloy_ingot` | 04, 08, 09 | ✅ codé — prime de 15 % à l'extraction (le drop du Gardien reste à faire) |
 | `ancient_conduit_stone` | 04 | À coder (Phase 2, trouvé tel quel) |
 

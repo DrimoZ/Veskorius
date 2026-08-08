@@ -169,6 +169,11 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.RIFT_ESSENCE, "Rift Essence");
         addItem(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT, "Corrupted Veskorian Alloy Ingot");
         addBlock(ModBlocks.VESKORIAN_ALLOY_BLOCK, "Block of Veskorian Alloy");
+        addBlock(ModBlocks.RESONANCE_SAND, "Resonance Sand");
+        addBlock(ModBlocks.RESONANCE_GLASS, "Resonance Glass");
+        add("codex.veskorius.crystals.glass.title", "Resonance Glass");
+        add("codex.veskorius.crystals.glass.text",
+            "Four sand and one Stable Resonance Crystal make four Resonance Sand; each one smelts into glass in an ordinary furnace. The same gesture as vanilla glass, because that is what it is.\n\nIt gives off light level 8 — enough to light a room without putting a lamp in it.\n\nThis is the only block in Veskorius built purely to be looked at: no recipe downstream wants it, no machine uses it. That is worth saying, because everything else here justifies itself with a mechanic. A building game needs materials that are only beautiful.");
         addBlock(ModBlocks.SYNTHESIS_RESIDUE_BLOCK, "Compressed Synthesis Residue");
         add("item.veskorius.veskorian_alloy_ingot.hint", "Structural metal of Tier 3. Forge gold instead of iron for the conductive kind.");
         add("item.veskorius.flux_slag.hint", "Forge waste. The same residue that, region-wide, caused the Collapse.");

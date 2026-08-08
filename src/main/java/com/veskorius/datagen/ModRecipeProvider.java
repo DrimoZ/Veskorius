@@ -64,6 +64,31 @@ public class ModRecipeProvider extends RecipeProvider {
             .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(
                 Veskorius.MOD_ID, "synthesis_residue_from_block"));
 
+        // Verre de Résonance, en deux temps parce que le dossier le veut « fondu au
+        // four vanilla » (04-Materials.md) et qu'un four ne prend qu'une entrée.
+        // 4 sable + 1 Cristal Stable donnent 4 sables de Résonance ; chacun se cuit en
+        // verre. C'est le geste du verre vanilla, à l'identique : rien de neuf à
+        // apprendre pour un joueur qui en a déjà fait.
+        net.minecraft.data.recipes.ShapelessRecipeBuilder
+            .shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.RESONANCE_SAND.get(), 4)
+            .requires(net.minecraft.tags.ItemTags.SAND)
+            .requires(net.minecraft.tags.ItemTags.SAND)
+            .requires(net.minecraft.tags.ItemTags.SAND)
+            .requires(net.minecraft.tags.ItemTags.SAND)
+            .requires(ModItems.STABLE_RESONANCE_CRYSTAL.get())
+            .unlockedBy(getHasName(ModItems.STABLE_RESONANCE_CRYSTAL.get()),
+                has(ModItems.STABLE_RESONANCE_CRYSTAL.get()))
+            .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(
+                Veskorius.MOD_ID, "resonance_sand"));
+
+        net.minecraft.data.recipes.SimpleCookingRecipeBuilder
+            .smelting(net.minecraft.world.item.crafting.Ingredient.of(ModBlocks.RESONANCE_SAND.get()),
+                RecipeCategory.BUILDING_BLOCKS, ModBlocks.RESONANCE_GLASS.get(), 0.1F, 200)
+            .unlockedBy(getHasName(ModBlocks.RESONANCE_SAND.get()),
+                has(ModBlocks.RESONANCE_SAND.get()))
+            .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(
+                Veskorius.MOD_ID, "resonance_glass"));
+
         // --- Machines T1 : châssis Fracturé + ce qui les distingue -------------
         //
         // La grammaire de fabrication est désormais « le boîtier de mon palier, plus

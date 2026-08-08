@@ -112,7 +112,7 @@ d'alliage et coûte donc le bonus de panoplie).
 
 ## 8. Interface
 
-- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **69 entrées**, 9 catégories,
+- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **70 entrées**, 9 catégories,
   couvrant les cinq paliers, les entités et l'équipement. Affiche les **recettes**
   (établi et machine, lues du RecipeManager chargé), pagine le texte, cherche dans tout
   le livre, s'adapte à la taille de la fenêtre.
@@ -136,8 +136,8 @@ SERVER, surchargeables par modpack.
 
 ## Ce qui reste
 
-**Matériaux de la phase 3** — `luminous_extract`, `resonance_glass`, `ancient_seed`,
-`resonance_bloom`, `ancient_conduit_stone`. Aucun n'est sur le chemin critique, et c'est
+**Matériaux restants** — `luminous_extract`, `ancient_seed`, `resonance_bloom`,
+`ancient_conduit_stone`, `meteoric_resonance_shard`. Le `resonance_glass` est fait. Aucun n'est sur le chemin critique, et c'est
 désormais le seul poste ouvert du dossier.
 
 Le Cœur de Faille n'est PAS de cette liste : c'est la `RiftFeature`, et elle fait déjà ce
