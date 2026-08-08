@@ -22,7 +22,21 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
         // Les blocs sont declares requiresCorrectToolForDrops : sans ces deux
         // tags, ils ne se dropent avec aucun outil.
+        // TROIS BLOCS MANQUAIENT ICI, ET ILS DISPARAISSAIENT AU MINAGE.
+        //
+        // requiresCorrectToolForDrops() sans appartenance à un tag mineable/* signifie
+        // qu'AUCUN outil n'est jamais correct : la table de butin ne se déclenche donc
+        // jamais, quel que soit ce qu'on tient en main. L'Advanced Assembler s'évaporait
+        // quand on le récupérait, et le Bloc d'Alliage — un bloc de CONSTRUCTION, produit
+        // du Structural Synthesizer — ne revenait pas du mur qu'on venait de bâtir.
+        //
+        // Rien ne le signalait : le bloc se pose, se casse, et le joueur croit à une
+        // maladresse. C'est `gradlew audit` qui l'a trouvé, en croisant la propriété du
+        // bloc avec les tags générés.
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
+            .add(ModBlocks.ADVANCED_ASSEMBLER.get())
+            .add(ModBlocks.VESKORIAN_ALLOY_BLOCK.get())
+            .add(ModBlocks.SYNTHESIS_RESIDUE_BLOCK.get())
             .add(ModBlocks.FRACTURED_CHASSIS.get())
             .add(ModBlocks.ATTUNED_CHASSIS.get())
             .add(ModBlocks.VESKORIAN_CHASSIS.get())
@@ -76,6 +90,11 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         // même être généré, sinon le palier référence un tag absent et chaque bloc devient
         // incassable à la pioche d'alliage.
         tag(ModTags.Blocks.INCORRECT_FOR_VESKORIAN_TOOL);
+
+        // Du sable se creuse à la pelle. Il ne se perd pas sans (il n'exige pas le bon
+        // outil), mais le creuser à la main prend vingt fois plus longtemps.
+        tag(BlockTags.MINEABLE_WITH_SHOVEL)
+            .add(ModBlocks.RESONANCE_SAND.get());
 
         tag(BlockTags.NEEDS_STONE_TOOL)
             .add(ModBlocks.FRACTURED_CHASSIS.get())

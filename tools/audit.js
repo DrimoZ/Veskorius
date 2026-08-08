@@ -56,6 +56,29 @@ for (const i of plainItems.concat(blockItems)) {
   }
 }
 
+// --- 1 bis. Outil correct exigé, mais aucun outil déclaré ----------------
+//
+// `requiresCorrectToolForDrops()` sans appartenance à un tag `mineable/*` veut dire
+// qu'AUCUN outil n'est jamais correct : le bloc ne se récupère JAMAIS, quoi qu'on tienne
+// en main. C'est arrivé à trois blocs — dont un bloc de CONSTRUCTION qu'on ne récupérait
+// pas du mur qu'on venait de bâtir, et une machine T3 qui s'évaporait quand on la
+// reprenait. Rien ne plante ; le joueur croit à une maladresse et recommence.
+const needsTool = new Set();
+for (const m of blocksSrc.matchAll(/register(?:SimpleBlock|Block)\("([a-z0-9_]+)"[\s\S]{0,900}?\)\);/g)) {
+  if (m[0].includes('requiresCorrectToolForDrops()')) needsTool.add(m[1]);
+}
+const mineable = new Set();
+for (const tool of ['pickaxe', 'axe', 'shovel', 'hoe']) {
+  const f = 'src/generated/resources/data/minecraft/tags/block/mineable/' + tool + '.json';
+  if (exists(f)) for (const v of JSON.parse(read(f)).values) mineable.add(String(v));
+}
+for (const b of needsTool) {
+  if (!mineable.has('veskorius:' + b)) {
+    problem('exige le bon outil sans figurer dans aucun tag mineable/* : ' + b
+      + ' (il disparaîtra au minage, quel que soit l\'outil)');
+  }
+}
+
 // --- 2. Langues, à parité stricte ----------------------------------------
 // (Le provider français refuse déjà de générer s'il manque une clé — on vérifie ici la
 // SORTIE, au cas où quelqu'un contournerait le provider.)
