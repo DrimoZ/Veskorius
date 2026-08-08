@@ -65,6 +65,10 @@ public class ModMenuTypes {
         FLUX_COMPRESSOR = MENUS.register("flux_compressor",
             () -> IMenuTypeExtension.create(FluxCompressorMenu::new));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<ReclaimerMenu>>
+        RECLAIMER = MENUS.register("reclaimer",
+            () -> IMenuTypeExtension.create(ReclaimerMenu::new));
+
     public static final DeferredHolder<MenuType<?>, MenuType<StructuralSynthesizerMenu>>
         STRUCTURAL_SYNTHESIZER = MENUS.register("structural_synthesizer",
             () -> IMenuTypeExtension.create(StructuralSynthesizerMenu::new));

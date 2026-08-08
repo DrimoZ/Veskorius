@@ -40,10 +40,11 @@ public class MachineRecipe implements Recipe<MachineRecipeInput> {
     private final int time;
     private final int oscPerTick;
     private final boolean stable;
+    private final ItemStack byproduct;
 
     public MachineRecipe(Supplier<? extends RecipeType<?>> type, Supplier<? extends RecipeSerializer<?>> serializer,
                          List<SizedIngredient> ingredients, ItemStack result, int time, int oscPerTick,
-                         boolean stable) {
+                         boolean stable, ItemStack byproduct) {
         this.type = type;
         this.serializer = serializer;
         this.ingredients = List.copyOf(ingredients);
@@ -51,6 +52,7 @@ public class MachineRecipe implements Recipe<MachineRecipeInput> {
         this.time = time;
         this.oscPerTick = oscPerTick;
         this.stable = stable;
+        this.byproduct = byproduct;
     }
 
     // --- Champs (getters nommés pour les codecs) -----------------------------
@@ -79,6 +81,23 @@ public class MachineRecipe implements Recipe<MachineRecipeInput> {
      */
     public boolean stable() {
         return stable;
+    }
+
+    /**
+     * <b>Sous-produit</b> du cycle, vide par defaut.
+     *
+     * <p>Il etait code EN DUR dans les machines : la Forge retournait un
+     * {@code new ItemStack(FLUX_SLAG)}, le Synthesizer un residu, le Damping Array de
+     * la boue. Un datapack pouvait donc changer ce qu'une machine PRODUIT mais pas ce
+     * qu'elle GACHE — la moitie de la boucle economique restait hors de portee, alors
+     * que le reste du mod est data-driven de bout en bout.
+     *
+     * <p>La javadoc de cette classe annoncait pourtant le champ depuis le debut :
+     * « ajouter un champ (sous-produit, chance d'echec propre a la recette, XP…) ne
+     * demande qu'une ligne de plus dans le serializer ». Elle avait raison.
+     */
+    public ItemStack byproduct() {
+        return byproduct;
     }
 
     // --- Recipe --------------------------------------------------------------

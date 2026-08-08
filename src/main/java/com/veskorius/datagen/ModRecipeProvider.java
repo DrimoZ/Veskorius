@@ -195,6 +195,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.VESKORIAN_ALLOY_INGOT.get(), 2)
                 .requires(blueprint(3)));
 
+        // Reclaimer (T3) : il ferme la boucle économique. Il se fabrique en CUIVRE — le
+        // métal des récupérateurs — plutôt qu'en alliage neuf : la machine qui rend les
+        // déchets ne doit pas coûter cher dans le matériau qu'elle sert à ne plus gâcher.
+        machine(recipeOutput, ModBlocks.RECLAIMER.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.VESKORIAN_ALLOY_INGOT.get(), b -> b
+                .requires(net.minecraft.world.item.Items.COPPER_BLOCK, 2)
+                .requires(ModItems.VESKORIAN_ALLOY_INGOT.get(), 2)
+                .requires(blueprint(3)));
+
         // Structural Synthesizer (#11) : ce qui rend l'alliage bâtissable.
         machine(recipeOutput, ModBlocks.STRUCTURAL_SYNTHESIZER.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
             ModItems.VESKORIAN_ALLOY_INGOT.get(), b -> b
@@ -634,12 +643,12 @@ public class ModRecipeProvider extends RecipeProvider {
         MachineRecipeBuilder.forging(ModItems.VESKORIAN_ALLOY_INGOT.get(), 1)
             .input(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
             .input(ModTags.Items.IRON_SUBSTITUTES, 2)
-            .time(400).osc(4)
+            .time(400).osc(4).byproduct(ModItems.FLUX_SLAG.get(), 1)
             .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "forging/veskorian_alloy_ingot"));
         MachineRecipeBuilder.forging(ModItems.VESKORIAN_CONDUCTIVE_ALLOY_INGOT.get(), 1)
             .input(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
             .input(net.minecraft.world.item.Items.GOLD_INGOT, 2)
-            .time(400).osc(4)
+            .time(400).osc(4).byproduct(ModItems.FLUX_SLAG.get(), 1)
             .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "forging/veskorian_conductive_alloy_ingot"));
         // Deep Synthesis Chamber (#15) : 2 Refined → 1 Hyper Refined, 90 s, 8 Osc/tick.
         // Le catalyseur a été payé à la construction, il n'apparaît donc pas ici.
@@ -654,6 +663,27 @@ public class ModRecipeProvider extends RecipeProvider {
             .time(30 * 20).osc(6)
             .save(recipeOutput, machineRecipe("compressing/concentrated_flux"));
 
+        // Reclaimer (T3) : les deux conversions que 16-Revision-and-Expansion.md dicte
+        // mot pour mot — « slag → un peu de pierre/gravier, sludge → poussière ».
+        //
+        // QUATRE POUR UN, ET LE TAUX EST MAUVAIS EXPRÈS. Recycler doit rester moins
+        // rentable que miner : un gravier vaut une pelletée, une poussière vaut un tiers
+        // de cristal brut. Si la boucle payait mieux, elle remplacerait l'exploration au
+        // lieu de la prolonger, et le mod enseignerait à rester chez soi. Ce qu'on achète
+        // ici n'est pas du rendement, c'est de ne plus avoir à jeter.
+        MachineRecipeBuilder.reclaiming(net.minecraft.world.item.Items.GRAVEL, 1)
+            .input(ModItems.FLUX_SLAG.get(), 4)
+            .time(20 * 20).osc(4)
+            .save(recipeOutput, machineRecipe("reclaiming/gravel_from_slag"));
+
+        // La boue n'avait, elle, STRICTEMENT aucun destinataire : le Damping Array en
+        // produisait à chaque purge et rien ne la consommait. Elle rend de la poussière —
+        // donc elle rentre dans la chaîne T1, ce qui referme la boucle jusqu'en bas.
+        MachineRecipeBuilder.reclaiming(ModItems.RESONANCE_DUST.get(), 1)
+            .input(ModItems.RESONANCE_SLUDGE.get(), 4)
+            .time(20 * 20).osc(4)
+            .save(recipeOutput, machineRecipe("reclaiming/dust_from_sludge"));
+
         // Structural Synthesizer (#11) : 4 lingots + 8 pierres → 4 blocs, 60 s. Le RÉSIDU
         // n'est pas ici : comme la scorie de la Forge, il est une propriété de la machine
         // (voir StructuralSynthesizerBlockEntity), donc un datapack qui ajoute un moulage
@@ -661,7 +691,7 @@ public class ModRecipeProvider extends RecipeProvider {
         MachineRecipeBuilder.synthesizing(ModBlocks.VESKORIAN_ALLOY_BLOCK.get(), 4)
             .input(ModItems.VESKORIAN_ALLOY_INGOT.get(), 4)
             .input(net.minecraft.tags.ItemTags.STONE_CRAFTING_MATERIALS, 8)
-            .time(60 * 20).osc(6)
+            .time(60 * 20).osc(6).byproduct(ModItems.SYNTHESIS_RESIDUE.get(), 1)
             .save(recipeOutput, machineRecipe("synthesizing/veskorian_alloy_block"));
 
         // Stabilizer : Raw Crystal + flux (Quartz via tag) → Stable Crystal, 30 s,

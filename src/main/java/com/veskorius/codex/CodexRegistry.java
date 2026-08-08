@@ -65,6 +65,7 @@ public final class CodexRegistry {
         TIERS.put("machines/driller", 3);
         TIERS.put("machines/slag_vent", 3);
         TIERS.put("machines/compressor", 3);
+        TIERS.put("machines/reclaimer", 3);
         TIERS.put("machines/chamber", 4);
         TIERS.put("machines/amplifier", 4);
         TIERS.put("machines/hub", 4);
@@ -207,6 +208,8 @@ public final class CodexRegistry {
             CodexUnlock.item(ModBlocks.SLAG_VENT));
         add("machines/compressor", CodexCategory.MACHINES, ModBlocks.FLUX_COMPRESSOR,
             CodexUnlock.item(ModBlocks.FLUX_COMPRESSOR));
+        add("machines/reclaimer", CodexCategory.MACHINES, ModBlocks.RECLAIMER,
+            CodexUnlock.item(ModBlocks.RECLAIMER));
         add("crystals/alloy", CodexCategory.CRYSTALS, ModItems.VESKORIAN_ALLOY_INGOT,
             CodexUnlock.item(ModItems.VESKORIAN_ALLOY_INGOT));
         add("crystals/slag", CodexCategory.CRYSTALS, ModItems.FLUX_SLAG,

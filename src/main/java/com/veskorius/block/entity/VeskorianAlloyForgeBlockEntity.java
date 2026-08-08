@@ -54,12 +54,23 @@ public class VeskorianAlloyForgeBlockEntity extends AbstractProcessingMachineBlo
 
     @Override
     protected void runCycle() {
+        // LU AVANT DE CONSOMMER. super.runCycle() vide les slots d'entrée, après quoi
+        // plus aucune recette ne correspond et le sous-produit reviendrait VIDE — la
+        // scorie disparaîtrait purement et simplement. Le piège n'existait pas tant que
+        // la scorie était une constante Java ; il est apparu le jour où elle est devenue
+        // une donnée de recette, et seul le test l'a vu.
+        ItemStack slag = slag();
         super.runCycle();
-        insertInto(SLOT_SLAG, slag());
+        insertInto(SLOT_SLAG, slag);
     }
 
-    private static ItemStack slag() {
-        return new ItemStack(ModItems.FLUX_SLAG.get());
+    /**
+     * La scorie vient de la RECETTE, plus d'une constante. Elle était écrite en dur ici :
+     * un datapack pouvait rééquilibrer ce que la Forge produit, jamais ce qu'elle gâche,
+     * alors que la contrainte de déchet est une décision d'équilibrage comme une autre.
+     */
+    private ItemStack slag() {
+        return recipeByproduct();
     }
 
     /** Les deux slots de sortie s'automatisent ; les entrées restent des entrées. */

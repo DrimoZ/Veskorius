@@ -87,6 +87,7 @@ public class Veskorius {
                 output.accept(ModItems.VESKORIAN_ALLOY_FORGE_ITEM.get());
                 output.accept(ModItems.RESONANCE_RELAY_ITEM.get());
                 output.accept(ModItems.FLUX_COMPRESSOR_ITEM.get());
+                output.accept(ModItems.RECLAIMER_ITEM.get());
                 output.accept(ModItems.STRUCTURAL_SYNTHESIZER_ITEM.get());
                 output.accept(ModItems.DEEP_CRYSTAL_DRILLER_ITEM.get());
                 output.accept(ModItems.SLAG_VENT_ITEM.get());

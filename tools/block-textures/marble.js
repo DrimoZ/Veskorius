@@ -237,6 +237,24 @@ const faces = {
     for (const [x, y] of [[2, 2], [12, 2]]) { c.rect(x, y, 2, 2, m.metal); c.set(x, y, m.metalHi); }
   },
 
+  // UN ENTONNOIR, et rien d'autre. Large en haut, étroit en bas, avec un bac dessous.
+  // C'est la seule façade du mod qui se lit de haut en bas plutôt que par symétrie : le
+  // Reclaimer ne transforme pas, il TRIE — ce qui entre est informe, ce qui sort est
+  // compté. Allumé, le filet qui descend s'éclaire ; le haut reste terne, parce que le
+  // déchet n'a jamais brillé.
+  reclaimer: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    for (let y = 1; y <= 6; y++) {
+      const inset = y - 1;
+      c.rect(1 + inset, y, 14 - inset * 2, 1, y < 3 ? m.tones[0] : m.tones[2]);
+    }
+    c.rect(7, 7, 2, 3, on ? a.mid : m.tones[0]);
+    if (on) { c.set(7, 7, a.hot); c.set(8, 9, a.lite); }
+    slab(c, 2, 10, 12, 5, m.metal, m.metalHi, m.line);
+    c.rect(4, 12, 8, 2, on ? a.deep : m.dark);
+    for (const [x, y] of [[1, 1], [13, 1]]) { c.rect(x, y, 2, 2, m.metal); c.set(x, y, m.metalHi); }
+  },
+
   // UN MOULE VU DE FACE : un cadre épais, et à l'intérieur QUATRE CASES — les quatre
   // blocs qu'un cycle produit. C'est le seul emblème du mod qui montre sa quantité.
   structural_synthesizer: (c, m, a, on) => {

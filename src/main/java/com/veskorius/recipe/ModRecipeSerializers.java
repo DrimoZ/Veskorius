@@ -42,6 +42,9 @@ public class ModRecipeSerializers {
     public static final DeferredHolder<RecipeSerializer<?>, MachineRecipeSerializer> COMPRESSING =
         RECIPE_SERIALIZERS.register("compressing",
             () -> new MachineRecipeSerializer(ModRecipeTypes.COMPRESSING::get));
+    public static final DeferredHolder<RecipeSerializer<?>, MachineRecipeSerializer> RECLAIMING =
+        RECIPE_SERIALIZERS.register("reclaiming",
+            () -> new MachineRecipeSerializer(ModRecipeTypes.RECLAIMING::get));
 
     public static final DeferredHolder<RecipeSerializer<?>, MachineRecipeSerializer> SYNTHESIZING =
         RECIPE_SERIALIZERS.register("synthesizing",

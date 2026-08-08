@@ -51,12 +51,15 @@ public class StructuralSynthesizerBlockEntity extends AbstractProcessingMachineB
 
     @Override
     protected void runCycle() {
+        // Lu avant que super.runCycle() ne vide les entrées — voir la note de la Forge.
+        ItemStack residue = residue();
         super.runCycle();
-        insertInto(SLOT_RESIDUE, residue());
+        insertInto(SLOT_RESIDUE, residue);
     }
 
-    private static ItemStack residue() {
-        return new ItemStack(ModItems.SYNTHESIS_RESIDUE.get());
+    /** Le résidu vient de la recette — voir {@code VeskorianAlloyForgeBlockEntity.slag()}. */
+    private ItemStack residue() {
+        return recipeByproduct();
     }
 
     @Override

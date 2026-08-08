@@ -406,6 +406,8 @@ public class ModItems {
 
     public static final DeferredItem<BlockItem> FLUX_COMPRESSOR_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.FLUX_COMPRESSOR);
+    public static final DeferredItem<BlockItem> RECLAIMER_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.RECLAIMER);
 
     public static final DeferredItem<BlockItem> STRUCTURAL_SYNTHESIZER_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.STRUCTURAL_SYNTHESIZER);

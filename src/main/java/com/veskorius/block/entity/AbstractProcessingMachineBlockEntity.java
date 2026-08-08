@@ -80,6 +80,17 @@ public abstract class AbstractProcessingMachineBlockEntity extends AbstractMachi
         }
     }
 
+    /**
+     * Sous-produit de la recette en cours, vide s'il n'y en a pas ou si aucune recette
+     * ne correspond. Les machines qui en ont un le lisent ICI plutôt que de renvoyer une
+     * constante Java : le déchet est une donnée de recette, surchargeable par datapack au
+     * même titre que le résultat.
+     */
+    protected ItemStack recipeByproduct() {
+        RecipeHolder<MachineRecipe> recipe = currentRecipe();
+        return recipe == null ? ItemStack.EMPTY : recipe.value().byproduct().copy();
+    }
+
     @Nullable
     private RecipeHolder<MachineRecipe> currentRecipe() {
         if (recipeDirty) {

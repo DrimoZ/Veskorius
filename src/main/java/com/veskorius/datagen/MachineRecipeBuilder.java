@@ -31,6 +31,7 @@ public class MachineRecipeBuilder {
     private int time = 1;
     private int oscPerTick = 0;
     private boolean stable = false;
+    private ItemStack byproduct = ItemStack.EMPTY;
 
     private MachineRecipeBuilder(Supplier<? extends RecipeType<?>> type,
                                  Supplier<? extends RecipeSerializer<?>> serializer, ItemStack result) {
@@ -74,6 +75,11 @@ public class MachineRecipeBuilder {
             ModRecipeSerializers.COMPRESSING::get, new ItemStack(result, count));
     }
 
+    public static MachineRecipeBuilder reclaiming(ItemLike result, int count) {
+        return new MachineRecipeBuilder(ModRecipeTypes.RECLAIMING::get,
+            ModRecipeSerializers.RECLAIMING::get, new ItemStack(result, count));
+    }
+
     public static MachineRecipeBuilder synthesizing(ItemLike result, int count) {
         return new MachineRecipeBuilder(ModRecipeTypes.SYNTHESIZING::get,
             ModRecipeSerializers.SYNTHESIZING::get, new ItemStack(result, count));
@@ -113,9 +119,22 @@ public class MachineRecipeBuilder {
         return this;
     }
 
+    /**
+     * Sous-produit du cycle — la scorie de la Forge, le résidu du Synthesizer.
+     *
+     * <p>Il vit ici, dans la <b>recette</b>, et non dans la machine. Il y était en dur :
+     * un datapack pouvait changer ce qu'une machine produit, jamais ce qu'elle gâche. La
+     * contrainte de déchet est pourtant une décision d'équilibrage comme une autre, et
+     * elle appartient à la donnée au même titre que le temps de cycle et le coût en Osc.
+     */
+    public MachineRecipeBuilder byproduct(ItemLike item, int count) {
+        this.byproduct = new ItemStack(item, count);
+        return this;
+    }
+
     public void save(RecipeOutput output, ResourceLocation id) {
         MachineRecipe recipe = new MachineRecipe(
-            type, serializer, List.copyOf(ingredients), result, time, oscPerTick, stable);
+            type, serializer, List.copyOf(ingredients), result, time, oscPerTick, stable, byproduct);
         // Pas d'advancement de déblocage pour une recette de machine (elle n'est
         // pas au recipe book vanilla) : null en 3e argument.
         output.accept(id, recipe, null);

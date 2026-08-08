@@ -2049,12 +2049,18 @@ public class MachineGameTests {
      * test, sur le {@code RecipeManager} chargé : chaque sous-produit doit apparaître
      * comme <b>ingrédient</b> d'au moins une recette qui a survécu au chargement.
      *
-     * <p><b>La scorie n'y figure pas, et c'est le fond du sujet.</b> Le premier jet la
-     * gardait dans la liste et le test tombait — à juste titre : aucune recette ne la
-     * consomme. Mais son exutoire n'a jamais été une recette. C'est le Slag Vent, une
-     * machine qui la <b>détruit</b>, et la corvée d'en poser un est précisément la
-     * contrainte que la Forge impose. Exiger d'elle une recette aurait effacé la seule
-     * différence que ce test doit protéger.
+     * <p><b>Les trois y figurent, et j'ai eu tort d'en exclure une.</b> Le premier jet
+     * gardait la scorie hors de la liste, au motif que son exutoire était le Slag Vent —
+     * une machine qui la <b>détruit</b> — et non une recette. C'était faux : le dossier
+     * lui destinait le Reclaimer depuis le début (« usages des déchets, essentiels pour
+     * que ce ne soit pas juste de la suppression »). J'avais pris l'état du code pour
+     * l'intention du design, ce qui est exactement l'erreur que cette famille de tests
+     * existe pour empêcher.
+     *
+     * <p>La boue, elle, n'était surveillée par personne : produite à chaque purge du
+     * Damping Array, consommée par rien, et absente de cette liste. Un déchet oublié
+     * <b>par la garde des déchets</b> — la liste est le seul point faible du dispositif,
+     * puisque rien n'oblige à y inscrire un sous-produit nouveau.
      */
     @GameTest(template = FIELD_ARENA, timeoutTicks = 40)
     public static void everyByproductHasAnOutlet(GameTestHelper helper) {
@@ -2072,12 +2078,14 @@ public class MachineGameTests {
     }
 
     /**
-     * Les sous-produits qui doivent <b>servir</b> à quelque chose. La scorie en est
-     * exclue volontairement — voir la note du test. Un déchet utile ajouté sans y
-     * figurer n'est pas gardé.
+     * Les trois sous-produits des machines. Un déchet ajouté sans y figurer n'est pas
+     * gardé : c'est la faiblesse du dispositif, et la raison pour laquelle la boue a pu
+     * s'accumuler tout un palier sans que personne ne le voie.
      */
     private static final net.minecraft.world.item.Item[] BYPRODUCTS = {
         ModItems.SYNTHESIS_RESIDUE.get(),
+        ModItems.FLUX_SLAG.get(),
+        ModItems.RESONANCE_SLUDGE.get(),
     };
 
     /** Toutes les machines fabricables. Une machine ajoutée sans y figurer n'est pas gardée. */
@@ -2088,6 +2096,7 @@ public class MachineGameTests {
         ModBlocks.TUNABLE_FIELD_EMITTER.get(), ModBlocks.CRYSTAL_ROOST.get(),
         ModBlocks.DAMPING_ARRAY.get(), ModBlocks.VESKORIAN_ALLOY_FORGE.get(),
         ModBlocks.RESONANCE_RELAY.get(), ModBlocks.FLUX_COMPRESSOR.get(),
+        ModBlocks.RECLAIMER.get(),
         ModBlocks.STRUCTURAL_SYNTHESIZER.get(), ModBlocks.DEEP_CRYSTAL_DRILLER.get(),
         ModBlocks.SLAG_VENT.get(),
         ModBlocks.DEEP_SYNTHESIS_CHAMBER.get(), ModBlocks.HARMONIC_AMPLIFIER.get(),
@@ -2163,7 +2172,7 @@ public class MachineGameTests {
                 helper.assertTrue(inv.getStackInSlot(
                         com.veskorius.block.entity.StructuralSynthesizerBlockEntity.SLOT_RESIDUE)
                         .is(ModItems.SYNTHESIS_RESIDUE.get()),
-                    "Chaque moulage laisse un résidu — propriété de la machine, pas de la recette");
+                    "Chaque moulage laisse un résidu — porté par la recette de synthèse");
             })
             .thenSucceed();
     }

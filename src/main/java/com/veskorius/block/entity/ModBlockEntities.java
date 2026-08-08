@@ -132,6 +132,12 @@ public class ModBlockEntities {
                 .of(FluxCompressorBlockEntity::new, ModBlocks.FLUX_COMPRESSOR.get())
                 .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ReclaimerBlockEntity>>
+        RECLAIMER = BLOCK_ENTITIES.register("reclaimer",
+            () -> BlockEntityType.Builder
+                .of(ReclaimerBlockEntity::new, ModBlocks.RECLAIMER.get())
+                .build(null));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<StructuralSynthesizerBlockEntity>>
         STRUCTURAL_SYNTHESIZER = BLOCK_ENTITIES.register("structural_synthesizer",
             () -> BlockEntityType.Builder

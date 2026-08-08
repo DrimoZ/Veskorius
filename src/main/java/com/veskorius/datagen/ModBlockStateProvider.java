@@ -52,6 +52,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.DAMPING_ARRAY.get(), "damping_array", VESKORIAN, SLATS);
         machine(ModBlocks.VESKORIAN_ALLOY_FORGE.get(), "veskorian_alloy_forge", VESKORIAN, PRESS);
         machine(ModBlocks.FLUX_COMPRESSOR.get(), "flux_compressor", VESKORIAN, RAM);
+        machine(ModBlocks.RECLAIMER.get(), "reclaimer", VESKORIAN, FUNNEL);
         machine(ModBlocks.DEEP_SYNTHESIS_CHAMBER.get(), "deep_synthesis_chamber", VESKORIAN, TANK);
         machine(ModBlocks.AUTOMATED_EXTRACTION_ARRAY.get(), "automated_extraction_array", VESKORIAN, GANTRY);
         machine(ModBlocks.STRUCTURAL_SYNTHESIZER.get(), "structural_synthesizer", VESKORIAN, MOLD);
@@ -457,6 +458,20 @@ public class ModBlockStateProvider extends BlockStateProvider {
         p.cube(b, 12, 5, 1, 15, 16, 15, "#side", "#top", "#side", false);  // montant droit
         p.cube(b, 4, 9, 4, 12, 14, 12, "#front", "#top", "#front", false); // bélier suspendu
         p.cube(b, 0, 14, 0, 16, 16, 16, "#side", "#top", "#side", false);  // sommier
+    };
+
+    /**
+     * Trémie : une gueule carrée qui se rétrécit vers un bac. La silhouette se lit de haut
+     * en bas et non par symétrie — le Reclaimer ne transforme pas, il <b>trie</b>. Ce qui
+     * entre par le large est informe, ce qui ressort par l'étroit est compté.
+     *
+     * <p>Deux étages, pas trois : un entonnoir trop détaillé redevient un cube à distance,
+     * et c'est à distance qu'on doit reconnaître la machine dans un atelier.
+     */
+    private static final Shape FUNNEL = (p, b) -> {
+        p.cube(b, 0, 11, 0, 16, 16, 16, "#side", "#top", "#front", false);   // gueule
+        p.cube(b, 3, 6, 3, 13, 11, 13, "#front", "#top", "#front", false);   // col
+        p.cube(b, 1, 0, 1, 15, 6, 15, "#side", "#top", "#front", false);     // bac
     };
 
     /**

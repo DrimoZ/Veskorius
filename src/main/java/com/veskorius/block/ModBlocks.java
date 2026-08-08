@@ -588,6 +588,22 @@ public class ModBlocks {
                 .noOcclusion()
                 .lightLevel(MACHINE_GLOW));
 
+    /**
+     * <b>Reclaimer</b> (T3) — il re-stabilise les dechets. Voir
+     * {@link com.veskorius.block.entity.ReclaimerBlockEntity} : c'est la machine qui
+     * ferme la derniere boucle ouverte du mod.
+     */
+    public static final DeferredBlock<ReclaimerBlock> RECLAIMER =
+        BLOCKS.registerBlock("reclaimer",
+            ReclaimerBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(MACHINE_GLOW));
+
     /** Machine #11 : ce qui rend le palier bâtissable — le lingot devient un bloc. */
     public static final DeferredBlock<StructuralSynthesizerBlock> STRUCTURAL_SYNTHESIZER =
         BLOCKS.registerBlock("structural_synthesizer",

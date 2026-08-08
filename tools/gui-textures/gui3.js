@@ -47,6 +47,7 @@ const ACCENT = {
   field_emitter: { deep: '#5C2C86', mid: '#8A47B8', hi: '#B57CE0' },
   veskorian_alloy_forge: { deep: '#8E5A15', mid: '#D8922A', hi: '#F0B863' },
   flux_compressor: { deep: '#5C2C86', mid: '#8A47B8', hi: '#B57CE0' },
+  reclaimer: { deep: '#3E4A38', mid: '#6B7F5E', hi: '#9DB48C' },
   structural_synthesizer: { deep: '#4A4658', mid: '#7C7890', hi: '#A8A4BA' },
   deep_crystal_driller: { deep: '#5E3517', mid: '#A8632F', hi: '#C9834E' },
   deep_synthesis_chamber: { deep: '#5E7A8E', mid: '#8FB3C6', hi: '#DDEEF5' },
@@ -114,6 +115,14 @@ const BANNER = {
     raised(c, 12, 58, 152, 5, a.mid, a.hi, a.deep);
     raised(c, 12, 69, 152, 4, P.brass, a.hi, a.deep);
     for (let i = 0; i < 10; i++) c.rect(18 + i * 15, 63, 4, 6, a.deep);
+  },
+  reclaimer: (c, a) => { // une file d'ENTONNOIRS qui se vident dans une rigole
+    raised(c, 12, 69, 152, 4, P.brass, a.hi, a.deep);
+    for (let i = 0; i < 7; i++) {
+      const x = 18 + i * 21;
+      for (let y = 0; y < 5; y++) c.rect(x + y, 59 + y, 14 - y * 2, 1, y < 2 ? a.deep : a.mid);
+      c.rect(x + 6, 64, 2, 5, a.hi);
+    }
   },
   structural_synthesizer: (c, a) => { // une file de MOULES : la quantité, encore
     for (let i = 0; i < 6; i++) {

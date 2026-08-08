@@ -44,6 +44,8 @@ public class ClientModEvents {
             com.veskorius.client.screen.DeepSynthesisChamberScreen::new);
         event.register(ModMenuTypes.FLUX_COMPRESSOR.get(),
             com.veskorius.client.screen.FluxCompressorScreen::new);
+        event.register(ModMenuTypes.RECLAIMER.get(),
+            com.veskorius.client.screen.ReclaimerScreen::new);
         event.register(ModMenuTypes.STRUCTURAL_SYNTHESIZER.get(),
             com.veskorius.client.screen.StructuralSynthesizerScreen::new);
         event.register(ModMenuTypes.DEEP_CRYSTAL_DRILLER.get(),

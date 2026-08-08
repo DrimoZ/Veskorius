@@ -65,6 +65,7 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.VESKORIAN_ALLOY_FORGE, "Forge d'Alliage Veskorien");
         addBlock(ModBlocks.RESONANCE_RELAY, "Relais de Résonance");
         addBlock(ModBlocks.FLUX_COMPRESSOR, "Compresseur de Flux");
+        addBlock(ModBlocks.RECLAIMER, "Récupérateur");
         addBlock(ModBlocks.STRUCTURAL_SYNTHESIZER, "Synthétiseur Structurel");
         addBlock(ModBlocks.DEEP_CRYSTAL_DRILLER, "Foreuse à Cristaux Profonds");
         addBlock(ModBlocks.SLAG_VENT, "Évent à Scorie");

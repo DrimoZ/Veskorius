@@ -84,6 +84,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.VESKORIAN_ALLOY_FORGE, "Veskorian Alloy Forge");
         addBlock(ModBlocks.RESONANCE_RELAY, "Resonance Relay");
         addBlock(ModBlocks.FLUX_COMPRESSOR, "Flux Compressor");
+        addBlock(ModBlocks.RECLAIMER, "Reclaimer");
         addBlock(ModBlocks.STRUCTURAL_SYNTHESIZER, "Structural Synthesizer");
         addBlock(ModBlocks.DEEP_CRYSTAL_DRILLER, "Deep Crystal Driller");
         addBlock(ModBlocks.SLAG_VENT, "Slag Vent");
@@ -232,6 +233,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("codex.veskorius.machines.slag_vent.title", "Slag Vent");
         add("codex.veskorius.machines.slag_vent.text",
             "Clears one Flux Slag every 10 seconds from every Forge within 8 blocks. It exists because a full slag slot stops a Forge dead.\n\nOne clear per pass per Forge: a battery of six will outrun a single Vent. It costs field continuously, so disposing of waste is a standing line in your energy budget, not a button you press once.");
+        add("codex.veskorius.machines.reclaimer.title", "Reclaimer");
+        add("codex.veskorius.machines.reclaimer.text",
+            "Feeds waste back into the economy. Four Flux Slag become one gravel; four Resonance Sludge become one Resonance Dust. 20 seconds, 4 Osc per tick.\n\nThe rate is deliberately poor. Reclaiming has to stay worse than mining, or the loop would replace exploration instead of extending it. What you buy here is not yield — it is no longer having to throw anything away.\n\nIt does not replace the Slag Vent. The Vent asks nothing but to exist; the Reclaimer wants a field, a cycle and floor space. Whoever wants slag gone without thinking keeps venting. Whoever wants it back pays for the infrastructure.\n\nBefore it existed, Flux Slag could only be destroyed and Resonance Sludge had nowhere to go at all.");
         add("codex.veskorius.machines.compressor.title", "Flux Compressor");
         add("codex.veskorius.machines.compressor.text",
             "Four Refined Crystals become one Concentrated Flux in 30 seconds, at 6 Osc per tick. An apparent loss, and a deliberate one.\n\nConcentrated Flux has exactly ONE consumer in the whole mod: the Convergence Core. Build a Compressor when you have decided to build that, and not before — there is nothing else to spend the output on.");

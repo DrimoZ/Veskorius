@@ -25,7 +25,8 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
  *                    { "item": "minecraft:iron_ingot", "count": 2 } ],
  *   "result": { "id": "veskorius:resonance_component", "count": 2 },
  *   "time": 100,
- *   "osc_per_tick": 3
+ *   "osc_per_tick": 3,
+ *   "byproduct": { "id": "veskorius:flux_slag", "count": 1 }
  * }
  * </pre>
  */
@@ -42,9 +43,10 @@ public class MachineRecipeSerializer implements RecipeSerializer<MachineRecipe> 
             ItemStack.CODEC.fieldOf("result").forGetter(MachineRecipe::result),
             ExtraCodecs.POSITIVE_INT.fieldOf("time").forGetter(MachineRecipe::time),
             ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("osc_per_tick", 0).forGetter(MachineRecipe::oscPerTick),
-            com.mojang.serialization.Codec.BOOL.optionalFieldOf("stable", false).forGetter(MachineRecipe::stable)
-        ).apply(instance, (ingredients, result, time, osc, stable) ->
-            new MachineRecipe(type, self, ingredients, result, time, osc, stable)));
+            com.mojang.serialization.Codec.BOOL.optionalFieldOf("stable", false).forGetter(MachineRecipe::stable),
+            ItemStack.CODEC.optionalFieldOf("byproduct", ItemStack.EMPTY).forGetter(MachineRecipe::byproduct)
+        ).apply(instance, (ingredients, result, time, osc, stable, byproduct) ->
+            new MachineRecipe(type, self, ingredients, result, time, osc, stable, byproduct)));
 
         this.streamCodec = StreamCodec.composite(
             SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), MachineRecipe::ingredients,
@@ -52,8 +54,9 @@ public class MachineRecipeSerializer implements RecipeSerializer<MachineRecipe> 
             ByteBufCodecs.VAR_INT, MachineRecipe::time,
             ByteBufCodecs.VAR_INT, MachineRecipe::oscPerTick,
             ByteBufCodecs.BOOL, MachineRecipe::stable,
-            (ingredients, result, time, osc, stable) ->
-                new MachineRecipe(type, self, ingredients, result, time, osc, stable));
+            ItemStack.OPTIONAL_STREAM_CODEC, MachineRecipe::byproduct,
+            (ingredients, result, time, osc, stable, byproduct) ->
+                new MachineRecipe(type, self, ingredients, result, time, osc, stable, byproduct));
     }
 
     @Override
