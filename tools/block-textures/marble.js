@@ -346,6 +346,23 @@ const faces = {
     c.rect(1, 3, 14, 1, on ? a.lite : m.line);
   },
 
+  // HUIT RAYONS partant d'un noyau central : la figure de l'anneau, dessinée sur la
+  // façade. Le joueur voit ce qu'il doit bâtir avant qu'on le lui explique — et une fois
+  // l'anneau posé, il reconnaît sur le bloc la forme qu'il vient de tracer au sol.
+  convergence_core: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    slab(c, 0, 0, 16, 16, m.tones[0], m.tones[3], m.line);
+    const spokes = [[8, 1], [8, 14], [1, 8], [14, 8], [3, 3], [12, 3], [3, 12], [12, 12]];
+    for (const [x, y] of spokes) {
+      c.rect(x - 1, y - 1, 2, 2, on ? a.mid : m.tones[2]);
+      if (on) c.set(x - 1, y - 1, a.hot);
+      c.line(x - 1, y - 1, 7, 7, on ? a.deep : m.line);
+    }
+    outline(c, DISC8, m.line);
+    fill(c, DISC8, on ? a.deep : m.dark);
+    fill(c, DISC4, on ? a.hot : m.tones[1]);
+  },
+
   // La même lentille, plus la réglette des trois bandes.
   tunable_field_emitter: (c, m, a, on) => {
     faces.field_emitter(c, m, a, on);

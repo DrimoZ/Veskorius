@@ -34,6 +34,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.veskorius.priority_high", "High");
         add("message.veskorius.hub_status", "Hub: shedding below %s, calibration %s%%");
         add("message.veskorius.priority_set", "Priority: %s");
+        add("message.veskorius.core_formed", "Core online — field range %s");
+        add("message.veskorius.core_incomplete", "Core idle — needs %s relays or amplifiers at %s blocks, each in direct view");
         add("item.veskorius.resonance_tuner.no_priority", "Only machines have a priority");
         add("gui.veskorius.machine_on", "Machine: On (click to turn off)");
         add("gui.veskorius.machine_off", "Machine: Off (click to turn on)");
@@ -83,6 +85,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.HARMONIC_AMPLIFIER, "Harmonic Amplifier");
         addBlock(ModBlocks.AUTOMATED_EXTRACTION_ARRAY, "Automated Extraction Array");
         addBlock(ModBlocks.RESONANCE_NETWORK_HUB, "Resonance Network Hub");
+        addBlock(ModBlocks.CONVERGENCE_CORE, "Convergence Core");
 
         // Châssis de palier : la base de craft et de texture des machines.
         addBlock(ModBlocks.FRACTURED_CHASSIS, "Fractured Chassis");

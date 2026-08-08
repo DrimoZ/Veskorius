@@ -265,6 +265,15 @@ vu les dix premières machines ne se dise pas "encore un four" en voyant les sui
 
 ## Convergence Core (multi-bloc, T4 → T5)
 
+> **✅ Codé.** Le bloc central coûte 3 Veskorian Alloy Block + 2 Harmonic Lattice + 1 Hyper
+> Refined + 1 Concentrated Flux + châssis + blueprint T4 — soit **neuf entrées**, le maximum
+> d'une grille. Les 12 blocs / 6 Treillis / 4 Hyper Refined / 4 Flux annoncés plus haut
+> décrivent le coût du **chantier entier** (anneau compris), pas celui du bloc : à 26 objets,
+> aucune recette d'établi ne peut les tenir. Les huit positions de l'anneau sont à distance
+> de **Chebyshev 5** (quatre axes + quatre coins), et la figure est **revalidée toutes les
+> deux secondes** et non seulement à la pose — sinon un mur bâti après coup laisserait un
+> Core allumé sur une figure détruite.
+
 Structure requise : le bloc Convergence Core au centre, entouré d'un anneau de 8 Resonance Relay
 **ou** Harmonic Amplifier (mélange autorisé) posés à exactement 5 blocs de distance, tous avec
 ligne de mire directe vers le Core (validation par ray-cast au moment de la pose du dernier

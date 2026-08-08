@@ -94,25 +94,11 @@ public final class ResonanceFieldManager {
         if (osc <= 0) {
             return 0;
         }
-        Set<BlockPos> set = EMITTERS.get(level.dimension());
-        if (set == null || set.isEmpty()) {
-            return 0;
-        }
-
-        // Copie défensive : extractOsc peut, via setChanged, déclencher des effets
-        // de bord, et un émetteur invalide est retiré en cours d'itération.
-        for (BlockPos emitterPos : set.toArray(BlockPos[]::new)) {
-            BlockEntity be = level.getBlockEntity(emitterPos);
-            if (!(be instanceof IResonanceField field)) {
-                // La position n'héberge plus d'émetteur : nettoyage paresseux.
-                set.remove(emitterPos);
-                continue;
-            }
-            if (!field.isActive()) {
-                continue;
-            }
-            long rangeSqr = (long) field.getRange() * field.getRange();
-            if (emitterPos.distSqr(consumerPos) > rangeSqr) {
+        // On sert d'abord la source LA PLUS FORTE, puis on retombe sur les autres si
+        // elle est à sec (voir strongestFirst). C'est la règle écrite de 06-Energy.md,
+        // « l'intensité retenue est celle de la source la plus forte ».
+        for (BlockPos emitterPos : strongestFirst(level, consumerPos, true)) {
+            if (!(level.getBlockEntity(emitterPos) instanceof IResonanceField field)) {
                 continue;
             }
             int drawn = field.extractOsc(osc);
@@ -121,6 +107,56 @@ public final class ResonanceFieldManager {
             }
         }
         return 0;
+    }
+
+    /**
+     * Les sources qui couvrent {@code pos}, <b>de la plus forte à la plus faible</b>, et à
+     * force égale dans l'ordre de pose.
+     *
+     * <p>Ce tri applique enfin ce que 06-Energy.md promettait depuis le début : « champs
+     * superposés : pas d'addition, l'intensité retenue est celle de la <b>source la plus
+     * forte</b> ». Le code, lui, servait depuis le premier émetteur inscrit, quelle que
+     * soit son intensité — et personne ne pouvait s'en apercevoir, puisque <i>toutes</i>
+     * les sources du mod valaient 100. L'écart est resté invisible jusqu'au Convergence
+     * Core, la première source d'intensité différente : sans ce tri, un Core posé au milieu
+     * d'une base ancienne aurait été systématiquement ignoré au profit du premier émetteur
+     * T2 venu, et le multi-bloc le plus coûteux du jeu n'aurait rien changé du tout.
+     *
+     * <p>Le repli sur les sources suivantes est conservé : si la plus forte est vide, on
+     * bascule sur la suivante plutôt que de bloquer la machine.
+     */
+    private static java.util.List<BlockPos> strongestFirst(ServerLevel level, BlockPos pos,
+                                                           boolean requireActive) {
+        Set<BlockPos> set = EMITTERS.get(level.dimension());
+        if (set == null || set.isEmpty()) {
+            return java.util.List.of();
+        }
+        java.util.List<BlockPos> covering = new java.util.ArrayList<>();
+        // Copie défensive : extractOsc peut, via setChanged, déclencher des effets de
+        // bord, et une position invalide est retirée en cours d'itération.
+        for (BlockPos emitterPos : set.toArray(BlockPos[]::new)) {
+            BlockEntity be = level.getBlockEntity(emitterPos);
+            if (!(be instanceof IResonanceField field)) {
+                // La position n'héberge plus d'émetteur : nettoyage paresseux.
+                set.remove(emitterPos);
+                continue;
+            }
+            if (requireActive && !field.isActive()) {
+                continue;
+            }
+            long rangeSqr = (long) field.getRange() * field.getRange();
+            if (emitterPos.distSqr(pos) <= rangeSqr) {
+                covering.add(emitterPos);
+            }
+        }
+        if (covering.size() > 1) {
+            // Tri STABLE : à intensité égale, l'ordre d'insertion est conservé, donc
+            // « première posée, première servie » continue de valoir entre égaux.
+            covering.sort(java.util.Comparator.comparingInt(
+                (BlockPos p) -> level.getBlockEntity(p) instanceof IResonanceField f
+                    ? f.getFieldStrength() : 0).reversed());
+        }
+        return covering;
     }
 
     /**
@@ -148,20 +184,11 @@ public final class ResonanceFieldManager {
 
     @org.jetbrains.annotations.Nullable
     private static IResonanceField findSource(ServerLevel level, BlockPos consumerPos, boolean requireActive) {
-        Set<BlockPos> set = EMITTERS.get(level.dimension());
-        if (set == null || set.isEmpty()) {
-            return null;
-        }
-        for (BlockPos emitterPos : set.toArray(BlockPos[]::new)) {
-            if (!(level.getBlockEntity(emitterPos) instanceof IResonanceField field)) {
-                set.remove(emitterPos);
-                continue;
-            }
-            if (requireActive && !field.isActive()) {
-                continue;
-            }
-            long rangeSqr = (long) field.getRange() * field.getRange();
-            if (emitterPos.distSqr(consumerPos) <= rangeSqr) {
+        // Même ordre que supply : sans ça, une machine lirait la bande harmonique d'une
+        // source et puiserait dans une autre — le désaccord se calculerait sur le mauvais
+        // champ, et la dissonance s'injecterait chez un innocent.
+        for (BlockPos emitterPos : strongestFirst(level, consumerPos, requireActive)) {
+            if (level.getBlockEntity(emitterPos) instanceof IResonanceField field) {
                 return field;
             }
         }

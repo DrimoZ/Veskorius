@@ -72,6 +72,12 @@ public class ModBlockEntities {
                 .of(ResonanceRelayBlockEntity::new, ModBlocks.RESONANCE_RELAY.get())
                 .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ConvergenceCoreBlockEntity>>
+        CONVERGENCE_CORE = BLOCK_ENTITIES.register("convergence_core",
+            () -> BlockEntityType.Builder
+                .of(ConvergenceCoreBlockEntity::new, ModBlocks.CONVERGENCE_CORE.get())
+                .build(null));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AutomatedExtractionArrayBlockEntity>>
         AUTOMATED_EXTRACTION_ARRAY = BLOCK_ENTITIES.register("automated_extraction_array",
             () -> BlockEntityType.Builder

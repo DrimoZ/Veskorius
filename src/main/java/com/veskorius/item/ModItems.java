@@ -294,6 +294,9 @@ public class ModItems {
     public static final DeferredItem<BlockItem> RESONANCE_RELAY_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_RELAY);
 
+    public static final DeferredItem<BlockItem> CONVERGENCE_CORE_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.CONVERGENCE_CORE);
+
     public static final DeferredItem<BlockItem> AUTOMATED_EXTRACTION_ARRAY_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.AUTOMATED_EXTRACTION_ARRAY);
 

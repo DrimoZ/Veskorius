@@ -67,6 +67,8 @@ import net.neoforged.neoforge.items.IItemHandler;
 public class MachineGameTests {
 
     private static final String EMPTY = "empty";
+    /** 42x42 : la seule arène assez large pour un anneau de onze blocs de côté. */
+    private static final String PIECE_ARENA = "piece_arena";
     private static final String FIELD_ARENA = "field_arena";
 
     /** Position de la machine dans le template 5x5x5. */
@@ -1990,6 +1992,7 @@ public class MachineGameTests {
         ModBlocks.SLAG_VENT.get(),
         ModBlocks.DEEP_SYNTHESIS_CHAMBER.get(), ModBlocks.HARMONIC_AMPLIFIER.get(),
         ModBlocks.AUTOMATED_EXTRACTION_ARRAY.get(), ModBlocks.RESONANCE_NETWORK_HUB.get(),
+        ModBlocks.CONVERGENCE_CORE.get(),
         ModBlocks.FRACTURED_CHASSIS.get(), ModBlocks.ATTUNED_CHASSIS.get(),
         ModBlocks.VESKORIAN_CHASSIS.get(),
     };
@@ -2344,6 +2347,92 @@ public class MachineGameTests {
         driller.markSynchronised(100);
         helper.assertTrue(driller.isSynchronised(),
             "La marque poussée par la Matrice doit prendre effet");
+        helper.succeed();
+    }
+
+    // =====================================================================
+    // Convergence Core (#18) — le seul multi-bloc
+    // =====================================================================
+
+    private static final BlockPos CORE = new BlockPos(10, 1, 10);
+
+    /**
+     * <b>La figure décide, et rien d'autre.</b> Sept relais sur huit ne suffisent pas ; le
+     * huitième allume le Core ; un mur posé sur une seule ligne de vue l'éteint.
+     *
+     * <p>Les trois moitiés comptent. Sans la première, le multi-bloc n'en est pas un — on
+     * pose un bloc et il marche. Sans la deuxième, il ne s'allume jamais et le joueur
+     * démonte au hasard. Sans la troisième, la contrainte de vue directe n'existe que dans
+     * le dossier, et le pilier « bases ouvertes, pas de boîtes fermées » redevient une
+     * recommandation esthétique au lieu d'une condition de fonctionnement.
+     */
+    @GameTest(template = PIECE_ARENA, timeoutTicks = 200, batch = "core_form")
+    public static void coreNeedsItsWholeRingInDirectView(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        var ring = com.veskorius.block.entity.ConvergenceCoreBlockEntity.ringOffsets();
+
+        helper.setBlock(CORE, ModBlocks.CONVERGENCE_CORE.get());
+        for (int i = 0; i < ring.size() - 1; i++) {
+            helper.setBlock(CORE.offset(ring.get(i)), ModBlocks.RESONANCE_RELAY.get());
+        }
+        helper.assertFalse(
+            com.veskorius.block.entity.ConvergenceCoreBlockEntity.isFormed(
+                level, helper.absolutePos(CORE)),
+            "Sept éléments sur huit : la figure ne doit PAS être valide");
+
+        // Le dernier, et un amplificateur plutôt qu'un relais — le mélange est autorisé.
+        BlockPos last = CORE.offset(ring.get(ring.size() - 1));
+        helper.setBlock(last, ModBlocks.HARMONIC_AMPLIFIER.get());
+        helper.assertTrue(
+            com.veskorius.block.entity.ConvergenceCoreBlockEntity.isFormed(
+                level, helper.absolutePos(CORE)),
+            "Huit éléments, relais et amplificateurs mélangés : la figure doit être valide");
+
+        // Un seul bloc plein sur une seule ligne de vue suffit à tout défaire.
+        helper.setBlock(CORE.offset(ring.get(0).getX() / 2, 0, ring.get(0).getZ() / 2),
+            Blocks.OBSIDIAN);
+        helper.assertFalse(
+            com.veskorius.block.entity.ConvergenceCoreBlockEntity.isFormed(
+                level, helper.absolutePos(CORE)),
+            "Une ligne de vue coupée doit défaire la figure — sinon on enferme le Core "
+                + "dans une boîte et la contrainte n'existe que dans le dossier");
+        helper.succeed();
+    }
+
+    /**
+     * <b>L'anneau se pose en comptant, sans plan.</b> Les huit positions sont à la même
+     * distance de Chebyshev, sur un seul niveau. Si la figure dérivait vers des offsets
+     * irréguliers, elle deviendrait indevinable en jeu et le multi-bloc se construirait à
+     * coups de captures d'écran d'un wiki.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 20)
+    public static void coreRingIsLaidOutByCounting(GameTestHelper helper) {
+        var ring = com.veskorius.block.entity.ConvergenceCoreBlockEntity.ringOffsets();
+        int r = com.veskorius.block.entity.ConvergenceCoreBlockEntity.RING_RADIUS;
+        helper.assertTrue(ring.size() == 8, "L'anneau compte huit positions, vaut " + ring.size());
+        for (BlockPos p : ring) {
+            helper.assertTrue(p.getY() == 0, "Toutes sur le même niveau, vaut y=" + p.getY());
+            helper.assertTrue(Math.max(Math.abs(p.getX()), Math.abs(p.getZ())) == r,
+                "Distance de Chebyshev " + r + " attendue pour " + p);
+        }
+        helper.assertTrue(ring.stream().distinct().count() == 8,
+            "Huit positions DISTINCTES : un doublon rendrait la figure impossible à valider");
+        helper.succeed();
+    }
+
+    /**
+     * <b>La source la plus forte l'emporte.</b> 06-Energy.md l'écrit depuis le début ; le
+     * manager, lui, servait depuis la première source inscrite. Personne ne pouvait s'en
+     * apercevoir tant que toutes valaient 100 — le Convergence Core est la première dont
+     * l'intensité diffère, et sans ce tri il aurait été systématiquement ignoré au profit
+     * du premier émetteur T2 venu.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 20)
+    public static void coreOutranksEveryOtherSource(GameTestHelper helper) {
+        helper.assertTrue(
+            com.veskorius.block.entity.ConvergenceCoreBlockEntity.FIELD_STRENGTH > 100,
+            "Le Core doit être plus fort que les sources ordinaires (100) — c'est "
+                + "l'exception assumée à l'anti-stacking de 06-Energy.md");
         helper.succeed();
     }
 

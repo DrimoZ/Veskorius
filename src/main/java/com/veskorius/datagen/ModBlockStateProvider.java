@@ -78,6 +78,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // Le Hub n'émet rien et ne transporte rien : il ARBITRE. Silhouette de borne
         // trapue, ni tour ni mât — on ne doit pas le chercher des yeux comme une source.
         vent(ModBlocks.RESONANCE_NETWORK_HUB.get(), "resonance_network_hub", VESKORIAN);
+        // Le Core est le seul bloc du mod qui soit un MONUMENT : socle large, corps
+        // massif, couronne. Il doit se voir de loin au milieu de son anneau — c'est la
+        // pièce autour de laquelle on bâtit, pas une machine qu'on range contre un mur.
+        core(ModBlocks.CONVERGENCE_CORE.get(), "convergence_core", VESKORIAN);
 
         // --- Châssis nus ------------------------------------------------------
         // Le bloc de base, posable tel quel. C'est littéralement le boîtier que
@@ -263,6 +267,13 @@ public class ModBlockStateProvider extends BlockStateProvider {
     private void emitter(Block block, String name, String chassisName) {
         ModelFile off = shaped(name, chassisName, name + "_front", TOWER);
         ModelFile on = shaped(name + "_on", chassisName, name + "_front_on", TOWER);
+        oriented(block, name, off, on, FieldEmitterBlock.FACING, FieldEmitterBlock.LIT);
+    }
+
+    /** Même fabrique, silhouette de monument. */
+    private void core(Block block, String name, String chassisName) {
+        ModelFile off = shaped(name, chassisName, name + "_front", MONUMENT);
+        ModelFile on = shaped(name + "_on", chassisName, name + "_front_on", MONUMENT);
         oriented(block, name, off, on, FieldEmitterBlock.FACING, FieldEmitterBlock.LIT);
     }
 
@@ -489,6 +500,18 @@ public class ModBlockStateProvider extends BlockStateProvider {
         p.cube(b, 12, 0, 0, 16, 16, 16, "#side", "#top", "#front", false); // pied droit
         p.cube(b, 4, 12, 0, 12, 16, 16, "#side", "#top", "#front", false); // poutre
         p.bar(b, 4, 10, 7, 12, 12, 9);                                     // rail de translation
+    };
+
+    /**
+     * Monument : socle débordant, corps massif, couronne en retrait. Aucune autre
+     * silhouette du mod n'occupe autant de volume — c'est délibéré, c'est le seul bloc
+     * autour duquel le joueur construit une figure de onze blocs de côté.
+     */
+    private static final Shape MONUMENT = (p, b) -> {
+        p.cube(b, 0, 0, 0, 16, 4, 16, "#side", "#top", "#side", false);
+        p.cube(b, 2, 4, 2, 14, 12, 14, "#side", "#top", "#front", false);
+        p.cube(b, 4, 12, 4, 12, 14, 12, "#side", "#top", "#side", false);
+        p.cube(b, 6, 14, 6, 10, 16, 10, "#front", "#top", "#front", false);
     };
 
     /** Assemble un modèle à partir d'une silhouette et d'un jeu de textures. */

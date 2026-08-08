@@ -237,6 +237,32 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
                 .requires(blueprint(4)));
 
+        // Convergence Core (#18). Le dossier annonce 12 Alloy Block + 6 Treillis +
+        // 4 Hyper Refined + 4 Flux Concentré — VINGT-SIX objets, soit près de trois fois ce
+        // qu'une grille peut tenir. C'est la même impossibilité que la Foreuse, en plus
+        // franche, et elle ne se voit qu'au chargement du monde.
+        //
+        // Le chiffre du dossier décrit le coût du CHANTIER, pas celui du bloc : l'anneau
+        // réclame huit relais ou amplificateurs, et c'est là que partent les autres
+        // Treillis et Hyper Refined. Le bloc central en garde le quart, et reste de loin
+        // la recette la plus chère du jeu. 05-Machines.md porte la révision.
+        //
+        // TROIS blocs d'alliage et non quatre : à quatre, la recette faisait dix entrées
+        // avec le châssis et le blueprint — un de trop, et donc une recette écartée en
+        // silence au chargement du monde. C'est le troisième objet du mod à buter sur les
+        // neuf cases ; le test everyMachineIsActuallyCraftable est né du deuxième.
+        //
+        // Le Flux Concentré reste, lui, non négociable : le Core est son SEUL consommateur
+        // dans tout le jeu. Le retirer aurait laissé le Flux Compressor sans débouché et
+        // vidé une machine entière de sa raison d'être, pour économiser une case.
+        machine(recipeOutput, ModBlocks.CONVERGENCE_CORE.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.HARMONIC_LATTICE.get(), b -> b
+                .requires(ModBlocks.VESKORIAN_ALLOY_BLOCK.get(), 3)
+                .requires(ModItems.HARMONIC_LATTICE.get(), 2)
+                .requires(ModItems.HYPER_REFINED_CRYSTAL.get())
+                .requires(ModItems.CONCENTRATED_FLUX.get())
+                .requires(blueprint(4)));
+
         // Automated Extraction Array (#16) : 4 lingots d'alliage (05-Machines.md).
         machine(recipeOutput, ModBlocks.AUTOMATED_EXTRACTION_ARRAY.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
             ModItems.VESKORIAN_ALLOY_INGOT.get(), b -> b

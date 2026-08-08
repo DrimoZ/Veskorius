@@ -142,7 +142,7 @@ ne sont pas comptés dans les 23 machines : ce sont des blocs de construction, p
 | 15 | `deep_synthesis_chamber` | T4 | ✅ codé — 2 Refined → 1 Hyper Refined, 90 s, 8 Osc/tick, surchauffe. Seule source du matériau ; consomme 1 Hyper Refined à la CONSTRUCTION (catalyseur permanent) |
 | 16 | `automated_extraction_array` | T4 | ✅ codé — ramasse la sortie des Driller à 12 blocs ET les fait tourner DOUBLE. Le signal est poussé vers les foreuses, jamais cherché par elles |
 | 17 | `resonance_network_hub` | T4 | ✅ codé — plancher de priorité selon la réserve du champ (>50 % tout passe, 20-50 % les basses s'effacent, <20 % hautes seules). Passif. Priorité réglable au Tuner ; dérive comme l'Amplifier |
-| 18 | `convergence_core` | T4→T5 | À coder (Phase 4) |
+| 18 | `convergence_core` | T4→T5 | ✅ codé — multi-bloc : 8 relais/amplificateurs à Chebyshev 5, chacun en vue directe, revalidé toutes les 2 s. Champ portée 40, intensité 1000 (exception assumée à l'anti-stacking) |
 | 19 | `rift_anchor` | T5 | À coder (Phase 4) |
 | 20 | `rift_core_extractor` | T5 | À coder (Phase 4) |
 | 21 | `rift_ward_emitter` | T5 | À coder (Phase 4) |

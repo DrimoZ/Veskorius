@@ -448,6 +448,21 @@ public class ModBlocks {
                 .noOcclusion()
                 .lightLevel(EMITTER_GLOW));
 
+    /**
+     * Machine #18 : le seul multi-bloc du mod. Posé seul, il est inerte — il lui faut huit
+     * relais ou amplificateurs à 5 blocs, tous en vue directe.
+     */
+    public static final DeferredBlock<ConvergenceCoreBlock> CONVERGENCE_CORE =
+        BLOCKS.registerBlock("convergence_core",
+            ConvergenceCoreBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(6.0f, 12.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(EMITTER_GLOW));
+
     /** Machine #16 : commande les foreuses — elle ramasse, et elle les fait tourner double. */
     public static final DeferredBlock<AutomatedExtractionArrayBlock> AUTOMATED_EXTRACTION_ARRAY =
         BLOCKS.registerBlock("automated_extraction_array",

@@ -73,6 +73,9 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.HARMONIC_AMPLIFIER, "Amplificateur Harmonique");
         addBlock(ModBlocks.AUTOMATED_EXTRACTION_ARRAY, "Matrice d'Extraction Automatisée");
         addBlock(ModBlocks.RESONANCE_NETWORK_HUB, "Nœud de Réseau de Résonance");
+        addBlock(ModBlocks.CONVERGENCE_CORE, "Cœur de Convergence");
+        add("message.veskorius.core_formed", "Cœur en ligne — portée %s");
+        add("message.veskorius.core_incomplete", "Cœur inerte — il lui faut %s relais ou amplificateurs à %s blocs, chacun en vue directe");
         add("gui.veskorius.priority_low", "Basse");
         add("gui.veskorius.priority_normal", "Normale");
         add("gui.veskorius.priority_high", "Haute");
