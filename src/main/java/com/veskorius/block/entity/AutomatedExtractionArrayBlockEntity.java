@@ -99,6 +99,13 @@ public class AutomatedExtractionArrayBlockEntity extends AbstractMachineBlockEnt
             if (p.distSqr(worldPosition) > radiusSqr || !level.isLoaded(p)) {
                 continue;
             }
+            // L'ÉTAT AVANT LA BLOCK ENTITY. Sur les quinze mille positions balayées, une
+            // poignée porte une foreuse : lire un état est un accès tableau, demander une
+            // block entity est une recherche dans la table du chunk. Filtrer d'abord évite
+            // la seconde quinze mille fois sur quinze mille et une.
+            if (!level.getBlockState(p).is(com.veskorius.block.ModBlocks.DEEP_CRYSTAL_DRILLER.get())) {
+                continue;
+            }
             if (!(level.getBlockEntity(p) instanceof DeepCrystalDrillerBlockEntity driller)) {
                 continue;
             }

@@ -113,6 +113,11 @@ public class SlagVentBlockEntity extends BlockEntity {
             if (p.distSqr(pos) > radiusSqr || !level.isLoaded(p)) {
                 continue;
             }
+            // L'état d'abord : voir la note de l'Automated Extraction Array. Une lecture
+            // d'état écarte presque tout, sans jamais toucher la table des block entities.
+            if (!level.getBlockState(p).is(com.veskorius.block.ModBlocks.VESKORIAN_ALLOY_FORGE.get())) {
+                continue;
+            }
             if (level.getBlockEntity(p) instanceof VeskorianAlloyForgeBlockEntity forge
                 && !forge.getInventory()
                     .getStackInSlot(VeskorianAlloyForgeBlockEntity.SLOT_SLAG).isEmpty()) {

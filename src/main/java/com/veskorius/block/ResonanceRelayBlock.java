@@ -41,43 +41,17 @@ import org.jetbrains.annotations.Nullable;
  * chaîne, il faut pouvoir remonter le fil relais par relais pour trouver lequel ne reçoit plus.
  * Sans ce retour, la seule façon de diagnostiquer serait de tout casser.
  */
-public class ResonanceRelayBlock extends BaseEntityBlock {
+public class ResonanceRelayBlock extends AbstractOrientedBlock {
 
     public static final MapCodec<ResonanceRelayBlock> CODEC = simpleCodec(ResonanceRelayBlock::new);
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final BooleanProperty LIT = BlockStateProperties.LIT;
-
     public ResonanceRelayBlock(Properties properties) {
         super(properties);
-        registerDefaultState(getStateDefinition().any()
-            .setValue(FACING, Direction.NORTH)
-            .setValue(LIT, Boolean.FALSE));
     }
 
     @Override
     protected MapCodec<ResonanceRelayBlock> codec() {
         return CODEC;
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIT);
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
-    }
-
-    @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
-    }
-
-    @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
     /**
@@ -95,11 +69,6 @@ public class ResonanceRelayBlock extends BaseEntityBlock {
         BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos,
         net.minecraft.world.phys.shapes.CollisionContext context) {
         return SHAPE;
-    }
-
-    @Override
-    protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
     }
 
     @Nullable

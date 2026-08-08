@@ -37,48 +37,17 @@ import org.jetbrains.annotations.Nullable;
  * <p>Réutilise {@link FieldEmitterBlock#FACING} et {@link FieldEmitterBlock#LIT} : mêmes
  * propriétés, donc même fabrique de modèle et même prise en main par le Resonance Tuner.
  */
-public class RiftWardEmitterBlock extends BaseEntityBlock {
+public class RiftWardEmitterBlock extends AbstractOrientedBlock {
 
     public static final MapCodec<RiftWardEmitterBlock> CODEC = simpleCodec(RiftWardEmitterBlock::new);
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final BooleanProperty LIT = BlockStateProperties.LIT;
-
     public RiftWardEmitterBlock(Properties properties) {
         super(properties);
-        registerDefaultState(getStateDefinition().any()
-            .setValue(FACING, Direction.NORTH)
-            .setValue(LIT, Boolean.FALSE));
     }
 
     @Override
     protected MapCodec<RiftWardEmitterBlock> codec() {
         return CODEC;
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIT);
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
-    }
-
-    @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
-    }
-
-    @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation(state.getValue(FACING)));
-    }
-
-    @Override
-    protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
     }
 
     @Nullable

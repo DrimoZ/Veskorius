@@ -40,11 +40,9 @@ import org.jetbrains.annotations.Nullable;
  * Tuner (12-UX-and-Advancements.md) et parce que l'ajouter plus tard casserait les
  * blocs déjà posés.
  */
-public class FieldEmitterBlock extends BaseEntityBlock {
+public class FieldEmitterBlock extends AbstractOrientedBlock {
 
     public static final MapCodec<FieldEmitterBlock> CODEC = simpleCodec(FieldEmitterBlock::new);
-
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     /**
      * Vrai quand l'émetteur a du carburant en réserve. Pilote la façade allumée
@@ -59,13 +57,9 @@ public class FieldEmitterBlock extends BaseEntityBlock {
      * {@code setBlock} — donc un recalcul de lumière — au même rythme. L'intermittence
      * se lit déjà sur les machines alimentées, qui hoquettent.
      */
-    public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     public FieldEmitterBlock(Properties properties) {
         super(properties);
-        registerDefaultState(getStateDefinition().any()
-            .setValue(FACING, Direction.NORTH)
-            .setValue(LIT, Boolean.FALSE));
     }
 
     @Override
@@ -75,32 +69,7 @@ public class FieldEmitterBlock extends BaseEntityBlock {
 
     // --- Orientation ---------------------------------------------------------
 
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIT);
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
-    }
-
-    @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
-    }
-
-    @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation(state.getValue(FACING)));
-    }
-
     // --- Rendu et ticker -----------------------------------------------------
-
-    @Override
-    protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
-    }
 
     /** Type de block entity de cette variante d'émetteur (redéfini par l'Accordable). */
     protected BlockEntityType<? extends FieldEmitterBlockEntity> emitterType() {

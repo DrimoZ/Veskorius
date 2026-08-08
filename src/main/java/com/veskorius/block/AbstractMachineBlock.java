@@ -39,63 +39,25 @@ import org.jetbrains.annotations.Nullable;
  * Une sous-classe fournit trois choses : son {@code codec()}, son type de block
  * entity, et {@code newBlockEntity}.
  */
-public abstract class AbstractMachineBlock extends BaseEntityBlock {
+public abstract class AbstractMachineBlock extends AbstractOrientedBlock {
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-
-    /**
-     * Vrai quand la machine avance réellement un cycle ce tick — piloté par
-     * {@link AbstractMachineBlockEntity}. Sert de retour visuel dans le monde
-     * (glow via {@code lightLevel}) : une machine allumée travaille, une machine
-     * éteinte est à l'arrêt (coupée, sans ingrédient, sortie pleine, ou — pour les
-     * machines à Osc — hors champ). C'est le seul retour « pas d'énergie » lisible
-     * sans ouvrir le GUI, cœur invisible du mod rendu visible (pilier 3).
-     */
-    public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    // L'ORIENTATION ET L'ÉTAT ALLUMÉ VIENNENT DU SOCLE, désormais partagé avec les neuf
+    // appareils qui ne sont pas des machines à cycle (Relais, Ancre, Évent, Amplificateur…).
+    // Ces quarante lignes étaient recopiées dix fois : voir AbstractOrientedBlock pour ce
+    // que ça coûtait vraiment — une correction d'orientation à appliquer dix fois, dont
+    // l'oubli ne se voyait que sur le bloc oublié, posé de travers dans une seule ruine.
+    //
+    // FACING et LIT restent accessibles sous AbstractMachineBlock.FACING / .LIT : un champ
+    // statique hérité se lit par la sous-classe, et les blockstates n'y voient rien.
 
     protected AbstractMachineBlock(Properties properties) {
         super(properties);
-        registerDefaultState(getStateDefinition().any()
-            .setValue(FACING, Direction.NORTH)
-            .setValue(LIT, Boolean.FALSE));
     }
 
     /** Type de block entity de cette machine, utilise pour brancher le ticker. */
     protected abstract BlockEntityType<? extends AbstractMachineBlockEntity> getMachineType();
 
-    // --- Orientation ---------------------------------------------------------
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIT);
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
-    }
-
-    @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
-    }
-
-    @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation(state.getValue(FACING)));
-    }
-
-    // --- Rendu et ticker -----------------------------------------------------
-
-    /**
-     * BaseEntityBlock rend le bloc INVISIBLE par defaut (il suppose un rendu par
-     * BlockEntityRenderer). Les machines sont des cubes normaux : il faut
-     * remettre MODEL, comme le fait AbstractFurnaceBlock.
-     */
-    @Override
-    protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
-    }
+    // --- Ticker --------------------------------------------------------------
 
     @Nullable
     @Override

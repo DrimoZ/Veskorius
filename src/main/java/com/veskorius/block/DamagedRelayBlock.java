@@ -47,48 +47,17 @@ import org.jetbrains.annotations.Nullable;
  * <p>Non minable et sans loot : il est du mobilier de structure. Récupérable, il donnerait
  * un relais T3 gratuit au milieu d'un donjon dont c'est précisément la récompense.
  */
-public class DamagedRelayBlock extends BaseEntityBlock {
+public class DamagedRelayBlock extends AbstractOrientedBlock {
 
     public static final MapCodec<DamagedRelayBlock> CODEC = simpleCodec(DamagedRelayBlock::new);
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final BooleanProperty LIT = BlockStateProperties.LIT;
-
     public DamagedRelayBlock(Properties properties) {
         super(properties);
-        registerDefaultState(getStateDefinition().any()
-            .setValue(FACING, Direction.NORTH)
-            .setValue(LIT, Boolean.FALSE));
     }
 
     @Override
     protected MapCodec<? extends DamagedRelayBlock> codec() {
         return CODEC;
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIT);
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
-    }
-
-    @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
-    }
-
-    @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation(state.getValue(FACING)));
-    }
-
-    @Override
-    protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
     }
 
     @Nullable

@@ -90,41 +90,53 @@ public final class ResonanceStormHandler {
             end(level, state);
             return;
         }
+        // MARQUÉ SALE UNIQUEMENT AUX PASSES DE SEMIS, pas à chaque tick. Le premier jet
+        // appelait setDirty() vingt fois par seconde pendant dix minutes : l'état était
+        // re-sérialisé à chaque sauvegarde du monde sans que rien n'ait changé d'utile.
+        // Perdre jusqu'à deux secondes de compteur sur un redémarrage n'a aucune
+        // conséquence ; les positions semées, elles, sont enregistrées à la passe même.
         if (state.remaining % SEED_INTERVAL == 0) {
             for (ServerPlayer player : level.players()) {
-                seedAround(level, player.blockPosition());
+                seedAround(level, state, player.blockPosition());
             }
+            state.setDirty();
         }
-        state.setDirty();
     }
 
     /**
      * Fin de l'orage : <b>tout cratère encore au sol disparaît</b>.
      *
-     * <p>On balaie autour des joueurs, comme on a semé. Un cratère posé dans un chunk
-     * depuis déchargé s'en tirerait — c'est accepté : il faudrait indexer chaque pose pour
-     * l'attraper, et le coût de cet index dépasse largement celui d'un fragment oublié dans
-     * un chunk que personne ne regarde.
+     * <p><b>On retire ce qu'on a POSÉ, pas ce qu'on retrouve.</b> Le premier jet balayait
+     * une boîte de 97×65×97 autour de chaque joueur pour y chercher des cratères — six cent
+     * onze mille lectures de bloc, sur le fil du serveur, dans un seul tick, et autant de
+     * fois qu'il y a de joueurs. Un gel garanti à chaque fin d'orage.
+     *
+     * <p>Les positions semées sont donc mémorisées. Le nettoyage devient proportionnel au
+     * nombre de cratères réellement posés — quelques centaines — au lieu du volume fouillé.
+     * Et il devient EXACT : le balayage laissait derrière lui tout cratère posé dans un
+     * chunk depuis déchargé, ce qui constituait exactement le stock permanent que
+     * l'événement existe pour empêcher.
      */
     private static void end(ServerLevel level, StormState state) {
         state.remaining = 0;
+        for (long packed : state.craters) {
+            BlockPos pos = BlockPos.of(packed);
+            // isLoaded d'abord : lire un bloc dans un chunk déchargé le ferait charger,
+            // ce qui rendrait le nettoyage plus coûteux que le balayage qu'on remplace.
+            if (level.isLoaded(pos) && level.getBlockState(pos).is(ModBlocks.METEORIC_CRATER.get())) {
+                level.removeBlock(pos, false);
+            }
+        }
+        state.craters.clear();
         state.setDirty();
         for (ServerPlayer player : level.players()) {
-            BlockPos at = player.blockPosition();
-            for (BlockPos pos : BlockPos.betweenClosed(
-                at.offset(-SEED_RADIUS, -32, -SEED_RADIUS),
-                at.offset(SEED_RADIUS, 32, SEED_RADIUS))) {
-                if (level.getBlockState(pos).is(ModBlocks.METEORIC_CRATER.get())) {
-                    level.removeBlock(pos, false);
-                }
-            }
             player.sendSystemMessage(
                 net.minecraft.network.chat.Component.translatable("message.veskorius.storm_ends"));
         }
     }
 
     /** Sème quelques cratères sur des blocs de surface exposés, au hasard. */
-    private static void seedAround(ServerLevel level, BlockPos centre) {
+    private static void seedAround(ServerLevel level, StormState state, BlockPos centre) {
         for (int i = 0; i < SEEDS_PER_PASS; i++) {
             int dx = level.random.nextInt(SEED_RADIUS * 2) - SEED_RADIUS;
             int dz = level.random.nextInt(SEED_RADIUS * 2) - SEED_RADIUS;
@@ -139,6 +151,7 @@ public final class ResonanceStormHandler {
                 continue;
             }
             level.setBlockAndUpdate(ground, ModBlocks.METEORIC_CRATER.get().defaultBlockState());
+            state.craters.add(ground.asLong());
             level.playSound(null, ground, SoundEvents.AMETHYST_BLOCK_CHIME,
                 SoundSource.WEATHER, 0.6f, 1.2f);
         }
@@ -174,6 +187,14 @@ public final class ResonanceStormHandler {
 
         private int remaining;
 
+        /**
+         * Les cratères posés par l'orage en cours, en positions compactées.
+         *
+         * <p>Persistée avec le reste : un serveur redémarré au milieu d'un orage doit
+         * encore savoir ce qu'il a semé, sinon ces cratères deviennent permanents.
+         */
+        private final java.util.List<Long> craters = new java.util.ArrayList<>();
+
         public static StormState get(ServerLevel level) {
             return level.getDataStorage().computeIfAbsent(
                 new Factory<>(StormState::new, StormState::load), NAME);
@@ -182,12 +203,16 @@ public final class ResonanceStormHandler {
         private static StormState load(CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
             StormState state = new StormState();
             state.remaining = tag.getInt("remaining");
+            for (long packed : tag.getLongArray("craters")) {
+                state.craters.add(packed);
+            }
             return state;
         }
 
         @Override
         public CompoundTag save(CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
             tag.putInt("remaining", remaining);
+            tag.putLongArray("craters", craters.stream().mapToLong(Long::longValue).toArray());
             return tag;
         }
     }
