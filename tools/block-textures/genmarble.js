@@ -250,6 +250,19 @@ tex.ancient_emitter_front_on=front('t1',0x748,faces.field_emitter,true);
   else if(age===2){for(const[x,y]of[[5,6],[10,7]])c.set(x,y,V.deep);}
   tex['resonance_bloom_bush_stage'+age]=c;}}
 
+// Verre Lumineux : le MÊME cadre que le verre ordinaire, mais qui brûle. On garde la
+// silhouette pour que les deux se rangent visuellement ensemble, et on ne change que
+// l'intensité — parce que c'est exactement ce que la teinture change.
+{const c=new Canvas(S,S);
+ const G={line:'#E4CCF7',lite:'#F4ECFD',hot:'#FFFFFF'};
+ for(let i=0;i<S;i++){c.set(i,0,G.line);c.set(i,S-1,G.line);c.set(0,i,G.line);c.set(S-1,i,G.line);}
+ for(const[x,y]of[[1,1],[S-2,1],[1,S-2],[S-2,S-2]])c.set(x,y,G.hot);
+ for(let i=2;i<7;i++)c.set(i,i,G.lite);
+ for(let i=9;i<13;i++)c.set(i,i-6,G.lite);
+ // Un halo interne, absent du verre ordinaire : la seule différence de motif.
+ for(let i=4;i<12;i++){c.set(i,3,G.lite);c.set(i,12,G.lite);c.set(3,i,G.lite);c.set(12,i,G.lite);}
+ tex.luminous_resonance_glass=c;}
+
 const out=process.argv[2];fs.mkdirSync(out,{recursive:true});
 const es=Object.entries(tex);
 for(const[n,c]of es)fs.writeFileSync(path.join(out,n+'.png'),encodePNG(S,S,c.px));

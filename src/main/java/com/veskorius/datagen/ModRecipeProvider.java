@@ -89,6 +89,20 @@ public class ModRecipeProvider extends RecipeProvider {
             .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(
                 Veskorius.MOD_ID, "resonance_glass"));
 
+        // La teinture : 8 verres autour d'un extrait, exactement la forme du verre
+        // teinté vanilla. Un joueur qui a déjà coloré du verre reconnaît la grille sans
+        // la lire — et le rapport 8 pour 1 dit de lui-même que la teinture est chère
+        // en plante, pas en verre.
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS,
+                ModBlocks.LUMINOUS_RESONANCE_GLASS.get(), 8)
+            .pattern("GGG").pattern("GEG").pattern("GGG")
+            .define('G', ModBlocks.RESONANCE_GLASS.get())
+            .define('E', ModItems.LUMINOUS_EXTRACT.get())
+            .unlockedBy(getHasName(ModItems.LUMINOUS_EXTRACT.get()),
+                has(ModItems.LUMINOUS_EXTRACT.get()))
+            .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(
+                Veskorius.MOD_ID, "luminous_resonance_glass"));
+
         // --- Machines T1 : châssis Fracturé + ce qui les distingue -------------
         //
         // La grammaire de fabrication est désormais « le boîtier de mon palier, plus
@@ -780,6 +794,21 @@ public class ModRecipeProvider extends RecipeProvider {
             .time(10 * 20)
             .stable()
             .save(recipeOutput, machineRecipe("crushing/resonance_dust"));
+
+        // Extrait Lumineux : 2 floraisons broyées (04-Materials.md).
+        //
+        // AU CRYSTAL CRUSHER, la machine du T1 — et c'est volontaire. La plupart des
+        // machines de départ deviennent inutiles dès qu'on les dépasse ; celle-ci reste
+        // la seule à savoir broyer, vingt heures plus tard. Une recette tardive sur une
+        // machine précoce coûte zéro contenu et rachète un bloc entier.
+        //
+        // Marquée stable() comme tout le T1 : broyer une fleur ne doit pas échouer
+        // parce que le champ est désaccordé.
+        MachineRecipeBuilder.crushing(ModItems.LUMINOUS_EXTRACT.get(), 1)
+            .input(ModItems.RESONANCE_BLOOM.get(), 2)
+            .time(10 * 20)
+            .stable()
+            .save(recipeOutput, machineRecipe("crushing/luminous_extract"));
 
         // Assembler, branche alternative : 3 Resonance Dust + 2 Iron → 2 Component,
         // 5 s, 3 Osc/tick (04-Materials.md + note tâche 2 de 11-Development-Plan.md).

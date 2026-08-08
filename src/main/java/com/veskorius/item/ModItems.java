@@ -284,6 +284,22 @@ public class ModItems {
             new Item.Properties());
 
     /**
+     * <b>Extrait Lumineux</b> — deux floraisons broyées au Crystal Crusher, et la seule
+     * teinture du mod.
+     *
+     * <p>Il ne teinte qu'une chose : le Verre de Résonance, qu'il fait passer de la
+     * luminosité 8 à 15. Une teinture unique plutôt que seize, parce qu'il n'y a ici
+     * qu'une plante — et parce que le résultat n'est pas une COULEUR mais une INTENSITÉ.
+     * Le verre teint n'est pas un verre violet de plus : c'est celui qui éclaire une pièce
+     * entière, et ça se voit sans avoir à comparer deux blocs côte à côte.
+     *
+     * <p>Il donne au T1 un usage tardif : le Crystal Crusher, posé dans la première heure
+     * de jeu, reste la machine qui broie les floraisons vingt heures plus tard.
+     */
+    public static final DeferredItem<Item> LUMINOUS_EXTRACT =
+        ITEMS.registerSimpleItem("luminous_extract", new Item.Properties().stacksTo(64));
+
+    /**
      * <b>Floraison de Résonance</b> — se mange, ou se broie en {@code luminous_extract}.
      *
      * <p>Elle donne la VISION NOCTURNE une minute, et pas l'effet Lueur. Le dossier écrit
@@ -350,6 +366,10 @@ public class ModItems {
     /** Sable de Résonance : l'étape intermédiaire du verre (voir ModBlocks). */
     public static final DeferredItem<BlockItem> RESONANCE_SAND_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_SAND);
+
+    /** Verre Lumineux : le Verre de Résonance teint, luminosité 15. */
+    public static final DeferredItem<BlockItem> LUMINOUS_RESONANCE_GLASS_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.LUMINOUS_RESONANCE_GLASS);
 
     /** Verre de Résonance : le seul bloc purement décoratif du mod. */
     public static final DeferredItem<BlockItem> RESONANCE_GLASS_ITEM =

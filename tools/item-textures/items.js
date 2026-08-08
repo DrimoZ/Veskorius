@@ -370,6 +370,22 @@ const items = {
     c.set(8, 6, '#FFFFFF');
   },
 
+  // Extrait Lumineux : la MEME fiole que le Flux Concentre, remplie d'autre chose. Deux
+  // liquides du mod, une seule silhouette de contenant — c'est ce qui fait lire « ceci
+  // se verse » avant de lire lequel. Le contenu, lui, est presque blanc : c'est de la
+  // lumiere en bouteille, pas un cristal fondu.
+  luminous_extract: (c) => {
+    const vial = [[3, 6, 9], [4, 5, 10], [5, 4, 11], [6, 4, 11], [7, 4, 11],
+      [8, 4, 11], [9, 4, 11], [10, 5, 10], [11, 6, 9], [12, 7, 8]];
+    outline(c, vial, IRON.line);
+    fill(c, vial, V.mid);
+    fill(c, [[5, 5, 10], [6, 5, 10], [7, 5, 10], [8, 5, 10]], V.lite);
+    fill(c, [[6, 6, 9], [7, 6, 9]], V.hot);
+    c.set(7, 7, '#FFFFFF'); c.set(8, 7, '#FFFFFF');
+    bar(c, IRON, 5, 2, 6, 2);
+    c.set(7, 3, V.hot);
+  },
+
   // --- Matiere du T5 -------------------------------------------------------
   //
   // L'essence est le SEUL item du mod dont le centre soit noir. Toute la chaine du

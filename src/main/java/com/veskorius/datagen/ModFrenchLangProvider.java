@@ -161,6 +161,11 @@ public class ModFrenchLangProvider extends LanguageProvider {
         add("codex.veskorius.world.bloom.title", "Graine Ancienne et Floraison de Résonance");
         add("codex.veskorius.world.bloom.text",
             "Une graine dans une Archive Régionale sur cinq, et un seul plant suffit pour toujours.\n\nLe buisson se CUEILLE, il ne se moissonne pas : clic droit sur un plant mûr et il donne deux ou trois floraisons, puis retombe à mi-croissance et repousse. Il n'a jamais besoin d'être replanté, et c'est tout l'enjeu — la graine vient d'une fouille qui peut n'en donner aucune, donc un plant qui mourrait à la récolte mettrait la branche derrière un coup de dé.\n\nIl pousse sur la terre, sur la terre labourée, et sur la Pierre Veinée de Résonance — le planter sur le veiné, c'est bâtir une serre sans l'avoir voulu.\n\nL'os à moelle le fait pousser. La Poussière et la Boue de Résonance aussi, sur lui comme sur n'importe quelle culture vanilla : la boue est un déchet, et nourrir un champ avec ce qu'on a purgé d'un réseau malade referme la boucle par le bas.\n\nManger une floraison donne la Vision Nocturne une minute. Les autres partent au broyage, en Extrait Lumineux.");
+        addBlock(ModBlocks.LUMINOUS_RESONANCE_GLASS, "Verre Lumineux");
+        addItem(ModItems.LUMINOUS_EXTRACT, "Extrait Lumineux");
+        add("codex.veskorius.crystals.extract.title", "Extrait Lumineux");
+        add("codex.veskorius.crystals.extract.text",
+            "Deux Floraisons de Résonance broyées au Crystal Crusher — la machine du palier 1, vingt heures plus tard. C'est la seule chose du mod qui en ait encore besoin.\n\nIl teinte exactement une chose : le Verre de Résonance, qui passe de la luminosité 8 à 15. Huit verres autour d'un extrait, la grille du verre teinté vanilla.\n\nUne teinture et pas seize, parce que ce qu'il change n'est pas une couleur mais une INTENSITÉ. Le verre lumineux n'est pas une nuance de violet de plus : c'est celui qui éclaire une pièce entière, et ça se voit sans tenir deux blocs côte à côte. Cultiver des heures pour obtenir une teinte aurait été une corvée déguisée en récompense.");
         addBlock(ModBlocks.RESONANCE_SAND, "Sable de Résonance");
         addBlock(ModBlocks.RESONANCE_GLASS, "Verre de Résonance");
         add("codex.veskorius.crystals.glass.title", "Verre de Résonance");

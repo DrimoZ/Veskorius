@@ -175,6 +175,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add("codex.veskorius.world.bloom.title", "Ancient Seed and Resonance Bloom");
         add("codex.veskorius.world.bloom.text",
             "One seed in five Regional Archives, and one plant is enough forever.\n\nThe bush is picked, not harvested: right-click it ripe and it gives two or three blooms, then drops back to half growth and regrows. It never has to be replanted, which is the whole point — the seed comes from a dig that may not yield one, so a plant that died on harvest would put the branch behind a dice roll.\n\nIt grows on dirt, farmland, and on Resonance Veined Stone — plant it on the veined rock and you have built a greenhouse without meaning to.\n\nBone meal grows it. So do Resonance Dust and Resonance Sludge, on this and on any vanilla crop: the sludge is a waste product, and feeding a field with what you purged from a sick network closes the loop from the bottom.\n\nEating a bloom gives Night Vision for a minute. The rest go to the Advanced Assembler's neighbour, ground into Luminous Extract.");
+        addBlock(ModBlocks.LUMINOUS_RESONANCE_GLASS, "Luminous Resonance Glass");
+        addItem(ModItems.LUMINOUS_EXTRACT, "Luminous Extract");
+        add("codex.veskorius.crystals.extract.title", "Luminous Extract");
+        add("codex.veskorius.crystals.extract.text",
+            "Two Resonance Blooms crushed in a Crystal Crusher — the Tier 1 machine, twenty hours later. It is the only thing in the mod that still needs it.\n\nIt tints exactly one thing: Resonance Glass, which goes from light level 8 to 15. Eight glass around one extract, the same grid as vanilla stained glass.\n\nOne dye and not sixteen, because what it changes is not a colour but an INTENSITY. Luminous glass is not another shade of purple — it is the one that lights a whole room, and you see that without holding two blocks side by side. Farming for hours to obtain a tint would have been a chore dressed as a reward.");
         addBlock(ModBlocks.RESONANCE_SAND, "Resonance Sand");
         addBlock(ModBlocks.RESONANCE_GLASS, "Resonance Glass");
         add("codex.veskorius.crystals.glass.title", "Resonance Glass");

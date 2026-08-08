@@ -102,6 +102,8 @@ public class Veskorius {
                 output.accept(ModItems.RESONANCE_BLOOM.get());
                 output.accept(ModItems.RESONANCE_SAND_ITEM.get());
                 output.accept(ModItems.RESONANCE_GLASS_ITEM.get());
+                output.accept(ModItems.LUMINOUS_EXTRACT.get());
+                output.accept(ModItems.LUMINOUS_RESONANCE_GLASS_ITEM.get());
                 output.accept(ModItems.CONCENTRATED_FLUX.get());
                 output.accept(ModItems.RESONANCE_MATRIX.get());
                 output.accept(ModItems.ADVANCED_ASSEMBLER_ITEM.get());

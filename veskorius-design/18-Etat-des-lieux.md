@@ -112,7 +112,7 @@ d'alliage et coûte donc le bonus de panoplie).
 
 ## 8. Interface
 
-- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **71 entrées**, 9 catégories,
+- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **72 entrées**, 9 catégories,
   couvrant les cinq paliers, les entités et l'équipement. Affiche les **recettes**
   (établi et machine, lues du RecipeManager chargé), pagine le texte, cherche dans tout
   le livre, s'adapte à la taille de la fenêtre.
@@ -136,8 +136,8 @@ SERVER, surchargeables par modpack.
 
 ## Ce qui reste
 
-**Matériaux restants** — `luminous_extract`, `ancient_conduit_stone`,
-`meteoric_resonance_shard`. Le verre et la branche agriculture sont faits. Aucun n'est sur le chemin critique, et c'est
+**Matériaux restants** — `ancient_conduit_stone` et `meteoric_resonance_shard`, les deux
+derniers du dossier. La branche décorative est complète : agriculture → extrait → verre teint. Aucun n'est sur le chemin critique, et c'est
 désormais le seul poste ouvert du dossier.
 
 Le Cœur de Faille n'est PAS de cette liste : c'est la `RiftFeature`, et elle fait déjà ce

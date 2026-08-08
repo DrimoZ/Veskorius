@@ -90,6 +90,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         // qui n'existe que pour bâtir. Le casser par erreur ne doit pas coûter un
         // Cristal Stable.
         dropSelf(ModBlocks.RESONANCE_GLASS.get());
+        dropSelf(ModBlocks.LUMINOUS_RESONANCE_GLASS.get());
         dropSelf(ModBlocks.DISSONANCE_BLOOM.get());
         // Une dalle double rend DEUX dalles : sans cette table dédiée, la moitié du
         // bloc disparaît au minage.

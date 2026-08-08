@@ -506,6 +506,31 @@ public class ModBlocks {
                 .sound(SoundType.SAND));
 
     /**
+     * <b>Verre Lumineux</b> — le Verre de Résonance teint à l'Extrait Lumineux.
+     *
+     * <p>Luminosité <b>15</b> contre 8 : c'est un bloc de lumière à part entière, aussi
+     * fort qu'une pierre lumineuse, et transparent. La différence avec le verre ordinaire
+     * ne se lit pas en comparant deux blocs — elle se lit dans la pièce qu'on vient
+     * d'éclairer.
+     *
+     * <p>C'est le seul débouché de toute la branche agricole, et il n'en faut pas
+     * d'autre : cultiver pendant des heures pour obtenir une nuance de violet aurait été
+     * une corvée déguisée en récompense.
+     */
+    public static final DeferredBlock<net.minecraft.world.level.block.Block> LUMINOUS_RESONANCE_GLASS =
+        BLOCKS.registerSimpleBlock("luminous_resonance_glass",
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(0.4f)
+                .sound(SoundType.GLASS)
+                .lightLevel(state -> 15)
+                .noOcclusion()
+                .isValidSpawn((state, level, pos, type) -> false)
+                .isRedstoneConductor((state, level, pos) -> false)
+                .isSuffocating((state, level, pos) -> false)
+                .isViewBlocking((state, level, pos) -> false));
+
+    /**
      * <b>Verre de Résonance</b> — le <b>seul</b> bloc du mod pensé uniquement pour la
      * construction (04-Materials.md, en toutes lettres : « pas de fonction de craft en
      * aval »).
