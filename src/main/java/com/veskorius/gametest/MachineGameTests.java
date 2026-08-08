@@ -1774,9 +1774,18 @@ public class MachineGameTests {
 
     /** Pose un Field Emitter et le charge d'un cristal, prêt à fournir. */
     private static void chargedEmitter(GameTestHelper helper) {
+        chargedEmitter(helper, 1);
+    }
+
+    /**
+     * Idem, avec plusieurs unites de carburant. Necessaire des qu'un cycle coute plus que
+     * les 4000 Osc d'un cristal : l'emetteur ne se recharge qu'a reserve nulle, donc il lui
+     * faut de quoi rebruler, sinon la machine cale a mi-course.
+     */
+    private static void chargedEmitter(GameTestHelper helper, int fuelCount) {
         FieldEmitterBlockEntity emitter = placeEmitter(helper);
         emitter.getFuelHandler().insertItem(FieldEmitterBlockEntity.SLOT_FUEL,
-            new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get()), false);
+            new ItemStack(ModItems.STABLE_RESONANCE_CRYSTAL.get(), fuelCount), false);
     }
 
     private static IItemHandler placeWhetstone(GameTestHelper helper) {
@@ -1869,6 +1878,152 @@ public class MachineGameTests {
     private static int progressOf(GameTestHelper helper) {
         ResonanceStabilizerBlockEntity machine = helper.getBlockEntity(MACHINE);
         return machine.getData().get(AbstractMachineBlockEntity.DATA_PROGRESS);
+    }
+
+    // =====================================================================
+    // Flux Compressor (#23), Structural Synthesizer (#11),
+    // Slag Vent (#13), Deep Crystal Driller (#12)
+    // =====================================================================
+
+    /**
+     * <b>Toutes ces positions sont dans la portee de 8 de l'emetteur, et c'est a verifier
+     * a chaque ajout.</b> Le premier jet posait le compresseur sur {@code MACHINE} (2,1,2),
+     * a 11 blocs de l'emetteur : la machine ne produisait rien et le test accusait la
+     * recette. Une position hors champ ne leve rien — elle rend juste un test faux sur une
+     * machine juste.
+     */
+    private static final BlockPos COMPRESSOR = new BlockPos(8, 1, 10);
+    private static final BlockPos SYNTH = new BlockPos(8, 1, 12);
+    private static final BlockPos VENT = new BlockPos(12, 1, 8);
+    private static final BlockPos DRILL = new BlockPos(6, 1, 6);
+
+    /** 4 Refined Crystal → 1 Concentrated Flux, 30 s. */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 30 * 20 + 200)
+    public static void compressorMakesConcentratedFlux(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                helper.setBlock(COMPRESSOR, ModBlocks.FLUX_COMPRESSOR.get());
+                machineInventory(helper, COMPRESSOR).insertItem(
+                    com.veskorius.block.entity.FluxCompressorBlockEntity.SLOT_INPUT,
+                    new ItemStack(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 4), false);
+            })
+            .thenExecuteAfter(30 * 20 + 40, () -> helper.assertTrue(
+                machineInventory(helper, COMPRESSOR).getStackInSlot(
+                    com.veskorius.block.entity.FluxCompressorBlockEntity.SLOT_OUTPUT)
+                    .is(ModItems.CONCENTRATED_FLUX.get()),
+                "Le compresseur doit rendre du Flux Concentré"))
+            .thenSucceed();
+    }
+
+    /**
+     * <b>Le synthétiseur produit quatre blocs ET un résidu.</b> Comme pour la Forge, le
+     * résidu est une propriété de la machine et non une ligne de recette : rien dans les
+     * données ne le garantit, seul ce test le fait.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 60 * 20 + 200)
+    public static void synthesizerMakesBlocksAndResidue(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                // Un cycle de 60 s a 6 Osc/tick coute 7200 Osc — DAVANTAGE que les 4000
+                // d'un seul cristal. Sans plusieurs unites de carburant, l'emetteur tombe
+                // a sec a mi-cycle et le test echouerait en accusant la recette.
+                chargedEmitter(helper, 4);
+                helper.setBlock(SYNTH, ModBlocks.STRUCTURAL_SYNTHESIZER.get());
+                IItemHandler inv = machineInventory(helper, SYNTH);
+                inv.insertItem(com.veskorius.block.entity.StructuralSynthesizerBlockEntity.SLOT_ALLOY,
+                    new ItemStack(ModItems.VESKORIAN_ALLOY_INGOT.get(), 4), false);
+                inv.insertItem(com.veskorius.block.entity.StructuralSynthesizerBlockEntity.SLOT_STONE,
+                    new ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 8), false);
+            })
+            .thenExecuteAfter(60 * 20 + 40, () -> {
+                IItemHandler inv = machineInventory(helper, SYNTH);
+                ItemStack out = inv.getStackInSlot(
+                    com.veskorius.block.entity.StructuralSynthesizerBlockEntity.SLOT_OUTPUT);
+                helper.assertTrue(out.is(ModItems.VESKORIAN_ALLOY_BLOCK_ITEM.get()) && out.getCount() == 4,
+                    "4 blocs d'alliage attendus, vaut : " + out);
+                helper.assertTrue(inv.getStackInSlot(
+                        com.veskorius.block.entity.StructuralSynthesizerBlockEntity.SLOT_RESIDUE)
+                        .is(ModItems.SYNTHESIS_RESIDUE.get()),
+                    "Chaque moulage laisse un résidu — propriété de la machine, pas de la recette");
+            })
+            .thenSucceed();
+    }
+
+    /**
+     * <b>Le Slag Vent débloque une forge à l'arrêt.</b> C'est toute sa raison d'être : sans
+     * ce comportement il n'a aucune fonction, et la contrainte de scorie du palier n'a
+     * aucune réponse.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = com.veskorius.block.entity.SlagVentBlockEntity.VENT_PERIOD + 300)
+    public static void slagVentClearsAStalledForge(GameTestHelper helper) {
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper);
+                helper.setBlock(FORGE, ModBlocks.VESKORIAN_ALLOY_FORGE.get());
+                machineInventory(helper, FORGE).insertItem(
+                    VeskorianAlloyForgeBlockEntity.SLOT_SLAG,
+                    new ItemStack(ModItems.FLUX_SLAG.get(), 64), false);
+                helper.setBlock(VENT, ModBlocks.SLAG_VENT.get());
+            })
+            .thenExecuteAfter(com.veskorius.block.entity.SlagVentBlockEntity.VENT_PERIOD + 40, () -> {
+                int left = machineInventory(helper, FORGE)
+                    .getStackInSlot(VeskorianAlloyForgeBlockEntity.SLOT_SLAG).getCount();
+                helper.assertTrue(left < 64,
+                    "L'évent doit avoir retiré de la scorie. Restant : " + left);
+            })
+            .thenSucceed();
+    }
+
+    /**
+     * <b>La foreuse retire l'amas du monde et le rend en cristal brut.</b>
+     *
+     * <p>Le premier jet de ce test affirmait le contraire — que l'amas devait survivre,
+     * l'arene etant censee se trouver au-dessus de la limite de profondeur. Elle est en
+     * realite posee a <b>Y −60</b>, donc franchement <i>sous</i> les −40 de la machine : le
+     * banc d'essai se trouve exactement dans les conditions d'exploitation. La foreuse
+     * faisait donc son travail et le test la declarait en faute. C'est le genre d'erreur qui
+     * ferait « corriger » du code parfaitement juste — d'ou cette note.
+     *
+     * <p>La garde de profondeur elle-meme est verifiee juste en dessous, par la geometrie.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 20 * 25 + 200)
+    public static void drillerHarvestsAClusterBeneathIt(GameTestHelper helper) {
+        BlockPos cluster = DRILL.below();
+        helper.startSequence()
+            .thenExecute(() -> {
+                chargedEmitter(helper, 4);
+                helper.setBlock(cluster, ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get());
+                helper.setBlock(DRILL, ModBlocks.DEEP_CRYSTAL_DRILLER.get());
+            })
+            .thenExecuteAfter(20 * 25, () -> {
+                helper.assertBlockNotPresent(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get(), cluster);
+                helper.assertTrue(machineInventory(helper, DRILL).getStackInSlot(
+                        com.veskorius.block.entity.DeepCrystalDrillerBlockEntity.SLOT_OUTPUT)
+                        .is(ModItems.RAW_RESONANCE_CRYSTAL.get()),
+                    "L'amas retire doit ressortir en cristal brut dans le slot de sortie");
+            })
+            .thenSucceed();
+    }
+
+    /**
+     * <b>La garde de profondeur existe, et l'arene est bien du bon cote.</b>
+     *
+     * <p>Sans la limite, on pose une foreuse n'importe ou et la geographie du monde ne
+     * decide plus de rien — or c'est elle qui doit decider de l'emplacement d'une base
+     * (07-World-Generation.md). Ce test verrouille les deux moities de l'affirmation : la
+     * limite vaut ce que le dossier annonce, et l'arene est en dessous — sans quoi le test
+     * de recolte ci-dessus passerait pour une raison qui n'a rien a voir.
+     */
+    @GameTest(template = FIELD_ARENA, timeoutTicks = 20)
+    public static void drillerDepthLimitIsWorthTesting(GameTestHelper helper) {
+        helper.assertTrue(com.veskorius.block.entity.DeepCrystalDrillerBlockEntity.MAX_Y == -40,
+            "05-Machines.md #12 annonce Y −40");
+        helper.assertTrue(helper.absolutePos(DRILL).getY()
+                < com.veskorius.block.entity.DeepCrystalDrillerBlockEntity.MAX_Y,
+            "L'arene doit etre SOUS la limite, sinon le test de recolte ne prouve rien. Y = "
+                + helper.absolutePos(DRILL).getY());
+        helper.succeed();
     }
 
     // =====================================================================

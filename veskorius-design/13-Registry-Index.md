@@ -51,14 +51,14 @@ est un objet-clé requis (et rendu) dans les recettes d'un tier ; les fragments 
 |---|---|---|
 | `resonance_component` | 04 | ✅ codé |
 | `resonance_dust` | 04, 05 | ✅ codé (produit par le Crystal Crusher ; entrée de la branche alt de l'Assembler) |
-| `veskorian_alloy_ingot` | 04, 05 | À coder (Phase 2) |
-| `veskorian_conductive_alloy_ingot` | 04, 05 | À coder (Phase 2) |
-| `veskorian_alloy_block` | 04 | À coder (Phase 2) |
+| `veskorian_alloy_ingot` | 04, 05 | ✅ codé (Veskorian Alloy Forge, branche FER) |
+| `veskorian_conductive_alloy_ingot` | 04, 05 | ✅ codé (même forge, branche OR — seul admis par le Resonance Relay) |
+| `veskorian_alloy_block` | 04 | ✅ codé (Structural Synthesizer ; décompactage à l'établi, compactage NON — il exige un champ) |
 | `harmonic_lattice` | 04, 05 | À coder (Phase 3) |
-| `concentrated_flux` | 04, 05 | À coder (Phase 2) |
+| `concentrated_flux` | 04, 05 | ✅ codé (Flux Compressor) |
 | `resonance_catalyst_core` | 04, 05 | ✅ codé (augment +15% ; craft 2 Component + 1 Refined Crystal + 1 Redstone) |
-| `flux_slag` | 04, 05 | À coder (Phase 2) |
-| `synthesis_residue` | 04, 05 | À coder (Phase 2) |
+| `flux_slag` | 04, 05 | ✅ codé (déchet de la Forge ; slot plein = forge arrêtée) |
+| `synthesis_residue` | 04, 05 | ✅ codé (déchet du Synthesizer ; le Slag Vent ne l'évacue PAS) |
 | `luminous_extract` | 04 | À coder (Phase 3) |
 | `resonance_glass` | 04 | À coder (Phase 3) |
 | `corrupted_veskorian_alloy_ingot` | 04, 08, 09 | À coder (Phase 4) |
@@ -135,9 +135,9 @@ ne sont pas comptés dans les 23 machines : ce sont des blocs de construction, p
 | 8 | `crystal_roost` | T2 | ✅ codé (production passive : 2 Quartz → 1 Raw Crystal 600s, si un Fileur < 6 blocs) |
 | 9 | `resonance_relay` | T3 | ✅ codé — portée 20, chaînable, 1 Osc/tick. **Tampon, pas fil** : seul son tick parle au manager, sinon deux relais voisins partent en récursion. Rediffuse la bande reçue et renvoie la dissonance en amont |
 | 10 | `veskorian_alloy_forge` | T3 | ✅ codé — 2 Refined + 2 lingots → alliage + scorie ; le métal décide de la branche |
-| 11 | `structural_synthesizer` | T3 | À coder (Phase 2) |
-| 12 | `deep_crystal_driller` | T3 | À coder (Phase 2) |
-| 13 | `slag_vent` | T3 | À coder (Phase 2) |
+| 11 | `structural_synthesizer` | T3 | ✅ codé — 4 lingots + 8 pierres → 4 blocs + 1 résidu, 60 s. Le résidu est une propriété de la machine, comme la scorie |
+| 12 | `deep_crystal_driller` | T3 | ✅ codé — récolte les amas sous Y −40 dans une colonne 5×5, 20 s/amas, 6 Osc/tick. Seule machine qui modifie le monde ; elle ne creuse pas la roche et épuise sa veine |
+| 13 | `slag_vent` | T3 | ✅ codé — 1 scorie / 10 s par forge dans 8 blocs, coût prélevé d'un coup. N'évacue QUE la scorie |
 | 14 | `harmonic_amplifier` | T4 | À coder (Phase 3) |
 | 15 | `deep_synthesis_chamber` | T4 | À coder (Phase 3) |
 | 16 | `automated_extraction_array` | T4 | À coder (Phase 3) |
@@ -147,7 +147,7 @@ ne sont pas comptés dans les 23 machines : ce sont des blocs de construction, p
 | 20 | `rift_core_extractor` | T5 | À coder (Phase 4) |
 | 21 | `rift_ward_emitter` | T5 | À coder (Phase 4) |
 | 22 | `crystal_crusher` | T1 | ✅ codé (cycle 10s autonome, 1 Raw Crystal → 3 Resonance Dust) |
-| 23 | `flux_compressor` | T3 | À coder (Phase 2) |
+| 23 | `flux_compressor` | T3 | ✅ codé — 4 Refined → 1 Flux Concentré, 30 s, 6 Osc/tick |
 
 Note : les # 6 et 7 (Resonance Storage Cell, Resonance Locator) sont des items, pas des blocs —
 déjà listés dans la section "Outils, armure, augment" ci-dessus pour éviter un doublon.

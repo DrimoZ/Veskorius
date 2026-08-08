@@ -448,6 +448,54 @@ public class ModBlocks {
                 .noOcclusion()
                 .lightLevel(EMITTER_GLOW));
 
+    /** Machine #23 : condense quatre cristaux raffinés en un Flux Concentré. */
+    public static final DeferredBlock<FluxCompressorBlock> FLUX_COMPRESSOR =
+        BLOCKS.registerBlock("flux_compressor",
+            FluxCompressorBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(MACHINE_GLOW));
+
+    /** Machine #11 : ce qui rend le palier bâtissable — le lingot devient un bloc. */
+    public static final DeferredBlock<StructuralSynthesizerBlock> STRUCTURAL_SYNTHESIZER =
+        BLOCKS.registerBlock("structural_synthesizer",
+            StructuralSynthesizerBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_LIGHT_GRAY)
+                .strength(3.5f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(MACHINE_GLOW));
+
+    /** Machine #12 : la seule machine du mod qui modifie le monde. */
+    public static final DeferredBlock<DeepCrystalDrillerBlock> DEEP_CRYSTAL_DRILLER =
+        BLOCKS.registerBlock("deep_crystal_driller",
+            DeepCrystalDrillerBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_BROWN)
+                .strength(4.0f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(MACHINE_GLOW));
+
+    /** Machine #13 : passif. N'existe que parce que la Forge se bloque. */
+    public static final DeferredBlock<SlagVentBlock> SLAG_VENT =
+        BLOCKS.registerBlock("slag_vent",
+            SlagVentBlock::new,
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_GRAY)
+                .strength(3.0f, 6.0f)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(EMITTER_GLOW));
+
     public static final DeferredBlock<net.minecraft.world.level.block.Block> VESKORIAN_ALLOY_BLOCK =
         BLOCKS.registerSimpleBlock("veskorian_alloy_block",
             BlockBehaviour.Properties.of()

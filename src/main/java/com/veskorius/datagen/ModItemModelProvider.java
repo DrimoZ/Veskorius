@@ -3,9 +3,40 @@ package com.veskorius.datagen;
 import com.veskorius.Veskorius;
 import com.veskorius.item.ModItems;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
+/**
+ * Modèles d'objet — <b>énumérés depuis le registre, jamais recopiés à la main</b>.
+ *
+ * <p>Ce fichier tenait une liste de {@code basicItem(...)}, une ligne par objet. Cette
+ * liste est la source d'un bug qui s'est produit <b>deux fois</b> et qui ne se voit
+ * jamais en relecture : un objet sans modèle est un objet <b>parfaitement fonctionnel</b>
+ * — il se craft, se stacke, s'insère dans les machines, apparaît dans l'onglet créatif —
+ * qui s'affiche simplement en cube violet dans l'inventaire et dans la main. Aucune
+ * exception, aucun avertissement au chargement, rien dans les tests : le jeu ne considère
+ * pas qu'il manque quelque chose, il affiche le modèle « manquant », qui est un modèle
+ * valide. Les cinq matériaux du T3 sont partis ainsi, et la Veskorian Alloy Forge avec eux.
+ *
+ * <p>La liste a donc disparu. On parcourt le registre : tout objet du mod reçoit son
+ * modèle, et ajouter un objet sans y penser <b>devient impossible</b> plutôt que
+ * seulement risqué. Deux exceptions, toutes deux justifiées par ce qui produit le modèle
+ * ailleurs :
+ * <ul>
+ *   <li>les {@link BlockItem} — leur modèle vient du modèle de bloc, produit par
+ *       {@code ModBlockStateProvider} (même correction, même raison) ;</li>
+ *   <li>les œufs d'apparition — modèle vanilla teinté, pas une texture à nous.</li>
+ * </ul>
+ *
+ * <p>Le filet de sécurité est réel : {@code basicItem} passe par l'{@code
+ * ExistingFileHelper}, qui <b>échoue la génération</b> si la texture correspondante
+ * n'existe pas. Un objet ajouté sans texture casse donc {@code runData} au lieu de
+ * s'afficher en violet trois heures plus tard en jeu.
+ */
 public class ModItemModelProvider extends ItemModelProvider {
 
     public ModItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
@@ -14,37 +45,20 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        basicItem(ModItems.RAW_RESONANCE_CRYSTAL.get());
-        basicItem(ModItems.STABLE_RESONANCE_CRYSTAL.get());
-        basicItem(ModItems.REFINED_RESONANCE_CRYSTAL.get());
-        basicItem(ModItems.RESONANCE_COMPONENT.get());
-        basicItem(ModItems.RESONANCE_DUST.get());
-        basicItem(ModItems.RAW_FLUX_DEPOSIT.get());
-        basicItem(ModItems.RESONANCE_CATALYST_CORE.get());
-        basicItem(ModItems.RESONANCE_TUNER.get());
-        basicItem(ModItems.RESONANCE_STORAGE_CELL.get());
-        basicItem(ModItems.RESONANCE_LOCATOR.get());
-        basicItem(ModItems.RESONANCE_SPORE.get());
-        basicItem(ModItems.RESONANCE_SLUDGE.get());
-        basicItem(ModItems.RESONANCE_BLUEPRINT.get());
-        basicItem(ModItems.CODEX_FRAGMENT.get());
-        basicItem(ModItems.FOSSILIZED_RATION.get());
+        for (DeferredHolder<Item, ? extends Item> holder : ModItems.ITEMS.getEntries()) {
+            Item item = holder.get();
+            String name = holder.getId().getPath();
 
-        // Codex : texture propre plutôt que le livre vanilla. Le manuel signature du mod
-        // ne devrait pas se confondre, dans une barre d'action, avec un livre
-        // d'enchantement — c'est l'objet que le joueur cherchera le plus souvent.
-        basicItem(ModItems.RESONANCE_CODEX.get());
-
-        basicItem(ModItems.CUSTODE_ALLOY_FRAGMENT.get());
-
-        // Œufs d'apparition : modèle vanilla template_spawn_egg (couleurs = item).
-        withExistingParent("crystal_strider_spawn_egg", mcLoc("item/template_spawn_egg"));
-        withExistingParent("custode_spawn_egg", mcLoc("item/template_spawn_egg"));
-
-        // Les objets de machine ne sont plus listés ici. Cette liste était à recopier à
-        // chaque machine ajoutée, et rien ne signalait l'oubli : la machine se posait, se
-        // texturait et fonctionnait, seul son objet apparaissait en cube violet. Elle est
-        // désormais produite par ModBlockStateProvider.oriented(), qui est appelé pour
-        // toute machine par construction — voir la note qui y est portée.
+            if (item instanceof BlockItem) {
+                // Le modèle d'objet d'un bloc est le modèle du bloc lui-même.
+                continue;
+            }
+            if (item instanceof DeferredSpawnEggItem) {
+                // Modèle vanilla : les deux couleurs viennent de l'objet, pas d'une texture.
+                withExistingParent(name, mcLoc("item/template_spawn_egg"));
+                continue;
+            }
+            basicItem(item);
+        }
     }
 }

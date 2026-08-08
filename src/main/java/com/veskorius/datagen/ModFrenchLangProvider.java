@@ -64,6 +64,10 @@ public class ModFrenchLangProvider extends LanguageProvider {
         addBlock(ModBlocks.DAMPING_ARRAY, "Matrice d'Amortissement");
         addBlock(ModBlocks.VESKORIAN_ALLOY_FORGE, "Forge d'Alliage Veskorien");
         addBlock(ModBlocks.RESONANCE_RELAY, "Relais de Résonance");
+        addBlock(ModBlocks.FLUX_COMPRESSOR, "Compresseur de Flux");
+        addBlock(ModBlocks.STRUCTURAL_SYNTHESIZER, "Synthétiseur Structurel");
+        addBlock(ModBlocks.DEEP_CRYSTAL_DRILLER, "Foreuse à Cristaux Profonds");
+        addBlock(ModBlocks.SLAG_VENT, "Évent à Scorie");
 
         // Architecture de donjon (17-Dungeons.md §4)
         addBlock(ModBlocks.VEINED_STONE_BRICKS, "Briques de Pierre Veinée");

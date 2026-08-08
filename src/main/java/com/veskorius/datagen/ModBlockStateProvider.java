@@ -51,6 +51,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.CRYSTAL_ROOST.get(), "crystal_roost", ATTUNED, NEST);
         machine(ModBlocks.DAMPING_ARRAY.get(), "damping_array", VESKORIAN, SLATS);
         machine(ModBlocks.VESKORIAN_ALLOY_FORGE.get(), "veskorian_alloy_forge", VESKORIAN, PRESS);
+        machine(ModBlocks.FLUX_COMPRESSOR.get(), "flux_compressor", VESKORIAN, RAM);
+        machine(ModBlocks.STRUCTURAL_SYNTHESIZER.get(), "structural_synthesizer", VESKORIAN, MOLD);
+        machine(ModBlocks.DEEP_CRYSTAL_DRILLER.get(), "deep_crystal_driller", VESKORIAN, DERRICK);
 
         // --- Émetteurs de champ ----------------------------------------------
         // Même traitement, sur la propriété LIT ajoutée à FieldEmitterBlock : un
@@ -64,6 +67,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // seulement remonter sa chaîne (relais). D'où un MÂT là où l'émetteur est une tour —
         // même famille, silhouette opposée : mince et haut contre large et tassé.
         relay(ModBlocks.RESONANCE_RELAY.get(), "resonance_relay", VESKORIAN);
+        // L'évent n'est pas une machine à cycle : même famille de propriétés, silhouette
+        // de CHEMINÉE — on doit lire « ça évacue » et non « ça fabrique ».
+        vent(ModBlocks.SLAG_VENT.get(), "slag_vent", VESKORIAN);
 
         // --- Châssis nus ------------------------------------------------------
         // Le bloc de base, posable tel quel. C'est littéralement le boîtier que
@@ -251,6 +257,13 @@ public class ModBlockStateProvider extends BlockStateProvider {
         oriented(block, name, off, on, FieldEmitterBlock.FACING, FieldEmitterBlock.LIT);
     }
 
+    /** Même fabrique, silhouette de cheminée. */
+    private void vent(Block block, String name, String chassisName) {
+        ModelFile off = shaped(name, chassisName, name + "_front", STACK);
+        ModelFile on = shaped(name + "_on", chassisName, name + "_front_on", STACK);
+        oriented(block, name, off, on, FieldEmitterBlock.FACING, FieldEmitterBlock.LIT);
+    }
+
     /** Même fabrique, silhouette de mât. Voir la note à l'appel. */
     private void relay(Block block, String name, String chassisName) {
         ModelFile off = shaped(name, chassisName, name + "_front", MAST);
@@ -400,6 +413,60 @@ public class ModBlockStateProvider extends BlockStateProvider {
         p.bar(b, 7, 10, 1, 9, 11, 15);                                     // bras nord-sud
         p.cube(b, 5, 11, 5, 11, 14, 11, "#side", "#top", "#front", false); // tête
         p.cube(b, 7, 14, 7, 9, 16, 9, "#top", "#top", "#top", false);      // pointe
+    };
+
+    /**
+     * Presse à mouton : une enclume massive et un bélier suspendu, séparés par un VIDE.
+     * C'est le vide qui dit « ça écrase » — une presse pleine serait un cube de plus.
+     */
+    private static final Shape RAM = (p, b) -> {
+        p.cube(b, 0, 0, 0, 16, 5, 16, "#side", "#top", "#front", false);   // enclume
+        p.cube(b, 1, 5, 1, 4, 16, 15, "#side", "#top", "#side", false);    // montant gauche
+        p.cube(b, 12, 5, 1, 15, 16, 15, "#side", "#top", "#side", false);  // montant droit
+        p.cube(b, 4, 9, 4, 12, 14, 12, "#front", "#top", "#front", false); // bélier suspendu
+        p.cube(b, 0, 14, 0, 16, 16, 16, "#side", "#top", "#side", false);  // sommier
+    };
+
+    /**
+     * Moule ouvert : un bac large et bas, aux bords relevés, vide au centre. La seule
+     * silhouette du lot qui soit plus large que haute — on doit lire « on coule dedans ».
+     */
+    private static final Shape MOLD = (p, b) -> {
+        p.cube(b, 0, 0, 0, 16, 6, 16, "#side", "#top", "#front", false);   // socle
+        p.cube(b, 0, 6, 0, 16, 11, 3, "#side", "#top", "#front", false);   // bord nord
+        p.cube(b, 0, 6, 13, 16, 11, 16, "#side", "#top", "#front", false); // bord sud
+        p.cube(b, 0, 6, 3, 3, 11, 13, "#side", "#top", "#side", false);    // bord ouest
+        p.cube(b, 13, 6, 3, 16, 11, 13, "#side", "#top", "#side", false);  // bord est
+        p.cube(b, 3, 6, 3, 13, 7, 13, "#front", "#front", "#front", false); // fond du bac
+    };
+
+    /**
+     * Derrick : un bâti à quatre pieds, une tête, et un TREPAN QUI DESCEND SOUS LE BLOC.
+     * C'est la seule silhouette du mod qui déborde volontairement vers le bas — elle dit
+     * où la machine travaille, et une foreuse qui ne montre pas son outil ne se lit pas.
+     */
+    private static final Shape DERRICK = (p, b) -> {
+        for (int[] c : new int[][] {{1, 1}, {12, 1}, {1, 12}, {12, 12}}) {
+            p.cube(b, c[0], 2, c[1], c[0] + 3, 12, c[1] + 3, "#side", "#top", "#side", false);
+        }
+        p.cube(b, 0, 12, 0, 16, 16, 16, "#side", "#top", "#front", false); // tête
+        p.cube(b, 6, 2, 6, 10, 12, 10, "#front", "#top", "#front", false); // arbre
+        p.cube(b, 7, 0, 7, 9, 2, 9, "#front", "#front", "#front", false);  // trépan
+    };
+
+    /**
+     * Cheminée : un fût qui se rétrécit vers le haut, ouvert au sommet. Elle ne ressemble
+     * à aucune machine du mod parce qu'elle n'en est pas une — elle ne produit rien.
+     */
+    private static final Shape STACK = (p, b) -> {
+        p.cube(b, 0, 0, 0, 16, 4, 16, "#side", "#top", "#front", false);
+        p.cube(b, 2, 4, 2, 14, 10, 14, "#side", "#top", "#front", false);
+        p.cube(b, 4, 10, 4, 12, 14, 12, "#side", "#top", "#side", false);
+        // Couronne évidée : quatre parois, rien au milieu — la fumée sort par là.
+        p.cube(b, 4, 14, 4, 12, 16, 5, "#side", "#side", "#side", false);
+        p.cube(b, 4, 14, 11, 12, 16, 12, "#side", "#side", "#side", false);
+        p.cube(b, 4, 14, 5, 5, 16, 11, "#side", "#side", "#side", false);
+        p.cube(b, 11, 14, 5, 12, 16, 11, "#side", "#side", "#side", false);
     };
 
     /** Assemble un modèle à partir d'une silhouette et d'un jeu de textures. */

@@ -46,6 +46,9 @@ const ACCENT = {
   damping_array: { deep: '#166B72', mid: '#27A3AC', hi: '#5FD6DC' },
   field_emitter: { deep: '#5C2C86', mid: '#8A47B8', hi: '#B57CE0' },
   veskorian_alloy_forge: { deep: '#8E5A15', mid: '#D8922A', hi: '#F0B863' },
+  flux_compressor: { deep: '#5C2C86', mid: '#8A47B8', hi: '#B57CE0' },
+  structural_synthesizer: { deep: '#4A4658', mid: '#7C7890', hi: '#A8A4BA' },
+  deep_crystal_driller: { deep: '#5E3517', mid: '#A8632F', hi: '#C9834E' },
 };
 
 /** Rectangle en relief : liseré clair en haut/gauche, sombre en bas/droite. */
@@ -77,6 +80,29 @@ function arrow(c, x, y, a, filled) {
 // Bandeaux d'atelier : le motif de la façade, transposé dans le GUI. C'est le
 // signe le plus rapide pour savoir quelle machine on a ouverte.
 const BANNER = {
+  flux_compressor: (c, a) => { // un bélier au-dessus d'une enclume, sur toute la largeur
+    raised(c, 12, 58, 152, 5, a.mid, a.hi, a.deep);
+    raised(c, 12, 69, 152, 4, P.brass, a.hi, a.deep);
+    for (let i = 0; i < 10; i++) c.rect(18 + i * 15, 63, 4, 6, a.deep);
+  },
+  structural_synthesizer: (c, a) => { // une file de MOULES : la quantité, encore
+    for (let i = 0; i < 6; i++) {
+      const x = 16 + i * 24;
+      sunken(c, x, 59, 18, 14, P.slot, P.hi, P.slotLo);
+      c.rect(x + 2, 61, 6, 4, a.mid);
+      c.rect(x + 10, 61, 6, 4, a.mid);
+      c.rect(x + 2, 67, 6, 4, a.deep);
+      c.rect(x + 10, 67, 6, 4, a.deep);
+    }
+  },
+  deep_crystal_driller: (c, a) => { // un profil de terrain, et la veine dessous
+    c.rect(12, 58, 152, 3, P.brass);
+    for (let i = 0; i < 19; i++) {
+      c.rect(14 + i * 8, 61, 3, 6 + (i % 3) * 2, a.deep);
+    }
+    for (let i = 0; i < 9; i++) c.poly([[18 + i * 17, 70], [23 + i * 17, 66], [28 + i * 17, 70],
+      [23 + i * 17, 74]], a.mid);
+  },
   resonance_stabilizer: (c, a) => { // un cristal entre deux mors
     for (let i = 0; i < 3; i++) {
       const x = 20 + i * 46;

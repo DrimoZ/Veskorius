@@ -72,6 +72,30 @@ public class ModBlockEntities {
                 .of(ResonanceRelayBlockEntity::new, ModBlocks.RESONANCE_RELAY.get())
                 .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FluxCompressorBlockEntity>>
+        FLUX_COMPRESSOR = BLOCK_ENTITIES.register("flux_compressor",
+            () -> BlockEntityType.Builder
+                .of(FluxCompressorBlockEntity::new, ModBlocks.FLUX_COMPRESSOR.get())
+                .build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<StructuralSynthesizerBlockEntity>>
+        STRUCTURAL_SYNTHESIZER = BLOCK_ENTITIES.register("structural_synthesizer",
+            () -> BlockEntityType.Builder
+                .of(StructuralSynthesizerBlockEntity::new, ModBlocks.STRUCTURAL_SYNTHESIZER.get())
+                .build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DeepCrystalDrillerBlockEntity>>
+        DEEP_CRYSTAL_DRILLER = BLOCK_ENTITIES.register("deep_crystal_driller",
+            () -> BlockEntityType.Builder
+                .of(DeepCrystalDrillerBlockEntity::new, ModBlocks.DEEP_CRYSTAL_DRILLER.get())
+                .build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SlagVentBlockEntity>>
+        SLAG_VENT = BLOCK_ENTITIES.register("slag_vent",
+            () -> BlockEntityType.Builder
+                .of(SlagVentBlockEntity::new, ModBlocks.SLAG_VENT.get())
+                .build(null));
+
     /** Émetteur Accordable : même émetteur, bande harmonique choisie (06-Energy.md). */
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TunableFieldEmitterBlockEntity>>
         TUNABLE_FIELD_EMITTER = BLOCK_ENTITIES.register("tunable_field_emitter",

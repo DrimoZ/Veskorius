@@ -272,6 +272,18 @@ public class ModItems {
     public static final DeferredItem<BlockItem> RESONANCE_RELAY_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.RESONANCE_RELAY);
 
+    public static final DeferredItem<BlockItem> FLUX_COMPRESSOR_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.FLUX_COMPRESSOR);
+
+    public static final DeferredItem<BlockItem> STRUCTURAL_SYNTHESIZER_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.STRUCTURAL_SYNTHESIZER);
+
+    public static final DeferredItem<BlockItem> DEEP_CRYSTAL_DRILLER_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.DEEP_CRYSTAL_DRILLER);
+
+    public static final DeferredItem<BlockItem> SLAG_VENT_ITEM =
+        ITEMS.registerSimpleBlockItem(ModBlocks.SLAG_VENT);
+
     public static final DeferredItem<BlockItem> VESKORIAN_ALLOY_BLOCK_ITEM =
         ITEMS.registerSimpleBlockItem(ModBlocks.VESKORIAN_ALLOY_BLOCK);
 

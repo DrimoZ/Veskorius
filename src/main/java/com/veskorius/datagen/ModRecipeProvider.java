@@ -165,6 +165,36 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.DIAMOND)
                 .requires(blueprint(3)));
 
+        // Flux Compressor (#23) : le condensateur du palier.
+        machine(recipeOutput, ModBlocks.FLUX_COMPRESSOR.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.REFINED_RESONANCE_CRYSTAL.get(), b -> b
+                .requires(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 2)
+                .requires(ModItems.VESKORIAN_ALLOY_INGOT.get(), 2)
+                .requires(blueprint(3)));
+
+        // Structural Synthesizer (#11) : ce qui rend l'alliage bâtissable.
+        machine(recipeOutput, ModBlocks.STRUCTURAL_SYNTHESIZER.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.VESKORIAN_ALLOY_INGOT.get(), b -> b
+                .requires(ModItems.VESKORIAN_ALLOY_INGOT.get(), 4)
+                .requires(Items.SMOOTH_STONE)
+                .requires(blueprint(3)));
+
+        // Deep Crystal Driller (#12) : 6 Component + 2 lingots d'alliage (05-Machines.md).
+        machine(recipeOutput, ModBlocks.DEEP_CRYSTAL_DRILLER.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.VESKORIAN_ALLOY_INGOT.get(), b -> b
+                .requires(ModItems.RESONANCE_COMPONENT.get(), 6)
+                .requires(ModItems.VESKORIAN_ALLOY_INGOT.get(), 2)
+                .requires(blueprint(3)));
+
+        // Slag Vent (#13) : volontairement BON MARCHÉ. Il ne produit rien ; le rendre
+        // cher n'ajouterait aucune décision, ça repousserait juste le moment où le joueur
+        // cesse de vider un slot à la main.
+        machine(recipeOutput, ModBlocks.SLAG_VENT.get(), ModBlocks.VESKORIAN_CHASSIS.get(),
+            ModItems.FLUX_SLAG.get(), b -> b
+                .requires(ModItems.VESKORIAN_ALLOY_INGOT.get())
+                .requires(Items.IRON_BARS)
+                .requires(blueprint(3)));
+
         // Émetteur Accordable : un Field Emitter + 2 Refined Crystal (l'accord demande
         // du cristal raffiné) + blueprint T2 rendu. Upgrade, pas une machine de plus.
         net.minecraft.data.recipes.ShapelessRecipeBuilder
@@ -404,6 +434,22 @@ public class ModRecipeProvider extends RecipeProvider {
             .input(net.minecraft.world.item.Items.GOLD_INGOT, 2)
             .time(400).osc(4)
             .save(recipeOutput, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "forging/veskorian_conductive_alloy_ingot"));
+        // Flux Compressor (#23) : 4 Refined Crystal → 1 Concentrated Flux, 30 s, 6 Osc/tick.
+        MachineRecipeBuilder.compressing(ModItems.CONCENTRATED_FLUX.get(), 1)
+            .input(ModItems.REFINED_RESONANCE_CRYSTAL.get(), 4)
+            .time(30 * 20).osc(6)
+            .save(recipeOutput, machineRecipe("compressing/concentrated_flux"));
+
+        // Structural Synthesizer (#11) : 4 lingots + 8 pierres → 4 blocs, 60 s. Le RÉSIDU
+        // n'est pas ici : comme la scorie de la Forge, il est une propriété de la machine
+        // (voir StructuralSynthesizerBlockEntity), donc un datapack qui ajoute un moulage
+        // produira son résidu comme les autres.
+        MachineRecipeBuilder.synthesizing(ModBlocks.VESKORIAN_ALLOY_BLOCK.get(), 4)
+            .input(ModItems.VESKORIAN_ALLOY_INGOT.get(), 4)
+            .input(net.minecraft.tags.ItemTags.STONE_CRAFTING_MATERIALS, 8)
+            .time(60 * 20).osc(6)
+            .save(recipeOutput, machineRecipe("synthesizing/veskorian_alloy_block"));
+
         // Stabilizer : Raw Crystal + flux (Quartz via tag) → Stable Crystal, 30 s,
         // autonome (05-Machines.md #1).
         MachineRecipeBuilder.stabilizing(ModItems.STABLE_RESONANCE_CRYSTAL.get(), 1)

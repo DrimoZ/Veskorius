@@ -223,6 +223,66 @@ const faces = {
     c.rect(7, 7, 2, 2, on ? a.hot : m.dark);
   },
 
+
+  // UN BÉLIER SUSPENDU au-dessus d'une enclume, et l'ÉCART entre les deux. Toute la
+  // lecture tient dans cet écart : c'est la seule façade du mod dont le sujet est un
+  // vide. Comprimé, l'écart se remplit de lumière.
+  flux_compressor: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    slab(c, 1, 1, 14, 5, IRON.mid, IRON.lite, IRON.deep);   // bélier
+    slab(c, 1, 11, 14, 4, m.metal, m.metalHi, m.line);       // enclume
+    for (let x = 3; x <= 12; x += 3) c.rect(x, 6, 2, 1, IRON.deep);
+    c.rect(2, 7, 12, 4, on ? a.mid : m.tones[0]);
+    if (on) { c.rect(2, 7, 12, 1, a.hot); c.rect(4, 9, 8, 1, a.lite); }
+    for (const [x, y] of [[2, 2], [12, 2]]) { c.rect(x, y, 2, 2, m.metal); c.set(x, y, m.metalHi); }
+  },
+
+  // UN MOULE VU DE FACE : un cadre épais, et à l'intérieur QUATRE CASES — les quatre
+  // blocs qu'un cycle produit. C'est le seul emblème du mod qui montre sa quantité.
+  structural_synthesizer: (c, m, a, on) => {
+    slab(c, 0, 0, 16, 16, m.tones[1], m.tones[3], m.line);
+    c.rect(2, 2, 12, 12, m.dark);
+    for (const [x, y] of [[3, 3], [9, 3], [3, 9], [9, 9]]) {
+      slab(c, x, y, 4, 4, on ? a.deep : m.tones[0], on ? a.mid : m.tones[2], m.line);
+      if (on) c.set(x + 1, y + 1, a.hot);
+    }
+    slab(c, 0, 7, 16, 2, m.metal, m.metalHi, m.line);
+  },
+
+  // UN TRÉPAN QUI DESCEND : une colonne centrale à dents, pointe en bas, et la roche
+  // de part et d'autre. La seule façade orientée VERS LE BAS du lot — la machine dit
+  // où elle travaille.
+  deep_crystal_driller: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    slab(c, 0, 0, 16, 3, m.metal, m.metalHi, m.line);
+    slab(c, 6, 3, 4, 9, IRON.mid, IRON.lite, IRON.deep);
+    for (let y = 4; y < 12; y += 2) { c.set(5, y, IRON.lite); c.set(10, y, IRON.lite); }
+    // Pointe : trois assises de plus en plus étroites.
+    c.rect(6, 12, 4, 1, IRON.lite);
+    c.rect(7, 13, 2, 1, IRON.mid);
+    c.set(7, 14, on ? a.hot : IRON.deep);
+    c.set(8, 14, on ? a.hot : IRON.deep);
+    // La veine qu'elle vise, de part et d'autre.
+    for (const x of [2, 13]) {
+      c.rect(x, 6, 2, 6, on ? a.deep : m.tones[0]);
+      if (on) c.set(x, 8, a.mid);
+    }
+  },
+
+  // UNE BOUCHE D'ÉVACUATION : une grille horizontale barrée de lames, sans centre et
+  // sans lentille. Rien n'y ressemble à un émetteur — l'évent ne produit rien, et sa
+  // façade ne doit rien promettre.
+  slag_vent: (c, m, a, on) => {
+    c.rect(0, 0, 16, 16, m.dark);
+    slab(c, 1, 1, 14, 14, m.tones[0], m.tones[3], m.line);
+    for (let y = 3; y < 14; y += 3) {
+      c.rect(3, y, 10, 2, m.dark);
+      c.rect(3, y, 10, 1, on ? a.deep : m.line);
+      if (on) { c.set(4, y, a.mid); c.set(11, y, a.mid); }
+    }
+    for (const x of [1, 14]) for (let y = 2; y < 14; y++) c.set(x, y, m.metal);
+  },
+
   // La même lentille, plus la réglette des trois bandes.
   tunable_field_emitter: (c, m, a, on) => {
     faces.field_emitter(c, m, a, on);
@@ -285,4 +345,4 @@ function top(tier, seed) {
   return c;
 }
 
-module.exports = { MARBLE, V, C, WOOD, IRON, S, marble, edges, slab, faces, front, side, top };
+module.exports = { MARBLE, V, C, A, WOOD, IRON, S, marble, edges, slab, faces, front, side, top };

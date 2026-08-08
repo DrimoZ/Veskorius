@@ -64,6 +64,16 @@ public class MachineRecipeBuilder {
             ModRecipeSerializers.FORGING::get, new ItemStack(result, count));
     }
 
+    public static MachineRecipeBuilder compressing(ItemLike result, int count) {
+        return new MachineRecipeBuilder(ModRecipeTypes.COMPRESSING::get,
+            ModRecipeSerializers.COMPRESSING::get, new ItemStack(result, count));
+    }
+
+    public static MachineRecipeBuilder synthesizing(ItemLike result, int count) {
+        return new MachineRecipeBuilder(ModRecipeTypes.SYNTHESIZING::get,
+            ModRecipeSerializers.SYNTHESIZING::get, new ItemStack(result, count));
+    }
+
     public static MachineRecipeBuilder roosting(ItemLike result, int count) {
         return new MachineRecipeBuilder(ModRecipeTypes.ROOSTING::get,
             ModRecipeSerializers.ROOSTING::get, new ItemStack(result, count));
