@@ -128,6 +128,26 @@ public final class VeskoriusConfig {
 
     // --- Génération (GenerationConfig) ---------------------------------------
 
+    public static int stormDurationTicks() {
+        return GenerationConfig.STORM_DURATION_TICKS.getAsInt();
+    }
+
+    public static int stormRollInterval() {
+        return GenerationConfig.STORM_ROLL_INTERVAL.getAsInt();
+    }
+
+    public static int stormRollChance() {
+        return GenerationConfig.STORM_ROLL_CHANCE.getAsInt();
+    }
+
+    public static int stormSeedRadius() {
+        return GenerationConfig.STORM_SEED_RADIUS.getAsInt();
+    }
+
+    public static int bloomGrowthChance() {
+        return GenerationConfig.BLOOM_GROWTH_CHANCE.getAsInt();
+    }
+
     public static double sporeGrowthChance() {
         return GenerationConfig.SPORE_GROWTH_CHANCE.getAsDouble();
     }

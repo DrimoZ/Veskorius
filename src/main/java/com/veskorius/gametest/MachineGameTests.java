@@ -1700,6 +1700,16 @@ public class MachineGameTests {
         helper.assertTrue(VeskoriusConfig.striderMilkCooldown() == 6000
                 && VeskoriusConfig.roostStriderRange() == 6.0,
             "Défauts Fileur/Roost : cooldown 6000, portée Roost 6");
+        // L'orage : dix minutes, un tirage par jour MC gagnant une fois sur six, rayon 48.
+        // Ces quatre-là sortent tout droit de 07-World-Generation.md — les changer sans
+        // toucher au dossier ferait diverger la seule description écrite de l'événement.
+        helper.assertTrue(VeskoriusConfig.stormDurationTicks() == 12000
+                && VeskoriusConfig.stormRollInterval() == 24000
+                && VeskoriusConfig.stormRollChance() == 6
+                && VeskoriusConfig.stormSeedRadius() == 48,
+            "Défauts Orage : 12000 / 24000 / 6 / 48");
+        helper.assertTrue(VeskoriusConfig.bloomGrowthChance() == 5,
+            "Défaut pousse du buisson : 5 (à peu près un buisson de baies)");
         helper.assertTrue(Math.abs(VeskoriusConfig.sporeGrowthChance() - 0.05) < 1e-6,
             "Défaut croissance de spore 0.05, vaut " + VeskoriusConfig.sporeGrowthChance());
         helper.succeed();

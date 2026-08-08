@@ -86,6 +86,11 @@ maker éditer des clés qui n'existent pas.
 | `mobs` | `fauna` | `striderMilkCooldown` | 6000 | Cooldown de traite du Fileur (ticks) |
 | `mobs` | `fauna` | `roostStriderRange` | 6 | Rayon dans lequel un Fileur active un Crystal Roost |
 | `generation` | `world` | `sporeGrowthChance` | 0.05 | Chance par random tick que la pierre veinée pousse un spore (face exposée, faible lumière) |
+| `generation` | `world` | `bloomGrowthChance` | 5 | Un random tick sur N fait avancer le Buisson de Floraison d'un stade (≈ un buisson de baies) |
+| `generation` | `storm` | `durationTicks` | 12000 | Durée d'un Orage de Résonance (10 min). Une durée plus longue est une FENÊTRE plus longue, jamais un stock plus gros : tout ce qui reste au sol à la fin disparaît |
+| `generation` | `storm` | `rollIntervalTicks` | 24000 | Intervalle entre deux tirages (1 jour MC) |
+| `generation` | `storm` | `rollChance` | 6 | Un tirage sur N déclenche l'orage — soit un tous les 5 à 7 jours. Très élevé = orages quasi absents |
+| `generation` | `storm` | `seedRadius` | 48 | Rayon de dépôt des cratères autour de chaque joueur. Plus large étale la chasse, plus étroit la concentre |
 | `harmonics` | `harmonics` | `enabled` | `true` | **Interrupteur maître** du système Harmoniques & Dissonance |
 | `harmonics` | `harmonics` | `bandCount` | 3 | Nombre de bandes sélectionnables (1-3) |
 | `harmonics` | `harmonics` | `detuneOscMultiplier` | 1.5 | Surcoût d'Osc d'une machine désaccordée |

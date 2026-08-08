@@ -106,7 +106,7 @@ public class ResonanceBloomBushBlock extends BushBlock implements BonemealableBl
         int age = state.getValue(AGE);
         // Lente : c'est une plante de ruine, pas une céréale. La comparaison utile est le
         // buisson de baies vanilla, qui met le même genre de temps.
-        if (age < RIPE && random.nextInt(5) == 0
+        if (age < RIPE && random.nextInt(com.veskorius.config.VeskoriusConfig.bloomGrowthChance()) == 0
             && level.getRawBrightness(pos.above(), 0) >= 9) {
             level.setBlock(pos, state.setValue(AGE, age + 1), 2);
         }

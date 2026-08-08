@@ -2,6 +2,7 @@ package com.veskorius.event;
 
 import com.veskorius.Veskorius;
 import com.veskorius.block.ModBlocks;
+import com.veskorius.config.VeskoriusConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -39,15 +40,14 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 @EventBusSubscriber(modid = Veskorius.MOD_ID)
 public final class ResonanceStormHandler {
 
-    /** Dix minutes (07-World-Generation.md). */
-    private static final int STORM_TICKS = 10 * 60 * 20;
-
-    /** Un tirage par jour Minecraft, gagnant une fois sur six : ~5-7 jours d'attente. */
-    private static final int ROLL_INTERVAL = 24000;
-    private static final int ROLL_CHANCE = 6;
-
-    /** Rayon de semis autour d'un joueur, et cadence. */
-    private static final int SEED_RADIUS = 48;
+    // DURÉE, FRÉQUENCE ET RAYON VIENNENT DE LA CONFIG (14-Configuration.md). L'orage
+    // est le seul événement aléatoire du mod : c'est précisément celui qu'un serveur
+    // peut vouloir calmer ou intensifier, et ses valeurs étaient les seules du mod à
+    // n'être réglables par personne.
+    //
+    // La cadence de semis, elle, reste en dur : ce n'est pas un réglage d'équilibrage
+    // mais un pas de simulation. L'exposer inviterait à le baisser, et à balayer la
+    // heightmap vingt fois par seconde pour un gain nul.
     private static final int SEED_INTERVAL = 40;
     private static final int SEEDS_PER_PASS = 2;
 
@@ -68,14 +68,15 @@ public final class ResonanceStormHandler {
             tickStorm(level, state);
             return;
         }
-        if (level.getGameTime() % ROLL_INTERVAL == 0 && anyoneReachedTierThree(level)
-            && level.random.nextInt(ROLL_CHANCE) == 0) {
+        if (level.getGameTime() % VeskoriusConfig.stormRollInterval() == 0
+            && anyoneReachedTierThree(level)
+            && level.random.nextInt(VeskoriusConfig.stormRollChance()) == 0) {
             start(level, state);
         }
     }
 
     private static void start(ServerLevel level, StormState state) {
-        state.remaining = STORM_TICKS;
+        state.remaining = VeskoriusConfig.stormDurationTicks();
         state.setDirty();
         for (ServerPlayer player : level.players()) {
             player.playNotifySound(SoundEvents.BEACON_ACTIVATE, SoundSource.WEATHER, 1.0f, 0.6f);
@@ -137,9 +138,10 @@ public final class ResonanceStormHandler {
 
     /** Sème quelques cratères sur des blocs de surface exposés, au hasard. */
     private static void seedAround(ServerLevel level, StormState state, BlockPos centre) {
+        int radius = VeskoriusConfig.stormSeedRadius();
         for (int i = 0; i < SEEDS_PER_PASS; i++) {
-            int dx = level.random.nextInt(SEED_RADIUS * 2) - SEED_RADIUS;
-            int dz = level.random.nextInt(SEED_RADIUS * 2) - SEED_RADIUS;
+            int dx = level.random.nextInt(radius * 2) - radius;
+            int dz = level.random.nextInt(radius * 2) - radius;
             BlockPos ground = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 centre.offset(dx, 0, dz));
             if (!level.isLoaded(ground) || !level.canSeeSky(ground)) {
