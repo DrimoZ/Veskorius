@@ -10,7 +10,7 @@ que rien d'autre ne le signale.
 
 ---
 
-## 1. Machines (23 au dossier — **23 codées**)
+## 1. Machines (24 au dossier — **24 codées**)
 
 | # | Machine | Palier | État | Ce qu'elle fait |
 |---|---|---|---|---|
@@ -30,6 +30,7 @@ que rien d'autre ne le signale.
 | 12 | Deep Crystal Driller | T3 | ✅ | Récolte les amas sous Y −40, 6 Osc/t |
 | 13 | Slag Vent | T3 | ✅ | Vide 1 scorie / 10 s par forge dans 8 blocs |
 | 23 | Flux Compressor | T3 | ✅ | 4 Refined → 1 Flux Concentré, 30 s, 6 Osc/t |
+| — | **Reclaimer** | T3 | ✅ | 4 scories → 1 gravier, 4 boues → 1 poussière. Ferme la boucle |
 | — | Damping Array | T3 | ✅ | Purge la dissonance d'un champ |
 | 14 | **Harmonic Amplifier** | T4 | ✅ | Élargit un champ existant ; ne fabrique rien |
 | 15 | **Deep Synthesis Chamber** | T4 | ✅ | Consomme un Hyper Refined à la construction, à demeure |
@@ -110,7 +111,7 @@ d'alliage et coûte donc le bonus de panoplie).
 
 ## 8. Interface
 
-- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **66 entrées**, 9 catégories,
+- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **67 entrées**, 9 catégories,
   couvrant les cinq paliers, les entités et l'équipement. Affiche les **recettes**
   (établi et machine, lues du RecipeManager chargé), pagine le texte, cherche dans tout
   le livre, s'adapte à la taille de la fenêtre.
@@ -121,7 +122,9 @@ d'alliage et coûte donc le bonus de panoplie).
 - 12 GUI dessinés par générateur, 61 textures de bloc, palettes indexées.
 - **JEI** : toutes les catégories, plugin piloté par table pour qu'une machine ajoutée
   sans sa catégorie se voie.
-- Jade, Curios. Lang EN + FR complets.
+- Jade, Curios. **Lang EN + FR à parité stricte** — 404 clés de chaque côté, vérifié au datagen.
+  Quarante-huit manquaient en français (tout le Codex T3-T4-T5 et les libellés du livre) :
+  une clé absente n'est pas une erreur pour Minecraft, il affiche l'identifiant et continue.
 
 ## 9. Configuration
 

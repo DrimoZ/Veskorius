@@ -404,6 +404,122 @@ add("advancements.veskorius.tier2_field.title", "Réseau court");
         add("codex.veskorius.fields.locator.title", "Localisateur de Résonance");
         add("codex.veskorius.fields.locator.text", "Pointe vers la résonance la plus proche — poche de cristal ou champ actif. Courte portée, sur une petite charge rechargée dans un champ ou depuis une Cellule.");
 
+        // --- Interface et messages non traduits ---------------------------
+        //
+        // Les libellés du Codex lui-même — la boîte de recherche, « Ensuite », « Entrée
+        // scellée », la notification de déblocage — restaient en anglais dans une
+        // interface entièrement française. Plus visibles encore que les entrées, parce
+        // qu'on les lit à chaque ouverture du livre.
+        add("gui.veskorius.codex.machine_note", "%s s · %s Osc/tick");
+        add("gui.veskorius.codex.next", "Ensuite : %s →");
+        add("gui.veskorius.codex.no_results", "Rien ici pour l'instant.");
+        add("gui.veskorius.codex.recipe", "Recette");
+        add("gui.veskorius.codex.recipe_shaped", "Recette (avec forme)");
+        add("gui.veskorius.codex.results", "%s résultat(s)");
+        add("gui.veskorius.codex.sealed", "Entrée scellée");
+        add("gui.veskorius.codex.search", "Rechercher…");
+        add("gui.veskorius.codex.tier_intro", "Début");
+        add("gui.veskorius.codex.toast", "Nouvelle entrée du Codex");
+        add("gui.veskorius.codex.tree", "Progression");
+        add("gui.veskorius.tuner_calibrate", "Recalibrer");
+        add("gui.veskorius.tuner_priority", "Définir la priorité");
+        add("item.veskorius.resonance_tuner.no_component", "La recalibration demande 1 Composant de Résonance");
+        add("item.veskorius.resonance_tuner.no_priority", "Seules les machines ont une priorité");
+        add("item.veskorius.resonance_tuner.recalibrated", "Recalibré (1 Composant de Résonance consommé)");
+        add("item.veskorius.rift_ward_plate.hint", "Immunité totale au déphasage. Coûte 10 % de vitesse de minage tant qu'il est porté.");
+        add("message.veskorius.amplifier_status", "Amplificateur : portée %s, maillon %s/%s, calibration %s %%");
+        add("message.veskorius.hub_status", "Concentrateur : délestage sous %s, calibration %s %%");
+        add("message.veskorius.priority_set", "Priorité : %s");
+        add("message.veskorius.relay_charge", "Relais : %s/%s Osc");
+        add("message.veskorius.rift_not_cleared", "La Faille a encore son gardien. Rien ne peut en être tiré.");
+        add("message.veskorius.slag_vent_status", "Évent : %s forge(s) vidée(s) à la dernière passe");
+
+        // --- Codex : T3, T4, T5 -------------------------------------------
+        //
+        // VINGT-CINQ ENTRÉES N'AVAIENT AUCUN TEXTE FRANÇAIS. Tout le T3, tout le T4,
+        // tout le T5 : en jeu en français, le manuel affichait des clés brutes sur la
+        // moitié des machines — c'est-à-dire exactement sur la partie du mod qu'on ne
+        // peut pas deviner sans lire. Le test everyCodexEntryHasRealText ne l'a pas vu :
+        // il tourne sur la langue active du serveur de test, qui est l'anglais.
+        add("codex.veskorius.crystals.alloy.title", "Alliage Veskorien");
+        add("codex.veskorius.crystals.alloy.text",
+            "La première matière que vous FABRIQUEZ au lieu de la raffiner. La chaîne T1-T2 partait du cristal et le purifiait ; celle-ci part du métal et l'allie. C'est ce changement de nature qui marque le palier, pas le nombre d'étapes.\n\nLa variante conductrice, c'est la même forge avec de l'or au lieu du fer. Ne les mélangez pas : le Relais et le Treillis Harmonique n'acceptent que la conductrice.");
+        add("codex.veskorius.crystals.essence.title", "Essence de Faille");
+        add("codex.veskorius.crystals.essence.text",
+            "Six par Faille, et la Faille est finie. Aucune machine n'en produit davantage, et il n'y en aura pas — c'est une décision, pas un oubli.\n\nDeux des six partent dans l'Émetteur de Garde qui rend le site exploitable, donc la première Faille que vous purgerez vous en rendra réellement quatre. Ce que vous en faites est le dernier vrai choix que le mod vous propose.");
+        add("codex.veskorius.crystals.hyper.title", "Cristal Hyper-Raffiné");
+        add("codex.veskorius.crystals.hyper.text",
+            "Le quatrième état du cristal. Il ne se mine pas, ne se trouve pas, ne se fabrique pas à l'établi : la Chambre de Synthèse Profonde en est la seule source, et bâtir cette Chambre en dépense un.\n\nLes trois de l'Archive Régionale sont tout le stock de départ du palier : deux vont dans votre premier Treillis Harmonique, le troisième dans la Chambre. Vous ne pouvez pas faire les deux, et ce choix EST le palier 4. Une fois la Chambre debout, la ressource devient renouvelable et la pression retombe.");
+        add("codex.veskorius.crystals.slag.title", "Scorie de Flux");
+        add("codex.veskorius.crystals.slag.text",
+            "Le déchet de la Forge, et il n'est pas inerte. Chimiquement, c'est la substance qui, à l'échelle d'une région, a provoqué l'Effondrement.\n\nUne sort à chaque cycle de forge, dans son propre slot, et un slot plein ARRÊTE la Forge. Videz-le à la main, ou posez un Évent à Scorie qui le fera pour vous. Vous reproduisez la cause de l'Effondrement en miniature, et elle stoppera votre production si vous l'ignorez. C'est la leçon voulue.");
+        add("codex.veskorius.fauna.guardian.title", "Gardien de Faille");
+        add("codex.veskorius.fauna.guardian.text",
+            "Jamais une rencontre au hasard : il se lève de la première Ancre de Faille qui tient, une fois par Faille, et plus jamais.\n\nTrois phases, et chacune demande autre chose. En ÉCHO il recule quand vous approchez — il faut le poursuivre. En RUPTURE il ouvre le sol sous vos pieds. En STABILISATION il marche vers le cœur et se soigne s'il l'atteint : il faut donc tenir le centre, là où la Faille est la pire.\n\nLe vaincre stabilise la Faille définitivement — les dégâts de phase cessent même ancre éteinte — et ouvre l'extraction. Butin garanti : trois Lingots d'Alliage Veskorien Corrompu.");
+        add("codex.veskorius.fields.calibration.title", "Calibration et dérive");
+        add("codex.veskorius.fields.calibration.text",
+            "Amplificateurs et Concentrateurs perdent 1 % d'efficacité par jour Minecraft de fonctionnement, jusqu'à −30 % et pas au-delà. Un amplificateur négligé porte moins loin qu'avant ; un Concentrateur négligé délestera plus tôt qu'il ne devrait.\n\nLe remède est le même geste que pour tout ce qui dérive dans ce monde : un Accordeur de Résonance en mode Recalibrer, au prix d'un Composant de Résonance.\n\nLe plancher compte. Rien ici ne cesse jamais de fonctionner : de l'entretien, jamais un mur.");
+        add("codex.veskorius.fields.lattice.title", "Treillis Harmonique");
+        add("codex.veskorius.fields.lattice.text",
+            "Quatre lingots d'alliage CONDUCTEUR et deux Cristaux Hyper-Raffinés. La branche de métal choisie à la Forge se paie une seconde fois, un palier plus tard.\n\nDeux choses seulement réclament un Treillis : l'Amplificateur Harmonique et le Cœur de Convergence. C'est le réseau T4 en un objet.");
+        add("codex.veskorius.machines.amplifier.title", "Amplificateur Harmonique");
+        add("codex.veskorius.machines.amplifier.text",
+            "Double la portée du champ qu'il REÇOIT, pour 2 Osc par tick. Derrière un émetteur T2, cela fait 16 blocs ; derrière un Relais, 40. Un Relais porte une portée fixe, celui-ci en multiplie une.\n\nTrois maillons au plus. Passé le troisième, un amplificateur transporte encore le champ mais cesse de le doubler.\n\nIl dérive : 1 % d'efficacité par jour Minecraft de fonctionnement, jusqu'à un plancher de −30 %. Clic droit avec un Accordeur en mode Recalibrer et un Composant de Résonance pour le remettre à neuf. La dérive ne mange que le GAIN, jamais la portée reçue — un amplificateur n'est jamais pire que pas d'amplificateur.");
+        add("codex.veskorius.machines.chamber.title", "Chambre de Synthèse Profonde");
+        add("codex.veskorius.machines.chamber.text",
+            "Deux Cristaux Raffinés deviennent un Cristal Hyper-Raffiné en 90 secondes, à 8 Osc par tick. Rien d'autre au monde n'en produit.\n\nLa bâtir CONSOMME un Cristal Hyper-Raffiné, qui devient son catalyseur permanent et ne réapparaît jamais comme entrée de cycle. L'Archive Régionale vous en donne exactement trois : deux pour votre premier Treillis Harmonique, le troisième ici. Vous ne pouvez pas faire les deux — ce choix est le palier.\n\nElle accepte la surchauffe : moitié moins de temps, deux fois plus d'Osc, et un cycle sur cinq perd son entrée.");
+        add("codex.veskorius.machines.compressor.title", "Compresseur de Flux");
+        add("codex.veskorius.machines.compressor.text",
+            "Quatre Cristaux Raffinés deviennent un Flux Concentré en 30 secondes, à 6 Osc par tick. Une perte apparente, et voulue.\n\nLe Flux Concentré a exactement UN consommateur dans tout le mod : le Cœur de Convergence. Posez un Compresseur quand vous avez décidé de le bâtir, pas avant — il n'y a rien d'autre à faire de sa production.");
+        add("codex.veskorius.machines.convergence_core.title", "Cœur de Convergence");
+        add("codex.veskorius.machines.convergence_core.text",
+            "Le seul multi-bloc du mod, et la seule source de champ plus forte que toutes les autres.\n\nPosé seul, il est inerte. Il lui faut HUIT Relais de Résonance ou Amplificateurs Harmoniques (le mélange est permis) à exactement 5 blocs — les quatre axes et les quatre coins d'un anneau de 11 blocs — et chacun doit voir le centre à découvert. On ne l'enferme pas.\n\nUne fois formé, il émet une portée de 40 à intensité maximale pour 12 Osc par tick. Il est revérifié toutes les deux secondes : murez une seule ligne de vue et il s'éteint.\n\nIl existe surtout pour alimenter une Ancre de Faille sans y consacrer une base entière de relais.");
+        add("codex.veskorius.machines.driller.title", "Foreuse à Cristaux Profonds");
+        add("codex.veskorius.machines.driller.text",
+            "Récolte les amas de cristal dans la colonne de 5×5 sous elle, un toutes les 20 secondes, à 6 Osc par tick. Elle n'atteint que sous Y −40 — en poser une plus haut ne fait strictement rien.\n\nElle prend les amas et laisse la roche : la galerie reste intacte et vous voyez exactement ce qui a été pris. Elle épuise aussi son filon. Quand la colonne est vide, elle s'arrête, et vous la déplacez.");
+        add("codex.veskorius.machines.extraction_array.title", "Réseau d'Extraction Automatisé");
+        add("codex.veskorius.machines.extraction_array.text",
+            "Commande toutes les Foreuses à Cristaux Profonds dans un rayon de 12 blocs : il vide leur sortie dans son propre coffre, et les foreuses qu'il commande tournent DEUX FOIS plus vite.\n\nIl répond à la corvée que la Foreuse crée. Avec cinq foreuses au fond d'une mine, marcher jusqu'à chacune est l'essentiel de ce que le palier vous demande. 10 Osc par tick pour cesser de le faire.");
+        add("codex.veskorius.machines.forge.title", "Forge à Alliage Veskorien");
+        add("codex.veskorius.machines.forge.text",
+            "Deux Cristaux Raffinés et deux lingots donnent un lingot d'alliage en 20 secondes. Le métal que vous lui donnez décide de la branche : le FER donne l'alliage structurel, l'OR l'alliage conducteur — et seul le conducteur entre dans un Relais. Ils ne se remplacent pas.\n\nChaque cycle laisse une Scorie de Flux dans son slot, et un slot plein arrête la Forge.");
+        add("codex.veskorius.machines.hub.title", "Concentrateur de Réseau");
+        add("codex.veskorius.machines.hub.text",
+            "Décide qui s'arrête quand un champ vient à manquer. Sans lui, les machines sont servies dans l'ordre où elles tickent, et une base sous-alimentée bégaie partout à la fois sans que rien ne vous dise ce que vous avez perdu.\n\nLe Concentrateur déleste par le bas : au-dessus de la moitié de réserve tout le monde tourne, entre un cinquième et la moitié les machines BASSES se taisent, en dessous seules les HAUTES sont servies. Réglez la priorité d'une machine à l'Accordeur.\n\nIl est passif et ne coûte rien — taxer un arbitre au moment précis où il n'y a plus d'énergie serait absurde.");
+        add("codex.veskorius.machines.reclaimer.title", "Récupérateur");
+        add("codex.veskorius.machines.reclaimer.text",
+            "Renvoie les déchets dans l'économie. Quatre Scories de Flux donnent un gravier ; quatre Boues de Résonance donnent une Poussière de Résonance. 20 secondes, 4 Osc par tick.\n\nLe taux est délibérément mauvais. Recycler doit rester moins rentable que miner, sinon la boucle remplacerait l'exploration au lieu de la prolonger. Ce que vous achetez ici, ce n'est pas du rendement — c'est de ne plus avoir à jeter.\n\nIl ne remplace pas l'Évent à Scorie. L'Évent ne demande que d'exister ; le Récupérateur veut un champ, un cycle et de la place. Qui veut se débarrasser de la scorie sans y penser continue de venter. Qui veut la récupérer paie l'infrastructure.\n\nAvant lui, la Scorie de Flux ne pouvait qu'être détruite, et la Boue de Résonance n'allait nulle part.");
+        add("codex.veskorius.machines.relay.title", "Relais de Résonance");
+        add("codex.veskorius.machines.relay.text",
+            "Porte un champ 20 blocs plus loin, et les relais se chaînent. Il consomme 1 Osc par tick que quelque chose s'en serve ou non — la portée n'est jamais gratuite.\n\nUn relais n'a pas de réserve propre digne de ce nom : il se remplit du champ en amont et sert ce qu'il détient. Il transporte aussi la bande harmonique de sa source, donc en glisser un devant une machine ne réparera pas un montage désaccordé.");
+        add("codex.veskorius.machines.rift_anchor.title", "Ancre de Faille");
+        add("codex.veskorius.machines.rift_anchor.text",
+            "Posée à moins de 12 blocs d'un cœur de Faille, elle stabilise la Faille — et convoque son Gardien, une fois, la première fois qu'elle tient.\n\n20 Osc par tick, en continu : le plus gros appétit du mod, et la raison d'être du Cœur de Convergence.\n\nElle ne tient que TANT QU'elle est alimentée. Coupez le champ et la Faille se réveille. Cassez l'ancre et elle se réveille aussitôt. Il n'y a pas d'interrupteur définitif ici.");
+        add("codex.veskorius.machines.rift_extractor.title", "Extracteur de Cœur de Faille");
+        add("codex.veskorius.machines.rift_extractor.text",
+            "Une Essence de Faille toutes les 120 secondes, à 15 Osc par tick, sur une Faille ancrée ET purgée de son Gardien. Environ une extraction sur sept rend en plus un Lingot d'Alliage Corrompu.\n\nSix extractions par Faille. Ensuite cette Faille est épuisée, définitivement. Le compte vit sur le cœur, donc remplacer l'Extracteur n'y change rien.\n\nL'Essence de Faille est la seule ressource finie de ce mod. Rien ne la régénère.");
+        add("codex.veskorius.machines.rift_ward.title", "Émetteur de Garde");
+        add("codex.veskorius.machines.rift_ward.text",
+            "Contient la corrosion ambiante d'une Faille ancrée dans un rayon de 12 blocs, pour 5 Osc par tick.\n\nAncrer une Faille arrête les dégâts aigus ; ça n'arrête pas la Faille. Ce qui reste ronge votre équipement — un point d'usure sur une pièce portée toutes les 5 secondes. Survivable, et inexploitable : on peut entrer sans Garde, on ne peut pas y travailler.\n\nIl coûte deux Essences de Faille sur les six qu'une Faille rendra jamais. C'est le seul objet du mod payé sur ce qu'il débloque.");
+        add("codex.veskorius.machines.slag_vent.title", "Évent à Scorie");
+        add("codex.veskorius.machines.slag_vent.text",
+            "Évacue une Scorie de Flux toutes les 10 secondes de chaque Forge dans un rayon de 8 blocs. Il existe parce qu'un slot de scorie plein arrête net une Forge.\n\nUne évacuation par passe et par Forge : une batterie de six dépassera un seul Évent. Il coûte du champ en continu, donc se débarrasser des déchets est une ligne permanente de votre budget d'énergie, pas un bouton qu'on presse une fois.");
+        add("codex.veskorius.machines.synthesizer.title", "Synthétiseur Structurel");
+        add("codex.veskorius.machines.synthesizer.text",
+            "Quatre lingots d'alliage et huit pierres donnent quatre Blocs d'Alliage Veskorien en 60 secondes. C'est ce qui rend le palier bâtissable — sans lui, l'alliage reste un matériau d'artisanat.\n\nComme la Forge, il laisse un sous-produit : un Résidu de Synthèse par cycle, dans son propre slot, et un slot plein arrête la machine. Un Évent à Scorie ne l'évacuera PAS. Celui-là reste votre problème — ou celui du Récupérateur.");
+        add("codex.veskorius.progression.tier3.title", "Palier 3 — L'alliage");
+        add("codex.veskorius.progression.tier3.text",
+            "Le palier où l'on cesse de raffiner pour se mettre à FABRIQUER. La Forge à Alliage Veskorien en est la porte, et la console du Sigma Laboratory en détient le plan.\n\nDeux nouveautés, et ce sont deux contraintes. Le métal que vous forgez sépare vos matériaux en deux familles qui ne se remplacent pas. Et chaque machine qui produit la matière du palier produit aussi un déchet qui l'arrêtera si vous l'ignorez.");
+        add("codex.veskorius.progression.tier4.title", "Palier 4 — La synthèse profonde");
+        add("codex.veskorius.progression.tier4.text",
+            "Ouvert par l'Archive Régionale, qui rend son plan et exactement trois Cristaux Hyper-Raffinés.\n\nC'est là que le réseau cesse d'être un ensemble de machines pour devenir quelque chose qui s'administre : des amplificateurs qui portent à l'échelle d'une région, un Concentrateur qui décide qui mange quand il n'y en a pas assez, et une calibration qui se dégrade si vous ne revenez jamais.");
+        add("codex.veskorius.progression.tier5.title", "Palier 5 — La Faille");
+        add("codex.veskorius.progression.tier5.text",
+            "Il ne se débloque en fabriquant rien du tout. On l'ouvre en TROUVANT une Faille, et on en trouve une en reconnaissant la pierre déformée.\n\nTout y est fini. Un Gardien par Faille, six essences par Faille, et aucun moyen d'en produire davantage. Le mod s'arrête où la ressource s'arrête.");
+        add("codex.veskorius.world.rift.title", "Lire une Faille");
+        add("codex.veskorius.world.rift.text",
+            "Une Faille est une bulle de rien, déchirée sous Y −60, avec un cœur qui flotte en son centre. Elle n'est pas bâtie et ce n'est pas une structure — c'est un accident de sur-résonance.\n\nLe Localisateur de Résonance ne peut pas en trouver : une Faille ne rayonne pas un champ, elle le déphase. Le seul signe est la pierre autour, tirée et fendue. Apprenez cette pierre et vous trouverez des Failles. Il n'y a pas d'instrument pour ça.\n\nNon ancré, un cœur blesse tout ce qui se tient à moins de 8 blocs au bout de trois secondes. Trois secondes suffisent pour regarder et reculer. Elles ne suffisent pas pour rester.");
+
         add("codex.veskorius.machines.stabilizer.title", "Stabilisateur de Résonance");
         add("codex.veskorius.machines.stabilizer.text", "Transforme Cristal Brut + quartz en Cristal Stable. Autonome, aucun champ requis — la première machine que l'on pose.");
         add("codex.veskorius.machines.assembler.title", "Assembleur de Composants");
@@ -454,5 +570,63 @@ add("advancements.veskorius.tier2_field.title", "Réseau court");
         add("codex.veskorius.progression.tier1.text", "Miner un cristal, le stabiliser, assembler des composants. Tout y est autonome ou fait main. Le Codex s'ouvre avec votre premier cristal.");
         add("codex.veskorius.progression.tier2.title", "Palier 2 — Le Champ");
         add("codex.veskorius.progression.tier2.text", "Réveillez une console d'Avant-poste pour le plan du Champ, puis bâtissez l'Émetteur de Champ et tout ce qu'il alimente : Purificateur, Cellule, Localisateur, Perchoir.");
+
+        assertNoKeyLeftUntranslated();
+    }
+
+    /**
+     * <b>Toute clé anglaise doit avoir sa contrepartie française.</b>
+     *
+     * <p>La javadoc de cette classe affirmait déjà que « les clés doivent rester
+     * synchronisées avec {@link ModLanguageProvider} ». Rien ne le vérifiait, et
+     * <b>quarante-huit clés manquaient</b> : tout le Codex du T3, du T4 et du T5, plus les
+     * libellés du livre lui-même — la boîte de recherche, « Ensuite », « Entrée scellée »,
+     * la notification de déblocage. En jeu en français, le manuel affichait des clés brutes
+     * sur la moitié des machines, c'est-à-dire précisément sur la partie du mod qu'on ne
+     * peut pas deviner sans lire.
+     *
+     * <p><b>Rien ne pouvait l'attraper</b>, et c'est le vrai enseignement. Une clé absente
+     * n'est pas une erreur pour Minecraft : il affiche l'identifiant et continue. Le
+     * {@code GameTest} qui vérifie que chaque entrée du Codex a un texte réel tourne sur la
+     * langue active du serveur de test — l'anglais — donc il passait au vert sur un livre
+     * français à moitié vide. Le contrôle doit donc vivre ici, au datagen, où l'échec est
+     * bruyant et immédiat.
+     *
+     * <p>La sonde reconstruit les clés anglaises en rejouant {@code addTranslations} sur une
+     * sous-classe qui n'enregistre rien : c'est le seul moyen d'obtenir la liste sans
+     * dépendre de l'ordre d'exécution des providers, qui n'est pas garanti.
+     */
+    private void assertNoKeyLeftUntranslated() {
+        java.util.Set<String> english = new java.util.TreeSet<>();
+        ModLanguageProvider probe = new ModLanguageProvider(null) {
+            @Override
+            public void add(String key, String value) {
+                english.add(key);
+            }
+        };
+        probe.addTranslations();
+
+        java.util.List<String> missing = english.stream()
+            .filter(key -> !hasKey(key))
+            .toList();
+        if (!missing.isEmpty()) {
+            throw new IllegalStateException(missing.size()
+                + " clé(s) anglaise(s) sans traduction française — elles s'afficheront en jeu "
+                + "sous forme d'identifiant brut, sans qu'aucune erreur ne soit levée : "
+                + missing);
+        }
+    }
+
+    /** Les clés déjà posées par ce provider. */
+    private final java.util.Set<String> keys = new java.util.HashSet<>();
+
+    private boolean hasKey(String key) {
+        return keys.contains(key);
+    }
+
+    @Override
+    public void add(String key, String value) {
+        keys.add(key);
+        super.add(key, value);
     }
 }
