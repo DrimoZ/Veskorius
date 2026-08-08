@@ -187,6 +187,22 @@ public final class CodexRegistry {
         return out;
     }
 
+    /**
+     * L'entrée qui suit celle-ci dans <b>sa catégorie</b>, ou {@code null} si c'est la
+     * dernière.
+     *
+     * <p>C'est ce qui transforme le Codex d'un dictionnaire en parcours : arrivé au bas
+     * d'une page, on n'a pas à se demander où aller ensuite, et surtout on découvre des
+     * entrées qu'on n'aurait pas cherchées. L'ordre d'une catégorie est l'ordre
+     * d'écriture du registre — il est déjà rédigé dans l'ordre où on apprend.
+     */
+    @Nullable
+    public static CodexEntry next(CodexEntry entry) {
+        List<CodexEntry> siblings = byCategory(entry.category());
+        int index = siblings.indexOf(entry);
+        return index >= 0 && index + 1 < siblings.size() ? siblings.get(index + 1) : null;
+    }
+
     @Nullable
     public static CodexEntry get(ResourceLocation id) {
         for (CodexEntry entry : ENTRIES) {

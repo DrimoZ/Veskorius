@@ -391,13 +391,20 @@ public class HarmonicsGameTests {
         Cow cow = helper.spawn(EntityType.COW, EMITTER.offset(1, 0, 0));
         float fullHealth = cow.getHealth();
         helper.startSequence()
-            .thenExecute(() -> {
-                chargedEmitter(helper);
+            .thenExecute(() -> chargedEmitter(helper))
+            .thenWaitUntil(() -> {
+                // ON RE-SATURE À CHAQUE ESSAI, et ce n'est pas une précaution décorative.
+                // La décroissance naturelle tourne toutes les 20 ticks et passe AVANT la
+                // décharge dans le même tick : si elle tombait dans la fenêtre
+                // d'observation, la dissonance repassait sous le plafond — et rien ne la
+                // fait remonter seule, donc la décharge n'avait plus jamais lieu. Le test
+                // échouait ainsi une fois sur quatre environ, sur un code parfaitement
+                // correct, ce qui est la pire espèce de test : celui qu'on relance.
                 FieldEmitterBlockEntity emitter = helper.getBlockEntity(EMITTER);
                 emitter.addDissonance(HarmonicsConfig.dissonanceCapacity());
+                helper.assertTrue(cow.getHealth() < fullHealth,
+                    "La décharge doit blesser une entité à portée, PV : " + cow.getHealth());
             })
-            .thenExecuteAfter(5, () -> helper.assertTrue(cow.getHealth() < fullHealth,
-                "La décharge doit blesser une entité à portée, PV : " + cow.getHealth()))
             .thenSucceed();
     }
 

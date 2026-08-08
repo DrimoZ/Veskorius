@@ -421,6 +421,9 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.RESONANCE_CODEX, "Resonance Codex");
         add("item.veskorius.resonance_codex.hint", "Right-click to open. It writes itself as you progress.");
         add("gui.veskorius.codex.search", "Search…");
+        add("gui.veskorius.codex.index", "Index");
+        add("gui.veskorius.codex.next", "Next: %s →");
+        add("gui.veskorius.codex.toast", "New Codex entry");
         add("gui.veskorius.codex.results", "%s result(s)");
         add("gui.veskorius.codex.no_results", "Nothing here yet.");
         add("gui.veskorius.codex.sealed", "Sealed entry");

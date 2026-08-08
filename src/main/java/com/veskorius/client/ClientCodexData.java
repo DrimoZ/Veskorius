@@ -22,8 +22,40 @@ public final class ClientCodexData {
     private ClientCodexData() {
     }
 
+    /**
+     * Vrai une fois la première synchronisation reçue. Elle apporte <b>tout</b> ce que le
+     * joueur a déjà débloqué : annoncer ce lot-là ferait trente bulles à la connexion, sur
+     * des pages lues depuis longtemps. On mémorise en silence, et on n'annonce qu'ensuite.
+     */
+    private static boolean primed;
+
     public static void apply(List<ResourceLocation> ids) {
+        Set<ResourceLocation> previous = unlocked;
         unlocked = new LinkedHashSet<>(ids);
+        if (!primed) {
+            primed = true;
+            return;
+        }
+        for (ResourceLocation id : ids) {
+            if (previous.contains(id)) {
+                continue;
+            }
+            CodexEntry entry = CodexRegistry.get(id);
+            if (entry != null) {
+                net.minecraft.client.Minecraft.getInstance().getToasts()
+                    .addToast(new CodexToast(entry));
+            }
+        }
+    }
+
+    /**
+     * Remet le cache à zéro à la déconnexion. Sans ça, rejoindre un second monde
+     * comparerait les nouvelles entrées à celles du monde précédent : les pages communes
+     * passeraient pour déjà connues et ne s'annonceraient jamais.
+     */
+    public static void reset() {
+        unlocked = Set.of();
+        primed = false;
     }
 
     public static boolean isUnlocked(CodexEntry entry) {

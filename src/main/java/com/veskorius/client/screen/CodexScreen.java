@@ -88,6 +88,21 @@ public class CodexScreen extends Screen {
     private int listScroll;
     private int page;
 
+    /**
+     * <b>Le sommaire</b> : tout le livre d'un coup d'œil, entrées scellées comprises.
+     *
+     * <p>Les catégories ne montrent que leur propre contenu, si bien qu'on ne voyait
+     * jamais l'étendue de ce qui restait. Ici les pages verrouillées sont visibles en
+     * grisé — on sait qu'il y a une suite, et combien, sans qu'un titre ne la déflore.
+     * C'est ce que « le manuel s'écrit tout seul » promettait sans jamais le montrer.
+     */
+    private boolean indexView;
+
+    /** Décalage de la grille du sommaire, en lignes. */
+    private int indexScroll;
+
+    private static final int INDEX_CELL = 20;
+
     /** Lignes de l'entrée ouverte, déjà découpées à la largeur de la page. */
     private List<FormattedCharSequence> bodyLines = List.of();
     private int linesPerPage = 1;
@@ -119,6 +134,9 @@ public class CodexScreen extends Screen {
         search.setResponder(s -> {
             listScroll = 0;
             selectedEntry = null;
+            if (!s.isEmpty()) {
+                indexView = false;
+            }
         });
         addRenderableWidget(search);
         reflow();
@@ -207,11 +225,122 @@ public class CodexScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
 
         renderCategories(graphics, mouseX, mouseY);
-        if (selectedEntry == null) {
-            renderEntryList(graphics, mouseX, mouseY);
-        } else {
+        renderIndexTab(graphics, mouseX, mouseY);
+        if (selectedEntry != null) {
             renderEntryPage(graphics, mouseX, mouseY);
+        } else if (indexView) {
+            renderIndex(graphics, mouseX, mouseY);
+        } else {
+            renderEntryList(graphics, mouseX, mouseY);
         }
+    }
+
+    private int indexTabY() {
+        return navRowY(CodexCategory.values().length) + 6;
+    }
+
+    private void renderIndexTab(GuiGraphics graphics, int mouseX, int mouseY) {
+        int y = indexTabY();
+        boolean hovered = inBox(mouseX, mouseY, left + PAD - 2, y - 2, NAV_W - PAD, NAV_ROW_H);
+        if (indexView) {
+            graphics.fill(left + PAD - 2, y - 2, left + NAV_W - 4, y + NAV_ROW_H - 4, COLOR_SELECTED);
+        } else if (hovered) {
+            graphics.fill(left + PAD - 2, y - 2, left + NAV_W - 4, y + NAV_ROW_H - 4, COLOR_HOVER);
+        }
+        graphics.drawString(font, "◆", left + PAD + 4, y + 3, COLOR_ACCENT, false);
+        graphics.drawString(font, Component.translatable("gui.veskorius.codex.index"),
+            left + PAD + 20, y + 3, COLOR_TEXT, false);
+    }
+
+    /**
+     * La grille du sommaire : une icône par entrée, groupée par catégorie. Les entrées
+     * scellées gardent leur <b>place</b> mais pas leur identité — un cadre vide et un
+     * point. On compte ce qui manque sans savoir ce que c'est.
+     */
+    private void renderIndex(GuiGraphics graphics, int mouseX, int mouseY) {
+        graphics.drawString(font, Component.translatable("gui.veskorius.codex.index"),
+            paneX, top + HEADER_H + 2, COLOR_TITLE, false);
+        Component sub = Component.translatable("gui.veskorius.codex.total",
+            ClientCodexData.totalUnlocked(), CodexRegistry.all().size());
+        graphics.drawString(font, sub, paneX + paneW - font.width(sub), top + HEADER_H + 2,
+            COLOR_DIM, false);
+        graphics.hLine(paneX, paneX + paneW - 1, top + HEADER_H + 14, COLOR_BORDER);
+
+        int cols = Math.max(1, (paneW - 4) / INDEX_CELL);
+        int y = paneTop - indexScroll;
+        @Nullable CodexEntry hoveredEntry = null;
+
+        for (CodexCategory cat : CodexCategory.values()) {
+            List<CodexEntry> entries = CodexRegistry.byCategory(cat);
+            if (entries.isEmpty()) {
+                continue;
+            }
+            if (y + 10 > paneTop - 2 && y < paneBottom) {
+                graphics.drawString(font, Component.translatable(cat.titleKey()),
+                    paneX, y, COLOR_DIM, false);
+            }
+            y += 12;
+            for (int i = 0; i < entries.size(); i++) {
+                int cx = paneX + (i % cols) * INDEX_CELL;
+                int cy = y + (i / cols) * INDEX_CELL;
+                if (cy + INDEX_CELL < paneTop - 2 || cy > paneBottom) {
+                    continue;
+                }
+                CodexEntry entry = entries.get(i);
+                boolean unlocked = ClientCodexData.isUnlocked(entry);
+                boolean over = inBox(mouseX, mouseY, cx, cy, 18, 18);
+                if (over) {
+                    graphics.fill(cx - 1, cy - 1, cx + 19, cy + 19, COLOR_HOVER);
+                    hoveredEntry = entry;
+                }
+                slot(graphics, cx, cy);
+                if (unlocked) {
+                    graphics.renderFakeItem(entry.icon(), cx + 1, cy + 1);
+                } else {
+                    graphics.drawString(font, "•", cx + 7, cy + 5, COLOR_LOCKED, false);
+                }
+            }
+            y += ((entries.size() + cols - 1) / cols) * INDEX_CELL + 4;
+        }
+        indexHeight = y + indexScroll - paneTop;
+
+        if (hoveredEntry != null) {
+            graphics.renderTooltip(font,
+                ClientCodexData.isUnlocked(hoveredEntry)
+                    ? Component.translatable(hoveredEntry.titleKey())
+                    : Component.translatable("gui.veskorius.codex.sealed"),
+                mouseX, mouseY);
+        }
+    }
+
+    /** Hauteur totale du sommaire, mesurée au dernier rendu (pour borner le défilement). */
+    private int indexHeight;
+
+    private int maxIndexScroll() {
+        return Math.max(0, indexHeight - (paneBottom - paneTop));
+    }
+
+    /** L'entrée du sommaire sous la souris, ou {@code null}. Miroir exact du rendu. */
+    @Nullable
+    private CodexEntry indexEntryAt(double mouseX, double mouseY) {
+        int cols = Math.max(1, (paneW - 4) / INDEX_CELL);
+        int y = paneTop - indexScroll;
+        for (CodexCategory cat : CodexCategory.values()) {
+            List<CodexEntry> entries = CodexRegistry.byCategory(cat);
+            if (entries.isEmpty()) {
+                continue;
+            }
+            y += 12;
+            for (int i = 0; i < entries.size(); i++) {
+                int cx = paneX + (i % cols) * INDEX_CELL;
+                int cy = y + (i / cols) * INDEX_CELL;
+                if (inBox(mouseX, mouseY, cx, cy, 18, 18)) {
+                    return entries.get(i);
+                }
+            }
+            y += ((entries.size() + cols - 1) / cols) * INDEX_CELL + 4;
+        }
+        return null;
     }
 
     /** Cadre à deux tons : un simple contour d'un pixel se lisait comme une boîte de debug. */
@@ -344,6 +473,26 @@ public class CodexScreen extends Screen {
                 graphics.drawString(font, "▶", paneX + paneW - 6, py, COLOR_ACCENT, false);
             }
         }
+
+        // « Et ensuite ? » — seulement sur la DERNIÈRE page, et seulement si la suite est
+        // lisible. Proposer un lien vers une entrée scellée serait annoncer son titre,
+        // c'est-à-dire déflorer exactement ce que le verrou protège.
+        CodexEntry follow = nextReadable(entry);
+        if (follow != null && page == pageCount() - 1) {
+            int fy = paneBottom - 22;
+            Component link = Component.translatable("gui.veskorius.codex.next",
+                Component.translatable(follow.titleKey()));
+            boolean over = inBox(mouseX, mouseY, paneX, fy - 2, font.width(link) + 2, 12);
+            graphics.hLine(paneX, paneX + paneW - 1, fy - 6, COLOR_BORDER);
+            graphics.drawString(font, link, paneX, fy, over ? COLOR_ACCENT : COLOR_DIM, false);
+        }
+    }
+
+    /** L'entrée suivante de la catégorie si elle est débloquée, sinon rien. */
+    @Nullable
+    private static CodexEntry nextReadable(CodexEntry entry) {
+        CodexEntry follow = CodexRegistry.next(entry);
+        return follow != null && ClientCodexData.isUnlocked(follow) ? follow : null;
     }
 
     /**
@@ -421,11 +570,23 @@ public class CodexScreen extends Screen {
             return false;
         }
 
+        if (inBox(mouseX, mouseY, left + PAD - 2, indexTabY() - 2, NAV_W - PAD, NAV_ROW_H)) {
+            indexView = true;
+            selectedEntry = null;
+            indexScroll = 0;
+            if (search != null) {
+                search.setValue("");
+            }
+            reflow();
+            return true;
+        }
+
         CodexCategory[] categories = CodexCategory.values();
         for (int i = 0; i < categories.length; i++) {
             if (inBox(mouseX, mouseY, left + PAD - 2, navRowY(i) - 2, NAV_W - PAD, NAV_ROW_H)) {
                 selectedCategory = categories[i];
                 selectedEntry = null;
+                indexView = false;
                 listScroll = 0;
                 if (search != null) {
                     search.setValue("");
@@ -433,6 +594,17 @@ public class CodexScreen extends Screen {
                 reflow();
                 return true;
             }
+        }
+
+        if (selectedEntry == null && indexView) {
+            CodexEntry hit = indexEntryAt(mouseX, mouseY);
+            if (hit != null) {
+                // Scellée comprise : sa page explique alors comment l'ouvrir. C'est tout
+                // l'intérêt du sommaire — voir ce qui manque ET savoir quoi faire pour l'avoir.
+                open(hit);
+                return true;
+            }
+            return false;
         }
 
         if (selectedEntry == null) {
@@ -459,6 +631,15 @@ public class CodexScreen extends Screen {
             page++;
             return true;
         }
+        CodexEntry follow = nextReadable(selectedEntry);
+        if (follow != null && page == pageCount() - 1) {
+            Component link = Component.translatable("gui.veskorius.codex.next",
+                Component.translatable(follow.titleKey()));
+            if (inBox(mouseX, mouseY, paneX, paneBottom - 24, font.width(link) + 2, 12)) {
+                open(follow);
+                return true;
+            }
+        }
         if (inBox(mouseX, mouseY, paneX, top + HEADER_H, paneW, 12)) {
             selectedEntry = null;
             reflow();
@@ -478,7 +659,10 @@ public class CodexScreen extends Screen {
         if (scrollY == 0) {
             return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
         }
-        if (selectedEntry == null) {
+        if (selectedEntry == null && indexView) {
+            indexScroll = Math.clamp(indexScroll - (int) Math.signum(scrollY) * INDEX_CELL,
+                0, maxIndexScroll());
+        } else if (selectedEntry == null) {
             listScroll = Math.clamp(listScroll - (int) Math.signum(scrollY), 0, maxScroll());
         } else {
             page = Math.clamp(page - (int) Math.signum(scrollY), 0, pageCount() - 1);
@@ -495,6 +679,10 @@ public class CodexScreen extends Screen {
         if (key == 256 && selectedEntry != null) {
             selectedEntry = null;
             reflow();
+            return true;
+        }
+        if (key == 256 && indexView) {
+            indexView = false;
             return true;
         }
         if (search != null && search.isFocused()) {
