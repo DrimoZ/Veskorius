@@ -114,7 +114,7 @@ d'alliage et coûte donc le bonus de panoplie).
 
 ## 8. Interface
 
-- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **74 entrées**, 9 catégories,
+- **Resonance Codex** : manuel en jeu qui s'écrit tout seul, **78 entrées**, 9 catégories,
   couvrant les cinq paliers, les entités et l'équipement. Affiche les **recettes**
   (établi et machine, lues du RecipeManager chargé), pagine le texte, cherche dans tout
   le livre, s'adapte à la taille de la fenêtre.

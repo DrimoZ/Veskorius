@@ -50,6 +50,10 @@ public final class CodexRegistry {
         TIERS.put("fields/locator", 2);
         TIERS.put("fields/lattice", 4);
         TIERS.put("fields/calibration", 4);
+        TIERS.put("fields/harmonics", 3);
+        TIERS.put("fields/dissonance", 3);
+        TIERS.put("machines/damping", 3);
+        TIERS.put("machines/tunable_emitter", 2);
         TIERS.put("machines/stabilizer", 1);
         TIERS.put("machines/assembler", 1);
         TIERS.put("machines/whetstone", 1);
@@ -251,6 +255,14 @@ public final class CodexRegistry {
             CodexUnlock.item(ModItems.HYPER_REFINED_CRYSTAL));
         add("fields/lattice", CodexCategory.FIELDS, ModItems.HARMONIC_LATTICE,
             CodexUnlock.item(ModItems.HARMONIC_LATTICE));
+        add("fields/harmonics", CodexCategory.FIELDS, ModBlocks.TUNABLE_FIELD_EMITTER,
+            CodexUnlock.item(ModItems.RESONANCE_TUNER));
+        add("fields/dissonance", CodexCategory.FIELDS, ModItems.RESONANCE_SLUDGE,
+            CodexUnlock.item(ModItems.RESONANCE_TUNER));
+        add("machines/damping", CodexCategory.MACHINES, ModBlocks.DAMPING_ARRAY,
+            CodexUnlock.item(ModBlocks.DAMPING_ARRAY));
+        add("machines/tunable_emitter", CodexCategory.MACHINES, ModBlocks.TUNABLE_FIELD_EMITTER,
+            CodexUnlock.item(ModBlocks.TUNABLE_FIELD_EMITTER));
         add("fields/calibration", CodexCategory.FIELDS, ModItems.RESONANCE_TUNER,
             CodexUnlock.item(ModBlocks.HARMONIC_AMPLIFIER));
 
