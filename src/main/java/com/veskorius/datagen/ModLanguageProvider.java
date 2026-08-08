@@ -382,6 +382,18 @@ public class ModLanguageProvider extends LanguageProvider {
         add("advancements.veskorius.first_strider.title", "Something Still Grows");
         add("advancements.veskorius.first_strider.description",
             "Harvest a Resonance Spore. The Crystal Striders will follow it anywhere.");
+        add("advancements.veskorius.tier3_relay.title", "Alloy");
+        add("advancements.veskorius.tier3_relay.description",
+            "The Sigma Laboratory gave up its plan. Metal now takes resonance — and leaves slag behind.");
+        add("advancements.veskorius.tier4_amplifier.title", "Deep Synthesis");
+        add("advancements.veskorius.tier4_amplifier.description",
+            "The Regional Archive opened. Three crystals, two projects, one decision.");
+        add("advancements.veskorius.tier5_rift.title", "Torn Stone");
+        add("advancements.veskorius.tier5_rift.description",
+            "You recognised the cracks. Something below never stopped resonating.");
+        add("advancements.veskorius.rift_guardian_slain.title", "It Kept the Watch");
+        add("advancements.veskorius.rift_guardian_slain.description",
+            "The rift is stable, and it will not be guarded again.");
         add("advancements.veskorius.tier2_field.title", "Short Network");
         add("advancements.veskorius.tier2_field.description", "Restore the field blueprint at an Outpost console");
 

@@ -335,7 +335,19 @@ public class ModFrenchLangProvider extends LanguageProvider {
         add("advancements.veskorius.first_strider.title", "Quelque chose pousse encore");
         add("advancements.veskorius.first_strider.description",
             "Récolter un Resonance Spore. Les Fileurs de Cristal le suivront n'importe où.");
-        add("advancements.veskorius.tier2_field.title", "Réseau court");
+                add("advancements.veskorius.tier3_relay.title", "Alliage");
+        add("advancements.veskorius.tier3_relay.description",
+            "Le Sigma Laboratory a rendu son plan. Le métal prend la Résonance — et laisse de la scorie.");
+        add("advancements.veskorius.tier4_amplifier.title", "Synthèse profonde");
+        add("advancements.veskorius.tier4_amplifier.description",
+            "L'Archive Régionale s'est ouverte. Trois cristaux, deux chantiers, une décision.");
+        add("advancements.veskorius.tier5_rift.title", "Pierre tordue");
+        add("advancements.veskorius.tier5_rift.description",
+            "Vous avez reconnu les fissures. Quelque chose, en dessous, n'a jamais cessé de résonner.");
+        add("advancements.veskorius.rift_guardian_slain.title", "Il montait la garde");
+        add("advancements.veskorius.rift_guardian_slain.description",
+            "La Faille est stable, et plus personne ne la gardera.");
+add("advancements.veskorius.tier2_field.title", "Réseau court");
         add("advancements.veskorius.tier2_field.description", "Restaurer le plan du champ à une console d'Avant-poste");
 
         // --- Codex de Résonance (15-Codex-Guidebook.md) ---

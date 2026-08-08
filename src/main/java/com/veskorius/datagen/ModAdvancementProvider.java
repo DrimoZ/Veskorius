@@ -96,8 +96,12 @@ public class ModAdvancementProvider extends AdvancementProvider {
                     null,
                     AdvancementType.TASK,
                     true, true, false)
-                .addCriterion("has_blueprint",
-                    InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.RESONANCE_BLUEPRINT.get()))
+                // Le PALIER, pas seulement l'objet. Le critère portait sur
+                // « posséder un resonance_blueprint », sans regarder son tier : ramasser
+                // le plan T4 de l'Archive aurait donc décerné le T2 au passage, et une
+                // fois les trois paliers ajoutés, les trois toasts seraient partis
+                // ensemble. Le même oubli que sur les recettes, transposé à l'arbre.
+                .addCriterion("has_blueprint", hasBlueprint(2))
                 .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "tier2_field"),
                     existingFileHelper);
 
@@ -133,6 +137,73 @@ public class ModAdvancementProvider extends AdvancementProvider {
                 .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "first_field"),
                     existingFileHelper);
 
+            // --- Les paliers hauts (12-UX-and-Advancements.md) -----------------
+            //
+            // L'arbre s'arrêtait au T2 pendant que le jeu allait au T5 : un joueur qui
+            // terminait la partie n'avait plus aucun retour après son deuxième plan. Les
+            // advancements ne débloquent rien ici — ils SONT le récit de la progression,
+            // et un récit qui s'interrompt aux deux cinquièmes ne raconte rien.
+            AdvancementHolder tier3 = Advancement.Builder.advancement()
+                .parent(tier2)
+                .display(
+                    ModBlocks.VESKORIAN_ALLOY_FORGE.get(),
+                    Component.translatable("advancements.veskorius.tier3_relay.title"),
+                    Component.translatable("advancements.veskorius.tier3_relay.description"),
+                    null,
+                    AdvancementType.TASK,
+                    true, true, false)
+                .addCriterion("has_blueprint", hasBlueprint(3))
+                .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "tier3_relay"),
+                    existingFileHelper);
+
+            AdvancementHolder tier4 = Advancement.Builder.advancement()
+                .parent(tier3)
+                .display(
+                    ModItems.HYPER_REFINED_CRYSTAL.get(),
+                    Component.translatable("advancements.veskorius.tier4_amplifier.title"),
+                    Component.translatable("advancements.veskorius.tier4_amplifier.description"),
+                    null,
+                    AdvancementType.GOAL,
+                    true, true, false)
+                .addCriterion("has_blueprint", hasBlueprint(4))
+                .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "tier4_amplifier"),
+                    existingFileHelper);
+
+            // Le T5 ne s'obtient pas par un plan : il n'y en a pas. On y entre en
+            // TROUVANT une Faille, ce que le dossier pose comme règle — « ne se débloque
+            // pas par craft mais par découverte en jeu ». Le critère suit donc la pierre
+            // déformée, qui est le seul signe qu'on en a vu une.
+            AdvancementHolder tier5 = Advancement.Builder.advancement()
+                .parent(tier4)
+                .display(
+                    ModBlocks.DEFORMED_STONE.get(),
+                    Component.translatable("advancements.veskorius.tier5_rift.title"),
+                    Component.translatable("advancements.veskorius.tier5_rift.description"),
+                    null,
+                    AdvancementType.GOAL,
+                    true, true, false)
+                .addCriterion("has_deformed_stone",
+                    InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.DEFORMED_STONE.get()))
+                .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "tier5_rift"),
+                    existingFileHelper);
+
+            // La fin. CHALLENGE et non GOAL : c'est le seul contenu du mod qui se gagne
+            // en combattant, et le seul qui ne se rejoue jamais.
+            Advancement.Builder.advancement()
+                .parent(tier5)
+                .display(
+                    ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT.get(),
+                    Component.translatable("advancements.veskorius.rift_guardian_slain.title"),
+                    Component.translatable("advancements.veskorius.rift_guardian_slain.description"),
+                    null,
+                    AdvancementType.CHALLENGE,
+                    true, true, false)
+                .addCriterion("slain", net.minecraft.advancements.critereon.KilledTrigger.TriggerInstance
+                    .playerKilledEntity(net.minecraft.advancements.critereon.EntityPredicate.Builder.entity()
+                        .of(com.veskorius.entity.ModEntities.RIFT_GUARDIAN.get())))
+                .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "rift_guardian_slain"),
+                    existingFileHelper);
+
             Advancement.Builder.advancement()
                 .parent(awakening)
                 .display(
@@ -146,6 +217,23 @@ public class ModAdvancementProvider extends AdvancementProvider {
                     InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.RESONANCE_SPORE.get()))
                 .save(saver, ResourceLocation.fromNamespaceAndPath(Veskorius.MOD_ID, "first_strider"),
                     existingFileHelper);
+        }
+
+        /**
+         * Critère « le joueur possède le blueprint de CE palier ».
+         *
+         * <p>Le tier vit dans un data component, et un critère d'inventaire nu l'ignore —
+         * exactement le piège qui rendait la garde des recettes décorative avant qu'on
+         * la répare. Ici il aurait fait sonner les quatre paliers au premier plan ramassé.
+         */
+        private static net.minecraft.advancements.Criterion<InventoryChangeTrigger.TriggerInstance>
+                hasBlueprint(int tier) {
+            return InventoryChangeTrigger.TriggerInstance.hasItems(
+                net.minecraft.advancements.critereon.ItemPredicate.Builder.item()
+                    .of(ModItems.RESONANCE_BLUEPRINT.get())
+                    .hasComponents(net.minecraft.core.component.DataComponentPredicate.builder()
+                        .expect(com.veskorius.item.ModDataComponents.BLUEPRINT_TIER.get(), tier)
+                        .build()));
         }
 
         /**

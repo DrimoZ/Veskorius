@@ -74,7 +74,7 @@ Neuf types de recette **data-driven** — un datapack change les valeurs sans re
 - Le palier est vérifié par data component — corrigé récemment : jusque-là le plan T2
   ouvrait tout le mod.
 - Trois châssis (Fracturé / Accordé / Veskorien), chacun contenant le précédent.
-- 7 advancements.
+- **11 advancements** couvrant les cinq paliers, du premier cristal au Gardien vaincu. Le critère de palier lit le data component du blueprint — sans quoi les quatre plans décerneraient les quatre paliers d'un coup.
 
 ## 5. Énigmes de donjon
 
