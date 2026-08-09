@@ -259,13 +259,13 @@ public class ModLanguageProvider extends LanguageProvider {
         // Les chiffres y sont explicites — « assez longtemps » envoie le joueur mesurer.
         add("codex.veskorius.machines.forge.title", "Veskorian Alloy Forge");
         add("codex.veskorius.machines.forge.text",
-            "Two Refined Crystals and two ingots become one alloy ingot in 20 seconds. The metal you feed it decides the branch: IRON gives structural alloy, GOLD gives the conductive kind — and only the conductive one goes into a Relay. They are not interchangeable.\n\nEvery cycle also drops one Flux Slag into its own slot, whatever you forged. When that slot fills, the Forge stops. Empty it by hand, or let a Slag Vent do it.");
+            "Two Refined Crystals and two ingots become one alloy ingot in 20 seconds, at 4 Osc per tick. The metal you feed it decides the branch: IRON gives structural alloy, GOLD gives the conductive kind — and only the conductive one goes into a Relay. They are not interchangeable.\n\nEvery cycle also drops one Flux Slag into its own slot, whatever you forged. When that slot fills, the Forge stops. Empty it by hand, or let a Slag Vent do it.");
         add("codex.veskorius.machines.relay.title", "Resonance Relay");
         add("codex.veskorius.machines.relay.text",
             "Carries a field 20 blocks further, and relays chain into one another. It draws 1 Osc per tick whether anything uses it or not — range is never free.\n\nA relay holds no charge of its own worth speaking of: it fills from the field upstream and serves what it holds. It also carries the harmonic band of its source, so slipping one in front of a machine will not fix a detuned setup.");
         add("codex.veskorius.machines.synthesizer.title", "Structural Synthesizer");
         add("codex.veskorius.machines.synthesizer.text",
-            "Four alloy ingots and eight stone become four Veskorian Alloy Blocks in 60 seconds. This is what makes the tier buildable — without it the alloy stays a crafting material.\n\nLike the Forge, it leaves a by-product: one Synthesis Residue per cycle, in its own slot, and a full slot stops the machine. A Slag Vent will NOT clear it. That one is still your problem.");
+            "Four alloy ingots and eight stone become four Veskorian Alloy Blocks in 60 seconds, at 6 Osc per tick. This is what makes the tier buildable — without it the alloy stays a crafting material.\n\nLike the Forge, it leaves a by-product: one Synthesis Residue per cycle, in its own slot, and a full slot stops the machine. A Slag Vent will NOT clear it. That one is still your problem.");
         add("codex.veskorius.machines.driller.title", "Deep Crystal Driller");
         add("codex.veskorius.machines.driller.text",
             "Harvests crystal clusters from the 5x5 column beneath it, one every 20 seconds, at 6 Osc per tick. It only reaches below Y -40 — placing one higher does nothing at all.\n\nIt takes the clusters and leaves the rock: the gallery stays intact and you can see exactly what was taken. It also exhausts its vein. When the column is empty it stops, and you move it.");
