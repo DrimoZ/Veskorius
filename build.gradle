@@ -183,21 +183,32 @@ tasks.register('audit', Exec) {
     commandLine 'node', 'tools/audit.js'
 }
 
-// JEI ET JADE NE SONT PLUS SUR LE CLASSPATH DES TESTS.
+// JEI ET JADE REVIENNENT SUR LE CLASSPATH COMMUN, ET C'EST UN RETOUR EN ARRIÈRE ASSUMÉ.
 //
-// Ils étaient en `localRuntime`, donc dans le runtimeClasspath de TOUS les runs — y
-// compris le serveur de test, qui les chargeait à chaque lancement sans qu'aucun test ne
-// les touche. Sur les cent trente-trois secondes d'un run rapide, soixante-sept étaient
-// du chargement de mods.
+// Ils avaient été déplacés vers `clientAdditionalRuntimeClasspath` pour épargner au
+// serveur de test le chargement de deux mods qu'aucun test n'ouvre : neuf secondes
+// gagnées sur trente. La configuration existe bien, les jars figurent bien dans
+// clientLegacyClasspath.txt — et pourtant le CLIENT NE LES CHARGE PLUS. Liste des mods
+// réduite à trois, packs de ressources réduits à deux, zéro trace de « jei » ou « jade »
+// dans tout le journal de lancement.
 //
-// ModDevGradle donne à chaque run une configuration `<run>AdditionalRuntimeClasspath` :
-// on les y met, pour le CLIENT seulement. L'API de JEI reste en compileOnly, donc le
-// plugin compile et se vérifie toujours en jeu — mais les tests headless ne paient plus
-// deux mods dont ils n'ouvrent jamais une classe.
+// Ça ne s'est vu qu'en lançant le jeu. Aucun test ne pouvait l'attraper : les GameTest
+// tournent sans client, et c'est précisément le client qui était cassé. Le plugin JEI de
+// ce mod est une intégration LIVRÉE, avec ses quatorze catégories — l'échanger contre
+// neuf secondes de démarrage de test était un mauvais marché, fait sans vérifier.
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
 dependencies {
+    // JEI — visualisation des recettes en jeu. L'API en compileOnly (pour écrire le
+    // plugin), le mod complet en localRuntime : chargé dans les runs, jamais exporté
+    // dans le jar publié.
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-    clientAdditionalRuntimeClasspath "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
-    clientAdditionalRuntimeClasspath "maven.modrinth:jade:${jade_version}"
+    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+
+    // Jade — HUD d'informations de bloc au survol (dev).
+    localRuntime "maven.modrinth:jade:${jade_version}"
 }
 
 // Génère neoforge.mods.toml à partir de src/main/templates/META-INF/neoforge.mods.toml
