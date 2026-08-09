@@ -290,6 +290,29 @@ tex.ancient_emitter_front_on=front('t1',0x748,faces.field_emitter,true);
  c.rect(6,6,4,4,V.deep);c.rect(7,7,2,2,V.mid);c.set(7,7,V.hot);c.set(8,8,V.lite);
  tex.meteoric_crater=c;}
 
+// VERRE CONNECTÉ : le cadre sort de la texture.
+//
+// Tant qu'il y était dessiné, chaque bloc portait ses quatre bordures et un mur de verre
+// s'affichait en quadrillage. Le cadre est désormais posé en GÉOMÉTRIE, uniquement là où
+// le verre s'arrête (voir ConnectedGlassBlock). Il faut donc deux textures par verre :
+// une plaque sans bord, et une couleur de cadre pour les bagues.
+for (const [name, G] of [
+  ['resonance_glass', {line:'#B79BD8',lite:'#D9C6EE',hot:'#F2E9FB'}],
+  ['luminous_resonance_glass', {line:'#E4CCF7',lite:'#F4ECFD',hot:'#FFFFFF'}]]) {
+  // La plaque : les seuls reflets, rien au bord. Le centre reste vide, sinon on obtient
+  // un bloc teinté et non une vitre.
+  const pane = new Canvas(S, S);
+  for (let i = 2; i < 7; i++) pane.set(i, i, G.lite);
+  for (let i = 9; i < 13; i++) pane.set(i, i - 6, G.lite);
+  pane.set(3, 2, G.hot); pane.set(11, 4, G.hot);
+  tex[name + '_pane'] = pane;
+  // Le cadre : plein, c'est une barre de quelques pixels vue de près.
+  const frame = new Canvas(S, S);
+  frame.rect(0, 0, S, S, G.line);
+  for (let i = 0; i < S; i++) frame.set(i, 0, G.lite);
+  tex[name + '_frame'] = frame;
+}
+
 const out=process.argv[2];fs.mkdirSync(out,{recursive:true});
 const es=Object.entries(tex);
 for(const[n,c]of es)fs.writeFileSync(path.join(out,n+'.png'),encodePNG(S,S,c.px));

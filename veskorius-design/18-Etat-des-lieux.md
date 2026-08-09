@@ -3,7 +3,7 @@
 Généré à partir du code, pas du dossier de design. Une case cochée ici veut dire
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
-NeoForge 1.21.1 · Java 21 · **237 fichiers Java, ~33 000 lignes** · **58 blocs, 88 items**
+NeoForge 1.21.1 · Java 21 · **238 fichiers Java, ~33 000 lignes** · **58 blocs, 88 items**
 · **165 GameTest en deux processus** (`runFastGameTests` 144 en ~27 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
@@ -124,7 +124,10 @@ d'alliage et coûte donc le bonus de panoplie).
   leur texte, parce qu'un manuel qui ne se lit qu'après coup n'aide pas à progresser.
   L'état de déblocage vit sur le **joueur** et survit à la mort.
 - Resonance Tuner : outil à modes (Pivoter / On-Off / Surchauffe / Redstone).
-- 12 GUI dessinés par générateur, 61 textures de bloc, palettes indexées.
+- 12 GUI dessinés par générateur, 98 textures de bloc, palettes indexées.
+- **Verre à textures connectées** : aucun joint ni cadre entre deux plaques. Un cube sans
+  bordure, plus une bague de cadre par côté ouvert, assemblés en blockstate multipart —
+  six pièces au lieu des 64 modèles qu'auraient demandé six booléens.
 - **JEI** : toutes les catégories, plugin piloté par table pour qu'une machine ajoutée
   sans sa catégorie se voie.
 - Jade, Curios. **Lang EN + FR à parité stricte** — 404 clés de chaque côté, vérifié au datagen.

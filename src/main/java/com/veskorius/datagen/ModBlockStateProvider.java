@@ -152,9 +152,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // TRANSLUCENT et non cutout : la texture a des pixels semi-transparents sur ses
         // reflets. En cutout ils seraient arrondis à « opaque ou rien », et la vitre
         // perdrait exactement ce qui la fait lire comme une vitre.
-        simpleBlockWithItem(ModBlocks.RESONANCE_GLASS.get(),
-            models().cubeAll("resonance_glass", modLoc("block/resonance_glass"))
-                .renderType("translucent"));
+        connectedGlass(ModBlocks.RESONANCE_GLASS.get(), "resonance_glass");
         // Le cratère n'a PAS d'objet : il n'existe que pendant un orage et se ramasse
         // en fragment. Lui donner un item le rendrait posable, donc stockable — et le
         // « rien ne s'accumule » de l'événement tomberait.
@@ -163,9 +161,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .renderType("cutout"));
         simpleBlockWithItem(ModBlocks.ANCIENT_CONDUIT_STONE.get(),
             cubeAll(ModBlocks.ANCIENT_CONDUIT_STONE.get()));
-        simpleBlockWithItem(ModBlocks.LUMINOUS_RESONANCE_GLASS.get(),
-            models().cubeAll("luminous_resonance_glass",
-                modLoc("block/luminous_resonance_glass")).renderType("translucent"));
+        connectedGlass(ModBlocks.LUMINOUS_RESONANCE_GLASS.get(), "luminous_resonance_glass");
         simpleBlockWithItem(ModBlocks.VEINED_STONE_BRICKS.get(),
             cubeAll(ModBlocks.VEINED_STONE_BRICKS.get()));
         simpleBlockWithItem(ModBlocks.CRACKED_VEINED_STONE_BRICKS.get(),
@@ -293,6 +289,69 @@ public class ModBlockStateProvider extends BlockStateProvider {
                     modLoc("block/resonance_bloom_bush_stage" + age)).renderType("cutout"))
                 .build();
         });
+    }
+
+    /**
+     * <b>Verre connecté</b> : un cube sans bordure, plus une bague de cadre par côté où
+     * le verre s'arrête.
+     *
+     * <p><b>Multipart plutôt que soixante-quatre modèles.</b> Six côtés valent 2⁶ états ;
+     * les écrire un par un aurait donné soixante-quatre fichiers à maintenir pour une
+     * règle qui tient en une phrase. Le multipart compose : le cube toujours, chaque
+     * bague seulement quand son côté est ouvert.
+     *
+     * <p><b>Une bague est un carré de quatre barres</b>, posé au bord du bloc, sur les
+     * quatre faces perpendiculaires à sa direction. C'est ce qui fait qu'un mur de verre
+     * n'est encadré qu'à son pourtour : à l'intérieur, chaque côté touche du verre, donc
+     * aucune bague n'est posée.
+     */
+    private void connectedGlass(Block block, String name) {
+        ModelFile pane = models().cubeAll(name + "_pane", modLoc("block/" + name + "_pane"))
+            .renderType("translucent");
+        var builder = getMultipartBuilder(block);
+        builder.part().modelFile(pane).addModel().end();
+        for (Direction dir : Direction.values()) {
+            builder.part().modelFile(glassRing(name, dir)).addModel()
+                .condition(com.veskorius.block.ConnectedGlassBlock.property(dir), false).end();
+        }
+        // L'objet montre le verre ENCADRÉ, pas la plaque nue : dans un inventaire, un
+        // carré de reflets sans bord ne se lit pas comme du verre.
+        itemModels().cubeAll(name, modLoc("block/" + name));
+    }
+
+    /** Les quatre barres de cadre au bord {@code dir} du bloc. */
+    private ModelFile glassRing(String name, Direction dir) {
+        // Un seizième d'épaisseur : assez pour se voir de près, assez fin pour que deux
+        // bagues opposées ne mangent pas la vitre.
+        final int t = 1;
+        var b = models().getBuilder(name + "_frame_" + dir.getSerializedName())
+            .parent(models().getExistingFile(mcLoc("block/block")))
+            .texture("frame", modLoc("block/" + name + "_frame"))
+            .texture("particle", modLoc("block/" + name + "_frame"))
+            .renderType("translucent");
+        // Coordonnées du bord concerné, puis les quatre barres qui en font le tour.
+        int lo = switch (dir) {
+            case DOWN, NORTH, WEST -> 0;
+            default -> 16 - t;
+        };
+        int hi = lo + t;
+        int[][] bars = switch (dir.getAxis()) {
+            // Bague horizontale : deux barres sur X, deux sur Z.
+            case Y -> new int[][] {
+                {0, lo, 0, 16, hi, t}, {0, lo, 16 - t, 16, hi, 16},
+                {0, lo, t, t, hi, 16 - t}, {16 - t, lo, t, 16, hi, 16 - t}};
+            case X -> new int[][] {
+                {lo, 0, 0, hi, t, 16}, {lo, 16 - t, 0, hi, 16, 16},
+                {lo, t, 0, hi, 16 - t, t}, {lo, t, 16 - t, hi, 16 - t, 16}};
+            case Z -> new int[][] {
+                {0, 0, lo, 16, t, hi}, {0, 16 - t, lo, 16, 16, hi},
+                {0, t, lo, t, 16 - t, hi}, {16 - t, t, lo, 16, 16 - t, hi}};
+        };
+        for (int[] e : bars) {
+            b.element().from(e[0], e[1], e[2]).to(e[3], e[4], e[5])
+                .allFaces((face, f) -> f.texture("#frame")).end();
+        }
+        return b;
     }
 
     private void chassis(Block block, String chassisName) {

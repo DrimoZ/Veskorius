@@ -565,8 +565,9 @@ public class ModBlocks {
      * d'autre : cultiver pendant des heures pour obtenir une nuance de violet aurait été
      * une corvée déguisée en récompense.
      */
-    public static final DeferredBlock<net.minecraft.world.level.block.Block> LUMINOUS_RESONANCE_GLASS =
-        BLOCKS.registerSimpleBlock("luminous_resonance_glass",
+    public static final DeferredBlock<ConnectedGlassBlock> LUMINOUS_RESONANCE_GLASS =
+        BLOCKS.registerBlock("luminous_resonance_glass",
+            ConnectedGlassBlock::new,
             BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(0.4f)
@@ -588,8 +589,9 @@ public class ModBlocks {
      * belles, sans quoi il n'offre que des outils. Celui-ci rayonne un peu (luminosité 8) :
      * de quoi éclairer une pièce sans y poser de lampe, ce qui est déjà un usage.
      */
-    public static final DeferredBlock<net.minecraft.world.level.block.Block> RESONANCE_GLASS =
-        BLOCKS.registerSimpleBlock("resonance_glass",
+    public static final DeferredBlock<ConnectedGlassBlock> RESONANCE_GLASS =
+        BLOCKS.registerBlock("resonance_glass",
+            ConnectedGlassBlock::new,
             BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(0.4f)
