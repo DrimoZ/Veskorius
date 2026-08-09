@@ -272,7 +272,16 @@ deviner où on en est.
    (blockstates et modèles manquants, loot table absente, incohérence tag d'outil /
    `requiresCorrectToolForDrops`, parité des traductions EN/FR, chiffres de
    `18-Etat-des-lieux.md`). Sort en erreur si quelque chose cloche.
-4. `gradle.properties` : la version `neo_version=21.1.172` est celle utilisée pour valider le
+5. **Sous Windows, cloner dans un chemin court.** Le plus long chemin du dépôt fait 148
+   caractères (`.../advancement/recipes/building_blocks/veined_stone_brick_stairs_from_resonance_veined_stone_stonecutting.json`,
+   un nom que la datagen vanilla compose toute seule). Au-delà de MAX_PATH, le checkout
+   n'échoue pas franchement : il réussit **en partie**, en laissant des fichiers manquants et
+   un `error: Filename too long` noyé dans la sortie. Si le dossier de destination est profond :
+
+   ```
+   git config --global core.longpaths true
+   ```
+6. `gradle.properties` : la version `neo_version=21.1.172` est celle utilisée pour valider le
    build. Si la résolution de dépendance échoue, vérifier la dernière version patch sur
    https://projects.neoforged.net/neoforged/neoforge.
 

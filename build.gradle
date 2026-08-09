@@ -14,7 +14,12 @@ group = mod_group_id
 
 sourceSets.main.resources {
     srcDir('src/generated/resources')
-    exclude("src/generated/**/.cache")
+    // MOTIF RELATIF AU srcDir, PAS AU PROJET. La version precedente disait
+    // « src/generated/**/.cache » et n'excluait donc rien du tout : Gradle cherchait ce chemin
+    // SOUS src/generated/resources. Resultat, le jar publie embarquait le cache d'empreintes
+    // de la datagen — treize fichiers a la racine de l'archive, invisibles tant qu'on ne
+    // comparait pas le jar local a celui d'un clone frais.
+    exclude('.cache/**')
 }
 
 repositories {

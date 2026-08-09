@@ -72,3 +72,14 @@ imposés par GitHub. Les liens entre pages utilisent le nom du fichier sans `.md
 
 Le wiki est en **anglais** : il s'adresse au même public que la page CurseForge. Le guide
 joueur français reste dans `veskorius-design/guide-joueur/`.
+
+## 4. Cloner sous Windows
+
+Le plus long chemin du dépôt fait 148 caractères — un nom de recette composé par la datagen
+vanilla. Sous la limite MAX_PATH, `git clone` n'échoue pas franchement : il réussit **en
+partie**, en laissant des fichiers manquants et un `error: Filename too long` dans la sortie.
+Constaté en clonant dans un dossier temporaire profond.
+
+```bash
+git config --global core.longpaths true
+```
