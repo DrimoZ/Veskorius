@@ -1,0 +1,7 @@
+{
+  "type": "veskorius:fueling",
+  "ingredient": {
+    "item": "veskorius:stable_resonance_crystal"
+  },
+  "osc": 4000
+}

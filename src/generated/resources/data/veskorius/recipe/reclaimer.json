@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "veskorius:veskorian_chassis"
+    },
+    {
+      "item": "minecraft:copper_block"
+    },
+    {
+      "item": "minecraft:copper_block"
+    },
+    {
+      "item": "veskorius:veskorian_alloy_ingot"
+    },
+    {
+      "item": "veskorius:veskorian_alloy_ingot"
+    },
+    {
+      "type": "neoforge:components",
+      "components": {
+        "veskorius:blueprint_tier": 3
+      },
+      "items": "veskorius:resonance_blueprint"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:reclaimer"
+  }
+}

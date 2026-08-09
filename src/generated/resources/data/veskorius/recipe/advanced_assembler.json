@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "veskorius:veskorian_chassis"
+    },
+    {
+      "item": "veskorius:veskorian_conductive_alloy_ingot"
+    },
+    {
+      "item": "veskorius:veskorian_conductive_alloy_ingot"
+    },
+    {
+      "item": "veskorius:resonance_component"
+    },
+    {
+      "item": "veskorius:resonance_component"
+    },
+    {
+      "type": "neoforge:components",
+      "components": {
+        "veskorius:blueprint_tier": 3
+      },
+      "items": "veskorius:resonance_blueprint"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:advanced_assembler"
+  }
+}

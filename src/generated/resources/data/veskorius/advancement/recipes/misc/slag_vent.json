@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_flux_slag": {
+      "conditions": {
+        "items": [
+          {
+            "items": "veskorius:flux_slag"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "veskorius:slag_vent"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_flux_slag"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "veskorius:slag_vent"
+    ]
+  }
+}

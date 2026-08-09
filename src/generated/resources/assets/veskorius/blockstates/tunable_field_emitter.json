@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east,lit=false": {
+      "model": "veskorius:block/tunable_field_emitter",
+      "y": 90
+    },
+    "facing=east,lit=true": {
+      "model": "veskorius:block/tunable_field_emitter_on",
+      "y": 90
+    },
+    "facing=north,lit=false": {
+      "model": "veskorius:block/tunable_field_emitter"
+    },
+    "facing=north,lit=true": {
+      "model": "veskorius:block/tunable_field_emitter_on"
+    },
+    "facing=south,lit=false": {
+      "model": "veskorius:block/tunable_field_emitter",
+      "y": 180
+    },
+    "facing=south,lit=true": {
+      "model": "veskorius:block/tunable_field_emitter_on",
+      "y": 180
+    },
+    "facing=west,lit=false": {
+      "model": "veskorius:block/tunable_field_emitter",
+      "y": 270
+    },
+    "facing=west,lit=true": {
+      "model": "veskorius:block/tunable_field_emitter_on",
+      "y": 270
+    }
+  }
+}

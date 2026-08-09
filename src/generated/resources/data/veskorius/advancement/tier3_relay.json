@@ -1,0 +1,36 @@
+{
+  "parent": "veskorius:tier2_field",
+  "criteria": {
+    "has_blueprint": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "veskorius:blueprint_tier": 3
+            },
+            "items": "veskorius:resonance_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.tier3_relay.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "veskorius:veskorian_alloy_forge"
+    },
+    "title": {
+      "translate": "advancements.veskorius.tier3_relay.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_blueprint"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

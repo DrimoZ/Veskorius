@@ -1,0 +1,28 @@
+{
+  "values": [
+    {
+      "id": "veskorius:modest_dwelling",
+      "required": false
+    },
+    {
+      "id": "veskorius:outpost",
+      "required": false
+    },
+    {
+      "id": "veskorius:sigma_laboratory",
+      "required": false
+    },
+    {
+      "id": "veskorius:regional_archive",
+      "required": false
+    },
+    {
+      "id": "veskorius:guard_post",
+      "required": false
+    },
+    {
+      "id": "veskorius:drill_shaft",
+      "required": false
+    }
+  ]
+}

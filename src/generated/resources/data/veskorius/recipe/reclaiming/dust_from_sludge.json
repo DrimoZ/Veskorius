@@ -1,0 +1,15 @@
+{
+  "type": "veskorius:reclaiming",
+  "ingredients": [
+    {
+      "count": 4,
+      "item": "veskorius:resonance_sludge"
+    }
+  ],
+  "osc_per_tick": 4,
+  "result": {
+    "count": 1,
+    "id": "veskorius:resonance_dust"
+  },
+  "time": 400
+}

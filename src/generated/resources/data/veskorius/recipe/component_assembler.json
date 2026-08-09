@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "veskorius:fractured_chassis"
+    },
+    {
+      "item": "veskorius:stable_resonance_crystal"
+    },
+    {
+      "item": "veskorius:stable_resonance_crystal"
+    },
+    {
+      "item": "minecraft:redstone"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:component_assembler"
+  }
+}

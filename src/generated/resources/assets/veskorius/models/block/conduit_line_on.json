@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "veskorius:block/conduit_line_end_on",
+    "side": "veskorius:block/conduit_line_on"
+  }
+}

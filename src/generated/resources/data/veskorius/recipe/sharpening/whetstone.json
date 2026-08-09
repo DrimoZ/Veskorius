@@ -1,0 +1,9 @@
+{
+  "type": "veskorius:sharpening",
+  "catalyst": {
+    "count": 1,
+    "item": "veskorius:stable_resonance_crystal"
+  },
+  "repair_percent": 25,
+  "time": 160
+}

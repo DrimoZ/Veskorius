@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 91204663,
+    "separation": 16,
+    "spacing": 56
+  },
+  "structures": [
+    {
+      "structure": "veskorius:sigma_laboratory",
+      "weight": 1
+    }
+  ]
+}

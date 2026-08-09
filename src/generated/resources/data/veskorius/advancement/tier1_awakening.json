@@ -1,0 +1,33 @@
+{
+  "criteria": {
+    "has_crystal": {
+      "conditions": {
+        "items": [
+          {
+            "items": "veskorius:raw_resonance_crystal"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
+    "description": {
+      "translate": "advancements.veskorius.tier1_awakening.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "veskorius:raw_resonance_crystal"
+    },
+    "title": {
+      "translate": "advancements.veskorius.tier1_awakening.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_crystal"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

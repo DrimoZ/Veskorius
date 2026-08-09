@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "veskorius:resonance_component"
+    },
+    {
+      "item": "veskorius:resonance_component"
+    },
+    {
+      "item": "veskorius:refined_resonance_crystal"
+    },
+    {
+      "item": "minecraft:redstone"
+    },
+    {
+      "type": "neoforge:components",
+      "components": {
+        "veskorius:blueprint_tier": 2
+      },
+      "items": "veskorius:resonance_blueprint"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:resonance_catalyst_core"
+  }
+}

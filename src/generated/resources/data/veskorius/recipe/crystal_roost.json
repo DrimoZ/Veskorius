@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "veskorius:attuned_chassis"
+    },
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "item": "minecraft:hay_block"
+    },
+    {
+      "type": "neoforge:components",
+      "components": {
+        "veskorius:blueprint_tier": 2
+      },
+      "items": "veskorius:resonance_blueprint"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:crystal_roost"
+  }
+}

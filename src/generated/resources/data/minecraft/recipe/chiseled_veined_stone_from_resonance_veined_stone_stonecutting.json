@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "veskorius:resonance_veined_stone"
+  },
+  "result": {
+    "count": 1,
+    "id": "veskorius:chiseled_veined_stone"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "parent": "veskorius:tier5_rift",
+  "criteria": {
+    "slain": {
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "veskorius:rift_guardian"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:player_killed_entity"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.rift_guardian_slain.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "veskorius:corrupted_veskorian_alloy_ingot"
+    },
+    "title": {
+      "translate": "advancements.veskorius.rift_guardian_slain.title"
+    }
+  },
+  "requirements": [
+    [
+      "slain"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "spored=false": {
+      "model": "veskorius:block/resonance_veined_stone"
+    },
+    "spored=true": {
+      "model": "veskorius:block/resonance_veined_stone_spored"
+    }
+  }
+}

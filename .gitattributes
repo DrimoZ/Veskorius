@@ -1,0 +1,16 @@
+# Fins de ligne normalisées à LF dans le dépôt, quelle que soit la machine. Sans ça, un
+# dépôt cloné sous Windows et un autre sous Linux se renvoient des diffs entiers où seule
+# la fin de ligne change.
+* text=auto eol=lf
+
+# BINAIRES DÉCLARÉS EXPLICITEMENT. Git les détecte presque toujours seul, mais « presque »
+# ne suffit pas ici : un .nbt de structure converti en CRLF est une structure corrompue,
+# et ça ne se voit qu'en jeu, au moment où le donjon ne génère plus.
+*.nbt binary
+*.png binary
+*.jar binary
+*.ogg binary
+
+# Le wrapper Gradle est un script shell : il doit rester en LF même sous Windows.
+gradlew text eol=lf
+gradlew.bat text eol=crlf

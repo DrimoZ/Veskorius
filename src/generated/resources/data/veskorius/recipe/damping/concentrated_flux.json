@@ -1,0 +1,7 @@
+{
+  "type": "veskorius:damping",
+  "dissonance": 2500,
+  "ingredient": {
+    "item": "veskorius:concentrated_flux"
+  }
+}

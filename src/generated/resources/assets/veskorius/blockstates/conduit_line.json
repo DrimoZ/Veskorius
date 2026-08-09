@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "axis=x,powered=false": {
+      "model": "veskorius:block/conduit_line",
+      "x": 90,
+      "y": 90
+    },
+    "axis=x,powered=true": {
+      "model": "veskorius:block/conduit_line_on",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y,powered=false": {
+      "model": "veskorius:block/conduit_line"
+    },
+    "axis=y,powered=true": {
+      "model": "veskorius:block/conduit_line_on"
+    },
+    "axis=z,powered=false": {
+      "model": "veskorius:block/conduit_line",
+      "x": 90
+    },
+    "axis=z,powered=true": {
+      "model": "veskorius:block/conduit_line_on",
+      "x": 90
+    }
+  }
+}

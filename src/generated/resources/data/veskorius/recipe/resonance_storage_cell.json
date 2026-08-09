@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "veskorius:resonance_component"
+    },
+    {
+      "item": "veskorius:resonance_component"
+    },
+    {
+      "item": "veskorius:stable_resonance_crystal"
+    },
+    {
+      "type": "neoforge:components",
+      "components": {
+        "veskorius:blueprint_tier": 2
+      },
+      "items": "veskorius:resonance_blueprint"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:resonance_storage_cell"
+  }
+}

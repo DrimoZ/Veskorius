@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "veskorius:item/veskorian_alloy_sword"
+  }
+}

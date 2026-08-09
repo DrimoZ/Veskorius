@@ -1,0 +1,53 @@
+{
+  "processors": [
+    {
+      "processor_type": "minecraft:rule",
+      "rules": [
+        {
+          "input_predicate": {
+            "block": "veskorius:veined_stone_bricks",
+            "predicate_type": "minecraft:random_block_match",
+            "probability": 0.14
+          },
+          "location_predicate": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "output_state": {
+            "Name": "veskorius:cracked_veined_stone_bricks"
+          }
+        },
+        {
+          "input_predicate": {
+            "block": "veskorius:conduit_line",
+            "predicate_type": "minecraft:random_block_match",
+            "probability": 0.1
+          },
+          "location_predicate": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "output_state": {
+            "Name": "veskorius:cracked_veined_stone_bricks"
+          }
+        },
+        {
+          "input_predicate": {
+            "block": "veskorius:resonance_veined_stone",
+            "predicate_type": "minecraft:random_block_match",
+            "probability": 0.07
+          },
+          "location_predicate": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "output_state": {
+            "Name": "minecraft:cobbled_deepslate"
+          }
+        }
+      ]
+    },
+    {
+      "integrity": 0.94,
+      "processor_type": "minecraft:block_rot",
+      "rottable_blocks": "#veskorius:structure_rottable"
+    }
+  ]
+}

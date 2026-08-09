@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_resonance_sand": {
+      "conditions": {
+        "items": [
+          {
+            "items": "veskorius:resonance_sand"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "veskorius:resonance_glass"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_resonance_sand"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "veskorius:resonance_glass"
+    ]
+  }
+}

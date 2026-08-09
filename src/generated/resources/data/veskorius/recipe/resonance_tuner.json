@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "tag": "veskorius:iron_substitutes"
+    },
+    {
+      "tag": "veskorius:iron_substitutes"
+    },
+    {
+      "item": "veskorius:resonance_component"
+    },
+    {
+      "item": "minecraft:redstone"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:resonance_tuner"
+  }
+}

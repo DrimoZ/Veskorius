@@ -1,0 +1,23 @@
+{
+  "type": "veskorius:forging",
+  "byproduct": {
+    "count": 1,
+    "id": "veskorius:flux_slag"
+  },
+  "ingredients": [
+    {
+      "count": 2,
+      "item": "veskorius:refined_resonance_crystal"
+    },
+    {
+      "count": 2,
+      "item": "minecraft:gold_ingot"
+    }
+  ],
+  "osc_per_tick": 4,
+  "result": {
+    "count": 1,
+    "id": "veskorius:veskorian_conductive_alloy_ingot"
+  },
+  "time": 400
+}

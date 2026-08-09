@@ -1,14 +1,31 @@
 # Veskorius (NeoForge 1.21.1)
 
-Squelette de mod fonctionnel — pas une démo, un vrai point de départ. Ce qui est codé ici
-compile, se charge et se lance ; ce qui manque est listé en bas, dans l'ordre où le coder.
+De l'énergie qui ne passe par aucun câble : elle emplit un volume, et une machine tourne si elle
+s'y tient. Mod de progression technique en cinq paliers, **jouables de bout en bout**.
 
-**Source de vérité pour tout ce qui est design/gameplay : `veskorius-design/`.** Ce dépôt ne
-contient que du code et ne redéfinit jamais une valeur de jeu. Si une valeur manque ici, elle est
-dans `veskorius-design/05-Machines.md` ou `04-Materials.md`, pas à redéfinir dans le code ni dans
-ce fichier.
+**Alpha 0.1.0.** Java 21, NeoForge 21.1.172+.
 
-## Contenu actuel
+## Où est quoi
+
+| | |
+|---|---|
+| **`veskorius-design/`** | **Source de vérité** pour tout ce qui est design et gameplay. Le code ne redéfinit jamais une valeur de jeu ; si un chiffre manque ici, il est dans `05-Machines.md` ou `04-Materials.md` |
+| `veskorius-design/18-Etat-des-lieux.md` | **L'inventaire de ce qui est codé**, écrit à partir du code et vérifié par `./gradlew audit`. C'est là qu'on regarde avant de croire qu'une fonctionnalité manque |
+| `veskorius-design/13-Registry-Index.md` | L'état « codé / à coder » de tout le contenu prévu |
+| `veskorius-design/11-Development-Plan.md` | La liste ordonnée de ce qui reste, avec les dépendances |
+| `veskorius-design/guide-joueur/` | Le guide joueur, en français |
+| `wiki/` | Les pages du wiki GitHub, en anglais |
+| `curseforge.md` · `PUBLISHING.md` | La page projet, et la procédure de publication |
+
+Ce README décrit le **dépôt** : comment le construire, et les conventions de code qu'on ne
+contourne pas. Il ne tient pas la liste du contenu — c'est le travail de `18-Etat-des-lieux.md`,
+qui est audité, alors qu'une liste tenue ici dériverait en silence. Elle a dérivé.
+
+## Historique de développement
+
+Ce qui suit est un **journal**, pas un inventaire : il raconte comment chaque système est arrivé
+et pourquoi il est fait comme ça. Pour savoir ce qui existe aujourd'hui, voir
+`18-Etat-des-lieux.md`.
 
 - Projet Gradle complet (ModDevGradle, NeoForge 1.21.1, Java 21). `./gradlew build` et
   `./gradlew runData` passent.
@@ -173,9 +190,10 @@ ce fichier.
 - **Récolte de spore** : la Resonance Veined Stone pousse un `resonance_spore` (état `spored`) sur
   une face exposée en faible luminosité, récolté au clic droit (sans casser la pierre), puis
   repousse — la reproduction du Fileur devient jouable en survie. Taux de pousse configurable.
-- Harnais `GameTest` : **104 tests** (machines, augments, automatisation d'objets, Codex, harmoniques, structures… +
-  Custode, défense de site, récolte de spore, amorçage T2 garanti, défauts de config),
-  `./gradlew runGameTestServer`. Le serveur de test charge tout le datapack sans erreur. Ce qui est
+- Harnais `GameTest` : **165 tests** (machines, augments, automatisation d'objets, Codex, harmoniques, structures… +
+  Custode, défense de site, récolte de spore, amorçage T2 garanti, défauts de config), en **deux
+  processus** (`runFastGameTests` / `runWorldGameTests`, voir « Mise en route »). Le serveur de
+  test charge tout le datapack sans erreur. Ce qui est
   **visuel ou réseau** (rendu des GUI et du HUD, particules, coupole, génération réelle des
   structures) n'est pas couvert ici : ça se valide en `runClient` — **passe faite le 2026-07-25, tout
   est bon** (seul le pont **Curios** reste non vérifié, le mod n'étant pas une dépendance de dev).
@@ -233,15 +251,27 @@ deviner où on en est.
 1. `./gradlew runClient` (ou via IntelliJ : Gradle > Tasks > neoforge > runClient) pour lancer
    le jeu avec le mod chargé.
 2. `./gradlew runData` après tout ajout de bloc/item/recette : régénère `src/generated/resources/`.
-   Ce dossier est volontairement ignoré par git — il se reconstruit à partir du code, et le
-   versionner créerait des conflits sans valeur. **À lancer avant `runGameTestServer`** : c'est
-   lui qui produit le template de structure vide dont les tests ont besoin. Le cache de datagen
-   est vidé automatiquement avant chaque run, donc la sortie correspond toujours au code (une
-   édition manuelle d'un JSON généré, pour tester une recette + `/reload`, est transitoire : le
-   prochain `runData` la remplace). Dépendances déjà en cache → ajouter `--offline` évite un accès
-   réseau.
-3. `./gradlew runGameTestServer` : joue les tests des machines sans interface (~24 s). Le build
-   échoue si un test échoue. Une machine n'est considérée finie que quand ses tests passent.
+   **Ce dossier EST versionné**, et il l'est depuis qu'on a mesuré le coût de l'inverse : ignoré,
+   il donnait à un clone frais un `./gradlew build` qui réussit et un jar sans un seul modèle,
+   sans une recette, sans une traduction. Vert au build, mort en jeu. Le commit de la datagen
+   fait aussi que ses diffs se relisent — c'est là qu'on voit qu'une recette a changé de coût.
+   **À lancer avant les GameTest** : c'est lui qui produit le template de structure vide dont
+   les tests ont besoin. Le cache de datagen est vidé automatiquement avant chaque run, donc la
+   sortie correspond toujours au code (une édition manuelle d'un JSON généré, pour tester une
+   recette + `/reload`, est transitoire : le prochain `runData` la remplace). Dépendances déjà
+   en cache → ajouter `--offline` évite un accès réseau.
+3. Les GameTest, **en deux processus** :
+   - `./gradlew runFastGameTests` — 144 tests, ~27 s. C'est celui qu'on lance en boucle.
+   - `./gradlew runWorldGameTests` — 21 tests de donjons, qui génèrent du monde.
+   - `./gradlew runAllGameTests` — les deux à la suite.
+
+   La séparation n'est pas cosmétique : dans une seule JVM, les tests de donjons accumulaient
+   assez de monde chargé pour que la suite finisse par se figer. `runGameTestServer` n'existe
+   plus, précisément pour que personne ne relance le chemin qui bloquait.
+4. `./gradlew audit` : vérifie la cohérence code ↔ ressources générées ↔ dossier de design
+   (blockstates et modèles manquants, loot table absente, incohérence tag d'outil /
+   `requiresCorrectToolForDrops`, parité des traductions EN/FR, chiffres de
+   `18-Etat-des-lieux.md`). Sort en erreur si quelque chose cloche.
 4. `gradle.properties` : la version `neo_version=21.1.172` est celle utilisée pour valider le
    build. Si la résolution de dépendance échoue, vérifier la dernière version patch sur
    https://projects.neoforged.net/neoforged/neoforge.
@@ -260,26 +290,20 @@ Elles ne sont pas décoratives — s'en écarter casse le socle générique :
 - **Une entrée qui aura d'autres membres plus tard passe par un tag, pas par un item en dur**
   (voir `ModTags`) — ça transforme une évolution prévue en un ajout de datagen d'une ligne.
 
-## Ce qui n'est PAS encore fait (dans l'ordre à coder)
+## Ce qui reste a faire
 
-Suivre `veskorius-design/11-Development-Plan.md`, Phase 1 — c'est la liste ordonnée complète et à
-jour (recettes exactes, chiffres d'équilibrage, dépendances entre tâches). Faites : tâches 1, 2,
-3, 4, 5, 6, 7, 9, 10, 13, 14, 15. Restent, avec leurs dépendances :
+**La liste vit dans `veskorius-design/11-Development-Plan.md`**, avec les recettes exactes, les
+chiffres d'equilibrage et les dependances entre taches. Et l'etat reel de chaque element est dans
+`13-Registry-Index.md` et `18-Etat-des-lieux.md`.
 
-1. **`ResonanceLocatorItem`** (tâche 8) — outil de localisation ; désormais **débloqué** (les
-   structures existent, il a une cible). Modèle d'énergie déjà résolu (batterie interne + recharge
-   par champ/Storage Cell). Prochain candidat naturel.
-2. **Mobs** (tâche 11) — le *Fileur de Cristal* est fait ; reste le *Custode* (garde réactif,
-   dépend des structures pour son spawn). Puis le **Crystal Roost** (tâche 12, débloqué par le
-   Fileur).
-3. **Finitions tâche 10** : tell de surface de l'Avant-poste ; migration du match blueprint vers
-   `DataComponentIngredient` quand le T3 arrivera. Bloc de récolte du `resonance_spore`.
+Cette section listait autrefois les taches restantes elle-meme. Elle a fini par reclamer du travail
+deja fait — Locator, Custode, Crystal Roost y figuraient comme « a coder » alors qu'ils tournaient
+depuis longtemps. Une liste dupliquee derive, et une liste de taches qui derive fait recoder
+l'existant. Elle ne sera pas retablie ici.
 
-La boucle T1-T2 est jouable en survie de bout en bout : miner → stabiliser → **trouver un
-Avant-poste, réveiller la console → blueprint T2** → poser un champ → purifier. L'augment +15%, la
-Storage Cell et les carburants data-driven sont en place. Reste surtout du contenu (Locator, Custode,
-Roost) ; le mode Tuner « retrait d'augment en place » reste différé.
-
+Les cinq paliers sont jouables de bout en bout. Ce qui reste tient de la finition : la passe
+esthetique (voir l'encadre plus haut), le mode Tuner « retrait d'augment en place », et les
+arbitrages de design encore ouverts, listes dans le dossier.
 ## Structure
 
 ```
@@ -299,10 +323,10 @@ src/main/java/com/veskorius/
 ├── worldgen/                   ← ModWorldGen (features + biome modifier, data-driven)
 ├── compat/jei/                 ← intégration JEI (chargée seulement si JEI présent)
 ├── datagen/                    ← providers + GatherDataEvent
-├── gametest/                   ← tests joués par runGameTestServer
+├── gametest/                   ← tests joués par runFastGameTests / runWorldGameTests
 └── tag/ModTags.java
 
 src/main/resources/assets/veskorius/textures/  ← seules ressources écrites à la main
-src/generated/resources/                       ← tout le reste, produit par runData
+src/generated/resources/                       ← tout le reste, produit par runData (VERSIONNÉ)
 src/main/templates/META-INF/neoforge.mods.toml ← généré vers le jar au build
 ```

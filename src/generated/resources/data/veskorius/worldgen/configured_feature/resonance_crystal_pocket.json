@@ -1,0 +1,9 @@
+{
+  "type": "veskorius:crystal_pocket",
+  "config": {
+    "crystal_tries": 8,
+    "flux_chance": 0.15,
+    "shell_thickness": 1,
+    "strider_chance": 0.34
+  }
+}

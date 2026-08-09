@@ -1,0 +1,36 @@
+{
+  "parent": "veskorius:find_outpost",
+  "criteria": {
+    "has_blueprint": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "veskorius:blueprint_tier": 2
+            },
+            "items": "veskorius:resonance_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.tier2_field.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "veskorius:resonance_blueprint"
+    },
+    "title": {
+      "translate": "advancements.veskorius.tier2_field.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_blueprint"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

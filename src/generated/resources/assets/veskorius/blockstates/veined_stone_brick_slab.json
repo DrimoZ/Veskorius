@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "veskorius:block/veined_stone_brick_slab"
+    },
+    "type=double": {
+      "model": "veskorius:block/veined_stone_bricks"
+    },
+    "type=top": {
+      "model": "veskorius:block/veined_stone_brick_slab_top"
+    }
+  }
+}

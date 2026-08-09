@@ -1,0 +1,15 @@
+{
+  "type": "veskorius:reclaiming",
+  "ingredients": [
+    {
+      "count": 4,
+      "item": "veskorius:flux_slag"
+    }
+  ],
+  "osc_per_tick": 4,
+  "result": {
+    "count": 1,
+    "id": "minecraft:gravel"
+  },
+  "time": 400
+}

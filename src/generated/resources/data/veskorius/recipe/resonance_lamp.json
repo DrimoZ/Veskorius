@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "veskorius:veined_stone_bricks"
+    },
+    "c": {
+      "item": "veskorius:stable_resonance_crystal"
+    }
+  },
+  "pattern": [
+    " # ",
+    "#c#",
+    " # "
+  ],
+  "result": {
+    "count": 2,
+    "id": "veskorius:resonance_lamp"
+  }
+}

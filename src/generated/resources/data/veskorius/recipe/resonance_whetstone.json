@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "veskorius:fractured_chassis"
+    },
+    {
+      "item": "veskorius:stable_resonance_crystal"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:resonance_whetstone"
+  }
+}

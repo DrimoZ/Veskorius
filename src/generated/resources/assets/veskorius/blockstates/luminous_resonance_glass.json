@@ -1,0 +1,117 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_pane"
+      }
+    },
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_bar_down_north"
+      },
+      "when": {
+        "down": "false",
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_bar_down_south"
+      },
+      "when": {
+        "down": "false",
+        "south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_bar_down_west"
+      },
+      "when": {
+        "down": "false",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_bar_down_east"
+      },
+      "when": {
+        "down": "false",
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_bar_up_north"
+      },
+      "when": {
+        "north": "false",
+        "up": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_bar_up_south"
+      },
+      "when": {
+        "south": "false",
+        "up": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_bar_up_west"
+      },
+      "when": {
+        "up": "false",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_bar_up_east"
+      },
+      "when": {
+        "east": "false",
+        "up": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_bar_north_west"
+      },
+      "when": {
+        "north": "false",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_bar_north_east"
+      },
+      "when": {
+        "east": "false",
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_bar_south_west"
+      },
+      "when": {
+        "south": "false",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "veskorius:block/luminous_resonance_glass_bar_south_east"
+      },
+      "when": {
+        "east": "false",
+        "south": "false"
+      }
+    }
+  ]
+}

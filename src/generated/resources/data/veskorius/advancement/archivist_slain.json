@@ -1,0 +1,38 @@
+{
+  "parent": "veskorius:tier4_amplifier",
+  "criteria": {
+    "slain": {
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "veskorius:custode_archiviste"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:player_killed_entity"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.archivist_slain.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "veskorius:hyper_refined_crystal"
+    },
+    "title": {
+      "translate": "advancements.veskorius.archivist_slain.title"
+    }
+  },
+  "requirements": [
+    [
+      "slain"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

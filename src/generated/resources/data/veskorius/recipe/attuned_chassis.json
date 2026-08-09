@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": {
+      "item": "veskorius:fractured_chassis"
+    },
+    "I": {
+      "tag": "veskorius:iron_substitutes"
+    },
+    "S": {
+      "item": "veskorius:stable_resonance_crystal"
+    }
+  },
+  "pattern": [
+    " I ",
+    "SFS",
+    " I "
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:attuned_chassis"
+  }
+}

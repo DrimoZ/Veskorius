@@ -1,0 +1,34 @@
+{
+  "parent": "veskorius:tier2_field",
+  "criteria": {
+    "has_emitter": {
+      "conditions": {
+        "items": [
+          {
+            "items": "veskorius:field_emitter"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.first_field.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "veskorius:field_emitter"
+    },
+    "title": {
+      "translate": "advancements.veskorius.first_field.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_emitter"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

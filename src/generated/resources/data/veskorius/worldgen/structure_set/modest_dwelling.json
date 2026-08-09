@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 84215631,
+    "separation": 7,
+    "spacing": 20
+  },
+  "structures": [
+    {
+      "structure": "veskorius:modest_dwelling",
+      "weight": 1
+    }
+  ]
+}

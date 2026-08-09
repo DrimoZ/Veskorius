@@ -1,0 +1,27 @@
+{
+  "parent": "veskorius:tier4_amplifier",
+  "criteria": {
+    "formed": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.convergence_formed.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "veskorius:convergence_core"
+    },
+    "title": {
+      "translate": "advancements.veskorius.convergence_formed.title"
+    }
+  },
+  "requirements": [
+    [
+      "formed"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

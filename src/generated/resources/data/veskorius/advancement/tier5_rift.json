@@ -1,0 +1,34 @@
+{
+  "parent": "veskorius:tier4_amplifier",
+  "criteria": {
+    "has_deformed_stone": {
+      "conditions": {
+        "items": [
+          {
+            "items": "veskorius:deformed_stone"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.tier5_rift.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "veskorius:deformed_stone"
+    },
+    "title": {
+      "translate": "advancements.veskorius.tier5_rift.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_deformed_stone"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

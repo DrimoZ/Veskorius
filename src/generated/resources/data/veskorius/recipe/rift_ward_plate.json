@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "veskorius:veskorian_alloy_chestplate"
+    },
+    {
+      "item": "veskorius:corrupted_veskorian_alloy_ingot"
+    },
+    {
+      "item": "veskorius:corrupted_veskorian_alloy_ingot"
+    },
+    {
+      "item": "veskorius:corrupted_veskorian_alloy_ingot"
+    },
+    {
+      "item": "veskorius:rift_essence"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:rift_ward_plate"
+  }
+}

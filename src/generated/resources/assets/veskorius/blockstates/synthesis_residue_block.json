@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "veskorius:block/synthesis_residue_block"
+    }
+  }
+}

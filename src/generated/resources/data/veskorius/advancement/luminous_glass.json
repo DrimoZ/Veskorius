@@ -1,0 +1,33 @@
+{
+  "parent": "veskorius:first_bloom",
+  "criteria": {
+    "has_glass": {
+      "conditions": {
+        "items": [
+          {
+            "items": "veskorius:luminous_resonance_glass"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.luminous_glass.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "veskorius:luminous_resonance_glass"
+    },
+    "title": {
+      "translate": "advancements.veskorius.luminous_glass.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_glass"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,40 @@
+{
+  "parent": "veskorius:find_dwelling",
+  "criteria": {
+    "in_outpost": {
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "structures": "veskorius:outpost"
+              }
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:location"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.find_outpost.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "veskorius:resonance_component"
+    },
+    "title": {
+      "translate": "advancements.veskorius.find_outpost.title"
+    }
+  },
+  "requirements": [
+    [
+      "in_outpost"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

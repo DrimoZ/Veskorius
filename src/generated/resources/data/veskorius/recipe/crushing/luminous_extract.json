@@ -1,0 +1,15 @@
+{
+  "type": "veskorius:crushing",
+  "ingredients": [
+    {
+      "count": 2,
+      "item": "veskorius:resonance_bloom"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:luminous_extract"
+  },
+  "stable": true,
+  "time": 200
+}

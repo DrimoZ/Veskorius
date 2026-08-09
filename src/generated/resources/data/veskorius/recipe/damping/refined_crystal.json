@@ -1,0 +1,7 @@
+{
+  "type": "veskorius:damping",
+  "dissonance": 500,
+  "ingredient": {
+    "item": "veskorius:refined_resonance_crystal"
+  }
+}

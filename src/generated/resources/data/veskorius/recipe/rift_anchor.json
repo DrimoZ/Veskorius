@@ -1,0 +1,41 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "veskorius:veskorian_chassis"
+    },
+    {
+      "item": "veskorius:hyper_refined_crystal"
+    },
+    {
+      "item": "veskorius:hyper_refined_crystal"
+    },
+    {
+      "item": "veskorius:hyper_refined_crystal"
+    },
+    {
+      "item": "veskorius:hyper_refined_crystal"
+    },
+    {
+      "item": "veskorius:veskorian_alloy_block"
+    },
+    {
+      "item": "veskorius:veskorian_alloy_block"
+    },
+    {
+      "item": "veskorius:veskorian_alloy_block"
+    },
+    {
+      "type": "neoforge:components",
+      "components": {
+        "veskorius:blueprint_tier": 4
+      },
+      "items": "veskorius:resonance_blueprint"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:rift_anchor"
+  }
+}

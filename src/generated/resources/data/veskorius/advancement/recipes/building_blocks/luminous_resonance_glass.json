@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_luminous_extract": {
+      "conditions": {
+        "items": [
+          {
+            "items": "veskorius:luminous_extract"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "veskorius:luminous_resonance_glass"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_luminous_extract"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "veskorius:luminous_resonance_glass"
+    ]
+  }
+}

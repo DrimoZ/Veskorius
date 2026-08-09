@@ -1,0 +1,139 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "veskorius:fossilized_ration"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 8.0,
+                "min": 4.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:cobblestone"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:copper_ingot"
+        }
+      ],
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 4.0,
+        "min": 2.0
+      }
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "components": {
+                "veskorius:codex_entry": "veskorius:daily_life/lamps"
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "veskorius:codex_fragment"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "components": {
+                "veskorius:codex_entry": "veskorius:daily_life/ration"
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "veskorius:codex_fragment"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "components": {
+                "veskorius:codex_entry": "veskorius:daily_life/market"
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "veskorius:codex_fragment"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "components": {
+                "veskorius:codex_entry": "veskorius:daily_life/children"
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "veskorius:codex_fragment"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "components": {
+                "veskorius:codex_entry": "veskorius:daily_life/festival"
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "veskorius:codex_fragment"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "components": {
+                "veskorius:codex_entry": "veskorius:hint/workshop"
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "veskorius:codex_fragment"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "veskorius:chests/modest_dwelling"
+}

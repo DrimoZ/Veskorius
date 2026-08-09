@@ -1,0 +1,33 @@
+{
+  "parent": "veskorius:tier3_relay",
+  "criteria": {
+    "has_reclaimer": {
+      "conditions": {
+        "items": [
+          {
+            "items": "veskorius:reclaimer"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.closed_loop.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "veskorius:reclaimer"
+    },
+    "title": {
+      "translate": "advancements.veskorius.closed_loop.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_reclaimer"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

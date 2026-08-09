@@ -1,0 +1,15 @@
+{
+  "type": "veskorius:synthesis",
+  "ingredients": [
+    {
+      "count": 2,
+      "item": "veskorius:refined_resonance_crystal"
+    }
+  ],
+  "osc_per_tick": 8,
+  "result": {
+    "count": 1,
+    "id": "veskorius:hyper_refined_crystal"
+  },
+  "time": 1800
+}

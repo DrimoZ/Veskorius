@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 74328509,
+    "separation": 9,
+    "spacing": 32
+  },
+  "structures": [
+    {
+      "structure": "veskorius:outpost",
+      "weight": 1
+    }
+  ]
+}

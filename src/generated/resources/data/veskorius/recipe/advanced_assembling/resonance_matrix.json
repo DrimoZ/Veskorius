@@ -1,0 +1,19 @@
+{
+  "type": "veskorius:advanced_assembling",
+  "ingredients": [
+    {
+      "count": 4,
+      "item": "veskorius:resonance_component"
+    },
+    {
+      "count": 2,
+      "item": "veskorius:veskorian_conductive_alloy_ingot"
+    }
+  ],
+  "osc_per_tick": 5,
+  "result": {
+    "count": 1,
+    "id": "veskorius:resonance_matrix"
+  },
+  "time": 600
+}

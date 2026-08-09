@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_raw_resonance_crystal": {
+      "conditions": {
+        "items": [
+          {
+            "items": "veskorius:raw_resonance_crystal"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "veskorius:crystal_crusher"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_raw_resonance_crystal"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "veskorius:crystal_crusher"
+    ]
+  }
+}

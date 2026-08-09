@@ -1,0 +1,19 @@
+{
+  "type": "veskorius:purifying",
+  "ingredients": [
+    {
+      "count": 1,
+      "item": "veskorius:stable_resonance_crystal"
+    },
+    {
+      "count": 1,
+      "item": "minecraft:redstone"
+    }
+  ],
+  "osc_per_tick": 2,
+  "result": {
+    "count": 1,
+    "id": "veskorius:refined_resonance_crystal"
+  },
+  "time": 900
+}

@@ -1,0 +1,15 @@
+{
+  "type": "veskorius:compressing",
+  "ingredients": [
+    {
+      "count": 4,
+      "item": "veskorius:refined_resonance_crystal"
+    }
+  ],
+  "osc_per_tick": 6,
+  "result": {
+    "count": 1,
+    "id": "veskorius:concentrated_flux"
+  },
+  "time": 600
+}

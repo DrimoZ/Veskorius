@@ -1,0 +1,7 @@
+{
+  "type": "veskorius:damping",
+  "dissonance": 6000,
+  "ingredient": {
+    "item": "veskorius:meteoric_resonance_shard"
+  }
+}

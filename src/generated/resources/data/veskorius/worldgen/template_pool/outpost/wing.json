@@ -1,0 +1,32 @@
+{
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "veskorius:outpost_wing_store",
+        "processors": "veskorius:worn",
+        "projection": "rigid"
+      },
+      "weight": 2
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "veskorius:outpost_wing_quarters",
+        "processors": "veskorius:worn",
+        "projection": "rigid"
+      },
+      "weight": 2
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "veskorius:outpost_wing_collapsed",
+        "processors": "veskorius:ruined",
+        "projection": "rigid"
+      },
+      "weight": 3
+    }
+  ],
+  "fallback": "veskorius:outpost/cap"
+}

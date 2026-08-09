@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "veskorius:veskorian_chassis"
+    },
+    {
+      "item": "veskorius:refined_resonance_crystal"
+    },
+    {
+      "item": "veskorius:refined_resonance_crystal"
+    },
+    {
+      "tag": "veskorius:iron_substitutes"
+    },
+    {
+      "tag": "veskorius:iron_substitutes"
+    },
+    {
+      "type": "neoforge:components",
+      "components": {
+        "veskorius:blueprint_tier": 3
+      },
+      "items": "veskorius:resonance_blueprint"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:veskorian_alloy_forge"
+  }
+}

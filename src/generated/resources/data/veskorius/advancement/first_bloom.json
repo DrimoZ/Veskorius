@@ -1,0 +1,33 @@
+{
+  "parent": "veskorius:tier4_amplifier",
+  "criteria": {
+    "has_bloom": {
+      "conditions": {
+        "items": [
+          {
+            "items": "veskorius:resonance_bloom"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.first_bloom.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "veskorius:resonance_bloom"
+    },
+    "title": {
+      "translate": "advancements.veskorius.first_bloom.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_bloom"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

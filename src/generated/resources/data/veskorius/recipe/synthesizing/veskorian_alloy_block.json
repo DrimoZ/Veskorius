@@ -1,0 +1,23 @@
+{
+  "type": "veskorius:synthesizing",
+  "byproduct": {
+    "count": 1,
+    "id": "veskorius:synthesis_residue"
+  },
+  "ingredients": [
+    {
+      "count": 4,
+      "item": "veskorius:veskorian_alloy_ingot"
+    },
+    {
+      "count": 8,
+      "tag": "minecraft:stone_crafting_materials"
+    }
+  ],
+  "osc_per_tick": 6,
+  "result": {
+    "count": 4,
+    "id": "veskorius:veskorian_alloy_block"
+  },
+  "time": 1200
+}

@@ -1,0 +1,15 @@
+{
+  "type": "veskorius:roosting",
+  "ingredients": [
+    {
+      "count": 2,
+      "item": "minecraft:quartz"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:raw_resonance_crystal"
+  },
+  "stable": true,
+  "time": 12000
+}

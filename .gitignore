@@ -12,7 +12,15 @@ bin/
 
 # Runtime (généré par ./gradlew runClient / runServer / runData)
 run/
-src/generated/
+
+# `src/generated/resources` EST VERSIONNÉ, et ce n'est pas une négligence.
+# Ignoré, il produisait un piège parfait : `./gradlew build` sur un clone frais
+# réussissait — et sortait un jar sans un seul modèle, sans une recette, sans une
+# traduction. Un mod vert au build et cassé en jeu. Ces fichiers sont une sortie de
+# datagen, mais ils sont aussi le contenu du jar : ils se relisent en diff, et c'est
+# là qu'on voit qu'une recette a changé de coût.
+# Seul le cache d'empreintes de datagen reste hors du dépôt.
+src/generated/resources/.cache/
 
 # OS
 .DS_Store

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "veskorius:block/resonance_bulkhead"
+    },
+    "powered=true": {
+      "model": "veskorius:block/resonance_bulkhead_open"
+    }
+  }
+}

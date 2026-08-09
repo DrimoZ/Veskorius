@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:cobblestone"
+    },
+    "U": {
+      "item": "minecraft:copper_ingot"
+    }
+  },
+  "pattern": [
+    "CUC",
+    "C C",
+    "CUC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:fractured_chassis"
+  }
+}

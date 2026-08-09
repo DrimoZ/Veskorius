@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "veskorius:block/raw_flux_deposit"
+    }
+  }
+}

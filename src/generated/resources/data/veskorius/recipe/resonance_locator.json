@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "veskorius:resonance_component"
+    },
+    "I": {
+      "tag": "veskorius:iron_substitutes"
+    },
+    "P": {
+      "type": "neoforge:components",
+      "components": {
+        "veskorius:blueprint_tier": 2
+      },
+      "items": "veskorius:resonance_blueprint"
+    },
+    "S": {
+      "item": "veskorius:stable_resonance_crystal"
+    }
+  },
+  "pattern": [
+    " S ",
+    "CIC",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:resonance_locator"
+  }
+}

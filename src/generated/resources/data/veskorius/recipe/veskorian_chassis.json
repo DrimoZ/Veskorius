@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "veskorius:attuned_chassis"
+    },
+    "I": {
+      "tag": "veskorius:iron_substitutes"
+    },
+    "R": {
+      "item": "veskorius:refined_resonance_crystal"
+    }
+  },
+  "pattern": [
+    " R ",
+    "IAI",
+    " R "
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:veskorian_chassis"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "parent": "veskorius:tier1_awakening",
+  "criteria": {
+    "has_spore": {
+      "conditions": {
+        "items": [
+          {
+            "items": "veskorius:resonance_spore"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.first_strider.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "veskorius:resonance_spore"
+    },
+    "title": {
+      "translate": "advancements.veskorius.first_strider.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_spore"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

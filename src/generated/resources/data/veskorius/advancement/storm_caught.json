@@ -1,0 +1,27 @@
+{
+  "parent": "veskorius:tier3_relay",
+  "criteria": {
+    "caught": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.storm_caught.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "veskorius:meteoric_resonance_shard"
+    },
+    "title": {
+      "translate": "advancements.veskorius.storm_caught.title"
+    }
+  },
+  "requirements": [
+    [
+      "caught"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

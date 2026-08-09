@@ -218,13 +218,13 @@ dependencies {
     // Jade — HUD d'informations de bloc au survol (dev).
     localRuntime "maven.modrinth:jade:${jade_version}"
 
-    // Construction Wands Revived — CONFORT DE TEST, rien d'autre. Poser un mur d'un clic
-    // fait gagner un temps réel quand on monte une arène pour vérifier une portée de champ
-    // ou une figure de Cœur de Convergence à huit relais.
-    //
-    // localRuntime comme les deux autres : présent dans les runs de développement, absent
-    // du jar publié. Aucune ligne de code du mod ne le connaît, et rien ne doit en dépendre.
-    localRuntime "curse.maven:construction-wands-revived-1395288:${construction_wands_file}"
+    // PAS de Construction Wands. Le fichier CurseMaven 8579878 du projet 1395288 se télécharge
+    // très bien et n'est PAS un mod NeoForge : « Missing ModLoader version in file ». FML le
+    // refuse au démarrage, et il ne se contente pas de ne pas se charger — il fait échouer
+    // `runData` et tout run de développement. Une dépendance de confort qui casse la datagen
+    // coûte infiniment plus cher que le confort qu'elle apporte.
+    // Pour y revenir : il faut l'identifiant d'un fichier NeoForge 1.21.1 du projet, pas
+    // celui-là. Le dépôt CurseMaven reste déclaré plus haut, prêt à resservir.
 }
 
 // Génère neoforge.mods.toml à partir de src/main/templates/META-INF/neoforge.mods.toml

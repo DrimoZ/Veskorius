@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "veskorius:block/veskorian_alloy_block"
+  }
+}

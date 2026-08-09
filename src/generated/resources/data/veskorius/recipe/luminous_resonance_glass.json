@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "E": {
+      "item": "veskorius:luminous_extract"
+    },
+    "G": {
+      "item": "veskorius:resonance_glass"
+    }
+  },
+  "pattern": [
+    "GGG",
+    "GEG",
+    "GGG"
+  ],
+  "result": {
+    "count": 8,
+    "id": "veskorius:luminous_resonance_glass"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "veskorius:field_emitter"
+    },
+    {
+      "item": "veskorius:refined_resonance_crystal"
+    },
+    {
+      "item": "veskorius:refined_resonance_crystal"
+    },
+    {
+      "type": "neoforge:components",
+      "components": {
+        "veskorius:blueprint_tier": 2
+      },
+      "items": "veskorius:resonance_blueprint"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:tunable_field_emitter"
+  }
+}

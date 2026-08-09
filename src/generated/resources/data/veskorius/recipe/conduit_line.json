@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "veskorius:veined_stone_bricks"
+    },
+    "d": {
+      "item": "veskorius:resonance_dust"
+    }
+  },
+  "pattern": [
+    "###",
+    "ddd",
+    "###"
+  ],
+  "result": {
+    "count": 4,
+    "id": "veskorius:conduit_line"
+  }
+}

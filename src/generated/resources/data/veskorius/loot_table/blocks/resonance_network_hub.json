@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "veskorius:resonance_network_hub"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "veskorius:blocks/resonance_network_hub"
+}

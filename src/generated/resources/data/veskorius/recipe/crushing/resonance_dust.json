@@ -1,0 +1,15 @@
+{
+  "type": "veskorius:crushing",
+  "ingredients": [
+    {
+      "count": 1,
+      "item": "veskorius:raw_resonance_crystal"
+    }
+  ],
+  "result": {
+    "count": 3,
+    "id": "veskorius:resonance_dust"
+  },
+  "stable": true,
+  "time": 200
+}

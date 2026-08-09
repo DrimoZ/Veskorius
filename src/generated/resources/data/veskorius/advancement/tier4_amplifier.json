@@ -1,0 +1,37 @@
+{
+  "parent": "veskorius:tier3_relay",
+  "criteria": {
+    "has_blueprint": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "veskorius:blueprint_tier": 4
+            },
+            "items": "veskorius:resonance_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.tier4_amplifier.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "veskorius:hyper_refined_crystal"
+    },
+    "title": {
+      "translate": "advancements.veskorius.tier4_amplifier.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_blueprint"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

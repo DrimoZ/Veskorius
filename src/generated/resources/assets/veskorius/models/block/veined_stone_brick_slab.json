@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "veskorius:block/veined_stone_bricks",
+    "side": "veskorius:block/veined_stone_bricks",
+    "top": "veskorius:block/veined_stone_bricks"
+  }
+}

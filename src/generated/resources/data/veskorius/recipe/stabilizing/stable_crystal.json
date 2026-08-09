@@ -1,0 +1,19 @@
+{
+  "type": "veskorius:stabilizing",
+  "ingredients": [
+    {
+      "count": 1,
+      "item": "veskorius:raw_resonance_crystal"
+    },
+    {
+      "count": 1,
+      "tag": "veskorius:stabilizer_flux"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "veskorius:stable_resonance_crystal"
+  },
+  "stable": true,
+  "time": 600
+}

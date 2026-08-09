@@ -1,0 +1,33 @@
+{
+  "parent": "veskorius:tier1_awakening",
+  "criteria": {
+    "has_chassis": {
+      "conditions": {
+        "items": [
+          {
+            "items": "veskorius:fractured_chassis"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.veskorius.first_chassis.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "veskorius:fractured_chassis"
+    },
+    "title": {
+      "translate": "advancements.veskorius.first_chassis.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_chassis"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
