@@ -223,6 +223,13 @@ et pourquoi il est fait comme ça. Pour savoir ce qui existe aujourd'hui, voir
     blanc restauré au T2, sombre poli au T3 ;
   - un GUI vanilla est un **aplat** (four : 6 couleurs, panneau `#c6c6c6`) — donc aucun grain
     sur les panneaux, contrairement aux blocs.
+  - **et les caissons non plus n'ont aucun grain.** La règle du bruit vaut pour de la pierre et
+    du marbre, matières qui *sont* granuleuses. Un châssis est une tôle : un semis de pixels
+    dessus ne se lit pas comme du métal mais comme de la saleté. Pire, il fabrique un motif qui
+    se répète à chaque bloc — sur un mur de châssis connectés, dont tout l'intérêt est de ne
+    plus montrer où un bloc finit, c'est l'inverse exact de l'effet cherché. La plaque est un
+    **aplat d'un seul ton** ; le relief vient du cadre, de l'ombre qu'il porte, et du demi-pixel
+    dont il déborde.
   Les formes symétriques passent par des tables de spans vérifiées (`x0 + x1 = 15` par ligne,
   marge d'1 px) : sur une grille 16×16 le centre tombe entre les pixels 7 et 8, et centrer sur 8
   décale tout d'un demi-pixel.

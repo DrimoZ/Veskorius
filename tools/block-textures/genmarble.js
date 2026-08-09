@@ -1,6 +1,6 @@
 const fs=require('fs'),path=require('path');
 const {encodePNG}=require('./png');
-const {MARBLE,V,C,A,S,marble,edges,slab,faces,front,side,top}=require('./marble');
+const {MARBLE,V,C,A,S,marble,edges,slab,faces,front,side,top,plate,frame}=require('./marble');
 const {Canvas,rng}=require('./draw');
 const TIER_OF={resonance_stabilizer:'t1',component_assembler:'t1',resonance_whetstone:'t1',
  crystal_crusher:'t1',flux_purifier:'t2',crystal_roost:'t2',field_emitter:'t2',
@@ -16,7 +16,11 @@ const tex={};
 for(const k of ['t1','t2','t3']){
   const nm={t1:'fractured',t2:'attuned',t3:'veskorian'}[k];
   tex[nm+'_chassis_side']=side(k,0x100+k.charCodeAt(1));
-  tex[nm+'_chassis_top']=top(k,0x200+k.charCodeAt(1));}
+  tex[nm+'_chassis_top']=top(k,0x200+k.charCodeAt(1));
+  // La plaque partage la graine du flanc : accolés, les deux montrent le MÊME marbre, et
+  // le cadre qui disparaît est la seule chose qui change.
+  tex[nm+'_chassis_plate']=plate(k,0x100+k.charCodeAt(1));
+  tex[nm+'_chassis_frame']=frame(k,0x400+k.charCodeAt(1));}
 let seed=0x300;
 for(const[n,k]of Object.entries(TIER_OF)){
   tex[n+'_front']=front(k,seed,faces[n],false,ACCENT[n]);

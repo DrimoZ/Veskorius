@@ -1,0 +1,41 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame"
+        },
+        "east": {
+          "texture": "#frame"
+        },
+        "north": {
+          "texture": "#frame"
+        },
+        "south": {
+          "texture": "#frame"
+        },
+        "up": {
+          "texture": "#frame"
+        },
+        "west": {
+          "texture": "#frame"
+        }
+      },
+      "from": [
+        -0.5,
+        0,
+        14
+      ],
+      "to": [
+        2,
+        16,
+        16.5
+      ]
+    }
+  ],
+  "textures": {
+    "frame": "veskorius:block/attuned_chassis_frame",
+    "particle": "veskorius:block/attuned_chassis_frame"
+  }
+}

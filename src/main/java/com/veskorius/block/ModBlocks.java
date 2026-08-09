@@ -60,29 +60,29 @@ public class ModBlocks {
      * Ils restent des blocs décoratifs à part entière — poser un mur de châssis est un
      * usage légitime.
      */
-    public static final DeferredBlock<net.minecraft.world.level.block.Block> FRACTURED_CHASSIS =
-        BLOCKS.registerSimpleBlock("fractured_chassis",
-            BlockBehaviour.Properties.of()
+    public static final DeferredBlock<ConnectedChassisBlock> FRACTURED_CHASSIS =
+        BLOCKS.register("fractured_chassis",
+            () -> new ConnectedChassisBlock(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.STONE)
                 .strength(3.0f, 6.0f)
                 .sound(SoundType.STONE)
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()));
 
-    public static final DeferredBlock<net.minecraft.world.level.block.Block> ATTUNED_CHASSIS =
-        BLOCKS.registerSimpleBlock("attuned_chassis",
-            BlockBehaviour.Properties.of()
+    public static final DeferredBlock<ConnectedChassisBlock> ATTUNED_CHASSIS =
+        BLOCKS.register("attuned_chassis",
+            () -> new ConnectedChassisBlock(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(3.5f, 6.0f)
                 .sound(SoundType.METAL)
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()));
 
-    public static final DeferredBlock<net.minecraft.world.level.block.Block> VESKORIAN_CHASSIS =
-        BLOCKS.registerSimpleBlock("veskorian_chassis",
-            BlockBehaviour.Properties.of()
+    public static final DeferredBlock<ConnectedChassisBlock> VESKORIAN_CHASSIS =
+        BLOCKS.register("veskorian_chassis",
+            () -> new ConnectedChassisBlock(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(4.0f, 8.0f)
                 .sound(SoundType.METAL)
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()));
 
     /** Machine #1 (05-Machines.md). Bloc actif : block entity + GUI. */
     public static final DeferredBlock<ResonanceStabilizerBlock> RESONANCE_STABILIZER =

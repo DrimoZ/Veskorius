@@ -95,9 +95,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
         // --- Châssis nus ------------------------------------------------------
         // Le bloc de base, posable tel quel. C'est littéralement le boîtier que
         // portent les machines de son palier : côtés et dessus sont les MÊMES fichiers.
-        chassis(ModBlocks.FRACTURED_CHASSIS.get(), FRACTURED);
-        chassis(ModBlocks.ATTUNED_CHASSIS.get(), ATTUNED);
-        chassis(ModBlocks.VESKORIAN_CHASSIS.get(), VESKORIAN);
+        connectedChassis(ModBlocks.FRACTURED_CHASSIS.get(), FRACTURED);
+        connectedChassis(ModBlocks.ATTUNED_CHASSIS.get(), ATTUNED);
+        connectedChassis(ModBlocks.VESKORIAN_CHASSIS.get(), VESKORIAN);
 
         // --- Blocs naturels ---------------------------------------------------
         simpleBlockWithItem(ModBlocks.RESONANCE_CRYSTAL_CLUSTER.get(),
@@ -338,8 +338,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
                     continue;
                 }
                 builder.part().modelFile(glassBar(name, a, b)).addModel()
-                    .condition(com.veskorius.block.ConnectedGlassBlock.property(a), false)
-                    .condition(com.veskorius.block.ConnectedGlassBlock.property(b), false)
+                    .condition(com.veskorius.block.AbstractConnectedBlock.property(a), false)
+                    .condition(com.veskorius.block.AbstractConnectedBlock.property(b), false)
                     .end();
             }
         }
@@ -372,11 +372,64 @@ public class ModBlockStateProvider extends BlockStateProvider {
             .element().from(from[0], from[1], from[2]).to(to[0], to[1], to[2])
             .allFaces((face, f) -> f.texture("#frame")).end();
     }
-    private void chassis(Block block, String chassisName) {
-        simpleBlockWithItem(block, models().cubeBottomTop(chassisName,
-            modLoc("block/" + chassisName + "_side"),
-            modLoc("block/" + chassisName + "_top"),
-            modLoc("block/" + chassisName + "_top")));
+    /**
+     * <b>Chassis a cadre connecte.</b> Une plaque nue sur les six faces, plus une baguette
+     * de cadre sur chacune des douze aretes — et une arete ne porte sa baguette que si NI
+     * l'une NI l'autre des deux faces qui la bordent n'a de chassis voisin.
+     *
+     * <p>Un chassis isole garde donc ses douze baguettes : une caisse. Celui du milieu d'un
+     * mur n'en a aucune. Entre les deux, le cadre suit exactement la silhouette du groupe,
+     * ce qui est tout l'effet recherche — un mur de caissons doit se lire comme UN panneau.
+     *
+     * <p><b>La condition porte sur l'arete, pas sur la face</b>, et c'est la seule forme
+     * qui marche. Conditionner sur la face donnait un quadrillage sur le verre : la bordure
+     * du HAUT de la face nord ne depend pas du nord, elle depend du HAUT.
+     */
+    private void connectedChassis(Block block, String name) {
+        ModelFile plate = models().cubeAll(name + "_plate", modLoc("block/" + name + "_plate"));
+        var builder = getMultipartBuilder(block);
+        builder.part().modelFile(plate).addModel().end();
+        for (Direction a : Direction.values()) {
+            for (Direction b : Direction.values()) {
+                // Chaque arete une seule fois, et jamais deux faces opposees ou egales.
+                if (a.getAxis() == b.getAxis() || a.ordinal() > b.ordinal()) {
+                    continue;
+                }
+                builder.part().modelFile(chassisBar(name, a, b)).addModel()
+                    .condition(com.veskorius.block.AbstractConnectedBlock.property(a), false)
+                    .condition(com.veskorius.block.AbstractConnectedBlock.property(b), false)
+                    .end();
+            }
+        }
+        // L'objet montre le caisson COMPLET, cadre peint : dans un inventaire, une plaque
+        // nue ne se distingue d'aucune autre plaque nue.
+        itemModels().cubeBottomTop(name, modLoc("block/" + name + "_side"),
+            modLoc("block/" + name + "_top"), modLoc("block/" + name + "_top"));
+    }
+
+    /** La baguette de cadre posee sur l'arete commune aux faces {@code a} et {@code b}. */
+    private ModelFile chassisBar(String name, Direction a, Direction b) {
+        // Deux pixels d'epaisseur, et un DEBORD d'un demi-pixel. Le debord n'est pas un
+        // correctif anti-z-fighting comme sur le verre : c'est du relief voulu. Une baguette
+        // affleurante se lit comme un dessin, une baguette qui depasse accroche la lumiere et
+        // se lit comme une piece rapportee. Elle ne peut jamais entrer dans un chassis voisin,
+        // puisqu'elle n'existe que la ou les deux faces bordant l'arete sont libres.
+        final float t = 2.0f;
+        final float over = 0.5f;
+        float[] from = {0, 0, 0};
+        float[] to = {16, 16, 16};
+        for (Direction d : new Direction[] {a, b}) {
+            int axis = d.getAxis().ordinal();
+            boolean high = d.getAxisDirection() == Direction.AxisDirection.POSITIVE;
+            from[axis] = high ? 16 - t : -over;
+            to[axis] = high ? 16 + over : t;
+        }
+        return models().getBuilder(name + "_bar_" + a.getSerializedName() + "_" + b.getSerializedName())
+            .parent(models().getExistingFile(mcLoc("block/block")))
+            .texture("frame", modLoc("block/" + name + "_frame"))
+            .texture("particle", modLoc("block/" + name + "_frame"))
+            .element().from(from[0], from[1], from[2]).to(to[0], to[1], to[2])
+            .allFaces((face, f) -> f.texture("#frame")).end();
     }
 
     // --- Fabriques de modèles ------------------------------------------------

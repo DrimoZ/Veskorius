@@ -27,15 +27,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Point d'entree du mod Veskorius.
- *
- * Ce fichier ne fait qu'enregistrer les objets du mod et declarer un onglet
- * createur dedie. Toute logique de gameplay vit dans des classes separees.
- *
- * Source de verite pour le gameplay et l'ordre des taches :
- * veskorius-design/ (en particulier 11-Development-Plan.md).
- */
 @Mod(Veskorius.MOD_ID)
 public class Veskorius {
 

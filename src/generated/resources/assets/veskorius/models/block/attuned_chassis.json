@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cube_bottom_top",
-  "textures": {
-    "bottom": "veskorius:block/attuned_chassis_top",
-    "side": "veskorius:block/attuned_chassis_side",
-    "top": "veskorius:block/attuned_chassis_top"
-  }
-}

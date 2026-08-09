@@ -489,22 +489,126 @@ function front(tier, seed, face, on, accent) {
 }
 
 /** Flanc : marbre nu et un bandeau de métal. Sobre exprès : la façade porte tout. */
-function side(tier, seed) {
-  const m = MARBLE[tier];
-  const c = marble(m, seed);
-  slab(c, 0, 6, 16, 3, m.metal, m.metalHi, m.line);
-  edges(c, m);
+// --- Caissons ------------------------------------------------------------
+// Le vocabulaire est celui d'un CAISSON : une plaque tenue dans un cadre métallique,
+// équerres aux angles, rivets. C'est la langue de Create, et elle marche pour une raison
+// précise — le cadre donne au bloc une bordure franche et sombre, donc une silhouette, là
+// où un carré de bruit uniforme n'en a aucune. L'ancienne version posait une simple barre
+// horizontale au milieu d'un champ de marbre : la barre se lisait, le bloc non.
+//
+// Trois textures par palier, et il en faut trois :
+//   `_side` / `_top` : le caisson COMPLET, cadre peint. C'est ce que portent les machines,
+//                      qui restent des unités distinctes et gardent donc leur cadre.
+//   `_plate`         : la plaque SEULE, sans cadre. C'est la face intérieure d'un groupe
+//                      de châssis accolés — c'est elle qui fait qu'un mur devient un mur.
+//   `_frame`         : le métal du cadre, posé en géométrie sur les arêtes ouvertes.
+
+/** Rivet : un point clair et son ombre. Deux pixels, et l'angle se lit comme boulonné. */
+function rivet(c, x, y, m) {
+  c.set(x, y, m.metalHi);
+  c.set(x, y + 1, m.line);
+}
+
+/**
+ * <b>Panneau lisse.</b> Un aplat, et un dégradé d'un seul cran vers le bas — la lumière
+ * vient du haut à gauche, comme partout ailleurs.
+ *
+ * <p><b>Aucun grain, et c'est un écart assumé à la règle des autres textures du mod</b>
+ * (voir README : le vanilla est très bruité, et c'est la fréquence du grain qui fait la
+ * matière). La règle vaut pour de la pierre et du marbre, matières qui SONT granuleuses.
+ * Un caisson est une tôle : un semis de pixels dessus ne se lit pas comme du métal, il se
+ * lit comme de la saleté, et il fabrique un motif qui se répète à chaque bloc — exactement
+ * ce qu'on cherche à faire disparaître en connectant les blocs.
+ */
+function panel(m) {
+  const c = new Canvas(S);
+  // UN SEUL TON, sur toute la surface. Un dégradé, même à trois paliers, se répète une fois
+  // par bloc : sur un mur de caissons, les marches s'alignent et dessinent des bandes
+  // horizontales tous les seize pixels. C'est un motif, et c'est exactement ce que la
+  // connexion des blocs sert à faire disparaître. Le relief vient du cadre et de l'ombre
+  // qu'il porte ; la tôle, elle, est plate.
+  c.rect(0, 0, S, S, m.tones[2]);
   return c;
 }
 
-/** Dessus : marbre et un carré de métal. */
-function top(tier, seed) {
+/**
+ * La plaque nue : le panneau, sans rien d'autre.
+ *
+ * <p>Pas de rivet, pas de cadre, aucun motif centré. Tout ce qui est centré se répéterait
+ * une fois par bloc et transformerait un mur en damier — c'est précisément ce qu'on veut
+ * éviter en connectant les textures.
+ */
+function plate(tier) {
+  return panel(MARBLE[tier]);
+}
+
+/**
+ * Le métal du cadre : un aplat, et un seul liseré clair.
+ *
+ * <p>Volontairement UNIFORME. Cette texture est vue par tranches de deux pixels — les
+ * baguettes posées sur les arêtes — et une tranche peut tomber n'importe où. Le moindre
+ * motif donnerait un cadre différent selon l'arête ; un aplat donne le même métal partout,
+ * et le relief vient de la géométrie, qui est là pour ça.
+ */
+function frame(tier) {
   const m = MARBLE[tier];
-  const c = marble(m, seed);
-  c.frameRect(3, 3, 10, 10, m.metal);
-  for (let i = 3; i < 13; i++) c.set(i, 3, m.metalHi);
-  edges(c, m);
+  const c = new Canvas(S);
+  c.rect(0, 0, S, S, m.metal);
   return c;
 }
 
-module.exports = { MARBLE, V, C, A, WOOD, IRON, S, marble, edges, slab, faces, front, side, top };
+/** Le cadre peint : bande de 2 px biseautée, équerres de 5 px, rivets, ombre portée. */
+function casing(c, m) {
+  for (let i = 0; i < S; i++) {
+    // Biseau : la lumière vient du haut à gauche, comme partout ailleurs dans le mod.
+    c.set(i, 0, m.metalHi); c.set(i, 1, m.metal);
+    c.set(i, S - 1, m.line); c.set(i, S - 2, m.metal);
+    c.set(0, i, m.metalHi); c.set(1, i, m.metal);
+    c.set(S - 1, i, m.line); c.set(S - 2, i, m.metal);
+  }
+  // L'ombre que le cadre porte sur la plaque : c'est ce pixel qui creuse le bloc. Sans lui
+  // le cadre est une décalcomanie ; avec lui, la plaque est DERRIÈRE.
+  for (let i = 2; i < S - 2; i++) {
+    c.set(i, 2, m.dark);
+    c.set(2, i, m.dark);
+  }
+  // Équerres EN DERNIER, et l'ordre est tout : dessinées avant, le trait d'ombre les
+  // traversait de part en part et effaçait les rivets. Une équerre coupée en deux ne se
+  // lit plus comme une pièce posée sur le cadre.
+  for (const [ox, oy] of [[0, 0], [S - 5, 0], [0, S - 5], [S - 5, S - 5]]) {
+    c.rect(ox, oy, 5, 5, m.metal);
+    for (let i = 0; i < 5; i++) {
+      c.set(ox + i, oy === 0 ? 0 : S - 1, oy === 0 ? m.metalHi : m.line);
+      c.set(ox === 0 ? 0 : S - 1, oy + i, ox === 0 ? m.metalHi : m.line);
+    }
+    // Le rivet au cœur de l'équerre, jamais sur son biseau.
+    rivet(c, ox === 0 ? 2 : S - 3, oy === 0 ? 2 : S - 4, m);
+  }
+  return c;
+}
+
+/** Flanc de caisson : la plaque, dans son cadre. */
+function side(tier) {
+  const m = MARBLE[tier];
+  const c = panel(m);
+  casing(c, m);
+  return c;
+}
+
+/**
+ * Dessus de caisson : le même cadre, plus une trappe d'accès.
+ *
+ * <p>Le dessus doit se distinguer du flanc sans changer de langage — sinon on ne sait plus
+ * quelle face on regarde quand une machine est vue de trois quarts.
+ */
+function top(tier) {
+  const m = MARBLE[tier];
+  const c = panel(m);
+  c.frameRect(5, 5, 6, 6, m.metal);
+  for (let i = 5; i < 11; i++) c.set(i, 5, m.metalHi);
+  casing(c, m);
+  return c;
+}
+
+module.exports = { MARBLE, V, C, A, WOOD, IRON, S, marble, edges, slab, faces, front,
+  side, top, plate, frame };

@@ -29,7 +29,19 @@ const problem = m => problems.push(m);
 const blocksSrc = read('src/main/java/com/veskorius/block/ModBlocks.java');
 const itemsSrc = read('src/main/java/com/veskorius/item/ModItems.java');
 
-const blocks = [...blocksSrc.matchAll(/register(?:SimpleBlock|Block)\("([a-z0-9_]+)"/g)].map(m => m[1]);
+// LE MOTIF D'ENREGISTREMENT EST DÉFINI UNE SEULE FOIS, et il le fallait : il servait à
+// trois endroits, écrit trois fois, et il ne reconnaissait que `registerSimpleBlock` et
+// `registerBlock`. Le jour où trois châssis sont passés au `BLOCKS.register(...)` nu — pour
+// devenir des blocs connectés — ils ont disparu de l'audit. Pas d'erreur : l'audit a
+// simplement cessé de vérifier leur blockstate, leur modèle, leur loot et leur tag d'outil,
+// en annonçant trois blocs de moins. Une garde qui rétrécit en silence est pire que pas de
+// garde. `BLOCKS.register` couvre désormais toutes les formes, présentes et à venir.
+const REGISTER = 'BLOCKS\\.register(?:SimpleBlock|Block)?\\("([a-z0-9_]+)"';
+const registrations = () => new RegExp(REGISTER, 'g');
+/** L'enregistrement ET le corps qui le suit, pour y chercher un appel de propriété. */
+const registrationBodies = () => new RegExp(REGISTER + '[\\s\\S]{0,900}?\\)\\);', 'g');
+
+const blocks = [...blocksSrc.matchAll(registrations())].map(m => m[1]);
 const plainItems = [...itemsSrc.matchAll(/(?:register(?:SimpleItem|Item)|armor)\("([a-z0-9_]+)"/g)].map(m => m[1]);
 const blockItems = [...itemsSrc.matchAll(/registerSimpleBlockItem\(ModBlocks\.([A-Z0-9_]+)\)/g)]
   .map(m => m[1].toLowerCase());
@@ -37,7 +49,7 @@ const blockItems = [...itemsSrc.matchAll(/registerSimpleBlockItem\(ModBlocks\.([
 // Les blocs déclarés sans table de butin : le provider ne les réclamera pas, et c'est
 // voulu (indestructibles, ou détruits par la génération).
 const noLoot = new Set();
-for (const m of blocksSrc.matchAll(/register(?:SimpleBlock|Block)\("([a-z0-9_]+)"[\s\S]{0,900}?\)\);/g)) {
+for (const m of blocksSrc.matchAll(registrationBodies())) {
   if (m[0].includes('noLootTable()')) noLoot.add(m[1]);
 }
 
@@ -64,7 +76,7 @@ for (const i of plainItems.concat(blockItems)) {
 // pas du mur qu'on venait de bâtir, et une machine T3 qui s'évaporait quand on la
 // reprenait. Rien ne plante ; le joueur croit à une maladresse et recommence.
 const needsTool = new Set();
-for (const m of blocksSrc.matchAll(/register(?:SimpleBlock|Block)\("([a-z0-9_]+)"[\s\S]{0,900}?\)\);/g)) {
+for (const m of blocksSrc.matchAll(registrationBodies())) {
   if (m[0].includes('requiresCorrectToolForDrops()')) needsTool.add(m[1]);
 }
 const mineable = new Set();

@@ -1,3 +1,8 @@
 {
-  "parent": "veskorius:block/veskorian_chassis"
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "veskorius:block/veskorian_chassis_top",
+    "side": "veskorius:block/veskorian_chassis_side",
+    "top": "veskorius:block/veskorian_chassis_top"
+  }
 }
