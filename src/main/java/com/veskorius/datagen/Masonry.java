@@ -59,7 +59,22 @@ public final class Masonry {
     public static final BlockState LAMP = ModBlocks.RESONANCE_LAMP.get().defaultBlockState();
     public static final BlockState BLOOM = ModBlocks.DISSONANCE_BLOOM.get().defaultBlockState();
     public static final BlockState BULKHEAD = ModBlocks.RESONANCE_BULKHEAD.get().defaultBlockState();
-    public static final BlockState GLASS = Blocks.PURPLE_STAINED_GLASS.defaultBlockState();
+    /**
+     * <b>Le verre des ruines est désormais celui du mod.</b>
+     *
+     * <p>C'était du verre teinté vanilla, au nom de la règle des accents ci-dessous — ne pas
+     * multiplier les blocs du mod pour des matières secondaires. La règle tenait quand le
+     * Verre de Résonance n'existait pas ; elle ne s'applique plus, puisqu'on ne crée rien.
+     * Et une baie de verre violet vanilla au milieu d'une ruine veskorienne était devenue
+     * l'anomalie : c'est LEUR verre qu'on devrait trouver chez eux.
+     *
+     * <p>Deux conséquences assumées. Les meneaux du Sigma deviennent des vitres continues
+     * au lieu de cinq blocs encadrés chacun — c'est tout l'intérêt du verre connecté. Et
+     * il ÉCLAIRE (luminosité 8) : les baies d'un sas se voient maintenant de loin, ce qui
+     * dit sans un mot qu'une porte est là et qu'elle tient encore à quelque chose.
+     */
+    public static final BlockState GLASS =
+        ModBlocks.RESONANCE_GLASS.get().defaultBlockState();
 
     public static final BlockState SLAB = ModBlocks.VEINED_STONE_BRICK_SLAB.get().defaultBlockState()
         .setValue(BlockStateProperties.SLAB_TYPE, SlabType.BOTTOM);
@@ -692,6 +707,23 @@ public final class Masonry {
                     && ((x == minX && z == minZ) || (x == maxX && z == maxZ));
                 b.set(x, y, z, end ? anchor : state);
             }
+        }
+    }
+
+    /**
+     * Colonne de verre, <b>avec ses connexions déjà inscrites</b>.
+     *
+     * <p>La pose d'une structure n'appelle pas {@code updateShape} sur les blocs
+     * intérieurs : elle écrit les états tels quels. Un verre connecté posé par une ruine
+     * arriverait donc avec toutes ses connexions à faux — chaque bloc encadré, exactement
+     * ce que le verre connecté existe pour éviter. On calcule donc l'état ici, où la
+     * géométrie est connue, plutôt que d'espérer qu'un voisin le corrige.
+     */
+    public static void glassColumn(TemplateBuilder b, int x, int y0, int z, int y1) {
+        for (int y = y0; y <= y1; y++) {
+            b.set(x, y, z, GLASS
+                .setValue(com.veskorius.block.ConnectedGlassBlock.DOWN, y > y0)
+                .setValue(com.veskorius.block.ConnectedGlassBlock.UP, y < y1));
         }
     }
 

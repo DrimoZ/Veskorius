@@ -782,7 +782,7 @@ public class ModStructurePieceProvider implements DataProvider {
         b.box(37, SIG_TOP - 1, 13, 37, SIG_TOP + 6, 25, Masonry.ROCK);
         b.box(36, SIG_TOP, 14, 36, SIG_TOP + 4, 24, AIR);
         for (int z = 13; z <= 25; z += 2) {
-            b.box(36, SIG_TOP, z, 36, SIG_TOP + 4, z, GLASS);
+            Masonry.glassColumn(b, 36, SIG_TOP, z, SIG_TOP + 4);
         }
         Masonry.collapse(b, 34, 21, 3, SIG_TOP + 6, SIG_TOP, 0x5EEF4);
 
