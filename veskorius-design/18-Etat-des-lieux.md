@@ -46,7 +46,7 @@ que rien d'autre ne le signale.
 Toute machine à cycle hérite d'`AbstractMachineBlockEntity` : progression, slot
 d'augment (Catalyst Core, +15 %), On/Off, mode redstone, surchauffe, faces
 configurables (entrée/sortie/désactivé), bande harmonique, glow lisible sur la façade.
-Neuf types de recette **data-driven** — un datapack change les valeurs sans recompiler.
+**14 types de recette** data-driven — un datapack change les valeurs sans recompiler.
 
 ---
 

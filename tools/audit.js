@@ -136,6 +136,11 @@ claim('items', /\*\*\d+ blocs, (\d+) items\*\*/, plainItems.length + blockItems.
 claim('entrées de Codex',
   /\*\*(\d+) entrées\*\*/,
   (read('src/main/java/com/veskorius/codex/CodexRegistry.java').match(/^\s+add\(/gm) || []).length);
+// Le chiffre avait glissé de 9 à 14 sans que rien ne le dise : c'est exactement le genre
+// d'écart qui fait réécrire un système « manquant » qui existait déjà.
+claim('types de recette', /\*\*(\d+) types de recette\*\*/,
+  (read('src/main/java/com/veskorius/recipe/ModRecipeTypes.java').match(/"[a-z_]+"/g) || [])
+    .filter((v, i, a) => a.indexOf(v) === i).length);
 claim('GameTest', /\*\*(\d+) GameTest/,
   javaFiles.filter(f => f.includes('gametest'))
     .reduce((n, f) => n + (read(f).match(/^    @GameTest/gm) || []).length, 0));

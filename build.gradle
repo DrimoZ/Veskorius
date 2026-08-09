@@ -29,6 +29,14 @@ repositories {
         url = "https://api.modrinth.com/maven"
         content { includeGroup "maven.modrinth" }
     }
+    // CurseMaven — pour Construction Wands. Il adresse un FICHIER par son identifiant
+    // numérique, pas une version : c'est pour ça que la coordonnée se termine par un
+    // numéro de build et non par « 1.2.3 ».
+    maven {
+        name = "CurseMaven"
+        url = "https://cursemaven.com"
+        content { includeGroup "curse.maven" }
+    }
 }
 
 base {
@@ -209,6 +217,14 @@ dependencies {
 
     // Jade — HUD d'informations de bloc au survol (dev).
     localRuntime "maven.modrinth:jade:${jade_version}"
+
+    // Construction Wands Revived — CONFORT DE TEST, rien d'autre. Poser un mur d'un clic
+    // fait gagner un temps réel quand on monte une arène pour vérifier une portée de champ
+    // ou une figure de Cœur de Convergence à huit relais.
+    //
+    // localRuntime comme les deux autres : présent dans les runs de développement, absent
+    // du jar publié. Aucune ligne de code du mod ne le connaît, et rien ne doit en dépendre.
+    localRuntime "curse.maven:construction-wands-revived-1395288:${construction_wands_file}"
 }
 
 // Génère neoforge.mods.toml à partir de src/main/templates/META-INF/neoforge.mods.toml
@@ -223,8 +239,15 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
         mod_name               : mod_name,
         mod_license            : mod_license,
         mod_version            : mod_version,
+        // Absentes de cette liste, `mod_description` et `mod_authors` ne pilotaient RIEN :
+        // le texte était en dur dans le template, et modifier gradle.properties n'avait
+        // aucun effet visible. Une clé qui ne commande rien est un piège.
+        mod_description        : mod_description,
     ]
     inputs.properties replaceProperties
+    // Le texte contient des accents. Sans charset explicite, ProcessResources filtre avec
+    // l'encodage de la plateforme — cp1252 sous Windows — et le mods.toml part abîmé.
+    filteringCharset = 'UTF-8'
     expand replaceProperties
     from "src/main/templates"
     into "build/generated/sources/modMetadata"
