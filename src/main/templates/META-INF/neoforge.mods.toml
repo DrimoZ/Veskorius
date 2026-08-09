@@ -6,6 +6,10 @@ license="${mod_license}"
 modId="${mod_id}" #mandatory
 version="${mod_version}" #mandatory
 displayName="${mod_name}" #mandatory
+authors="${mod_authors}"
+# Icône de la liste des mods. Le fichier est produit par `node tools/logo/genlogo.js` et
+# versionné dans src/main/resources — comme les textures, générées par le même genre d'outil.
+logoFile="logo.png"
 description='''
 ${mod_description}
 '''

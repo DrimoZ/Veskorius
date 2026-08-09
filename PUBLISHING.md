@@ -42,36 +42,28 @@ jeton d'API.
    - Game version : 1.21.1
    - Modloader : NeoForge
    - Changelog : ce que change cette version. Pour la première, la liste des cinq paliers suffit.
-5. Une image de projet (logo) est demandée pour la validation.
+5. Image de projet : `build/texture-sheets/veskorius-512.png`, produit par
+   `node tools/logo/genlogo.js`. Le meme dessin en 256 est deja dans le jar
+   (`logo.png`, declare par `logoFile`) et sert d'icone dans la liste des mods.
 
-La validation manuelle de CurseForge prend en général quelques heures.
-
-### Ce qu'il reste à décider avant de publier
-
-- `mod_authors` est **vide** dans `gradle.properties` — le jar ne déclare aucun auteur.
-- `mod_description` est sans accents (« technologie ancienne a restaurer ») : c'est le texte
-  affiché dans la liste des mods en jeu.
-- Aucun `logoFile` n'est déclaré dans le `neoforge.mods.toml`.
+La validation manuelle de CurseForge prend en general quelques heures.
 
 ## 3. Le wiki GitHub
 
-Les pages sont dans [`wiki/`](wiki/). Le wiki GitHub est un dépôt git séparé — il faut donc
-d'abord que le dépôt ait un remote (`git remote -v` n'en renvoie aucun aujourd'hui), et que le
-wiki ait été initialisé une fois depuis l'onglet *Wiki* de GitHub.
+**Fait** — les dix pages de [`wiki/`](wiki/) sont en ligne sur
+https://github.com/DrimoZ/Veskorius/wiki.
 
-Ensuite :
+Pour republier apres une modification, depuis la racine du depot :
 
 ```bash
-git clone https://github.com/<compte>/<depot>.wiki.git /tmp/veskorius-wiki
-cp wiki/*.md /tmp/veskorius-wiki/
-cd /tmp/veskorius-wiki && git add -A && git commit -m "wiki: pages joueur" && git push
+git clone https://github.com/DrimoZ/Veskorius.wiki.git /c/vkwiki && cp wiki/*.md /c/vkwiki/ && cd /c/vkwiki && git add -A && git commit -m "wiki: mise a jour" && git push
 ```
 
-`Home.md` est la page d'accueil, `_Sidebar.md` la navigation latérale — ces deux noms sont
-imposés par GitHub. Les liens entre pages utilisent le nom du fichier sans `.md`.
+`Home.md` est la page d'accueil, `_Sidebar.md` la navigation laterale — ces deux noms sont
+imposes par GitHub. Les liens entre pages utilisent le nom du fichier sans `.md`.
 
-Le wiki est en **anglais** : il s'adresse au même public que la page CurseForge. Le guide
-joueur français reste dans `veskorius-design/guide-joueur/`.
+Le wiki est en **anglais** : il s'adresse au meme public que la page CurseForge. Le guide
+joueur francais reste dans `veskorius-design/guide-joueur/`.
 
 ## 4. Cloner sous Windows
 

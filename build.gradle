@@ -248,6 +248,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
         // le texte était en dur dans le template, et modifier gradle.properties n'avait
         // aucun effet visible. Une clé qui ne commande rien est un piège.
         mod_description        : mod_description,
+        mod_authors            : mod_authors,
     ]
     inputs.properties replaceProperties
     // Le texte contient des accents. Sans charset explicite, ProcessResources filtre avec

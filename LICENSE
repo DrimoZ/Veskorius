@@ -1,0 +1,33 @@
+Veskorius
+Copyright (c) 2026 DrimoZ. All rights reserved.
+
+This software and its associated assets (code, textures, models, sounds, data
+files and documentation) are the property of the copyright holder.
+
+Permission is granted to any person obtaining a copy of the compiled mod to:
+
+  - use it, for personal or private-server play;
+  - include it in a modpack, on the condition that the pack credits Veskorius
+    and links to its official page, and that the mod file is distributed
+    unmodified.
+
+No other rights are granted. In particular, without prior written permission
+from the copyright holder, you may not:
+
+  - redistribute the source code, in whole or in part;
+  - publish a modified version, a fork, or a derivative work;
+  - re-upload the mod file to any download site or mirror;
+  - use its assets in another project.
+
+Reading the source, and building it locally for the purpose of understanding,
+debugging, or preparing a contribution to this repository, is permitted.
+
+Contributions submitted to this repository are licensed to the copyright holder
+under these same terms.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

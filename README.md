@@ -335,7 +335,8 @@ src/main/java/com/veskorius/
 ├── gametest/                   ← tests joués par runFastGameTests / runWorldGameTests
 └── tag/ModTags.java
 
-src/main/resources/assets/veskorius/textures/  ← seules ressources écrites à la main
+src/main/resources/assets/veskorius/textures/  ← textures, produites par tools/{block,item,gui}-textures
+src/main/resources/logo.png                    ← icône de la liste des mods, par tools/logo/genlogo.js
 src/generated/resources/                       ← tout le reste, produit par runData (VERSIONNÉ)
 src/main/templates/META-INF/neoforge.mods.toml ← généré vers le jar au build
 ```
