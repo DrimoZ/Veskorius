@@ -2056,6 +2056,37 @@ public class MachineGameTests {
         helper.succeed();
     }
 
+    /**
+     * <b>Le compte d'extractions descend, et il ne remonte jamais.</b>
+     *
+     * <p>C'est le seul chiffre irréversible du mod : six essences par Faille, puis plus
+     * rien, jamais. Toute la fin du jeu repose dessus — si le compte se réinitialisait
+     * (au rechargement, en remplaçant l'Extracteur, en cassant l'Ancre), la seule ressource
+     * volontairement finie deviendrait une ferme, et le T5 perdrait ce qui le distingue.
+     *
+     * <p>On vérifie donc les deux bouts : que six extractions passent, et que la septième
+     * soit refusée.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void aRiftGivesSixAndNeverMore(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.RIFT_CORE.get());
+        com.veskorius.block.entity.RiftCoreBlockEntity core = helper.getBlockEntity(MACHINE);
+        core.setCleared(true);
+
+        int max = com.veskorius.block.entity.RiftCoreBlockEntity.MAX_EXTRACTIONS;
+        for (int i = 1; i <= max; i++) {
+            helper.assertTrue(core.consumeExtraction(),
+                "L'extraction n°" + i + " sur " + max + " doit passer");
+        }
+        helper.assertFalse(core.consumeExtraction(),
+            "La " + (max + 1) + "e extraction doit être refusée — sinon la seule ressource "
+                + "finie du mod devient une ferme");
+        helper.assertTrue(core.getExtractionsLeft() == 0,
+            "…et le compte restant doit tomber à zéro, puisque c'est lui qu'on montre au "
+                + "joueur. Obtenu : " + core.getExtractionsLeft());
+        helper.succeed();
+    }
+
     // --- Utilitaires ---------------------------------------------------------
 
     private static IItemHandler assemblerInventory(GameTestHelper helper) {

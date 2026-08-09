@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.veskorius.block.entity.ModBlockEntities;
 import com.veskorius.block.entity.RiftCoreBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -38,6 +39,35 @@ public class RiftCoreBlock extends BaseEntityBlock {
     @Override
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
+    }
+
+    /**
+     * <b>Le Cœur dit ce qu'il lui reste.</b>
+     *
+     * <p>Sans ça, la fin du mod est muette : on extrait six essences, puis l'Extracteur
+     * s'arrête. Le joueur ne peut pas distinguer une panne d'un manque d'énergie d'un
+     * épuisement définitif — et comme rien ne repousse, il peut chercher longtemps une
+     * suite qui n'existe pas.
+     *
+     * <p>Le compte vit sur le Cœur (jamais sur l'Extracteur, qu'on peut remplacer), donc
+     * c'est le Cœur qu'on interroge. Trois états à distinguer : gardé, exploitable,
+     * épuisé.
+     */
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+                                               net.minecraft.world.entity.player.Player player,
+                                               net.minecraft.world.phys.BlockHitResult hit) {
+        if (level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
+        if (level.getBlockEntity(pos) instanceof RiftCoreBlockEntity core) {
+            int left = core.getExtractionsLeft();
+            String key = !core.isCleared() ? "message.veskorius.rift_guarded"
+                : left > 0 ? "message.veskorius.rift_remaining" : "message.veskorius.rift_spent";
+            player.displayClientMessage(
+                net.minecraft.network.chat.Component.translatable(key, left), true);
+        }
+        return InteractionResult.CONSUME;
     }
 
     @Nullable

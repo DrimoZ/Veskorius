@@ -85,6 +85,20 @@ public class RiftCoreExtractorBlockEntity extends AbstractMachineBlockEntity {
         }
         insertInto(SLOT_OUTPUT, essence());
 
+        // LA DERNIÈRE ESSENCE SE DIT. Sans ça, la fin du mod est un silence : l'extracteur
+        // s'arrête, et rien ne distingue un épuisement définitif d'une panne. Le joueur
+        // peut chercher longtemps une suite qui n'existe pas — or c'est une décision de
+        // design assumée (« le mod s'arrête où la ressource s'arrête »), et une décision
+        // assumée mérite d'être annoncée plutôt que subie.
+        if (!core.canExtract()) {
+            for (net.minecraft.server.level.ServerPlayer nearby
+                    : serverLevel.getEntitiesOfClass(net.minecraft.server.level.ServerPlayer.class,
+                        new net.minecraft.world.phys.AABB(worldPosition).inflate(32.0))) {
+                nearby.sendSystemMessage(net.minecraft.network.chat.Component.translatable(
+                    "message.veskorius.rift_exhausted"));
+            }
+        }
+
         if (serverLevel.getRandom().nextFloat() < CORRUPTED_CHANCE) {
             ItemStack corrupted = new ItemStack(ModItems.CORRUPTED_VESKORIAN_ALLOY_INGOT.get());
             if (canInsertInto(SLOT_BONUS, corrupted)) {

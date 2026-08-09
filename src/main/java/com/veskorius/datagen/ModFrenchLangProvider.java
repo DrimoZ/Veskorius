@@ -485,6 +485,10 @@ add("advancements.veskorius.tier2_field.title", "Réseau court");
         add("message.veskorius.priority_set", "Priorité : %s");
         add("message.veskorius.relay_charge", "Relais : %s/%s Osc");
         add("message.veskorius.rift_not_cleared", "La Faille a encore son gardien. Rien ne peut en être tiré.");
+        add("message.veskorius.rift_guarded", "Cette Faille a encore son gardien. Rien ne peut en être tiré.");
+        add("message.veskorius.rift_remaining", "%s extraction(s) restante(s) dans cette Faille.");
+        add("message.veskorius.rift_spent", "Cette Faille est épuisée. Rien ne la régénère.");
+        add("message.veskorius.rift_exhausted", "Le cœur se tait. C'était la dernière — cette Faille ne donnera plus rien.");
         add("message.veskorius.slag_vent_status", "Évent : %s forge(s) vidée(s) à la dernière passe");
 
         // --- Codex : T3, T4, T5 -------------------------------------------

@@ -4,7 +4,7 @@ Généré à partir du code, pas du dossier de design. Une case cochée ici veut
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
 NeoForge 1.21.1 · Java 21 · **237 fichiers Java, ~33 000 lignes** · **58 blocs, 88 items**
-· **164 GameTest en deux processus** (`runFastGameTests` 143 en ~27 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
+· **165 GameTest en deux processus** (`runFastGameTests` 144 en ~27 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
 
@@ -38,7 +38,7 @@ que rien d'autre ne le signale.
 | 16 | **Automated Extraction Array** | T4 | ✅ | Extraction sans joueur |
 | 17 | **Resonance Network Hub** | T4 | ✅ | Coordination de réseau |
 | 18 | **Convergence Core** | T4→T5 | ✅ | Multi-bloc : anneau de 8 relais à 5 blocs, portée 40, force 1000 |
-| 19–21 | **Rift Anchor / Extractor / Ward** | T5 | ✅ | La Faille : ancrer, purger, extraire 6 fois |
+| 19–21 | **Rift Anchor / Extractor / Ward** | T5 | ✅ | La Faille : ancrer, purger, extraire 6 fois — et le Cœur DIT ce qu'il lui reste |
 
 **Les cinq paliers sont jouables de bout en bout.**
 

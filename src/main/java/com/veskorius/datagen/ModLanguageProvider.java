@@ -39,6 +39,10 @@ public class ModLanguageProvider extends LanguageProvider {
         add("message.veskorius.ward_off", "Ward idle — no field");
         add("item.veskorius.rift_essence.hint", "Six per rift, and the rift is spent. Nothing makes more.");
         add("message.veskorius.rift_not_cleared", "The rift still has a guardian. Nothing can be drawn from it.");
+        add("message.veskorius.rift_guarded", "This rift still has its guardian. Nothing can be drawn from it.");
+        add("message.veskorius.rift_remaining", "%s extraction(s) left in this rift.");
+        add("message.veskorius.rift_spent", "This rift is spent. Nothing regenerates it.");
+        add("message.veskorius.rift_exhausted", "The core goes quiet. That was the last of it — this rift will give nothing more.");
         add("message.veskorius.anchor_idle", "Anchor idle — no rift in reach, or no field");
         add("item.veskorius.deformed_stone.hint", "Stone twisted by a rift. The bubble is close — and it is not safe.");
         add("message.veskorius.core_formed", "Core online — field range %s");
