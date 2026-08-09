@@ -305,55 +305,73 @@ public class ModBlockStateProvider extends BlockStateProvider {
      * n'est encadré qu'à son pourtour : à l'intérieur, chaque côté touche du verre, donc
      * aucune bague n'est posée.
      */
+    /**
+     * <b>Verre connecté</b> : une vitre lisse, et un cadre sur les seules ARÊTES qui
+     * bordent le vide.
+     *
+     * <p><b>Le premier jet posait la condition au mauvais endroit</b>, et ça se voyait :
+     * un mur de verre s'affichait en quadrillage. Il dessinait un cadre sur la face D dès
+     * que D n'avait pas de voisin — or la bordure du HAUT de la face nord ne dépend pas
+     * du nord, elle dépend du HAUT. Chaque bloc du mur gardait donc ses quatre bordures.
+     *
+     * <p>La règle porte sur les <b>douze arêtes</b> du cube : une barre à l'arête entre
+     * les faces A et B n'existe que si NI A NI B n'a de voisin. Un bloc isolé garde ses
+     * douze barres — une cage. Le bloc au centre d'un mur n'en a aucune : chacune de ses
+     * arêtes touche du verre par au moins un côté. Entre les deux, le cadre suit
+     * exactement la silhouette de l'ensemble.
+     *
+     * <p><b>Les barres débordent d'un vingtième de pixel et sont opaques.</b> Coplanaires
+     * avec la vitre et translucides, elles clignotaient : deux surfaces au même plan se
+     * disputent la profondeur, et deux translucides s'ordonnent mal. Un débord
+     * imperceptible tranche le premier problème, le rendu cutout le second — un cadre n'a
+     * aucune raison d'être transparent.
+     */
     private void connectedGlass(Block block, String name) {
         ModelFile pane = models().cubeAll(name + "_pane", modLoc("block/" + name + "_pane"))
             .renderType("translucent");
         var builder = getMultipartBuilder(block);
         builder.part().modelFile(pane).addModel().end();
-        for (Direction dir : Direction.values()) {
-            builder.part().modelFile(glassRing(name, dir)).addModel()
-                .condition(com.veskorius.block.ConnectedGlassBlock.property(dir), false).end();
+        for (Direction a : Direction.values()) {
+            for (Direction b : Direction.values()) {
+                // Chaque arête une seule fois, et jamais deux faces opposées ou égales.
+                if (a.getAxis() == b.getAxis() || a.ordinal() > b.ordinal()) {
+                    continue;
+                }
+                builder.part().modelFile(glassBar(name, a, b)).addModel()
+                    .condition(com.veskorius.block.ConnectedGlassBlock.property(a), false)
+                    .condition(com.veskorius.block.ConnectedGlassBlock.property(b), false)
+                    .end();
+            }
         }
         // L'objet montre le verre ENCADRÉ, pas la plaque nue : dans un inventaire, un
         // carré de reflets sans bord ne se lit pas comme du verre.
         itemModels().cubeAll(name, modLoc("block/" + name));
     }
 
-    /** Les quatre barres de cadre au bord {@code dir} du bloc. */
-    private ModelFile glassRing(String name, Direction dir) {
-        // Un seizième d'épaisseur : assez pour se voir de près, assez fin pour que deux
-        // bagues opposées ne mangent pas la vitre.
-        final int t = 1;
-        var b = models().getBuilder(name + "_frame_" + dir.getSerializedName())
+    /** La barre de cadre posée sur l'arête commune aux faces {@code a} et {@code b}. */
+    private ModelFile glassBar(String name, Direction a, Direction b) {
+        // Un pixel d'épaisseur, et un débord de 0,05 px pour ne jamais être coplanaire
+        // avec la vitre — c'est ce chevauchement exact qui faisait clignoter l'image.
+        final float t = 1.0f;
+        final float over = 0.05f;
+        float[] from = {0, 0, 0};
+        float[] to = {16, 16, 16};
+        for (Direction d : new Direction[] {a, b}) {
+            int axis = d.getAxis().ordinal();
+            boolean high = d.getAxisDirection() == Direction.AxisDirection.POSITIVE;
+            from[axis] = high ? 16 - t : -over;
+            to[axis] = high ? 16 + over : t;
+        }
+        return models().getBuilder(name + "_bar_" + a.getSerializedName() + "_" + b.getSerializedName())
             .parent(models().getExistingFile(mcLoc("block/block")))
             .texture("frame", modLoc("block/" + name + "_frame"))
             .texture("particle", modLoc("block/" + name + "_frame"))
-            .renderType("translucent");
-        // Coordonnées du bord concerné, puis les quatre barres qui en font le tour.
-        int lo = switch (dir) {
-            case DOWN, NORTH, WEST -> 0;
-            default -> 16 - t;
-        };
-        int hi = lo + t;
-        int[][] bars = switch (dir.getAxis()) {
-            // Bague horizontale : deux barres sur X, deux sur Z.
-            case Y -> new int[][] {
-                {0, lo, 0, 16, hi, t}, {0, lo, 16 - t, 16, hi, 16},
-                {0, lo, t, t, hi, 16 - t}, {16 - t, lo, t, 16, hi, 16 - t}};
-            case X -> new int[][] {
-                {lo, 0, 0, hi, t, 16}, {lo, 16 - t, 0, hi, 16, 16},
-                {lo, t, 0, hi, 16 - t, t}, {lo, t, 16 - t, hi, 16 - t, 16}};
-            case Z -> new int[][] {
-                {0, 0, lo, 16, t, hi}, {0, 16 - t, lo, 16, 16, hi},
-                {0, t, lo, t, 16 - t, hi}, {16 - t, t, lo, 16, 16 - t, hi}};
-        };
-        for (int[] e : bars) {
-            b.element().from(e[0], e[1], e[2]).to(e[3], e[4], e[5])
-                .allFaces((face, f) -> f.texture("#frame")).end();
-        }
-        return b;
+            // CUTOUT et non translucent : un cadre est opaque, et le sortir du tri des
+            // surfaces transparentes supprime la seconde cause de scintillement.
+            .renderType("cutout")
+            .element().from(from[0], from[1], from[2]).to(to[0], to[1], to[2])
+            .allFaces((face, f) -> f.texture("#frame")).end();
     }
-
     private void chassis(Block block, String chassisName) {
         simpleBlockWithItem(block, models().cubeBottomTop(chassisName,
             modLoc("block/" + chassisName + "_side"),
