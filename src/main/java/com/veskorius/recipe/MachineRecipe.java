@@ -147,6 +147,27 @@ public class MachineRecipe implements Recipe<MachineRecipeInput> {
         return true;
     }
 
+    /**
+     * <b>Hors du livre de recettes vanilla.</b>
+     *
+     * <p>Le livre classe toutes les recettes chargées et se plaignait des nôtres à chaque
+     * entrée dans un monde — vingt lignes de « Unknown recipe category » par chargement,
+     * avec un identifiant malformé où le namespace apparaissait deux fois. Il essayait de
+     * ranger dans un onglet d'établi des recettes qui ne se font pas à l'établi.
+     *
+     * <p>{@code isSpecial()} est le mécanisme prévu pour ça : une recette spéciale ne
+     * s'affiche pas au livre et ne se débloque pas. C'est exact ici — on ne fabrique pas
+     * ces recettes, une machine les exécute — et ça vide le journal d'un bruit que
+     * personne n'aurait fini par lire.
+     *
+     * <p>JEI, lui, les montre : il a ses propres catégories, déclarées par le plugin du
+     * mod. Le livre vanilla et JEI ne servent pas la même chose.
+     */
+    @Override
+    public boolean isSpecial() {
+        return true;
+    }
+
     @Override
     public RecipeSerializer<?> getSerializer() {
         return serializer.get();
