@@ -23,10 +23,12 @@ import net.minecraft.world.level.block.state.BlockState;
  *       géométrie, uniquement là où le verre s'arrête.</li>
  * </ol>
  *
- * <p>La mécanique des six côtés vit dans {@link AbstractConnectedBlock} ; ce qui suit est
- * ce que le verre seul demande.
+ * <p>Où poser ce cadre est décidé par {@link ConnectedFrame}, la même règle que pour les
+ * châssis, et assemblé au rendu par {@code ConnectedFrameModel}. Le verre a d'abord eu sa
+ * propre implémentation à six booléens de blockstate : c'était le même raisonnement écrit
+ * deux fois, dont une seule moitié corrigée à chaque défaut trouvé.
  */
-public class ConnectedGlassBlock extends AbstractConnectedBlock {
+public class ConnectedGlassBlock extends Block {
 
     public static final MapCodec<ConnectedGlassBlock> CODEC = simpleCodec(ConnectedGlassBlock::new);
 
@@ -74,5 +76,4 @@ public class ConnectedGlassBlock extends AbstractConnectedBlock {
     protected int getLightBlock(BlockState state, BlockGetter level, BlockPos pos) {
         return 0;
     }
-
 }

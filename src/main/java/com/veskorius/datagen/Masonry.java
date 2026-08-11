@@ -711,22 +711,22 @@ public final class Masonry {
     }
 
     /**
-     * Colonne de verre, <b>avec ses connexions déjà inscrites</b>.
+     * Colonne de verre.
      *
-     * <p>La pose d'une structure n'appelle pas {@code updateShape} sur les blocs
-     * intérieurs : elle écrit les états tels quels. Un verre connecté posé par une ruine
-     * arriverait donc avec toutes ses connexions à faux — chaque bloc encadré, exactement
-     * ce que le verre connecté existe pour éviter. On calcule donc l'état ici, où la
-     * géométrie est connue, plutôt que d'espérer qu'un voisin le corrige.
+     * <p><b>Elle inscrivait autrefois ses connexions à la main</b>, et c'était nécessaire :
+     * la pose d'une structure n'appelle pas {@code updateShape} sur les blocs intérieurs,
+     * donc un verre connecté posé par une ruine arrivait avec toutes ses connexions à faux —
+     * chaque bloc encadré, exactement ce que le verre connecté existe pour éviter.
+     *
+     * <p>Le contournement a disparu avec la cause : les connexions ne vivent plus dans
+     * l'état du bloc, elles sont calculées au rendu à partir du voisinage réel. Une
+     * structure peut désormais poser du verre sans rien savoir de ce qui l'entoure.
      */
     public static void glassColumn(TemplateBuilder b, int x, int y0, int z, int y1) {
         for (int y = y0; y <= y1; y++) {
-            b.set(x, y, z, GLASS
-                .setValue(com.veskorius.block.ConnectedGlassBlock.DOWN, y > y0)
-                .setValue(com.veskorius.block.ConnectedGlassBlock.UP, y < y1));
+            b.set(x, y, z, GLASS);
         }
     }
-
     /** Descente de conduit le long d'un mur, sur l'axe vertical. */
     public static void conduitDrop(TemplateBuilder b, int x, int y0, int z, int y1) {
         BlockState state = conduit(Direction.Axis.Y);

@@ -3,7 +3,7 @@
 Généré à partir du code, pas du dossier de design. Une case cochée ici veut dire
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
-NeoForge 1.21.1 · Java 21 · **244 fichiers Java, ~34 200 lignes** · **58 blocs, 88 items**
+NeoForge 1.21.1 · Java 21 · **243 fichiers Java, ~34 200 lignes** · **58 blocs, 88 items**
 · **174 GameTest en deux processus** (`runFastGameTests` 153 en ~28 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
@@ -125,49 +125,62 @@ d'alliage et coûte donc le bonus de panoplie).
   L'état de déblocage vit sur le **joueur** et survit à la mort.
 - Resonance Tuner : outil à modes (Pivoter / On-Off / Surchauffe / Redstone).
 - 12 GUI dessinés par générateur, 101 textures de bloc, palettes indexées.
-- **Verre à textures connectées** : aucun joint ni cadre entre deux plaques. Un cube sans
-  bordure, plus une baguette de cadre par ARÊTE ouverte, assemblés en blockstate multipart
-  — douze pièces au lieu des 64 modèles qu'auraient demandé six booléens.
-- **Châssis à cadre connecté** (les trois paliers) : un caisson isolé montre son cadre
-  métallique sur ses douze arêtes ; accolés, le cadre ne subsiste qu'autour du groupe, qui
-  se lit comme *un* panneau. Les trois paliers ne se connectent pas entre eux — le palier est
-  une information qui doit rester visible sur le bâtiment.
+- **Cadre connecté** — verres (2) et châssis (3), **une seule implémentation**. Un bloc isolé
+  montre son cadre sur ses douze arêtes ; accolés, le cadre ne subsiste qu'autour du groupe,
+  qui se lit comme *une* surface. Les deux verres ne se lient pas entre eux, les trois paliers
+  de châssis non plus : c'est une information qui doit rester visible.
 
-  **Le bloc ne porte AUCUNE propriété de blockstate.** Une première version en portait six —
-  une par face — tenues par `updateShape`. Elle butait sur le **coin rentrant** : dans une
-  disposition en L, le bloc de l'angle touche ses deux voisins, ne dessine donc aucune
-  bordure, et son coin restait nu. Le combler demande de connaître les **diagonales**, soit
-  dix-huit booléens, soit **262 144 états par bloc** au lieu de 64. Le voisinage est donc lu
-  au moment où le chunk se construit, par `ConnectedChassisModel` (`getModelData`), qui a
-  accès au monde. Bénéfice qu'on n'avait pas cherché : plus rien n'étant stocké, **un mur
-  bâti avant cette fonctionnalité se connecte de lui-même** — la version à propriétés laissait
-  les anciens murs figés sur l'état par défaut, `updateShape` n'étant pas appelé au
-  chargement d'un monde.
+  Les deux familles ont d'abord eu leur propre version — six booléens de blockstate pour le
+  verre, un modèle dynamique pour les châssis. Le même raisonnement écrit deux fois, dont une
+  seule moitié corrigée à chaque défaut trouvé. Tout passe désormais par `ConnectedFrame`
+  (la règle), `ConnectedFrameModel` (le montage) et une méthode de datagen unique ; ce qui
+  distingue un verre d'un caisson tient en trois paramètres — texture du cadre, épaisseur,
+  couche de rendu.
 
-  La règle vit dans `ChassisFrame`, sans rendu et sans client, pour être testable : une
-  baguette sur l'arête `a`/`b` si ni `a` ni `b` n'a de voisin ; un quart de cadre dans le coin
-  `p`/`q` de la face `f` si `f` est dégagée, si `p` et `q` ont un voisin, et si la diagonale
-  `p+q` n'en a pas. **La troisième condition n'est pas une précaution** : sans elle, le bloc
-  central d'un mur plein poserait quatre quarts de cadre au milieu d'une surface lisse.
+  **Aucun de ces blocs ne porte de propriété de blockstate.** Une version en portait six, une
+  par face, tenues par `updateShape`. Elle ne pouvait pas aller plus loin : l'arête concave et
+  le coin rentrant demandent de connaître les **diagonales**, soit dix-huit booléens, soit
+  **262 144 états par bloc** au lieu de 64. Le voisinage est donc lu à la construction du chunk
+  par `getModelData`, qui a accès au monde. Trois conséquences, toutes bonnes : les diagonales
+  sont disponibles, l'état ne pèse rien, et **un mur bâti avant cette fonctionnalité se
+  connecte de lui-même** — la version à propriétés laissait les anciens murs figés sur l'état
+  par défaut, `updateShape` n'étant pas appelé au chargement d'un monde. `Masonry.glassColumn`
+  a perdu du même coup son contournement, qui cuisait les connexions dans le NBT des
+  structures parce que leur pose n'appelle pas `updateShape`.
 
-  Quatre pièges, tous trouvés en jeu et aucun en relecture :
-  1. **Les baguettes portent la texture du caisson**, pas un métal à part : l'UV automatique
-     fait tomber chacune sur la bordure qu'elle représente, si bien qu'un bloc isolé
-     redessine exactement le bloc en main. Une texture dédiée donnait deux objets différents
-     pour le même bloc.
-  2. **Le cadre peint tient dans trois pixels**, l'épaisseur exacte des baguettes
-     (`CASING_WIDTH`, partagé avec le générateur de textures). Au-delà, la partie qui déborde
-     n'existe que dans l'inventaire.
-  3. **Les UV sont bornées à la main.** Les baguettes débordent de 0,02 px pour ne pas être
-     coplanaires avec la plaque — et l'UV automatique se déduisant des coordonnées, ce débord
+  **Trois règles**, toutes dans `ConnectedFrame`, sans rendu ni client, donc testables :
+  1. **arête convexe** — ni `a` ni `b` n'a de voisin : c'est un bord de silhouette ;
+  2. **arête concave** — une seule des deux faces est couverte, et la diagonale l'est aussi :
+     la surface tourne d'un plan à l'autre. C'est le pied d'un bloc posé sur une dalle, dont
+     la face verticale rejoignait le dessus de la dalle sans aucune séparation ;
+  3. **quart de cadre** — la face est dégagée, les deux directions du coin sont couvertes, et
+     leur diagonale ne l'est pas. C'est le coin rentrant d'un L, qui restait nu.
+
+  Les conditions sur les diagonales, en 2 et 3, ne sont pas des précautions : sans elles, un
+  mur plat gagnerait un trait horizontal par bloc et son bloc central quatre quarts de cadre.
+  Huit tests couvrent la règle, chaque cas avec son contre-exemple, dont un balayage exhaustif
+  qui vérifie qu'une baguette et un quart de cadre ne se superposent jamais.
+
+  **Quatre pièges de rendu**, tous trouvés en jeu et aucun en relecture :
+  1. **Les morceaux portent la texture du bloc**, pas un métal à part : l'UV automatique fait
+     tomber chacun sur la bordure qu'il représente, si bien qu'un bloc isolé redessine
+     exactement le bloc en main. Une texture dédiée donnait deux objets pour le même bloc.
+  2. **Le cadre peint tient dans l'épaisseur des morceaux** (`CASING_WIDTH` = 3 px pour les
+     caissons, partagé avec le générateur de textures). Au-delà, ce qui déborde n'existe que
+     dans l'inventaire.
+  3. **Les UV sont bornées à la main.** Les morceaux débordent de 0,02 px pour ne pas être
+     coplanaires avec le fond — et l'UV automatique se déduisant des coordonnées, ce débord
      les faisait lire la tuile VOISINE dans l'atlas : un liseré clair sur chaque bord.
-  4. **La plaque est un cube plein, de 0 à 16.** L'avoir reculée de 0,05 px pour la départir
-     des baguettes ouvrait une fente de 0,1 px entre deux caissons, que rien ne fermait
-     puisque les faces partagées sont cullées : on voyait **le ciel à travers le mur**.
+  4. **Le fond est un cube plein, de 0 à 16.** L'avoir reculé de 0,05 px pour le départir des
+     morceaux ouvrait une fente de 0,1 px entre deux blocs, que rien ne fermait puisque les
+     faces partagées sont cullées : on voyait **le ciel à travers le mur**.
+
+  Le verre garde en plus son `skipRendering` : sans lui, deux plaques accolées dessinent
+  chacune leur face intérieure, ce qui trouble la transparence et trace une ligne.
 
   Les **machines gardent un cadre peint** dans leur texture, et ne se connectent pas : leurs
-  silhouettes sont creusées, à étages, parfois traversantes, et une baguette posée sur
-  l'arête d'un cube y flotterait dans le vide.
+  silhouettes sont creusées, à étages, parfois traversantes, et un morceau posé sur l'arête
+  d'un cube y flotterait dans le vide.
 - **JEI** : toutes les catégories, plugin piloté par table pour qu'une machine ajoutée
   sans sa catégorie se voie.
 - Jade, Curios. **Lang EN + FR à parité stricte** — 404 clés de chaque côté, vérifié au datagen.

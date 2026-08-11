@@ -4,7 +4,7 @@ import com.veskorius.Veskorius;
 import com.veskorius.block.AbstractMachineBlock;
 import com.veskorius.block.FieldEmitterBlock;
 import com.veskorius.block.FieldSensitiveBlock;
-import com.veskorius.block.ChassisFrame;
+import com.veskorius.block.ConnectedFrame;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.ResonanceVeinedStoneBlock;
 import net.minecraft.core.Direction;
@@ -307,117 +307,128 @@ public class ModBlockStateProvider extends BlockStateProvider {
      * aucune bague n'est posée.
      */
     /**
-     * <b>Verre connecté</b> : une vitre lisse, et un cadre sur les seules ARÊTES qui
-     * bordent le vide.
+     * <b>Un bloc a cadre connecte.</b> On ecrit ici les MORCEAUX — un fond, douze baguettes
+     * d'arete, vingt-quatre quarts de cadre — et rien qui dise quand les poser.
      *
-     * <p><b>Le premier jet posait la condition au mauvais endroit</b>, et ça se voyait :
-     * un mur de verre s'affichait en quadrillage. Il dessinait un cadre sur la face D dès
-     * que D n'avait pas de voisin — or la bordure du HAUT de la face nord ne dépend pas
-     * du nord, elle dépend du HAUT. Chaque bloc du mur gardait donc ses quatre bordures.
+     * <p><b>Le blockstate ne pointe que sur le fond.</b> C'est {@code ConnectedFrameModel}
+     * qui assemble le cadre a la construction du chunk, en lisant le voisinage reel. Un
+     * multipart ne pouvait pas : l'arete concave et le coin rentrant demandent de connaitre
+     * les DIAGONALES, soit dix-huit booleens, soit 262 144 etats par bloc au lieu de 64.
      *
-     * <p>La règle porte sur les <b>douze arêtes</b> du cube : une barre à l'arête entre
-     * les faces A et B n'existe que si NI A NI B n'a de voisin. Un bloc isolé garde ses
-     * douze barres — une cage. Le bloc au centre d'un mur n'en a aucune : chacune de ses
-     * arêtes touche du verre par au moins un côté. Entre les deux, le cadre suit
-     * exactement la silhouette de l'ensemble.
+     * <p><b>Une seule methode pour le verre et pour les chassis.</b> Les deux ont eu leur
+     * propre version, donc le meme raisonnement ecrit deux fois — et une seule moitie
+     * corrigee a chaque defaut trouve. Ce qui les distingue tient en trois parametres : la
+     * texture du cadre, son epaisseur, et la couche de rendu.
      *
-     * <p><b>Les barres débordent d'un vingtième de pixel et sont opaques.</b> Coplanaires
-     * avec la vitre et translucides, elles clignotaient : deux surfaces au même plan se
-     * disputent la profondeur, et deux translucides s'ordonnent mal. Un débord
-     * imperceptible tranche le premier problème, le rendu cutout le second — un cadre n'a
-     * aucune raison d'être transparent.
+     * <p>Les noms des morceaux viennent de {@link ConnectedFrame} : la datagen les ecrit, le
+     * modele les reclame, et un desaccord d'un caractere rendrait le bloc invisible sans la
+     * moindre erreur.
+     *
+     * @param frameTexture la texture des baguettes
+     * @param thickness    leur epaisseur en pixels
+     * @param renderType   {@code null} pour la couche solide par defaut
      */
-    private void connectedGlass(Block block, String name) {
-        ModelFile pane = models().cubeAll(name + "_pane", modLoc("block/" + name + "_pane"))
-            .renderType("translucent");
-        var builder = getMultipartBuilder(block);
-        builder.part().modelFile(pane).addModel().end();
-        for (Direction a : Direction.values()) {
-            for (Direction b : Direction.values()) {
-                // Chaque arête une seule fois, et jamais deux faces opposées ou égales.
-                if (a.getAxis() == b.getAxis() || a.ordinal() > b.ordinal()) {
-                    continue;
-                }
-                builder.part().modelFile(glassBar(name, a, b)).addModel()
-                    .condition(com.veskorius.block.AbstractConnectedBlock.property(a), false)
-                    .condition(com.veskorius.block.AbstractConnectedBlock.property(b), false)
-                    .end();
-            }
-        }
-        // L'objet montre le verre ENCADRÉ, pas la plaque nue : dans un inventaire, un
-        // carré de reflets sans bord ne se lit pas comme du verre.
-        itemModels().cubeAll(name, modLoc("block/" + name));
+    private void connectedFrame(Block block, String name, ModelFile base,
+                                String frameTexture, float thickness, String renderType) {
+        simpleBlock(block, base);
+        ConnectedFrame.forEachEdge((a, b) ->
+            framePiece(ConnectedFrame.barName(name, a, b), frameTexture, renderType,
+                barBox(a, b, thickness)));
+        ConnectedFrame.forEachFaceCorner((f, p, q) ->
+            framePiece(ConnectedFrame.cornerName(name, f, p, q), frameTexture, renderType,
+                cornerBox(f, p, q, thickness)));
     }
 
-    /** La barre de cadre posée sur l'arête commune aux faces {@code a} et {@code b}. */
-    private ModelFile glassBar(String name, Direction a, Direction b) {
-        // Un pixel d'épaisseur, et un débord de 0,05 px pour ne jamais être coplanaire
-        // avec la vitre — c'est ce chevauchement exact qui faisait clignoter l'image.
-        final float t = 1.0f;
-        final float over = 0.05f;
-        float[] from = {0, 0, 0};
-        float[] to = {16, 16, 16};
+    /**
+     * <b>La baguette d'une arete</b> : {@code thickness} pixels sur les deux axes des faces
+     * {@code a} et {@code b}, toute la longueur sur le troisieme.
+     *
+     * <p><b>Le debord est minuscule et decale par axe long</b> (0,02 a 0,04 px). Il ne sert
+     * qu'a decoller la baguette du fond : deux surfaces au meme plan se disputent la
+     * profondeur et clignotent. Le decalage, lui, evite que deux baguettes se retrouvent
+     * coplanaires dans un angle, la ou trois se rejoignent.
+     *
+     * <p>Une version debordait d'un demi-pixel « pour le relief » : a la jonction de deux
+     * blocs non connectes, les deux cages se chevauchaient alors sur un pixel entier et un
+     * mur entier scintillait.
+     */
+    private static float[][] barBox(Direction a, Direction b, float t) {
+        int longAxis = 3 - a.getAxis().ordinal() - b.getAxis().ordinal();
+        float over = 0.02f + 0.01f * longAxis;
+        float[] from = {-over, -over, -over};
+        float[] to = {16 + over, 16 + over, 16 + over};
         for (Direction d : new Direction[] {a, b}) {
             int axis = d.getAxis().ordinal();
             boolean high = d.getAxisDirection() == Direction.AxisDirection.POSITIVE;
             from[axis] = high ? 16 - t : -over;
             to[axis] = high ? 16 + over : t;
         }
-        return models().getBuilder(ChassisFrame.barName(name, a, b))
-            .parent(models().getExistingFile(mcLoc("block/block")))
-            .texture("frame", modLoc("block/" + name + "_frame"))
-            .texture("particle", modLoc("block/" + name + "_frame"))
-            // CUTOUT et non translucent : un cadre est opaque, et le sortir du tri des
-            // surfaces transparentes supprime la seconde cause de scintillement.
-            .renderType("cutout")
-            .element().from(from[0], from[1], from[2]).to(to[0], to[1], to[2])
-            .allFaces((face, f) -> f.texture("#frame")).end();
-    }
-    /**
-     * <b>Chassis a cadre connecte.</b> On ecrit ici les MORCEAUX — la plaque, douze
-     * baguettes d'arete, vingt-quatre quarts de cadre — et rien qui dise quand les poser.
-     *
-     * <p><b>Le blockstate ne pointe que sur la plaque.</b> C'est {@code ConnectedChassisModel}
-     * qui assemble le cadre a la construction du chunk, en lisant le voisinage reel. Un
-     * multipart ne pouvait pas : le coin rentrant — le bloc d'un angle en L, qui touche ses
-     * deux voisins et ne dessine donc aucune bordure — demande de connaitre les DIAGONALES,
-     * soit dix-huit booleens, soit 262 144 etats par bloc au lieu de 64.
-     *
-     * <p>Les noms des morceaux viennent de {@link ChassisFrame} et pas d'ici : la datagen les
-     * ecrit, le modele les reclame, et un desaccord d'un caractere rendrait le bloc invisible
-     * sans la moindre erreur.
-     */
-    private void connectedChassis(Block block, String name) {
-        simpleBlock(block, chassisPlate(name));
-        ChassisFrame.forEachEdge((a, b) -> chassisBar(name, a, b));
-        ChassisFrame.forEachFaceCorner((f, p, q) -> chassisCorner(name, f, p, q));
-        // L'objet montre le caisson COMPLET, cadre peint : dans un inventaire, une plaque
-        // nue ne se distingue d'aucune autre plaque nue.
-        itemModels().cubeBottomTop(name, modLoc("block/" + name + "_side"),
-            modLoc("block/" + name + "_top"), modLoc("block/" + name + "_top"));
-    }
-    /**
-     * La plaque : un cube PLEIN, de 0 a 16, avec ses cullfaces.
-     *
-     * <p><b>Elle ne doit jamais reculer, meme d'un centieme de pixel.</b> Une version l'a
-     * mise en retrait de 0,05 px pour eviter que les baguettes ne soient coplanaires avec
-     * elle. Resultat en jeu : entre deux caissons voisins s'ouvrait une fente de 0,1 px que
-     * plus rien ne fermait — les faces partagees etant cullees — et on voyait LE CIEL a
-     * travers le mur, un quadrillage bleu sur chaque joint. Un bloc plein est plein.
-     */
-    private ModelFile chassisPlate(String name) {
-        return models().cubeAll(name + "_plate", modLoc("block/" + name + "_plate"));
+        return new float[][] {from, to};
     }
 
     /**
-     * L'UV que Minecraft deduirait tout seul de la boite, pour une face donnee.
+     * <b>Le quart de cadre d'un coin rentrant</b> : un carre pose sur la face {@code f}, dans
+     * l'angle entre {@code p} et {@code q}.
      *
-     * <p>On la recalcule pour pouvoir la BORNER a la tuile. C'est le noeud du probleme :
-     * l'UV automatique se deduit des coordonnees, donc une geometrie qui sort du cube sort
-     * aussi de sa tuile et va lire la texture voisine dans l'atlas — d'ou un lisere clair
-     * sur chaque bord. Or les baguettes DOIVENT deborder un peu, sinon elles sont
-     * coplanaires avec la plaque et clignotent. Les deux contraintes ne se concilient qu'en
-     * dissociant la geometrie de l'UV, ce que permet un uv explicite.
+     * <p>C'est la piece qui manquait, et le defaut se voyait tres bien : dans une disposition
+     * en L, le bloc de l'angle touche ses deux voisins, ne dessine donc aucune bordure — et
+     * son coin restait nu au milieu du cadre. Aucune baguette ne pouvait le couvrir, puisqu'une
+     * baguette n'existe que la ou le voisin manque.
+     *
+     * <p>Il ne deborde QUE du cote de {@code f}. Vers {@code p} et {@code q} il y a un voisin
+     * — c'est la condition meme de sa presence — donc rien a decoller.
+     */
+    private static float[][] cornerBox(Direction f, Direction p, Direction q, float t) {
+        final float over = 0.02f;
+        float[] from = {0, 0, 0};
+        float[] to = {16, 16, 16};
+        for (Direction d : new Direction[] {p, q}) {
+            int axis = d.getAxis().ordinal();
+            boolean high = d.getAxisDirection() == Direction.AxisDirection.POSITIVE;
+            from[axis] = high ? 16 - t : 0;
+            to[axis] = high ? 16 : t;
+        }
+        int fa = f.getAxis().ordinal();
+        boolean fh = f.getAxisDirection() == Direction.AxisDirection.POSITIVE;
+        from[fa] = fh ? 16 - t : -over;
+        to[fa] = fh ? 16 + over : t;
+        return new float[][] {from, to};
+    }
+
+    /**
+     * Un morceau de cadre : une boite, une texture, et des UV BORNEES A LA TUILE.
+     *
+     * <p>Le bornage est le noeud du probleme. L'UV automatique de Minecraft se deduit des
+     * coordonnees ; une geometrie qui deborde du cube sort donc aussi de sa tuile et va lire
+     * la texture VOISINE dans l'atlas — un lisere clair sur chaque bord. Or les morceaux
+     * DOIVENT deborder un peu, sinon ils sont coplanaires avec le fond et clignotent. Les
+     * deux contraintes ne se concilient qu'en dissociant la geometrie de l'UV.
+     *
+     * <p>Reprendre la texture du bloc lui-meme, et non un metal a part, fait le reste : l'UV
+     * fait tomber chaque morceau exactement sur la bordure qu'il represente, si bien qu'un
+     * bloc isole redessine le bloc en main.
+     */
+    private ModelFile framePiece(String name, String texture, String renderType, float[][] box) {
+        final float[] from = box[0];
+        final float[] to = box[1];
+        var builder = models().getBuilder(name)
+            .parent(models().getExistingFile(mcLoc("block/block")))
+            .texture("frame", modLoc("block/" + texture))
+            .texture("particle", modLoc("block/" + texture));
+        if (renderType != null) {
+            builder = builder.renderType(renderType);
+        }
+        return builder
+            .element().from(from[0], from[1], from[2]).to(to[0], to[1], to[2])
+            .allFaces((face, f) -> {
+                float[] uv = faceUvs(face, from, to);
+                f.texture("#frame").uvs(uv[0], uv[1], uv[2], uv[3]);
+            }).end();
+    }
+
+    /**
+     * L'UV que Minecraft deduirait tout seul de la boite, pour une face donnee — recalculee
+     * pour pouvoir la BORNER a la tuile.
      */
     private static float[] faceUvs(Direction face, float[] f, float[] t) {
         float[] uv = switch (face) {
@@ -434,87 +445,41 @@ public class ModBlockStateProvider extends BlockStateProvider {
         return uv;
     }
 
-    /** La baguette de cadre posee sur l'arete commune aux faces {@code a} et {@code b}. */
-    private ModelFile chassisBar(String name, Direction a, Direction b) {
-        // ELLE PORTE LA TEXTURE DU CAISSON, PAS UNE TEXTURE DE METAL A PART.
-        //
-        // Le premier jet lui donnait un aplat metallique dedie. Resultat : le bloc pose ne
-        // ressemblait pas au bloc en main. En reprenant `_side`, l'UV fait tout le travail :
-        // la face exterieure d'une baguette posee sur l'arete du bas echantillonne les
-        // dernieres lignes de la texture, celle du haut les premieres. Chaque baguette tombe
-        // donc EXACTEMENT sur la bordure qu'elle represente, et un chassis isole — qui porte
-        // ses douze baguettes — redessine le caisson complet.
-        //
-        // TROIS PIXELS, CHIFFRE PARTAGE avec le generateur de textures
-        // (tools/block-textures/marble.js, CASING_WIDTH) : le cadre peint tient tout entier
-        // dans les trois premiers pixels du bord.
-        final float t = 3.0f;
-        // LA BAGUETTE DEBORDE, ET SES UV SONT BORNEES A LA MAIN. Les trois tentatives
-        // precedentes ont chacune casse une contrainte differente, et il n'y en a pas deux
-        // qu'on puisse satisfaire en bougeant une seule chose :
-        //   — a fleur du bloc, la baguette est coplanaire avec la plaque : ca clignote ;
-        //   — en debordant avec l'UV automatique, elle lit la tuile voisine : lisere clair ;
-        //   — en reculant la plaque a la place, le bloc n'est plus plein : on voit le ciel.
-        // La seule issue est de dissocier la geometrie de l'UV. Le debord est de 0,02 px,
-        // decale par axe long pour qu'aucune paire de baguettes ne soit coplanaire dans un
-        // angle, la ou trois se rejoignent.
-        int longAxis = 3 - a.getAxis().ordinal() - b.getAxis().ordinal();
-        final float over = 0.02f + 0.01f * longAxis;
-        final float[] from = {-over, -over, -over};
-        final float[] to = {16 + over, 16 + over, 16 + over};
-        for (Direction d : new Direction[] {a, b}) {
-            int axis = d.getAxis().ordinal();
-            boolean high = d.getAxisDirection() == Direction.AxisDirection.POSITIVE;
-            from[axis] = high ? 16 - t : -over;
-            to[axis] = high ? 16 + over : t;
-        }
-        return models().getBuilder(name + "_bar_" + a.getSerializedName() + "_" + b.getSerializedName())
-            .parent(models().getExistingFile(mcLoc("block/block")))
-            .texture("frame", modLoc("block/" + name + "_side"))
-            .texture("particle", modLoc("block/" + name + "_side"))
-            .element().from(from[0], from[1], from[2]).to(to[0], to[1], to[2])
-            .allFaces((face, f) -> {
-                float[] uv = faceUvs(face, from, to);
-                f.texture("#frame").uvs(uv[0], uv[1], uv[2], uv[3]);
-            }).end();
-    }
     /**
-     * <b>Le quart de cadre d'un coin rentrant.</b> Un carre de 3x3 pose sur la face
-     * {@code f}, dans l'angle entre {@code p} et {@code q}.
+     * Verre connecte : une vitre lisse, et un cadre d'un pixel sur les seules aretes qui
+     * bordent le vide.
      *
-     * <p>C'est la piece qui manquait, et le defaut se voyait tres bien : dans une
-     * disposition en L, le bloc de l'angle touche ses deux voisins, ne dessine donc aucune
-     * bordure — et son coin restait nu au milieu du cadre. Aucune baguette ne pouvait le
-     * couvrir, puisqu'une baguette n'existe que la ou le voisin manque.
-     *
-     * <p>Elle ne deborde QUE du cote de {@code f}. Vers {@code p} et {@code q} il y a un
-     * chassis voisin — c'est la condition meme de sa presence — donc rien a decoller, et la
-     * face de la plaque de ce cote est culled de toute facon.
+     * <p>Le cadre est en CUTOUT et non en translucide : un cadre est opaque, et le sortir du
+     * tri des surfaces transparentes supprime une cause de scintillement.
      */
-    private ModelFile chassisCorner(String name, Direction f, Direction p, Direction q) {
-        final float t = 3.0f;
-        final float over = 0.02f;
-        final float[] from = {0, 0, 0};
-        final float[] to = {16, 16, 16};
-        for (Direction d : new Direction[] {p, q}) {
-            int axis = d.getAxis().ordinal();
-            boolean high = d.getAxisDirection() == Direction.AxisDirection.POSITIVE;
-            from[axis] = high ? 16 - t : 0;
-            to[axis] = high ? 16 : t;
-        }
-        int fa = f.getAxis().ordinal();
-        boolean fh = f.getAxisDirection() == Direction.AxisDirection.POSITIVE;
-        from[fa] = fh ? 16 - t : -over;
-        to[fa] = fh ? 16 + over : t;
-        return models().getBuilder(ChassisFrame.cornerName(name, f, p, q))
-            .parent(models().getExistingFile(mcLoc("block/block")))
-            .texture("frame", modLoc("block/" + name + "_side"))
-            .texture("particle", modLoc("block/" + name + "_side"))
-            .element().from(from[0], from[1], from[2]).to(to[0], to[1], to[2])
-            .allFaces((face, fb) -> {
-                float[] uv = faceUvs(face, from, to);
-                fb.texture("#frame").uvs(uv[0], uv[1], uv[2], uv[3]);
-            }).end();
+    private void connectedGlass(Block block, String name) {
+        ModelFile pane = models().cubeAll(name + "_pane", modLoc("block/" + name + "_pane"))
+            .renderType("translucent");
+        connectedFrame(block, name, pane, name + "_frame", 1.0f, "cutout");
+        // L'objet montre le verre ENCADRE, pas la plaque nue : dans un inventaire, un carre
+        // de reflets sans bord ne se lit pas comme du verre.
+        itemModels().cubeAll(name, modLoc("block/" + name));
+    }
+
+    /**
+     * Caisson connecte : une plaque, et un cadre de trois pixels.
+     *
+     * <p>Trois pixels, et ce chiffre est PARTAGE avec le generateur de textures
+     * (tools/block-textures/marble.js, CASING_WIDTH) : le cadre peint tient tout entier dans
+     * les trois premiers pixels du bord. Un morceau plus mince n'en reproduirait qu'une
+     * partie, et le bloc pose cesserait de ressembler au bloc en main.
+     *
+     * <p>La plaque est un cube PLEIN, de 0 a 16. L'avoir reculee de 0,05 px pour la departir
+     * des baguettes ouvrait une fente de 0,1 px entre deux caissons, que rien ne fermait
+     * puisque les faces partagees sont cullees : on voyait le ciel a travers le mur.
+     */
+    private void connectedChassis(Block block, String name) {
+        ModelFile plate = models().cubeAll(name + "_plate", modLoc("block/" + name + "_plate"));
+        connectedFrame(block, name, plate, name + "_side", 3.0f, null);
+        // L'objet montre le caisson COMPLET, cadre peint : dans un inventaire, une plaque nue
+        // ne se distingue d'aucune autre plaque nue.
+        itemModels().cubeBottomTop(name, modLoc("block/" + name + "_side"),
+            modLoc("block/" + name + "_top"), modLoc("block/" + name + "_top"));
     }
     // --- Fabriques de modèles ------------------------------------------------
 

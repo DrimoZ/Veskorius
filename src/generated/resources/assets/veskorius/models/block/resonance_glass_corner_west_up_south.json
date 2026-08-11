@@ -1,0 +1,66 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        "east": {
+          "texture": "#frame"
+        },
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            15.0,
+            0.0,
+            16.0,
+            1.0
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            15.0,
+            1.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#frame"
+        }
+      },
+      "from": [
+        -0.02,
+        15,
+        15
+      ],
+      "to": [
+        1,
+        16,
+        16
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "frame": "veskorius:block/resonance_glass_frame",
+    "particle": "veskorius:block/resonance_glass_frame"
+  }
+}
