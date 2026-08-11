@@ -9,20 +9,24 @@ import net.minecraft.world.level.block.Block;
  * intérieures et ne subsiste qu'autour du groupe, qui se lit alors comme <i>un</i> panneau
  * et non comme une grille de cubes.
  *
- * <p><b>Pourquoi le cadre est de la géométrie et pas de la texture.</b> Une texture
- * connectée à la Optifine demande 47 tuiles et un mod de rendu ; le jeu de base n'en a pas.
- * Poser le cadre en relief sur les arêtes ouvertes donne le même résultat avec deux
- * textures, et en donne même un peu plus : le cadre <b>déborde</b> légèrement, donc il
- * accroche la lumière et se lit comme une pièce rapportée, pas comme un dessin.
+ * <p><b>Ce bloc n'a aucune propriété de blockstate, et c'est le cœur du dispositif.</b> Une
+ * première version portait six booléens — un par face — tenus à jour par {@code updateShape}.
+ * Elle butait sur le <b>coin rentrant</b> : dans une disposition en L, le bloc de l'angle
+ * touche ses deux voisins, ne dessine donc aucune bordure, et son coin reste nu. Le combler
+ * demande de savoir si la <b>diagonale</b> est occupée — douze bits de plus, soit 262 144
+ * états par bloc au lieu de 64. Ce n'est pas une option.
  *
- * <p>Le débord n'entre jamais dans un voisin par construction : une baguette n'existe que
- * là où les deux faces qui bordent l'arête sont libres de châssis.
+ * <p>Le voisinage est donc lu <b>au moment où le chunk se construit</b>, par un modèle
+ * dynamique côté client ({@code ConnectedChassisModel}), qui a accès au monde. Trois
+ * conséquences, toutes bonnes : les diagonales sont disponibles, l'état ne pèse rien, et
+ * <b>un mur bâti avant l'arrivée de cette fonctionnalité se connecte tout seul</b> — il n'y a
+ * plus d'état sauvegardé à migrer.
  *
  * <p><b>Les trois paliers ne se connectent pas entre eux.</b> Un caisson fracturé contre un
- * caisson veskorien garde son cadre des deux côtés — le palier est une information qu'on
- * lit sur le bâtiment, et la fondre serait la perdre.
+ * caisson veskorien garde son cadre des deux côtés — le palier est une information qu'on lit
+ * sur le bâtiment, et la fondre serait la perdre.
  */
-public class ConnectedChassisBlock extends AbstractConnectedBlock {
+public class ConnectedChassisBlock extends Block {
 
     public static final MapCodec<ConnectedChassisBlock> CODEC =
         simpleCodec(ConnectedChassisBlock::new);

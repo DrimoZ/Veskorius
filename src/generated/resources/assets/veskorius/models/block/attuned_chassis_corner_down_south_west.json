@@ -1,0 +1,65 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame"
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            13.0,
+            3.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            13.0,
+            13.0,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            13.0,
+            3.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#frame"
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            13.0,
+            13.0,
+            16.0,
+            16.0
+          ]
+        }
+      },
+      "from": [
+        0,
+        -0.02,
+        13
+      ],
+      "to": [
+        3,
+        3,
+        16
+      ]
+    }
+  ],
+  "textures": {
+    "frame": "veskorius:block/attuned_chassis_side",
+    "particle": "veskorius:block/attuned_chassis_side"
+  }
+}

@@ -3,8 +3,8 @@
 Généré à partir du code, pas du dossier de design. Une case cochée ici veut dire
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
-NeoForge 1.21.1 · Java 21 · **241 fichiers Java, ~33 800 lignes** · **58 blocs, 88 items**
-· **169 GameTest en deux processus** (`runFastGameTests` 148 en ~28 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
+NeoForge 1.21.1 · Java 21 · **244 fichiers Java, ~34 200 lignes** · **58 blocs, 88 items**
+· **174 GameTest en deux processus** (`runFastGameTests` 153 en ~28 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
 
@@ -130,18 +130,41 @@ d'alliage et coûte donc le bonus de panoplie).
   — douze pièces au lieu des 64 modèles qu'auraient demandé six booléens.
 - **Châssis à cadre connecté** (les trois paliers) : un caisson isolé montre son cadre
   métallique sur ses douze arêtes ; accolés, le cadre ne subsiste qu'autour du groupe, qui
-  se lit comme *un* panneau. Même mécanique que le verre, extraite dans
-  `AbstractConnectedBlock`. Les trois paliers ne se connectent pas entre eux : le palier est
+  se lit comme *un* panneau. Les trois paliers ne se connectent pas entre eux — le palier est
   une information qui doit rester visible sur le bâtiment.
-  Deux contraintes, apprises en jeu et non en relecture. **Les baguettes portent la texture
-  du caisson**, pas un métal à part : l'UV automatique fait tomber chacune sur la bordure
-  qu'elle représente, si bien qu'un bloc isolé redessine exactement le bloc en main. Une
-  texture dédiée donnait deux objets différents pour le même bloc. Et **le cadre peint tient
-  dans trois pixels**, l'épaisseur exacte des baguettes — au-delà, la partie qui déborde
-  n'existe que dans l'inventaire. **Le débord est minuscule et décalé par axe** (0,02 à
-  0,06 px) : il ne sert qu'à décoller la baguette de la plaque. La version à un demi-pixel
-  faisait se chevaucher les cages de deux caissons non connectés sur un pixel entier, et un
-  mur entier scintillait.
+
+  **Le bloc ne porte AUCUNE propriété de blockstate.** Une première version en portait six —
+  une par face — tenues par `updateShape`. Elle butait sur le **coin rentrant** : dans une
+  disposition en L, le bloc de l'angle touche ses deux voisins, ne dessine donc aucune
+  bordure, et son coin restait nu. Le combler demande de connaître les **diagonales**, soit
+  dix-huit booléens, soit **262 144 états par bloc** au lieu de 64. Le voisinage est donc lu
+  au moment où le chunk se construit, par `ConnectedChassisModel` (`getModelData`), qui a
+  accès au monde. Bénéfice qu'on n'avait pas cherché : plus rien n'étant stocké, **un mur
+  bâti avant cette fonctionnalité se connecte de lui-même** — la version à propriétés laissait
+  les anciens murs figés sur l'état par défaut, `updateShape` n'étant pas appelé au
+  chargement d'un monde.
+
+  La règle vit dans `ChassisFrame`, sans rendu et sans client, pour être testable : une
+  baguette sur l'arête `a`/`b` si ni `a` ni `b` n'a de voisin ; un quart de cadre dans le coin
+  `p`/`q` de la face `f` si `f` est dégagée, si `p` et `q` ont un voisin, et si la diagonale
+  `p+q` n'en a pas. **La troisième condition n'est pas une précaution** : sans elle, le bloc
+  central d'un mur plein poserait quatre quarts de cadre au milieu d'une surface lisse.
+
+  Quatre pièges, tous trouvés en jeu et aucun en relecture :
+  1. **Les baguettes portent la texture du caisson**, pas un métal à part : l'UV automatique
+     fait tomber chacune sur la bordure qu'elle représente, si bien qu'un bloc isolé
+     redessine exactement le bloc en main. Une texture dédiée donnait deux objets différents
+     pour le même bloc.
+  2. **Le cadre peint tient dans trois pixels**, l'épaisseur exacte des baguettes
+     (`CASING_WIDTH`, partagé avec le générateur de textures). Au-delà, la partie qui déborde
+     n'existe que dans l'inventaire.
+  3. **Les UV sont bornées à la main.** Les baguettes débordent de 0,02 px pour ne pas être
+     coplanaires avec la plaque — et l'UV automatique se déduisant des coordonnées, ce débord
+     les faisait lire la tuile VOISINE dans l'atlas : un liseré clair sur chaque bord.
+  4. **La plaque est un cube plein, de 0 à 16.** L'avoir reculée de 0,05 px pour la départir
+     des baguettes ouvrait une fente de 0,1 px entre deux caissons, que rien ne fermait
+     puisque les faces partagées sont cullées : on voyait **le ciel à travers le mur**.
+
   Les **machines gardent un cadre peint** dans leur texture, et ne se connectent pas : leurs
   silhouettes sont creusées, à étages, parfois traversantes, et une baguette posée sur
   l'arête d'un cube y flotterait dans le vide.

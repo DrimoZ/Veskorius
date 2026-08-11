@@ -4,6 +4,7 @@ import com.veskorius.Veskorius;
 import com.veskorius.block.AbstractMachineBlock;
 import com.veskorius.block.FieldEmitterBlock;
 import com.veskorius.block.FieldSensitiveBlock;
+import com.veskorius.block.ChassisFrame;
 import com.veskorius.block.ModBlocks;
 import com.veskorius.block.ResonanceVeinedStoneBlock;
 import net.minecraft.core.Direction;
@@ -362,7 +363,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
             from[axis] = high ? 16 - t : -over;
             to[axis] = high ? 16 + over : t;
         }
-        return models().getBuilder(name + "_bar_" + a.getSerializedName() + "_" + b.getSerializedName())
+        return models().getBuilder(ChassisFrame.barName(name, a, b))
             .parent(models().getExistingFile(mcLoc("block/block")))
             .texture("frame", modLoc("block/" + name + "_frame"))
             .texture("particle", modLoc("block/" + name + "_frame"))
@@ -373,40 +374,28 @@ public class ModBlockStateProvider extends BlockStateProvider {
             .allFaces((face, f) -> f.texture("#frame")).end();
     }
     /**
-     * <b>Chassis a cadre connecte.</b> Une plaque nue sur les six faces, plus une baguette
-     * de cadre sur chacune des douze aretes — et une arete ne porte sa baguette que si NI
-     * l'une NI l'autre des deux faces qui la bordent n'a de chassis voisin.
+     * <b>Chassis a cadre connecte.</b> On ecrit ici les MORCEAUX — la plaque, douze
+     * baguettes d'arete, vingt-quatre quarts de cadre — et rien qui dise quand les poser.
      *
-     * <p>Un chassis isole garde donc ses douze baguettes : une caisse. Celui du milieu d'un
-     * mur n'en a aucune. Entre les deux, le cadre suit exactement la silhouette du groupe,
-     * ce qui est tout l'effet recherche — un mur de caissons doit se lire comme UN panneau.
+     * <p><b>Le blockstate ne pointe que sur la plaque.</b> C'est {@code ConnectedChassisModel}
+     * qui assemble le cadre a la construction du chunk, en lisant le voisinage reel. Un
+     * multipart ne pouvait pas : le coin rentrant — le bloc d'un angle en L, qui touche ses
+     * deux voisins et ne dessine donc aucune bordure — demande de connaitre les DIAGONALES,
+     * soit dix-huit booleens, soit 262 144 etats par bloc au lieu de 64.
      *
-     * <p><b>La condition porte sur l'arete, pas sur la face</b>, et c'est la seule forme
-     * qui marche. Conditionner sur la face donnait un quadrillage sur le verre : la bordure
-     * du HAUT de la face nord ne depend pas du nord, elle depend du HAUT.
+     * <p>Les noms des morceaux viennent de {@link ChassisFrame} et pas d'ici : la datagen les
+     * ecrit, le modele les reclame, et un desaccord d'un caractere rendrait le bloc invisible
+     * sans la moindre erreur.
      */
     private void connectedChassis(Block block, String name) {
-        ModelFile plate = chassisPlate(name);
-        var builder = getMultipartBuilder(block);
-        builder.part().modelFile(plate).addModel().end();
-        for (Direction a : Direction.values()) {
-            for (Direction b : Direction.values()) {
-                // Chaque arete une seule fois, et jamais deux faces opposees ou egales.
-                if (a.getAxis() == b.getAxis() || a.ordinal() > b.ordinal()) {
-                    continue;
-                }
-                builder.part().modelFile(chassisBar(name, a, b)).addModel()
-                    .condition(com.veskorius.block.AbstractConnectedBlock.property(a), false)
-                    .condition(com.veskorius.block.AbstractConnectedBlock.property(b), false)
-                    .end();
-            }
-        }
+        simpleBlock(block, chassisPlate(name));
+        ChassisFrame.forEachEdge((a, b) -> chassisBar(name, a, b));
+        ChassisFrame.forEachFaceCorner((f, p, q) -> chassisCorner(name, f, p, q));
         // L'objet montre le caisson COMPLET, cadre peint : dans un inventaire, une plaque
         // nue ne se distingue d'aucune autre plaque nue.
         itemModels().cubeBottomTop(name, modLoc("block/" + name + "_side"),
             modLoc("block/" + name + "_top"), modLoc("block/" + name + "_top"));
     }
-
     /**
      * La plaque : un cube PLEIN, de 0 a 16, avec ses cullfaces.
      *
@@ -487,6 +476,44 @@ public class ModBlockStateProvider extends BlockStateProvider {
             .allFaces((face, f) -> {
                 float[] uv = faceUvs(face, from, to);
                 f.texture("#frame").uvs(uv[0], uv[1], uv[2], uv[3]);
+            }).end();
+    }
+    /**
+     * <b>Le quart de cadre d'un coin rentrant.</b> Un carre de 3x3 pose sur la face
+     * {@code f}, dans l'angle entre {@code p} et {@code q}.
+     *
+     * <p>C'est la piece qui manquait, et le defaut se voyait tres bien : dans une
+     * disposition en L, le bloc de l'angle touche ses deux voisins, ne dessine donc aucune
+     * bordure — et son coin restait nu au milieu du cadre. Aucune baguette ne pouvait le
+     * couvrir, puisqu'une baguette n'existe que la ou le voisin manque.
+     *
+     * <p>Elle ne deborde QUE du cote de {@code f}. Vers {@code p} et {@code q} il y a un
+     * chassis voisin — c'est la condition meme de sa presence — donc rien a decoller, et la
+     * face de la plaque de ce cote est culled de toute facon.
+     */
+    private ModelFile chassisCorner(String name, Direction f, Direction p, Direction q) {
+        final float t = 3.0f;
+        final float over = 0.02f;
+        final float[] from = {0, 0, 0};
+        final float[] to = {16, 16, 16};
+        for (Direction d : new Direction[] {p, q}) {
+            int axis = d.getAxis().ordinal();
+            boolean high = d.getAxisDirection() == Direction.AxisDirection.POSITIVE;
+            from[axis] = high ? 16 - t : 0;
+            to[axis] = high ? 16 : t;
+        }
+        int fa = f.getAxis().ordinal();
+        boolean fh = f.getAxisDirection() == Direction.AxisDirection.POSITIVE;
+        from[fa] = fh ? 16 - t : -over;
+        to[fa] = fh ? 16 + over : t;
+        return models().getBuilder(ChassisFrame.cornerName(name, f, p, q))
+            .parent(models().getExistingFile(mcLoc("block/block")))
+            .texture("frame", modLoc("block/" + name + "_side"))
+            .texture("particle", modLoc("block/" + name + "_side"))
+            .element().from(from[0], from[1], from[2]).to(to[0], to[1], to[2])
+            .allFaces((face, fb) -> {
+                float[] uv = faceUvs(face, from, to);
+                fb.texture("#frame").uvs(uv[0], uv[1], uv[2], uv[3]);
             }).end();
     }
     // --- Fabriques de modèles ------------------------------------------------
