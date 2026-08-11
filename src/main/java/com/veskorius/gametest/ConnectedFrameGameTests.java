@@ -75,9 +75,10 @@ public class ConnectedFrameGameTests {
     @GameTest(template = EMPTY, timeoutTicks = 20)
     public static void theMiddleOfAWallIsBare(GameTestHelper helper) {
         // Un mur dans le plan XY : les quatre côtés de ce plan, et ses quatre diagonales.
-        int mask = ConnectedFrame.neighbourhood((first, second) ->
+        int mask = ConnectedFrame.neighbourhood((first, second, third) ->
             first.getAxis() != Direction.Axis.Z
-                && (second == null || second.getAxis() != Direction.Axis.Z));
+                && (second == null || second.getAxis() != Direction.Axis.Z)
+                && third == null);
 
         helper.assertTrue(bars(mask) == 0,
             "aucune baguette au milieu d'un mur, obtenu " + bars(mask));
@@ -138,6 +139,35 @@ public class ConnectedFrameGameTests {
             "mais rien sur la face du haut : elle est contre un voisin, on ne la voit pas");
         helper.assertTrue(corners(mask) == 2,
             "deux quarts de cadre exactement — sud et nord, obtenu " + corners(mask));
+        helper.succeed();
+    }
+
+    /**
+     * <b>Le pourtour du pied d'un bloc posé sur une dalle.</b> Aux quatre coins de ce pourtour,
+     * les blocs de la dalle sont en <b>diagonale</b> du bloc debout : leur surface se prolonge
+     * dans les deux directions, mais elle monte en marche par le coin. Sans le bloc de
+     * <b>sommet</b>, on ne peut pas distinguer ce cas d'une surface plate — et les quatre
+     * bordures concaves se rejoignaient en laissant un trou à chaque angle.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void theFootOfAStandingBlockClosesItsCorners(GameTestHelper helper) {
+        // Vu depuis le bloc de dalle en diagonale : la dalle continue à l'ouest et au sud, et
+        // le bloc debout occupe le sommet ouest-sud-haut.
+        int mask = ConnectedFrame.faceBit(Direction.WEST)
+            | ConnectedFrame.faceBit(Direction.SOUTH)
+            | ConnectedFrame.edgeBit(Direction.WEST, Direction.SOUTH)
+            | ConnectedFrame.vertexBit(Direction.WEST, Direction.SOUTH, Direction.UP);
+
+        helper.assertTrue(
+            ConnectedFrame.hasCorner(mask, Direction.UP, Direction.WEST, Direction.SOUTH),
+            "la surface monte en marche par le coin : il faut le fermer");
+
+        // Le même voisinage SANS le bloc debout : c'est une dalle plate, il ne faut rien.
+        int flat = mask & ~ConnectedFrame.vertexBit(Direction.WEST, Direction.SOUTH, Direction.UP);
+        helper.assertTrue(
+            !ConnectedFrame.hasCorner(flat, Direction.UP, Direction.WEST, Direction.SOUTH),
+            "sans le bloc debout, la dalle est plate : aucun quart de cadre");
+        helper.assertTrue(corners(flat) == 0, "et nulle part ailleurs non plus");
         helper.succeed();
     }
 

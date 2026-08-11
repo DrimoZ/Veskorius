@@ -54,6 +54,7 @@ public class ConnectedFrameModel extends BakedModelWrapper<BakedModel> {
     }
 
     private final Block block;
+    private final ChunkRenderTypeSet baseRenderTypes;
     private final Map<EdgeKey, Piece> bars;
     private final Map<CornerKey, Piece> corners;
     private final ChunkRenderTypeSet renderTypes;
@@ -69,9 +70,10 @@ public class ConnectedFrameModel extends BakedModelWrapper<BakedModel> {
         // L'UNION DES COUCHES, ET IL LA FAUT. Le verre pose sa vitre en translucide et son
         // cadre en cutout ; si le modèle n'annonçait que la couche du fond, le cadre ne serait
         // jamais dessiné — sans erreur, il manquerait simplement à l'image.
+        this.baseRenderTypes =
+            base.getRenderTypes(block.defaultBlockState(), RandomSource.create(0), ModelData.EMPTY);
         Set<RenderType> union = new LinkedHashSet<>();
-        base.getRenderTypes(block.defaultBlockState(), RandomSource.create(0), ModelData.EMPTY)
-            .asList().forEach(union::add);
+        baseRenderTypes.asList().forEach(union::add);
         for (Piece piece : bars.values()) {
             piece.renderTypes().asList().forEach(union::add);
         }
@@ -89,10 +91,13 @@ public class ConnectedFrameModel extends BakedModelWrapper<BakedModel> {
     @Override
     public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state,
                                   ModelData modelData) {
-        int mask = ConnectedFrame.neighbourhood((first, second) -> {
+        int mask = ConnectedFrame.neighbourhood((first, second, third) -> {
             BlockPos target = pos.relative(first);
             if (second != null) {
                 target = target.relative(second);
+            }
+            if (third != null) {
+                target = target.relative(third);
             }
             // Le même bloc exactement : deux paliers de châssis ne se fondent pas l'un dans
             // l'autre, et le verre lumineux ne se fond pas dans l'ordinaire.
@@ -108,7 +113,13 @@ public class ConnectedFrameModel extends BakedModelWrapper<BakedModel> {
         // Les faces du fond portent leur cullface : c'est ce qui fait qu'entre deux blocs
         // accolés, la face partagée n'est pas dessinée. On les laisse passer telles quelles —
         // le cadre, lui, n'est jamais culled, il vit donc côté `side == null`.
-        List<BakedQuad> base = originalModel.getQuads(state, side, rand, data, renderType);
+        // LE FOND AUSSI DOIT ÊTRE FILTRÉ. {@code getQuads} ignore la couche demandée — c'est
+        // {@code getRenderTypes} qui trie — donc annoncer l'union sans filtrer ici faisait
+        // dessiner la vitre translucide UNE SECONDE FOIS dans la couche cutout du cadre. Deux
+        // verres superposés, et un rendu que rien n'expliquait.
+        List<BakedQuad> base = renderType == null || baseRenderTypes.contains(renderType)
+            ? originalModel.getQuads(state, side, rand, data, renderType)
+            : List.of();
         if (side != null) {
             return base;
         }

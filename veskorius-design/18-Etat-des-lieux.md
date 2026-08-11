@@ -4,7 +4,7 @@ Généré à partir du code, pas du dossier de design. Une case cochée ici veut
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
 NeoForge 1.21.1 · Java 21 · **243 fichiers Java, ~34 200 lignes** · **58 blocs, 88 items**
-· **174 GameTest en deux processus** (`runFastGameTests` 153 en ~28 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
+· **175 GameTest en deux processus** (`runFastGameTests` 154 en ~28 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
 
@@ -139,8 +139,9 @@ d'alliage et coûte donc le bonus de panoplie).
 
   **Aucun de ces blocs ne porte de propriété de blockstate.** Une version en portait six, une
   par face, tenues par `updateShape`. Elle ne pouvait pas aller plus loin : l'arête concave et
-  le coin rentrant demandent de connaître les **diagonales**, soit dix-huit booléens, soit
-  **262 144 états par bloc** au lieu de 64. Le voisinage est donc lu à la construction du chunk
+  le coin rentrant demandent de connaître les **diagonales d'arête**, et le pied d'un bloc
+  posé sur une dalle demande en plus les **diagonales de sommet** : vingt-six booléens, soit
+  **67 millions d'états par bloc** au lieu de 64. Le voisinage est donc lu à la construction du chunk
   par `getModelData`, qui a accès au monde. Trois conséquences, toutes bonnes : les diagonales
   sont disponibles, l'état ne pèse rien, et **un mur bâti avant cette fonctionnalité se
   connecte de lui-même** — la version à propriétés laissait les anciens murs figés sur l'état
@@ -153,12 +154,17 @@ d'alliage et coûte donc le bonus de panoplie).
   2. **arête concave** — une seule des deux faces est couverte, et la diagonale l'est aussi :
      la surface tourne d'un plan à l'autre. C'est le pied d'un bloc posé sur une dalle, dont
      la face verticale rejoignait le dessus de la dalle sans aucune séparation ;
-  3. **quart de cadre** — la face est dégagée, les deux directions du coin sont couvertes, et
-     leur diagonale ne l'est pas. C'est le coin rentrant d'un L, qui restait nu.
+  3. **quart de cadre** — la face est dégagée, aucune des deux bordures du coin n'existe
+     (la surface se prolonge dans les deux directions), et la **diagonale, elle, n'est pas
+     plate**. Deux façons de ne pas l'être, et il a fallu les deux : rien en diagonale — le
+     coin rentrant d'un L, qui restait nu — ou bien un bloc en diagonale surmonté d'un autre,
+     la surface montant en marche par le coin. Ce second cas est le pourtour du pied d'un bloc
+     posé sur une dalle : les quatre bordures concaves se rejoignaient en laissant un trou à
+     chaque angle.
 
   Les conditions sur les diagonales, en 2 et 3, ne sont pas des précautions : sans elles, un
   mur plat gagnerait un trait horizontal par bloc et son bloc central quatre quarts de cadre.
-  Huit tests couvrent la règle, chaque cas avec son contre-exemple, dont un balayage exhaustif
+  Neuf tests couvrent la règle, chaque cas avec son contre-exemple, dont un balayage exhaustif
   qui vérifie qu'une baguette et un quart de cadre ne se superposent jamais.
 
   **Quatre pièges de rendu**, tous trouvés en jeu et aucun en relecture :

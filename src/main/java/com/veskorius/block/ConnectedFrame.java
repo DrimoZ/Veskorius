@@ -20,10 +20,10 @@ import net.minecraft.world.level.block.Block;
  * défaut en jeu, pas avant.
  *
  * <h2>Le voisinage</h2>
- * Dix-huit bits : les <b>6 faces</b>, puis les <b>12 diagonales d'arête</b> (les blocs qui ne
- * partagent avec nous qu'une arête). Ces douze-là sont la raison pour laquelle le cadre <b>ne
- * peut pas</b> vivre dans le blockstate : six booléens font 64 états, dix-huit en font
- * 262 144, par bloc.
+ * Vingt-six bits : les <b>6 faces</b>, les <b>12 diagonales d'arête</b>, et les <b>8 diagonales
+ * de sommet</b> — autrement dit tout ce qui touche le cube. Ce sont ces vingt derniers qui
+ * interdisent au cadre de vivre dans le blockstate : six booléens font 64 états, vingt-six en
+ * feraient 67 millions, par bloc.
  *
  * <h2>Les règles</h2>
  * <ol>
@@ -101,6 +101,28 @@ public final class ConnectedFrame {
     }
 
     /**
+     * Bit de la diagonale de sommet : le bloc qui ne partage avec nous qu'un coin.
+     *
+     * <p>Les trois directions doivent etre d'axes differents ; l'ordre n'importe pas. Un
+     * sommet est entierement decrit par le signe qu'il prend sur chaque axe, d'ou l'index
+     * a trois bits.
+     */
+    public static int vertexBit(Direction p, Direction q, Direction r) {
+        int index = 0;
+        boolean[] seen = new boolean[3];
+        for (Direction d : new Direction[] {p, q, r}) {
+            int axis = d.getAxis().ordinal();
+            if (seen[axis]) {
+                throw new IllegalArgumentException("pas un sommet : " + p + " / " + q + " / " + r);
+            }
+            seen[axis] = true;
+            if (d.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
+                index |= 1 << axis;
+            }
+        }
+        return 1 << (18 + index);
+    }
+    /**
      * Construit le voisinage en interrogeant {@code probe} pour les 6 faces puis les 12
      * diagonales.
      *
@@ -111,7 +133,7 @@ public final class ConnectedFrame {
     public static int neighbourhood(Probe probe) {
         int mask = 0;
         for (Direction d : Direction.values()) {
-            if (probe.isConnected(d, null)) {
+            if (probe.isConnected(d, null, null)) {
                 mask |= faceBit(d);
             }
         }
@@ -120,18 +142,30 @@ public final class ConnectedFrame {
                 if (p.getAxis() == q.getAxis() || p.ordinal() > q.ordinal()) {
                     continue;
                 }
-                if (probe.isConnected(p, q)) {
+                if (probe.isConnected(p, q, null)) {
                     mask |= edgeBit(p, q);
+                }
+                for (Direction r : Direction.values()) {
+                    if (r.getAxis() == p.getAxis() || r.getAxis() == q.getAxis()
+                        || r.ordinal() < q.ordinal()) {
+                        continue;
+                    }
+                    if (probe.isConnected(p, q, r)) {
+                        mask |= vertexBit(p, q, r);
+                    }
                 }
             }
         }
         return mask;
     }
 
-    /** « Y a-t-il le même bloc à un pas de {@code first}, puis éventuellement de {@code second} ? » */
+    /**
+     * « Y a-t-il le même bloc en suivant ces pas ? » Un, deux ou trois — une face, une arête
+     * ou un sommet. Les pas non utilisés sont {@code null}.
+     */
     @FunctionalInterface
     public interface Probe {
-        boolean isConnected(Direction first, Direction second);
+        boolean isConnected(Direction first, Direction second, Direction third);
     }
 
     public static boolean connected(int mask, Direction direction) {
@@ -140,6 +174,11 @@ public final class ConnectedFrame {
 
     public static boolean connectedDiagonally(int mask, Direction p, Direction q) {
         return (mask & edgeBit(p, q)) != 0;
+    }
+
+    /** « Le bloc qui ne touche que ce coin est-il des nôtres ? » */
+    public static boolean connectedAtVertex(int mask, Direction p, Direction q, Direction r) {
+        return (mask & vertexBit(p, q, r)) != 0;
     }
 
     // --- Les règles -----------------------------------------------------------
@@ -165,16 +204,31 @@ public final class ConnectedFrame {
         return connectedDiagonally(mask, a, b);
     }
 
-    /** Le quart de cadre de la face {@code f}, dans le coin {@code p}/{@code q}. */
+    /**
+     * Faut-il un quart de cadre dans le coin {@code p}/{@code q} de la face {@code f} ?
+     *
+     * <p>Une baguette de bordure court sur toute la largeur de la face : si l'une des deux
+     * bordures du coin existe, le coin est déjà couvert. Le quart de cadre ne sert donc que
+     * quand les <b>deux bordures sont plates</b> — la surface se prolonge dans les deux
+     * directions — et que la <b>diagonale, elle, ne l'est pas</b>.
+     *
+     * <p>« La diagonale est plate » veut dire : il y a un bloc en diagonale ET rien au-dessus
+     * de lui du côté de la face. Deux façons de ne pas l'être, et il a fallu les deux :
+     * <ul>
+     *   <li><b>rien en diagonale</b> — le coin rentrant d'un L, qui restait nu ;</li>
+     *   <li><b>un bloc en diagonale ET un bloc au-dessus de lui</b> — la surface monte en
+     *       marche par le coin. C'est le pourtour du pied d'un bloc posé sur une dalle : les
+     *       quatre bordures concaves se rejoignaient sans que rien ne ferme leurs angles.
+     *       Ce cas-là demande le bloc qui ne partage avec nous qu'un SOMMET.</li>
+     * </ul>
+     */
     public static boolean hasCorner(int mask, Direction f, Direction p, Direction q) {
-        return !connected(mask, f)
-            && connected(mask, p)
-            && connected(mask, q)
-            && !connectedDiagonally(mask, p, q)
-            // Si une baguette passe déjà par ce coin, la doubler d'un quart de cadre poserait
-            // deux surfaces au même endroit — ça clignoterait.
-            && !hasBar(mask, f, p)
-            && !hasBar(mask, f, q);
+        if (connected(mask, f) || hasBar(mask, f, p) || hasBar(mask, f, q)) {
+            return false;
+        }
+        boolean flatDiagonal = connectedDiagonally(mask, p, q)
+            && !connectedAtVertex(mask, p, q, f);
+        return !flatDiagonal;
     }
 
     // --- Balayages et noms ----------------------------------------------------
