@@ -386,7 +386,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
      * du HAUT de la face nord ne depend pas du nord, elle depend du HAUT.
      */
     private void connectedChassis(Block block, String name) {
-        ModelFile plate = models().cubeAll(name + "_plate", modLoc("block/" + name + "_plate"));
+        ModelFile plate = chassisPlate(name);
         var builder = getMultipartBuilder(block);
         builder.part().modelFile(plate).addModel().end();
         for (Direction a : Direction.values()) {
@@ -407,41 +407,68 @@ public class ModBlockStateProvider extends BlockStateProvider {
             modLoc("block/" + name + "_top"), modLoc("block/" + name + "_top"));
     }
 
+    /**
+     * La plaque : un cube en RETRAIT DE 0,05 PIXEL sur les six faces.
+     *
+     * <p>Ce retrait minuscule existe pour une seule raison : les baguettes de cadre viennent
+     * se poser a fleur du bloc, et deux surfaces exactement au meme plan se disputent la
+     * profondeur — elles clignotent. Reculer la plaque les depart une fois pour toutes, sans
+     * qu'aucune geometrie ne sorte du cube.
+     *
+     * <p>C'etait l'inverse avant : la plaque restait a 0..16 et c'etaient les baguettes qui
+     * DEBORDAIENT. Un element qui sort du cube emmene ses UV avec lui — l'UV automatique de
+     * Minecraft se deduit des coordonnees — et une UV hors de la tuile va lire la texture
+     * VOISINE dans l'atlas. D'ou des lisereS clairs sur chaque bord de baguette.
+     *
+     * <p>Le retrait a un benefice second : la plaque est reellement en creux derriere son
+     * cadre, au lieu de l'etre en trompe-l'oeil.
+     */
+    private ModelFile chassisPlate(String name) {
+        final float inset = 0.05f;
+        return models().getBuilder(name + "_plate")
+            .parent(models().getExistingFile(mcLoc("block/block")))
+            .texture("all", modLoc("block/" + name + "_plate"))
+            .texture("particle", modLoc("block/" + name + "_plate"))
+            .element().from(inset, inset, inset).to(16 - inset, 16 - inset, 16 - inset)
+            // Les cullfaces restent indispensables : sans elles, deux caissons accoles
+            // dessinent chacun la face qu'ils se partagent, pour rien.
+            .allFaces((face, f) -> f.texture("#all").cullface(face)).end();
+    }
     /** La baguette de cadre posee sur l'arete commune aux faces {@code a} et {@code b}. */
     private ModelFile chassisBar(String name, Direction a, Direction b) {
         // ELLE PORTE LA TEXTURE DU CAISSON, PAS UNE TEXTURE DE METAL A PART.
         //
         // Le premier jet lui donnait un aplat metallique dedie. Resultat : le bloc pose ne
-        // ressemblait pas au bloc en main — cadre peint, biseau, equerres et rivets d'un cote,
-        // baguettes plates et nues de l'autre. Deux objets differents pour le meme bloc.
+        // ressemblait pas au bloc en main. En reprenant `_side`, l'UV automatique fait tout
+        // le travail : la face exterieure d'une baguette posee sur l'arete du bas
+        // echantillonne les dernieres lignes de la texture, celle du haut les premieres.
+        // Chaque baguette tombe donc EXACTEMENT sur la bordure qu'elle represente. Un
+        // chassis isole, qui porte ses douze baguettes, redessine le caisson complet.
         //
-        // En reprenant `_side`, l'UV automatique fait tout le travail : la face exterieure
-        // d'une baguette posee sur l'arete du bas echantillonne les deux dernieres lignes de
-        // la texture, celle du haut les deux premieres, celles des cotes les colonnes
-        // correspondantes. Chaque baguette tombe donc EXACTEMENT sur la bordure qu'elle
-        // represente, avec son biseau et ses equerres. Un chassis isole, qui porte ses douze
-        // baguettes, redessine ainsi le caisson complet : identique a l'objet, au pixel.
         // TROIS PIXELS, ET CE CHIFFRE EST PARTAGE avec le generateur de textures
         // (tools/block-textures/marble.js, CASING_WIDTH). Le cadre peint tient tout entier
         // dans les trois premiers pixels du bord ; une baguette plus mince n'en reproduirait
-        // qu'une partie, et le bloc pose cesserait de ressembler au bloc en main.
+        // qu'une partie.
         final float t = 3.0f;
-        // DEBORD MINUSCULE, ET STAGGERE PAR AXE. Il ne sert qu'a decoller la baguette de la
-        // plaque : deux surfaces au meme plan se disputent la profondeur et clignotent. La
-        // version precedente debordait d'un demi-pixel « pour le relief » — a un joint entre
-        // deux caissons non connectes, les deux cages se chevauchaient alors sur un pixel
-        // entier, ce qui a couvert un mur de bandes scintillantes. Trois valeurs distinctes
-        // selon l'axe long evitent en plus que deux baguettes se retrouvent coplanaires dans
-        // un angle, la ou trois d'entre elles se rejoignent.
+        // RIEN NE SORT DE 0..16, ET C'EST LA REGLE QUI COMPTE ICI. L'UV automatique se
+        // deduit des coordonnees de la boite : un element qui deborde du cube lit, dans
+        // l'atlas, la texture d'a cote. La version precedente debordait de 0,06 px « pour
+        // decoller la baguette de la plaque » et bordait tout le cadre de lisereS clairs.
+        // C'est la plaque qui recule maintenant, pas la baguette qui avance.
+        //
+        // Le decalage RENTRANT depend de l'axe long (0 / 0,01 / 0,02 px). Il ne se voit pas,
+        // et il evite que deux baguettes se retrouvent coplanaires la ou trois se rejoignent,
+        // dans un angle. Les extremites suivent le meme decalage, sans quoi le bout d'une
+        // baguette tomberait dans le plan de la face exterieure d'une autre.
         int longAxis = 3 - a.getAxis().ordinal() - b.getAxis().ordinal();
-        final float over = 0.06f - 0.02f * longAxis;
-        float[] from = {-over, -over, -over};
-        float[] to = {16 + over, 16 + over, 16 + over};
+        final float in = 0.01f * longAxis;
+        float[] from = {in, in, in};
+        float[] to = {16 - in, 16 - in, 16 - in};
         for (Direction d : new Direction[] {a, b}) {
             int axis = d.getAxis().ordinal();
             boolean high = d.getAxisDirection() == Direction.AxisDirection.POSITIVE;
-            from[axis] = high ? 16 - t : -over;
-            to[axis] = high ? 16 + over : t;
+            from[axis] = high ? 16 - t : in;
+            to[axis] = high ? 16 - in : t;
         }
         return models().getBuilder(name + "_bar_" + a.getSerializedName() + "_" + b.getSerializedName())
             .parent(models().getExistingFile(mcLoc("block/block")))
