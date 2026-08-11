@@ -408,74 +408,86 @@ public class ModBlockStateProvider extends BlockStateProvider {
     }
 
     /**
-     * La plaque : un cube en RETRAIT DE 0,05 PIXEL sur les six faces.
+     * La plaque : un cube PLEIN, de 0 a 16, avec ses cullfaces.
      *
-     * <p>Ce retrait minuscule existe pour une seule raison : les baguettes de cadre viennent
-     * se poser a fleur du bloc, et deux surfaces exactement au meme plan se disputent la
-     * profondeur — elles clignotent. Reculer la plaque les depart une fois pour toutes, sans
-     * qu'aucune geometrie ne sorte du cube.
-     *
-     * <p>C'etait l'inverse avant : la plaque restait a 0..16 et c'etaient les baguettes qui
-     * DEBORDAIENT. Un element qui sort du cube emmene ses UV avec lui — l'UV automatique de
-     * Minecraft se deduit des coordonnees — et une UV hors de la tuile va lire la texture
-     * VOISINE dans l'atlas. D'ou des lisereS clairs sur chaque bord de baguette.
-     *
-     * <p>Le retrait a un benefice second : la plaque est reellement en creux derriere son
-     * cadre, au lieu de l'etre en trompe-l'oeil.
+     * <p><b>Elle ne doit jamais reculer, meme d'un centieme de pixel.</b> Une version l'a
+     * mise en retrait de 0,05 px pour eviter que les baguettes ne soient coplanaires avec
+     * elle. Resultat en jeu : entre deux caissons voisins s'ouvrait une fente de 0,1 px que
+     * plus rien ne fermait — les faces partagees etant cullees — et on voyait LE CIEL a
+     * travers le mur, un quadrillage bleu sur chaque joint. Un bloc plein est plein.
      */
     private ModelFile chassisPlate(String name) {
-        final float inset = 0.05f;
-        return models().getBuilder(name + "_plate")
-            .parent(models().getExistingFile(mcLoc("block/block")))
-            .texture("all", modLoc("block/" + name + "_plate"))
-            .texture("particle", modLoc("block/" + name + "_plate"))
-            .element().from(inset, inset, inset).to(16 - inset, 16 - inset, 16 - inset)
-            // Les cullfaces restent indispensables : sans elles, deux caissons accoles
-            // dessinent chacun la face qu'ils se partagent, pour rien.
-            .allFaces((face, f) -> f.texture("#all").cullface(face)).end();
+        return models().cubeAll(name + "_plate", modLoc("block/" + name + "_plate"));
     }
+
+    /**
+     * L'UV que Minecraft deduirait tout seul de la boite, pour une face donnee.
+     *
+     * <p>On la recalcule pour pouvoir la BORNER a la tuile. C'est le noeud du probleme :
+     * l'UV automatique se deduit des coordonnees, donc une geometrie qui sort du cube sort
+     * aussi de sa tuile et va lire la texture voisine dans l'atlas — d'ou un lisere clair
+     * sur chaque bord. Or les baguettes DOIVENT deborder un peu, sinon elles sont
+     * coplanaires avec la plaque et clignotent. Les deux contraintes ne se concilient qu'en
+     * dissociant la geometrie de l'UV, ce que permet un uv explicite.
+     */
+    private static float[] faceUvs(Direction face, float[] f, float[] t) {
+        float[] uv = switch (face) {
+            case DOWN -> new float[] {f[0], 16 - t[2], t[0], 16 - f[2]};
+            case UP -> new float[] {f[0], f[2], t[0], t[2]};
+            case NORTH -> new float[] {16 - t[0], 16 - t[1], 16 - f[0], 16 - f[1]};
+            case SOUTH -> new float[] {f[0], 16 - t[1], t[0], 16 - f[1]};
+            case WEST -> new float[] {f[2], 16 - t[1], t[2], 16 - f[1]};
+            case EAST -> new float[] {16 - t[2], 16 - t[1], 16 - f[2], 16 - f[1]};
+        };
+        for (int i = 0; i < uv.length; i++) {
+            uv[i] = Math.max(0f, Math.min(16f, uv[i]));
+        }
+        return uv;
+    }
+
     /** La baguette de cadre posee sur l'arete commune aux faces {@code a} et {@code b}. */
     private ModelFile chassisBar(String name, Direction a, Direction b) {
         // ELLE PORTE LA TEXTURE DU CAISSON, PAS UNE TEXTURE DE METAL A PART.
         //
         // Le premier jet lui donnait un aplat metallique dedie. Resultat : le bloc pose ne
-        // ressemblait pas au bloc en main. En reprenant `_side`, l'UV automatique fait tout
-        // le travail : la face exterieure d'une baguette posee sur l'arete du bas
-        // echantillonne les dernieres lignes de la texture, celle du haut les premieres.
-        // Chaque baguette tombe donc EXACTEMENT sur la bordure qu'elle represente. Un
-        // chassis isole, qui porte ses douze baguettes, redessine le caisson complet.
+        // ressemblait pas au bloc en main. En reprenant `_side`, l'UV fait tout le travail :
+        // la face exterieure d'une baguette posee sur l'arete du bas echantillonne les
+        // dernieres lignes de la texture, celle du haut les premieres. Chaque baguette tombe
+        // donc EXACTEMENT sur la bordure qu'elle represente, et un chassis isole — qui porte
+        // ses douze baguettes — redessine le caisson complet.
         //
-        // TROIS PIXELS, ET CE CHIFFRE EST PARTAGE avec le generateur de textures
-        // (tools/block-textures/marble.js, CASING_WIDTH). Le cadre peint tient tout entier
-        // dans les trois premiers pixels du bord ; une baguette plus mince n'en reproduirait
-        // qu'une partie.
+        // TROIS PIXELS, CHIFFRE PARTAGE avec le generateur de textures
+        // (tools/block-textures/marble.js, CASING_WIDTH) : le cadre peint tient tout entier
+        // dans les trois premiers pixels du bord.
         final float t = 3.0f;
-        // RIEN NE SORT DE 0..16, ET C'EST LA REGLE QUI COMPTE ICI. L'UV automatique se
-        // deduit des coordonnees de la boite : un element qui deborde du cube lit, dans
-        // l'atlas, la texture d'a cote. La version precedente debordait de 0,06 px « pour
-        // decoller la baguette de la plaque » et bordait tout le cadre de lisereS clairs.
-        // C'est la plaque qui recule maintenant, pas la baguette qui avance.
-        //
-        // Le decalage RENTRANT depend de l'axe long (0 / 0,01 / 0,02 px). Il ne se voit pas,
-        // et il evite que deux baguettes se retrouvent coplanaires la ou trois se rejoignent,
-        // dans un angle. Les extremites suivent le meme decalage, sans quoi le bout d'une
-        // baguette tomberait dans le plan de la face exterieure d'une autre.
+        // LA BAGUETTE DEBORDE, ET SES UV SONT BORNEES A LA MAIN. Les trois tentatives
+        // precedentes ont chacune casse une contrainte differente, et il n'y en a pas deux
+        // qu'on puisse satisfaire en bougeant une seule chose :
+        //   — a fleur du bloc, la baguette est coplanaire avec la plaque : ca clignote ;
+        //   — en debordant avec l'UV automatique, elle lit la tuile voisine : lisere clair ;
+        //   — en reculant la plaque a la place, le bloc n'est plus plein : on voit le ciel.
+        // La seule issue est de dissocier la geometrie de l'UV. Le debord est de 0,02 px,
+        // decale par axe long pour qu'aucune paire de baguettes ne soit coplanaire dans un
+        // angle, la ou trois se rejoignent.
         int longAxis = 3 - a.getAxis().ordinal() - b.getAxis().ordinal();
-        final float in = 0.01f * longAxis;
-        float[] from = {in, in, in};
-        float[] to = {16 - in, 16 - in, 16 - in};
+        final float over = 0.02f + 0.01f * longAxis;
+        final float[] from = {-over, -over, -over};
+        final float[] to = {16 + over, 16 + over, 16 + over};
         for (Direction d : new Direction[] {a, b}) {
             int axis = d.getAxis().ordinal();
             boolean high = d.getAxisDirection() == Direction.AxisDirection.POSITIVE;
-            from[axis] = high ? 16 - t : in;
-            to[axis] = high ? 16 - in : t;
+            from[axis] = high ? 16 - t : -over;
+            to[axis] = high ? 16 + over : t;
         }
         return models().getBuilder(name + "_bar_" + a.getSerializedName() + "_" + b.getSerializedName())
             .parent(models().getExistingFile(mcLoc("block/block")))
             .texture("frame", modLoc("block/" + name + "_side"))
             .texture("particle", modLoc("block/" + name + "_side"))
             .element().from(from[0], from[1], from[2]).to(to[0], to[1], to[2])
-            .allFaces((face, f) -> f.texture("#frame")).end();
+            .allFaces((face, f) -> {
+                float[] uv = faceUvs(face, from, to);
+                f.texture("#frame").uvs(uv[0], uv[1], uv[2], uv[3]);
+            }).end();
     }
     // --- Fabriques de modèles ------------------------------------------------
 

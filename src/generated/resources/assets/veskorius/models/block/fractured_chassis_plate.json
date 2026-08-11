@@ -1,47 +1,6 @@
 {
-  "parent": "minecraft:block/block",
-  "elements": [
-    {
-      "faces": {
-        "down": {
-          "cullface": "down",
-          "texture": "#all"
-        },
-        "east": {
-          "cullface": "east",
-          "texture": "#all"
-        },
-        "north": {
-          "cullface": "north",
-          "texture": "#all"
-        },
-        "south": {
-          "cullface": "south",
-          "texture": "#all"
-        },
-        "up": {
-          "cullface": "up",
-          "texture": "#all"
-        },
-        "west": {
-          "cullface": "west",
-          "texture": "#all"
-        }
-      },
-      "from": [
-        0.05,
-        0.05,
-        0.05
-      ],
-      "to": [
-        15.95,
-        15.95,
-        15.95
-      ]
-    }
-  ],
+  "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "veskorius:block/fractured_chassis_plate",
-    "particle": "veskorius:block/fractured_chassis_plate"
+    "all": "veskorius:block/fractured_chassis_plate"
   }
 }
