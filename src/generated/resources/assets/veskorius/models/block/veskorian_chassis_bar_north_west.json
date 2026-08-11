@@ -23,19 +23,19 @@
         }
       },
       "from": [
-        -0.5,
-        0,
-        -0.5
+        -0.04,
+        -0.04,
+        -0.04
       ],
       "to": [
-        2,
-        16,
-        2
+        3,
+        16.04,
+        3
       ]
     }
   ],
   "textures": {
-    "frame": "veskorius:block/veskorian_chassis_frame",
-    "particle": "veskorius:block/veskorian_chassis_frame"
+    "frame": "veskorius:block/veskorian_chassis_side",
+    "particle": "veskorius:block/veskorian_chassis_side"
   }
 }

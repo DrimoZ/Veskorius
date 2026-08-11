@@ -28,6 +28,11 @@ const {
 
 const S = 16;
 
+// Largeur du cadre des caissons, en pixels. ELLE EST DUPLIQUEE DANS LA DATAGEN
+// (ModBlockStateProvider.chassisBar) : les baguettes de geometrie doivent avoir
+// exactement cette epaisseur, sinon le bloc pose cesse de ressembler au bloc en main.
+const CASING_WIDTH = 3;
+
 // --- Marbre : trois états de restauration --------------------------------
 const MARBLE = {
   t1: { // Ruine : marbre encrassé, gris, fissuré. Cuivre oxydé.
@@ -543,22 +548,22 @@ function plate(tier) {
 }
 
 /**
- * Le métal du cadre : un aplat, et un seul liseré clair.
+ * <b>Le cadre peint, et il tient tout entier dans TROIS pixels.</b> Bande biseautée de
+ * 2 px, puis une rainure sombre, et un rivet dans chaque angle.
  *
- * <p>Volontairement UNIFORME. Cette texture est vue par tranches de deux pixels — les
- * baguettes posées sur les arêtes — et une tranche peut tomber n'importe où. Le moindre
- * motif donnerait un cadre différent selon l'arête ; un aplat donne le même métal partout,
- * et le relief vient de la géométrie, qui est là pour ça.
+ * <p><b>Cette largeur n'est pas un choix esthétique, c'est une contrainte.</b> Les blocs
+ * connectés reconstituent ce cadre avec des baguettes de géométrie posées sur les arêtes
+ * ouvertes, et une baguette ne peut reproduire que la bande qu'elle recouvre. La première
+ * version peignait des équerres de 5 px et une ombre portée débordant de la bande : le bloc
+ * POSÉ n'était alors plus le bloc EN MAIN — cadre riche dans l'inventaire, mince filet une
+ * fois posé. Deux objets pour le même bloc.
+ *
+ * <p>Donc : tout ce que le cadre dessine vit dans les trois premiers pixels du bord, et les
+ * baguettes font trois pixels d'épaisseur. Un caisson isolé, qui porte ses douze baguettes,
+ * redessine exactement cette texture.
  */
-function frame(tier) {
-  const m = MARBLE[tier];
-  const c = new Canvas(S);
-  c.rect(0, 0, S, S, m.metal);
-  return c;
-}
-
-/** Le cadre peint : bande de 2 px biseautée, équerres de 5 px, rivets, ombre portée. */
 function casing(c, m) {
+  const T = CASING_WIDTH;
   for (let i = 0; i < S; i++) {
     // Biseau : la lumière vient du haut à gauche, comme partout ailleurs dans le mod.
     c.set(i, 0, m.metalHi); c.set(i, 1, m.metal);
@@ -566,27 +571,21 @@ function casing(c, m) {
     c.set(0, i, m.metalHi); c.set(1, i, m.metal);
     c.set(S - 1, i, m.line); c.set(S - 2, i, m.metal);
   }
-  // L'ombre que le cadre porte sur la plaque : c'est ce pixel qui creuse le bloc. Sans lui
-  // le cadre est une décalcomanie ; avec lui, la plaque est DERRIÈRE.
-  for (let i = 2; i < S - 2; i++) {
-    c.set(i, 2, m.dark);
-    c.set(2, i, m.dark);
+  // La rainure : le pixel qui creuse le bloc. Sans lui le cadre est une décalcomanie ;
+  // avec lui, la plaque est DERRIÈRE. Elle reste dans la bande, donc dans la baguette.
+  for (let i = T - 1; i < S - (T - 1); i++) {
+    c.set(i, T - 1, m.dark);
+    c.set(T - 1, i, m.dark);
+    c.set(i, S - T, m.dark);
+    c.set(S - T, i, m.dark);
   }
-  // Équerres EN DERNIER, et l'ordre est tout : dessinées avant, le trait d'ombre les
-  // traversait de part en part et effaçait les rivets. Une équerre coupée en deux ne se
-  // lit plus comme une pièce posée sur le cadre.
-  for (const [ox, oy] of [[0, 0], [S - 5, 0], [0, S - 5], [S - 5, S - 5]]) {
-    c.rect(ox, oy, 5, 5, m.metal);
-    for (let i = 0; i < 5; i++) {
-      c.set(ox + i, oy === 0 ? 0 : S - 1, oy === 0 ? m.metalHi : m.line);
-      c.set(ox === 0 ? 0 : S - 1, oy + i, ox === 0 ? m.metalHi : m.line);
-    }
-    // Le rivet au cœur de l'équerre, jamais sur son biseau.
-    rivet(c, ox === 0 ? 2 : S - 3, oy === 0 ? 2 : S - 4, m);
+  // Un rivet par angle, dans l'épaisseur de la bande. C'est le seul détail « pièce
+  // assemblée » qui survive à la contrainte des trois pixels, et il suffit.
+  for (const [x, y] of [[1, 1], [S - 2, 1], [1, S - 2], [S - 2, S - 2]]) {
+    rivet(c, x, y, m);
   }
   return c;
 }
-
 /** Flanc de caisson : la plaque, dans son cadre. */
 function side(tier) {
   const m = MARBLE[tier];
@@ -610,5 +609,5 @@ function top(tier) {
   return c;
 }
 
-module.exports = { MARBLE, V, C, A, WOOD, IRON, S, marble, edges, slab, faces, front,
-  side, top, plate, frame };
+module.exports = { MARBLE, V, C, A, WOOD, IRON, S, CASING_WIDTH, marble, edges, slab, faces, front,
+  side, top, plate };

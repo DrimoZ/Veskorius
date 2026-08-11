@@ -3,8 +3,8 @@
 Généré à partir du code, pas du dossier de design. Une case cochée ici veut dire
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
-NeoForge 1.21.1 · Java 21 · **240 fichiers Java, ~33 600 lignes** · **58 blocs, 88 items**
-· **165 GameTest en deux processus** (`runFastGameTests` 144 en ~27 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
+NeoForge 1.21.1 · Java 21 · **241 fichiers Java, ~33 800 lignes** · **58 blocs, 88 items**
+· **169 GameTest en deux processus** (`runFastGameTests` 148 en ~28 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
 
@@ -124,17 +124,24 @@ d'alliage et coûte donc le bonus de panoplie).
   leur texte, parce qu'un manuel qui ne se lit qu'après coup n'aide pas à progresser.
   L'état de déblocage vit sur le **joueur** et survit à la mort.
 - Resonance Tuner : outil à modes (Pivoter / On-Off / Surchauffe / Redstone).
-- 12 GUI dessinés par générateur, 104 textures de bloc, palettes indexées.
+- 12 GUI dessinés par générateur, 101 textures de bloc, palettes indexées.
 - **Verre à textures connectées** : aucun joint ni cadre entre deux plaques. Un cube sans
   bordure, plus une baguette de cadre par ARÊTE ouverte, assemblés en blockstate multipart
   — douze pièces au lieu des 64 modèles qu'auraient demandé six booléens.
 - **Châssis à cadre connecté** (les trois paliers) : un caisson isolé montre son cadre
   métallique sur ses douze arêtes ; accolés, le cadre ne subsiste qu'autour du groupe, qui
   se lit comme *un* panneau. Même mécanique que le verre, extraite dans
-  `AbstractConnectedBlock`. Le cadre **déborde d'un demi-pixel** : ce n'est pas un correctif
-  anti-z-fighting comme sur le verre, c'est du relief voulu — une baguette affleurante se
-  lit comme un dessin. Les trois paliers ne se connectent pas entre eux : le palier est une
-  information qui doit rester visible sur le bâtiment.
+  `AbstractConnectedBlock`. Les trois paliers ne se connectent pas entre eux : le palier est
+  une information qui doit rester visible sur le bâtiment.
+  Deux contraintes, apprises en jeu et non en relecture. **Les baguettes portent la texture
+  du caisson**, pas un métal à part : l'UV automatique fait tomber chacune sur la bordure
+  qu'elle représente, si bien qu'un bloc isolé redessine exactement le bloc en main. Une
+  texture dédiée donnait deux objets différents pour le même bloc. Et **le cadre peint tient
+  dans trois pixels**, l'épaisseur exacte des baguettes — au-delà, la partie qui déborde
+  n'existe que dans l'inventaire. **Le débord est minuscule et décalé par axe** (0,02 à
+  0,06 px) : il ne sert qu'à décoller la baguette de la plaque. La version à un demi-pixel
+  faisait se chevaucher les cages de deux caissons non connectés sur un pixel entier, et un
+  mur entier scintillait.
   Les **machines gardent un cadre peint** dans leur texture, et ne se connectent pas : leurs
   silhouettes sont creusées, à étages, parfois traversantes, et une baguette posée sur
   l'arête d'un cube y flotterait dans le vide.

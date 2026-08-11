@@ -409,15 +409,34 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     /** La baguette de cadre posee sur l'arete commune aux faces {@code a} et {@code b}. */
     private ModelFile chassisBar(String name, Direction a, Direction b) {
-        // Deux pixels d'epaisseur, et un DEBORD d'un demi-pixel. Le debord n'est pas un
-        // correctif anti-z-fighting comme sur le verre : c'est du relief voulu. Une baguette
-        // affleurante se lit comme un dessin, une baguette qui depasse accroche la lumiere et
-        // se lit comme une piece rapportee. Elle ne peut jamais entrer dans un chassis voisin,
-        // puisqu'elle n'existe que la ou les deux faces bordant l'arete sont libres.
-        final float t = 2.0f;
-        final float over = 0.5f;
-        float[] from = {0, 0, 0};
-        float[] to = {16, 16, 16};
+        // ELLE PORTE LA TEXTURE DU CAISSON, PAS UNE TEXTURE DE METAL A PART.
+        //
+        // Le premier jet lui donnait un aplat metallique dedie. Resultat : le bloc pose ne
+        // ressemblait pas au bloc en main — cadre peint, biseau, equerres et rivets d'un cote,
+        // baguettes plates et nues de l'autre. Deux objets differents pour le meme bloc.
+        //
+        // En reprenant `_side`, l'UV automatique fait tout le travail : la face exterieure
+        // d'une baguette posee sur l'arete du bas echantillonne les deux dernieres lignes de
+        // la texture, celle du haut les deux premieres, celles des cotes les colonnes
+        // correspondantes. Chaque baguette tombe donc EXACTEMENT sur la bordure qu'elle
+        // represente, avec son biseau et ses equerres. Un chassis isole, qui porte ses douze
+        // baguettes, redessine ainsi le caisson complet : identique a l'objet, au pixel.
+        // TROIS PIXELS, ET CE CHIFFRE EST PARTAGE avec le generateur de textures
+        // (tools/block-textures/marble.js, CASING_WIDTH). Le cadre peint tient tout entier
+        // dans les trois premiers pixels du bord ; une baguette plus mince n'en reproduirait
+        // qu'une partie, et le bloc pose cesserait de ressembler au bloc en main.
+        final float t = 3.0f;
+        // DEBORD MINUSCULE, ET STAGGERE PAR AXE. Il ne sert qu'a decoller la baguette de la
+        // plaque : deux surfaces au meme plan se disputent la profondeur et clignotent. La
+        // version precedente debordait d'un demi-pixel « pour le relief » — a un joint entre
+        // deux caissons non connectes, les deux cages se chevauchaient alors sur un pixel
+        // entier, ce qui a couvert un mur de bandes scintillantes. Trois valeurs distinctes
+        // selon l'axe long evitent en plus que deux baguettes se retrouvent coplanaires dans
+        // un angle, la ou trois d'entre elles se rejoignent.
+        int longAxis = 3 - a.getAxis().ordinal() - b.getAxis().ordinal();
+        final float over = 0.06f - 0.02f * longAxis;
+        float[] from = {-over, -over, -over};
+        float[] to = {16 + over, 16 + over, 16 + over};
         for (Direction d : new Direction[] {a, b}) {
             int axis = d.getAxis().ordinal();
             boolean high = d.getAxisDirection() == Direction.AxisDirection.POSITIVE;
@@ -426,12 +445,11 @@ public class ModBlockStateProvider extends BlockStateProvider {
         }
         return models().getBuilder(name + "_bar_" + a.getSerializedName() + "_" + b.getSerializedName())
             .parent(models().getExistingFile(mcLoc("block/block")))
-            .texture("frame", modLoc("block/" + name + "_frame"))
-            .texture("particle", modLoc("block/" + name + "_frame"))
+            .texture("frame", modLoc("block/" + name + "_side"))
+            .texture("particle", modLoc("block/" + name + "_side"))
             .element().from(from[0], from[1], from[2]).to(to[0], to[1], to[2])
             .allFaces((face, f) -> f.texture("#frame")).end();
     }
-
     // --- Fabriques de modèles ------------------------------------------------
 
     private void machine(Block block, String name, String chassisName, Shape shape) {
