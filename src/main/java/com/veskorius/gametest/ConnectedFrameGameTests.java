@@ -98,10 +98,10 @@ public class ConnectedFrameGameTests {
         int mask = ConnectedFrame.faceBit(Direction.DOWN)
             | ConnectedFrame.edgeBit(Direction.EAST, Direction.DOWN);
 
-        helper.assertTrue(ConnectedFrame.hasBar(mask, Direction.EAST, Direction.DOWN),
+        helper.assertTrue(ConnectedFrame.hasBar(mask, Direction.EAST, Direction.DOWN, CREASES),
             "la face est est dégagée, le dessous est pris, la diagonale est-bas aussi : "
                 + "la surface tourne, il faut une baguette");
-        helper.assertTrue(!ConnectedFrame.hasBar(mask, Direction.WEST, Direction.DOWN),
+        helper.assertTrue(!ConnectedFrame.hasBar(mask, Direction.WEST, Direction.DOWN, CREASES),
             "mais rien à l'ouest, où la dalle ne continue pas : les deux faces se prolongent");
         helper.succeed();
     }
@@ -115,7 +115,7 @@ public class ConnectedFrameGameTests {
     public static void aFlatSurfaceGetsNoConcaveEdge(GameTestHelper helper) {
         int mask = ConnectedFrame.faceBit(Direction.UP);
 
-        helper.assertTrue(!ConnectedFrame.hasBar(mask, Direction.SOUTH, Direction.UP),
+        helper.assertTrue(!ConnectedFrame.hasBar(mask, Direction.SOUTH, Direction.UP, CREASES),
             "voisin au-dessus mais rien en diagonale : les deux faces se prolongent, "
                 + "aucune baguette");
         helper.succeed();
@@ -131,11 +131,11 @@ public class ConnectedFrameGameTests {
         int mask = ConnectedFrame.faceBit(Direction.UP) | ConnectedFrame.faceBit(Direction.WEST);
 
         helper.assertTrue(
-            ConnectedFrame.hasCorner(mask, Direction.SOUTH, Direction.UP, Direction.WEST),
+            ConnectedFrame.hasCorner(mask, Direction.SOUTH, Direction.UP, Direction.WEST, CREASES),
             "la face sud est dégagée, le haut et l'ouest sont pris, la diagonale est vide : "
                 + "il faut un quart de cadre");
         helper.assertTrue(
-            !ConnectedFrame.hasCorner(mask, Direction.UP, Direction.SOUTH, Direction.WEST),
+            !ConnectedFrame.hasCorner(mask, Direction.UP, Direction.SOUTH, Direction.WEST, CREASES),
             "mais rien sur la face du haut : elle est contre un voisin, on ne la voit pas");
         helper.assertTrue(corners(mask) == 2,
             "deux quarts de cadre exactement — sud et nord, obtenu " + corners(mask));
@@ -159,13 +159,13 @@ public class ConnectedFrameGameTests {
             | ConnectedFrame.vertexBit(Direction.WEST, Direction.SOUTH, Direction.UP);
 
         helper.assertTrue(
-            ConnectedFrame.hasCorner(mask, Direction.UP, Direction.WEST, Direction.SOUTH),
+            ConnectedFrame.hasCorner(mask, Direction.UP, Direction.WEST, Direction.SOUTH, CREASES),
             "la surface monte en marche par le coin : il faut le fermer");
 
         // Le même voisinage SANS le bloc debout : c'est une dalle plate, il ne faut rien.
         int flat = mask & ~ConnectedFrame.vertexBit(Direction.WEST, Direction.SOUTH, Direction.UP);
         helper.assertTrue(
-            !ConnectedFrame.hasCorner(flat, Direction.UP, Direction.WEST, Direction.SOUTH),
+            !ConnectedFrame.hasCorner(flat, Direction.UP, Direction.WEST, Direction.SOUTH, CREASES),
             "sans le bloc debout, la dalle est plate : aucun quart de cadre");
         helper.assertTrue(corners(flat) == 0, "et nulle part ailleurs non plus");
         helper.succeed();
@@ -183,7 +183,7 @@ public class ConnectedFrameGameTests {
             | ConnectedFrame.edgeBit(Direction.UP, Direction.WEST);
 
         helper.assertTrue(
-            !ConnectedFrame.hasCorner(mask, Direction.SOUTH, Direction.UP, Direction.WEST),
+            !ConnectedFrame.hasCorner(mask, Direction.SOUTH, Direction.UP, Direction.WEST, CREASES),
             "diagonale occupée : le coin est intérieur, aucun cadre");
         helper.assertTrue(corners(mask) == 0, "aucun quart de cadre nulle part");
         helper.succeed();
@@ -203,12 +203,12 @@ public class ConnectedFrameGameTests {
             for (int diagonals = 0; diagonals < 64; diagonals++) {
                 int mask = faces | (diagonals << 6);
                 ConnectedFrame.forEachFaceCorner((f, p, q) -> {
-                    if (!ConnectedFrame.hasCorner(mask, f, p, q)) {
+                    if (!ConnectedFrame.hasCorner(mask, f, p, q, CREASES)) {
                         return;
                     }
-                    helper.assertTrue(!ConnectedFrame.hasBar(mask, f, p),
+                    helper.assertTrue(!ConnectedFrame.hasBar(mask, f, p, CREASES),
                         "quart de cadre et baguette " + f + "/" + p + " au même endroit");
-                    helper.assertTrue(!ConnectedFrame.hasBar(mask, f, q),
+                    helper.assertTrue(!ConnectedFrame.hasBar(mask, f, q, CREASES),
                         "quart de cadre et baguette " + f + "/" + q + " au même endroit");
                 });
             }
@@ -216,10 +216,68 @@ public class ConnectedFrameGameTests {
         helper.succeed();
     }
 
+    /** Les caissons soulignent les plis ; le verre ne dessine que sa silhouette. */
+    private static final boolean CREASES = true;
+    private static final boolean SILHOUETTE = false;
+
+    /**
+     * <b>Le verre ne souligne pas les plis, et les caissons si.</b>
+     *
+     * <p>Un caisson est opaque : ses plis sont des arêtes qu'on voit, et les souligner rend la
+     * forme lisible. Le verre du mod est transparent à 96 % — il n'a presque pas de surface —
+     * et une baguette posée sur un pli n'y borde rien : elle flotte en l'air.
+     *
+     * <p>La <b>silhouette</b>, elle, vaut pour les deux : le contour du groupe et le coin
+     * rentrant d'un L se ferment dans les deux styles.
+     */
+    @GameTest(template = EMPTY, timeoutTicks = 20)
+    public static void glassDrawsItsSilhouetteOnly(GameTestHelper helper) {
+        // Le pied d'un bloc posé sur une dalle : un pli.
+        int step = ConnectedFrame.faceBit(Direction.DOWN)
+            | ConnectedFrame.edgeBit(Direction.EAST, Direction.DOWN);
+        helper.assertTrue(ConnectedFrame.hasBar(step, Direction.EAST, Direction.DOWN, CREASES),
+            "un caisson souligne le pli");
+        helper.assertTrue(!ConnectedFrame.hasBar(step, Direction.EAST, Direction.DOWN, SILHOUETTE),
+            "le verre ne le souligne pas : la baguette flotterait dans le vide");
+
+        // Un bloc isolé : douze baguettes dans les deux styles.
+        helper.assertTrue(bars(0) == 12 && barsOf(0, SILHOUETTE) == 12,
+            "la silhouette d'un bloc isolé ne dépend pas du style");
+
+        // Le coin rentrant d'un L : silhouette, donc les deux le ferment.
+        int corner = ConnectedFrame.faceBit(Direction.UP) | ConnectedFrame.faceBit(Direction.WEST);
+        helper.assertTrue(
+            ConnectedFrame.hasCorner(corner, Direction.SOUTH, Direction.UP, Direction.WEST, SILHOUETTE),
+            "le coin rentrant appartient à la silhouette : le verre le ferme aussi");
+
+        // La marche par le coin, elle, est un pli.
+        int stepCorner = ConnectedFrame.faceBit(Direction.WEST)
+            | ConnectedFrame.faceBit(Direction.SOUTH)
+            | ConnectedFrame.edgeBit(Direction.WEST, Direction.SOUTH)
+            | ConnectedFrame.vertexBit(Direction.WEST, Direction.SOUTH, Direction.UP);
+        helper.assertTrue(
+            ConnectedFrame.hasCorner(stepCorner, Direction.UP, Direction.WEST, Direction.SOUTH, CREASES),
+            "un caisson ferme l'angle du pourtour");
+        helper.assertTrue(
+            !ConnectedFrame.hasCorner(stepCorner, Direction.UP, Direction.WEST, Direction.SOUTH, SILHOUETTE),
+            "le verre n'a pas de pourtour à fermer, puisqu'il ne trace pas le pli");
+        helper.succeed();
+    }
+
+    private static int barsOf(int mask, boolean creases) {
+        int[] n = {0};
+        ConnectedFrame.forEachEdge((a, b) -> {
+            if (ConnectedFrame.hasBar(mask, a, b, creases)) {
+                n[0]++;
+            }
+        });
+        return n[0];
+    }
+
     private static int bars(int mask) {
         int[] n = {0};
         ConnectedFrame.forEachEdge((a, b) -> {
-            if (ConnectedFrame.hasBar(mask, a, b)) {
+            if (ConnectedFrame.hasBar(mask, a, b, CREASES)) {
                 n[0]++;
             }
         });
@@ -229,7 +287,7 @@ public class ConnectedFrameGameTests {
     private static int corners(int mask) {
         int[] n = {0};
         ConnectedFrame.forEachFaceCorner((f, p, q) -> {
-            if (ConnectedFrame.hasCorner(mask, f, p, q)) {
+            if (ConnectedFrame.hasCorner(mask, f, p, q, CREASES)) {
                 n[0]++;
             }
         });

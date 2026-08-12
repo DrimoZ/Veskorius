@@ -54,16 +54,18 @@ public class ConnectedFrameModel extends BakedModelWrapper<BakedModel> {
     }
 
     private final Block block;
+    private final boolean creases;
     private final ChunkRenderTypeSet baseRenderTypes;
     private final Map<EdgeKey, Piece> bars;
     private final Map<CornerKey, Piece> corners;
     private final ChunkRenderTypeSet renderTypes;
     private final Map<Long, List<BakedQuad>> cache = new ConcurrentHashMap<>();
 
-    public ConnectedFrameModel(BakedModel base, Block block,
+    public ConnectedFrameModel(BakedModel base, Block block, boolean creases,
                                Map<EdgeKey, Piece> bars, Map<CornerKey, Piece> corners) {
         super(base);
         this.block = block;
+        this.creases = creases;
         this.bars = bars;
         this.corners = corners;
 
@@ -143,12 +145,12 @@ public class ConnectedFrameModel extends BakedModelWrapper<BakedModel> {
     private List<BakedQuad> build(int mask, RandomSource rand, @Nullable RenderType renderType) {
         List<BakedQuad> quads = new ArrayList<>();
         ConnectedFrame.forEachEdge((a, b) -> {
-            if (ConnectedFrame.hasBar(mask, a, b)) {
+            if (ConnectedFrame.hasBar(mask, a, b, creases)) {
                 collect(bars.get(new EdgeKey(a, b)), quads, rand, renderType);
             }
         });
         ConnectedFrame.forEachFaceCorner((f, p, q) -> {
-            if (ConnectedFrame.hasCorner(mask, f, p, q)) {
+            if (ConnectedFrame.hasCorner(mask, f, p, q, creases)) {
                 collect(corners.get(new CornerKey(f, p, q)), quads, rand, renderType);
             }
         });

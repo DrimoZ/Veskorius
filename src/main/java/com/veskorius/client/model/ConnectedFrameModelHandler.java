@@ -82,7 +82,7 @@ public final class ConnectedFrameModelHandler {
                 }
             });
 
-            ConnectedFrameModel dynamic = new ConnectedFrameModel(base, block, bars, corners);
+            ConnectedFrameModel dynamic = new ConnectedFrameModel(base, block, frame.underlinesCreases(), bars, corners);
             for (BlockState state : block.getStateDefinition().getPossibleStates()) {
                 models.put(BlockModelShaper.stateToModelLocation(state), dynamic);
             }

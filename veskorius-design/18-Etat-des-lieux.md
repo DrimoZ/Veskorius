@@ -4,7 +4,7 @@ Généré à partir du code, pas du dossier de design. Une case cochée ici veut
 « enregistré, texturé, traduit, testé », pas « écrit dans un .md ».
 
 NeoForge 1.21.1 · Java 21 · **243 fichiers Java, ~34 200 lignes** · **58 blocs, 88 items**
-· **175 GameTest en deux processus** (`runFastGameTests` 154 en ~28 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
+· **176 GameTest en deux processus** (`runFastGameTests` 155 en ~28 s / `runWorldGameTests` 21 donjons ; `runAllGameTests` pour les deux), dont un qui vérifie que chaque machine a une recette réellement
 chargée — une recette de plus de 9 ingrédients est écartée au chargement du monde, sans
 que rien d'autre ne le signale.
 
@@ -151,7 +151,7 @@ d'alliage et coûte donc le bonus de panoplie).
 
   **Trois règles**, toutes dans `ConnectedFrame`, sans rendu ni client, donc testables :
   1. **arête convexe** — ni `a` ni `b` n'a de voisin : c'est un bord de silhouette ;
-  2. **arête concave** — une seule des deux faces est couverte, et la diagonale l'est aussi :
+  2. **arête concave** (blocs opaques seulement) — une seule des deux faces est couverte, et la diagonale l'est aussi :
      la surface tourne d'un plan à l'autre. C'est le pied d'un bloc posé sur une dalle, dont
      la face verticale rejoignait le dessus de la dalle sans aucune séparation ;
   3. **quart de cadre** — la face est dégagée, aucune des deux bordures du coin n'existe
@@ -164,7 +164,7 @@ d'alliage et coûte donc le bonus de panoplie).
 
   Les conditions sur les diagonales, en 2 et 3, ne sont pas des précautions : sans elles, un
   mur plat gagnerait un trait horizontal par bloc et son bloc central quatre quarts de cadre.
-  Neuf tests couvrent la règle, chaque cas avec son contre-exemple, dont un balayage exhaustif
+  Dix tests couvrent la règle, chaque cas avec son contre-exemple, dont un balayage exhaustif
   qui vérifie qu'une baguette et un quart de cadre ne se superposent jamais.
 
   **Quatre pièges de rendu**, tous trouvés en jeu et aucun en relecture :
@@ -180,6 +180,13 @@ d'alliage et coûte donc le bonus de panoplie).
   4. **Le fond est un cube plein, de 0 à 16.** L'avoir reculé de 0,05 px pour le départir des
      morceaux ouvrait une fente de 0,1 px entre deux blocs, que rien ne fermait puisque les
      faces partagées sont cullées : on voyait **le ciel à travers le mur**.
+
+  **Le verre ne souligne pas les plis, et c'est un paramètre du bloc.** Un caisson est
+  opaque : ses plis sont des arêtes qu'on voit, et les souligner rend la forme lisible. Le
+  verre du mod est transparent à 96 % — sa vitre ne fait que onze pixels sur 256 — donc une
+  baguette posée sur un pli n'y borde rien et flotte en l'air. Le verre ne trace que sa
+  **silhouette**, ce qu'il faisait déjà avant l'unification ; le coin rentrant d'un L, lui,
+  appartient à la silhouette et se ferme dans les deux styles.
 
   Le verre garde en plus son `skipRendering` : sans lui, deux plaques accolées dessinent
   chacune leur face intérieure, ce qui trouble la transparence et trace une ligne.

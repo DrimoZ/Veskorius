@@ -32,15 +32,17 @@ import net.minecraft.world.level.block.Block;
  *       aucune.</li>
  *   <li><b>Arête concave</b> — une seule des deux faces est couverte, et la <b>diagonale</b>
  *       l'est aussi : la surface tourne d'un plan à l'autre. C'est le pied d'un bloc posé sur
- *       une dalle : sa face verticale rejoignait le dessus de la dalle sans la moindre
- *       séparation.</li>
- *   <li><b>Quart de cadre</b> — la face {@code f} est dégagée, {@code p} et {@code q} sont
- *       couverts (donc aucune baguette ne passe par ce coin), et la diagonale {@code p+q} ne
- *       l'est pas. C'est le coin rentrant d'un L, qui restait nu.</li>
+ *       une dalle, dont la face verticale rejoignait le dessus de la dalle sans la moindre
+ *       séparation. <b>Réservée aux blocs opaques</b> — voir {@link Frame}.</li>
+ *   <li><b>Quart de cadre</b> — la face {@code f} est dégagée, aucune des deux bordures du
+ *       coin n'existe, et la diagonale n'est pas plate. Deux façons de ne pas l'être : rien
+ *       en diagonale (le coin rentrant d'un L, qui appartient à la silhouette) ou un bloc en
+ *       diagonale surmonté d'un autre (une marche par le coin, donc un pli).</li>
  * </ol>
  *
- * <p>La condition sur la diagonale, en 3, n'est pas une précaution : sans elle, le bloc
- * central d'un mur plein poserait quatre quarts de cadre au milieu d'une surface lisse.
+ * <p>Les conditions sur les diagonales ne sont pas des précautions : sans elles, un mur plat
+ * gagnerait un trait horizontal par bloc, et son bloc central quatre quarts de cadre au
+ * milieu d'une surface lisse.
  */
 public final class ConnectedFrame {
 
@@ -54,7 +56,8 @@ public final class ConnectedFrame {
      * les fichiers, le second les réclame. Un désaccord d'un caractère rendrait le bloc
      * invisible sans la moindre erreur, d'où l'unique déclaration.
      */
-    public record Frame(Supplier<? extends Block> block, String name, String base) {
+    public record Frame(Supplier<? extends Block> block, String name, String base,
+                        boolean underlinesCreases) {
 
         /** Le modèle de fond : la plaque d'un caisson, la vitre d'un verre. */
         public String baseModel() {
@@ -62,12 +65,22 @@ public final class ConnectedFrame {
         }
     }
 
+    /**
+     * <b>Le dernier paramètre dit si le cadre souligne les PLIS de la surface</b> — les arêtes
+     * où elle tourne d'un plan à l'autre, comme le pied d'un bloc posé sur une dalle.
+     *
+     * <p>Un caisson est opaque : ses plis sont des arêtes qu'on voit, et les souligner rend la
+     * forme lisible. <b>Une vitre ne l'est pas</b> — le verre du mod est transparent à 96 %,
+     * il n'a presque pas de surface. Une baguette posée sur un pli n'y borde rien du tout :
+     * elle flotte en l'air. Le verre ne dessine donc que sa SILHOUETTE, ce qu'il faisait déjà
+     * avant que les deux familles ne partagent leur code.
+     */
     public static final List<Frame> FRAMES = List.of(
-        new Frame(ModBlocks.FRACTURED_CHASSIS, "fractured_chassis", "_plate"),
-        new Frame(ModBlocks.ATTUNED_CHASSIS, "attuned_chassis", "_plate"),
-        new Frame(ModBlocks.VESKORIAN_CHASSIS, "veskorian_chassis", "_plate"),
-        new Frame(ModBlocks.RESONANCE_GLASS, "resonance_glass", "_pane"),
-        new Frame(ModBlocks.LUMINOUS_RESONANCE_GLASS, "luminous_resonance_glass", "_pane"));
+        new Frame(ModBlocks.FRACTURED_CHASSIS, "fractured_chassis", "_plate", true),
+        new Frame(ModBlocks.ATTUNED_CHASSIS, "attuned_chassis", "_plate", true),
+        new Frame(ModBlocks.VESKORIAN_CHASSIS, "veskorian_chassis", "_plate", true),
+        new Frame(ModBlocks.RESONANCE_GLASS, "resonance_glass", "_pane", false),
+        new Frame(ModBlocks.LUMINOUS_RESONANCE_GLASS, "luminous_resonance_glass", "_pane", false));
 
     // --- Le voisinage ---------------------------------------------------------
 
@@ -194,14 +207,21 @@ public final class ConnectedFrame {
      *       si la diagonale est occupée. Sinon les deux faces se prolongent l'une l'autre et
      *       une baguette y tracerait un trait au milieu d'un plan.</li>
      * </ul>
+     *
+     * <p>Ce troisième cas est un <b>pli</b>, et {@code creases} dit s'il faut le souligner : oui
+     * pour un caisson opaque, dont les plis sont des arêtes qu'on voit ; non pour une vitre
+     * transparente à 96 %, où la baguette ne borderait rien et flotterait en l'air.
      */
-    public static boolean hasBar(int mask, Direction a, Direction b) {
+    public static boolean hasBar(int mask, Direction a, Direction b, boolean creases) {
         boolean ca = connected(mask, a);
         boolean cb = connected(mask, b);
         if (ca == cb) {
+            // Les deux dégagées : arête de silhouette. Les deux couvertes : rien de visible.
             return !ca;
         }
-        return connectedDiagonally(mask, a, b);
+        // Une seule couverte : la surface tourne d'un plan à l'autre si la diagonale est là.
+        // C'est un PLI, et seuls les blocs opaques les soulignent.
+        return creases && connectedDiagonally(mask, a, b);
     }
 
     /**
@@ -222,13 +242,23 @@ public final class ConnectedFrame {
      *       Ce cas-là demande le bloc qui ne partage avec nous qu'un SOMMET.</li>
      * </ul>
      */
-    public static boolean hasCorner(int mask, Direction f, Direction p, Direction q) {
-        if (connected(mask, f) || hasBar(mask, f, p) || hasBar(mask, f, q)) {
+    public static boolean hasCorner(int mask, Direction f, Direction p, Direction q,
+                                    boolean creases) {
+        if (connected(mask, f)
+            || hasBar(mask, f, p, creases)
+            || hasBar(mask, f, q, creases)) {
+            // Face cachée, ou une baguette passe déjà par ce coin : la doubler poserait deux
+            // surfaces au même endroit, et ça clignoterait.
             return false;
         }
-        boolean flatDiagonal = connectedDiagonally(mask, p, q)
-            && !connectedAtVertex(mask, p, q, f);
-        return !flatDiagonal;
+        if (!connectedDiagonally(mask, p, q)) {
+            // Rien en diagonale : c'est le coin rentrant d'un L. Il appartient à la
+            // SILHOUETTE, donc tout le monde le ferme, verre compris.
+            return true;
+        }
+        // Un bloc en diagonale, surmonté d'un autre : la surface monte en marche PAR LE COIN.
+        // C'est un pli, au même titre qu'une arête concave.
+        return creases && connectedAtVertex(mask, p, q, f);
     }
 
     // --- Balayages et noms ----------------------------------------------------
