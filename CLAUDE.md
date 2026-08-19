@@ -90,6 +90,11 @@ automatiquement en fin de tour (`.claude/hooks/audit-on-stop.js`).
   `en_us.json`, le wiki et la page CurseForge.
 - **Une seule implémentation d'un mécanisme.** Quand deux endroits font presque la même chose,
   factoriser le mécanisme et paramétrer ce qui diffère — jamais dupliquer.
+- **Mais un refactoring ne change jamais le comportement visible.** Unifier le *mécanisme*, pas
+  les *décisions* : ce qui diffère légitimement entre deux cas devient un paramètre nommé au
+  même endroit, verrouillé par un test qui l'exerce dans les deux sens. En unifiant le verre et
+  les châssis, la règle « souligner les plis de la surface » — qui n'a de sens que sur un bloc
+  opaque — a été imposée au verre, transparent à 96 % : les baguettes flottaient en l'air.
 - Toute machine à cycle hérite d'`AbstractMachineBlockEntity` (progression, slot d'augment,
   On/Off, mode redstone, surchauffe, faces configurables, bande harmonique). Une machine
   input→output n'écrit **aucun** code de recette : `AbstractProcessingMachineBlockEntity` +
