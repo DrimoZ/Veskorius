@@ -1,0 +1,53 @@
+{
+  "$comment": "Config Claude Code PARTAGÉE du dépôt. Les permissions personnelles et jetables vont dans settings.local.json, qui n'est pas versionné.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/no-generated-edit.js"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/audit-on-stop.js"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew compileJava:*)",
+      "Bash(./gradlew build:*)",
+      "Bash(./gradlew runData:*)",
+      "Bash(./gradlew audit:*)",
+      "Bash(./gradlew runFastGameTests:*)",
+      "Bash(./gradlew runWorldGameTests:*)",
+      "Bash(./gradlew runAllGameTests:*)",
+      "Bash(node tools/audit.js)",
+      "Bash(node tools/block-textures/:*)",
+      "Bash(node tools/item-textures/:*)",
+      "Bash(node tools/gui-textures/:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(unzip -l:*)",
+      "Bash(unzip -o -q:*sources.jar*)",
+      "Bash(javap -cp build/moddev/artifacts/:*)"
+    ],
+    "ask": [
+      "Bash(./gradlew runClient:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}
